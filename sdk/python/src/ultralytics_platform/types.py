@@ -1128,6 +1128,7 @@ ModelsListResponseModelsItem = TypedDict(
                 "Ultralytics-Enterprise",
                 "Other",
             ]
+            | None
         ],
         "datasetId": NotRequired[str],
         "datasetVersion": NotRequired[ModelsListResponseModelsItemDatasetVersion],
@@ -1294,6 +1295,7 @@ ModelsListResponseModel = TypedDict(
                 "Ultralytics-Enterprise",
                 "Other",
             ]
+            | None
         ],
         "datasetId": NotRequired[str],
         "datasetVersion": NotRequired[ModelsListResponseModelDatasetVersion],
@@ -1338,6 +1340,7 @@ ModelsListResponseModel = TypedDict(
                 "Ultralytics-Enterprise",
                 "Other",
             ]
+            | None
         ],
         "projectName": str,
         "projectVisibility": Literal["public", "private"],
@@ -1525,6 +1528,7 @@ ModelsRetrieveResponseModel = TypedDict(
                 "Ultralytics-Enterprise",
                 "Other",
             ]
+            | None
         ],
         "datasetId": NotRequired[str],
         "datasetVersion": NotRequired[ModelsRetrieveResponseModelDatasetVersion],
@@ -1569,6 +1573,7 @@ ModelsRetrieveResponseModel = TypedDict(
                 "Ultralytics-Enterprise",
                 "Other",
             ]
+            | None
         ],
     },
 )

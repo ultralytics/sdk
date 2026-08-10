@@ -6988,23 +6988,30 @@
                                 "type": "string"
                               },
                               "license": {
-                                "type": "string",
-                                "enum": [
-                                  "None",
-                                  "Apache-2.0",
-                                  "MIT",
-                                  "BSD-3-Clause",
-                                  "AGPL-3.0",
-                                  "GPL-3.0",
-                                  "LGPL-3.0",
-                                  "MPL-2.0",
-                                  "EUPL-1.1",
-                                  "Unlicense",
-                                  "CC0-1.0",
-                                  "Ultralytics-Enterprise",
-                                  "Other"
-                                ],
-                                "description": "License"
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "None",
+                                      "Apache-2.0",
+                                      "MIT",
+                                      "BSD-3-Clause",
+                                      "AGPL-3.0",
+                                      "GPL-3.0",
+                                      "LGPL-3.0",
+                                      "MPL-2.0",
+                                      "EUPL-1.1",
+                                      "Unlicense",
+                                      "CC0-1.0",
+                                      "Ultralytics-Enterprise",
+                                      "Other"
+                                    ],
+                                    "description": "License"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               },
                               "datasetId": {
                                 "description": "Source dataset ID",
@@ -7740,23 +7747,30 @@
                                   "type": "string"
                                 },
                                 "license": {
-                                  "type": "string",
-                                  "enum": [
-                                    "None",
-                                    "Apache-2.0",
-                                    "MIT",
-                                    "BSD-3-Clause",
-                                    "AGPL-3.0",
-                                    "GPL-3.0",
-                                    "LGPL-3.0",
-                                    "MPL-2.0",
-                                    "EUPL-1.1",
-                                    "Unlicense",
-                                    "CC0-1.0",
-                                    "Ultralytics-Enterprise",
-                                    "Other"
-                                  ],
-                                  "description": "License"
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "None",
+                                        "Apache-2.0",
+                                        "MIT",
+                                        "BSD-3-Clause",
+                                        "AGPL-3.0",
+                                        "GPL-3.0",
+                                        "LGPL-3.0",
+                                        "MPL-2.0",
+                                        "EUPL-1.1",
+                                        "Unlicense",
+                                        "CC0-1.0",
+                                        "Ultralytics-Enterprise",
+                                        "Other"
+                                      ],
+                                      "description": "License"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
                                 },
                                 "datasetId": {
                                   "description": "Source dataset ID",
@@ -8443,21 +8457,29 @@
                                 },
                                 "projectLicense": {
                                   "description": "Parent project license",
-                                  "type": "string",
-                                  "enum": [
-                                    "None",
-                                    "Apache-2.0",
-                                    "MIT",
-                                    "BSD-3-Clause",
-                                    "AGPL-3.0",
-                                    "GPL-3.0",
-                                    "LGPL-3.0",
-                                    "MPL-2.0",
-                                    "EUPL-1.1",
-                                    "Unlicense",
-                                    "CC0-1.0",
-                                    "Ultralytics-Enterprise",
-                                    "Other"
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "None",
+                                        "Apache-2.0",
+                                        "MIT",
+                                        "BSD-3-Clause",
+                                        "AGPL-3.0",
+                                        "GPL-3.0",
+                                        "LGPL-3.0",
+                                        "MPL-2.0",
+                                        "EUPL-1.1",
+                                        "Unlicense",
+                                        "CC0-1.0",
+                                        "Ultralytics-Enterprise",
+                                        "Other"
+                                      ],
+                                      "description": "License"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
                                   ]
                                 },
                                 "projectName": {
@@ -9077,23 +9099,30 @@
                               "type": "string"
                             },
                             "license": {
-                              "type": "string",
-                              "enum": [
-                                "None",
-                                "Apache-2.0",
-                                "MIT",
-                                "BSD-3-Clause",
-                                "AGPL-3.0",
-                                "GPL-3.0",
-                                "LGPL-3.0",
-                                "MPL-2.0",
-                                "EUPL-1.1",
-                                "Unlicense",
-                                "CC0-1.0",
-                                "Ultralytics-Enterprise",
-                                "Other"
-                              ],
-                              "description": "License"
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "None",
+                                    "Apache-2.0",
+                                    "MIT",
+                                    "BSD-3-Clause",
+                                    "AGPL-3.0",
+                                    "GPL-3.0",
+                                    "LGPL-3.0",
+                                    "MPL-2.0",
+                                    "EUPL-1.1",
+                                    "Unlicense",
+                                    "CC0-1.0",
+                                    "Ultralytics-Enterprise",
+                                    "Other"
+                                  ],
+                                  "description": "License"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "datasetId": {
                               "description": "Source dataset ID",
@@ -9780,21 +9809,29 @@
                             },
                             "projectLicense": {
                               "description": "Parent project license",
-                              "type": "string",
-                              "enum": [
-                                "None",
-                                "Apache-2.0",
-                                "MIT",
-                                "BSD-3-Clause",
-                                "AGPL-3.0",
-                                "GPL-3.0",
-                                "LGPL-3.0",
-                                "MPL-2.0",
-                                "EUPL-1.1",
-                                "Unlicense",
-                                "CC0-1.0",
-                                "Ultralytics-Enterprise",
-                                "Other"
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "None",
+                                    "Apache-2.0",
+                                    "MIT",
+                                    "BSD-3-Clause",
+                                    "AGPL-3.0",
+                                    "GPL-3.0",
+                                    "LGPL-3.0",
+                                    "MPL-2.0",
+                                    "EUPL-1.1",
+                                    "Unlicense",
+                                    "CC0-1.0",
+                                    "Ultralytics-Enterprise",
+                                    "Other"
+                                  ],
+                                  "description": "License"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             }
                           },
