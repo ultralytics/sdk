@@ -1,3 +1,5 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
 from __future__ import annotations
 
 from typing import Literal, cast
@@ -37,7 +39,8 @@ class Explore:
         Args:
             q (str, optional): Search term
             type (Literal["all", "projects", "datasets"], optional): Resource type filter
-            sort (Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order
+            sort (Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional):
+                Sort order
             offset (float, optional): Skip this many results for pagination
             task (str, optional): Comma-separated YOLO task filters
             author (str, optional): Owner username filter
@@ -103,7 +106,8 @@ class AsyncExplore:
         Args:
             q (str, optional): Search term
             type (Literal["all", "projects", "datasets"], optional): Resource type filter
-            sort (Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order
+            sort (Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional):
+                Sort order
             offset (float, optional): Skip this many results for pagination
             task (str, optional): Comma-separated YOLO task filters
             author (str, optional): Owner username filter

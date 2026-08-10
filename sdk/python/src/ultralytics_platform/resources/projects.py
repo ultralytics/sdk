@@ -1,3 +1,5 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
 from __future__ import annotations
 
 from typing import Any, BinaryIO, Literal, cast
@@ -103,10 +105,12 @@ class Projects:
             slug (str): slug request value.
             name (str): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
+                and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
             tags (list[str], optional): tags request value.
-            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional):
+                Project/model license identifier
             owner (str, optional): Team owner username (creates resource in their workspace)
 
         Returns:
@@ -138,7 +142,8 @@ class Projects:
         """Get project details.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
             username (str, optional): Owner username when using a project slug instead of an ID
 
         Returns:
@@ -184,7 +189,7 @@ class Projects:
         | NotGiven = NOT_GIVEN,
         archived: bool | NotGiven = NOT_GIVEN,
         icon_color: str | NotGiven = NOT_GIVEN,
-        icon_letter: str | Literal[""] | None | NotGiven = NOT_GIVEN,
+        icon_letter: str | Literal[""] | NotGiven | None = NOT_GIVEN,
         view_preferences: dict[str, Any] | NotGiven = NOT_GIVEN,
     ) -> ProjectsUpdateResponse:
         """Update a project.
@@ -192,13 +197,16 @@ class Projects:
         Update project properties like name, description, metadata, visibility, or tags.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
             name (str, optional): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
+                and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
             tags (list[str], optional): tags request value.
-            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional):
+                Project/model license identifier
             archived (bool, optional): archived request value.
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""] | None, optional): iconLetter request value.
@@ -237,7 +245,8 @@ class Projects:
         Moves the project and all its models to trash. Can be restored within 30 days.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
 
         Returns:
             (ProjectsDeleteResponse): The API response.
@@ -260,7 +269,8 @@ class Projects:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
 
         Returns:
             (ProjectsRetrieveMetadataResponse): The API response.
@@ -293,7 +303,8 @@ class Projects:
         Copies a public, owned, or shared project and its models into your account or a workspace.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
             name (str, optional): name request value.
             slug (str, optional): slug request value.
             description (str, optional): description request value.
@@ -335,7 +346,8 @@ class Projects:
         """Upload a project icon.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
             image (BinaryIO): WebP image, maximum 5 MB
             icon_color (str, optional): iconColor request value.
             icon_letter (str, optional): iconLetter request value.
@@ -361,7 +373,8 @@ class Projects:
         """Delete a project icon.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
 
         Returns:
             (ProjectsDeleteIconResponse): The API response.
@@ -459,10 +472,12 @@ class AsyncProjects:
             slug (str): slug request value.
             name (str): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
+                and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
             tags (list[str], optional): tags request value.
-            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional):
+                Project/model license identifier
             owner (str, optional): Team owner username (creates resource in their workspace)
 
         Returns:
@@ -494,7 +509,8 @@ class AsyncProjects:
         """Get project details.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
             username (str, optional): Owner username when using a project slug instead of an ID
 
         Returns:
@@ -540,7 +556,7 @@ class AsyncProjects:
         | NotGiven = NOT_GIVEN,
         archived: bool | NotGiven = NOT_GIVEN,
         icon_color: str | NotGiven = NOT_GIVEN,
-        icon_letter: str | Literal[""] | None | NotGiven = NOT_GIVEN,
+        icon_letter: str | Literal[""] | NotGiven | None = NOT_GIVEN,
         view_preferences: dict[str, Any] | NotGiven = NOT_GIVEN,
     ) -> ProjectsUpdateResponse:
         """Update a project.
@@ -548,13 +564,16 @@ class AsyncProjects:
         Update project properties like name, description, metadata, visibility, or tags.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
             name (str, optional): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
+                and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
             tags (list[str], optional): tags request value.
-            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional):
+                Project/model license identifier
             archived (bool, optional): archived request value.
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""] | None, optional): iconLetter request value.
@@ -593,7 +612,8 @@ class AsyncProjects:
         Moves the project and all its models to trash. Can be restored within 30 days.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
 
         Returns:
             (ProjectsDeleteResponse): The API response.
@@ -616,7 +636,8 @@ class AsyncProjects:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
 
         Returns:
             (ProjectsRetrieveMetadataResponse): The API response.
@@ -649,7 +670,8 @@ class AsyncProjects:
         Copies a public, owned, or shared project and its models into your account or a workspace.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
             name (str, optional): name request value.
             slug (str, optional): slug request value.
             description (str, optional): description request value.
@@ -691,7 +713,8 @@ class AsyncProjects:
         """Upload a project icon.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
             image (BinaryIO): WebP image, maximum 5 MB
             icon_color (str, optional): iconColor request value.
             icon_letter (str, optional): iconLetter request value.
@@ -717,7 +740,8 @@ class AsyncProjects:
         """Delete a project icon.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project URL name or ID, e.g. `my-project` from
+                platform.ultralytics.com/username/my-project
 
         Returns:
             (ProjectsDeleteIconResponse): The API response.
