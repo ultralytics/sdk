@@ -1,0 +1,23 @@
+{
+  "source": "openapi.json",
+  "upstream": "https://platform.ultralytics.com/openapi.json",
+  "name": "Ultralytics Platform API",
+  "apiKey": {
+    "environment": "ULTRALYTICS_API_KEY"
+  },
+  "docs": {
+    "basePath": "/api/docs"
+  },
+  "header": "Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license",
+  "license": {
+    "id": "AGPL-3.0-only",
+    "file": "LICENSE"
+  },
+  "python": {
+    "client": "Platform",
+    "install": "uv pip install \"git+https://github.com/ultralytics/sdk.git#subdirectory=sdk/python\"",
+    "package": "ultralytics_platform",
+    "project": "ultralytics-platform",
+    "version": "0.1.0"
+  }
+}

@@ -49,6 +49,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+.ruff_cache/
 cover/
 
 # Translations
@@ -167,7 +168,7 @@ cython_debug/
 # datasets and projects
 datasets/
 runs/
-tests/
+/openapi.json
 .DS_Store
 
 # Neural Network weights
