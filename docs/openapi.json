@@ -246,7 +246,14 @@
                           },
                           "description": {
                             "description": "Dataset description",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "visibility": {
                             "type": "string",
@@ -275,14 +282,28 @@
                           },
                           "classCount": {
                             "description": "Number of classes",
-                            "type": "number"
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "classNames": {
                             "description": "Class names",
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "format": {
                             "description": "Annotation format",
@@ -296,30 +317,45 @@
                           },
                           "tags": {
                             "description": "Tags",
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "license": {
                             "description": "License",
-                            "type": "string",
-                            "enum": [
-                              "None",
-                              "CC0-1.0",
-                              "CC-BY-2.5",
-                              "CC-BY-4.0",
-                              "CC-BY-SA-4.0",
-                              "CC-BY-NC-4.0",
-                              "CC-BY-NC-SA-4.0",
-                              "CC-BY-ND-4.0",
-                              "CC-BY-NC-ND-4.0",
-                              "Apache-2.0",
-                              "MIT",
-                              "AGPL-3.0",
-                              "GPL-3.0",
-                              "Research-Only",
-                              "Other"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "None",
+                                  "CC0-1.0",
+                                  "CC-BY-2.5",
+                                  "CC-BY-4.0",
+                                  "CC-BY-SA-4.0",
+                                  "CC-BY-NC-4.0",
+                                  "CC-BY-NC-SA-4.0",
+                                  "CC-BY-ND-4.0",
+                                  "CC-BY-NC-ND-4.0",
+                                  "Apache-2.0",
+                                  "MIT",
+                                  "AGPL-3.0",
+                                  "GPL-3.0",
+                                  "Research-Only",
+                                  "Other"
+                                ],
+                                "description": "Dataset license"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "splits": {
@@ -481,24 +517,38 @@
                           },
                           "kptShape": {
                             "description": "Pose keypoint shape [num_keypoints, dims]",
-                            "type": "array",
-                            "prefixItems": [
+                            "anyOf": [
                               {
-                                "type": "number"
+                                "type": "array",
+                                "prefixItems": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "number"
+                                  }
+                                ]
                               },
                               {
-                                "type": "number"
+                                "type": "null"
                               }
                             ]
                           },
                           "flipIdx": {
                             "description": "Pose keypoint horizontal-flip indices",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "minimum": 0,
-                              "maximum": 9007199254740991
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "processingTimeMs": {
                             "description": "Backend processing time in milliseconds",
@@ -1028,7 +1078,14 @@
                         },
                         "description": {
                           "description": "Dataset description",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "visibility": {
                           "type": "string",
@@ -1057,14 +1114,28 @@
                         },
                         "classCount": {
                           "description": "Number of classes",
-                          "type": "number"
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "classNames": {
                           "description": "Class names",
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "format": {
                           "description": "Annotation format",
@@ -1078,30 +1149,45 @@
                         },
                         "tags": {
                           "description": "Tags",
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "license": {
                           "description": "License",
-                          "type": "string",
-                          "enum": [
-                            "None",
-                            "CC0-1.0",
-                            "CC-BY-2.5",
-                            "CC-BY-4.0",
-                            "CC-BY-SA-4.0",
-                            "CC-BY-NC-4.0",
-                            "CC-BY-NC-SA-4.0",
-                            "CC-BY-ND-4.0",
-                            "CC-BY-NC-ND-4.0",
-                            "Apache-2.0",
-                            "MIT",
-                            "AGPL-3.0",
-                            "GPL-3.0",
-                            "Research-Only",
-                            "Other"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "None",
+                                "CC0-1.0",
+                                "CC-BY-2.5",
+                                "CC-BY-4.0",
+                                "CC-BY-SA-4.0",
+                                "CC-BY-NC-4.0",
+                                "CC-BY-NC-SA-4.0",
+                                "CC-BY-ND-4.0",
+                                "CC-BY-NC-ND-4.0",
+                                "Apache-2.0",
+                                "MIT",
+                                "AGPL-3.0",
+                                "GPL-3.0",
+                                "Research-Only",
+                                "Other"
+                              ],
+                              "description": "Dataset license"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "splits": {
@@ -1263,24 +1349,38 @@
                         },
                         "kptShape": {
                           "description": "Pose keypoint shape [num_keypoints, dims]",
-                          "type": "array",
-                          "prefixItems": [
+                          "anyOf": [
                             {
-                              "type": "number"
+                              "type": "array",
+                              "prefixItems": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ]
                             },
                             {
-                              "type": "number"
+                              "type": "null"
                             }
                           ]
                         },
                         "flipIdx": {
                           "description": "Pose keypoint horizontal-flip indices",
-                          "type": "array",
-                          "items": {
-                            "type": "integer",
-                            "minimum": 0,
-                            "maximum": 9007199254740991
-                          }
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "processingTimeMs": {
                           "description": "Backend processing time in milliseconds",
@@ -2444,7 +2544,14 @@
                     },
                     "sampleSize": {
                       "description": "Number of images included; set only when stats came from a capped subset",
-                      "type": "number"
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     }
                   },
                   "required": [
@@ -5417,7 +5524,14 @@
                           },
                           "description": {
                             "description": "Project description",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "visibility": {
                             "type": "string",
@@ -5429,28 +5543,43 @@
                           },
                           "tags": {
                             "description": "Tags",
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "license": {
                             "description": "License",
-                            "type": "string",
-                            "enum": [
-                              "None",
-                              "Apache-2.0",
-                              "MIT",
-                              "BSD-3-Clause",
-                              "AGPL-3.0",
-                              "GPL-3.0",
-                              "LGPL-3.0",
-                              "MPL-2.0",
-                              "EUPL-1.1",
-                              "Unlicense",
-                              "CC0-1.0",
-                              "Ultralytics-Enterprise",
-                              "Other"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "None",
+                                  "Apache-2.0",
+                                  "MIT",
+                                  "BSD-3-Clause",
+                                  "AGPL-3.0",
+                                  "GPL-3.0",
+                                  "LGPL-3.0",
+                                  "MPL-2.0",
+                                  "EUPL-1.1",
+                                  "Unlicense",
+                                  "CC0-1.0",
+                                  "Ultralytics-Enterprise",
+                                  "Other"
+                                ],
+                                "description": "License"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "iconColor": {
@@ -5459,7 +5588,14 @@
                           },
                           "iconLetter": {
                             "description": "Icon letter(s)",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "iconImage": {
                             "description": "Icon image URL",
@@ -5503,15 +5639,23 @@
                           },
                           "task": {
                             "description": "Default task type for models in this project",
-                            "type": "string",
-                            "enum": [
-                              "detect",
-                              "segment",
-                              "semantic",
-                              "depth",
-                              "classify",
-                              "pose",
-                              "obb"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "detect",
+                                  "segment",
+                                  "semantic",
+                                  "depth",
+                                  "classify",
+                                  "pose",
+                                  "obb"
+                                ],
+                                "description": "YOLO task type"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "clonedFrom": {
@@ -5883,7 +6027,14 @@
                         },
                         "description": {
                           "description": "Project description",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "visibility": {
                           "type": "string",
@@ -5895,28 +6046,43 @@
                         },
                         "tags": {
                           "description": "Tags",
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "license": {
                           "description": "License",
-                          "type": "string",
-                          "enum": [
-                            "None",
-                            "Apache-2.0",
-                            "MIT",
-                            "BSD-3-Clause",
-                            "AGPL-3.0",
-                            "GPL-3.0",
-                            "LGPL-3.0",
-                            "MPL-2.0",
-                            "EUPL-1.1",
-                            "Unlicense",
-                            "CC0-1.0",
-                            "Ultralytics-Enterprise",
-                            "Other"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "None",
+                                "Apache-2.0",
+                                "MIT",
+                                "BSD-3-Clause",
+                                "AGPL-3.0",
+                                "GPL-3.0",
+                                "LGPL-3.0",
+                                "MPL-2.0",
+                                "EUPL-1.1",
+                                "Unlicense",
+                                "CC0-1.0",
+                                "Ultralytics-Enterprise",
+                                "Other"
+                              ],
+                              "description": "License"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "iconColor": {
@@ -5925,11 +6091,22 @@
                         },
                         "iconLetter": {
                           "description": "Icon letter(s)",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "iconImage": {
                           "description": "Icon image URL",
                           "type": "string"
+                        },
+                        "modelCount": {
+                          "type": "number",
+                          "description": "Number of models"
                         },
                         "starCount": {
                           "type": "number",
@@ -5954,15 +6131,23 @@
                         },
                         "task": {
                           "description": "Default task type for models in this project",
-                          "type": "string",
-                          "enum": [
-                            "detect",
-                            "segment",
-                            "semantic",
-                            "depth",
-                            "classify",
-                            "pose",
-                            "obb"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "detect",
+                                "segment",
+                                "semantic",
+                                "depth",
+                                "classify",
+                                "pose",
+                                "obb"
+                              ],
+                              "description": "YOLO task type"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "clonedFrom": {
@@ -6035,6 +6220,7 @@
                         "slug",
                         "name",
                         "visibility",
+                        "modelCount",
                         "starCount",
                         "isStarred",
                         "createdAt",
@@ -6662,7 +6848,7 @@
             "name": "projectId",
             "in": "query",
             "required": false,
-            "description": "Project name or ID",
+            "description": "Project name or ID; required when listing models",
             "schema": {
               "type": "string"
             }
@@ -6681,6 +6867,15 @@
             "in": "query",
             "required": false,
             "description": "Project name, e.g. `my-project` (use with username)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "required": false,
+            "description": "Model name (use with username and projectSlug for a single-model lookup)",
             "schema": {
               "type": "string"
             }
@@ -6752,7 +6947,14 @@
                           },
                           "description": {
                             "description": "Model description",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "status": {
                             "type": "string",
@@ -6832,11 +7034,25 @@
                           },
                           "bestEpoch": {
                             "description": "Best epoch number",
-                            "type": "number"
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "bestFitness": {
                             "description": "Best fitness score",
-                            "type": "number"
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "trainArgs": {
                             "description": "Public training configuration; dataset, unknown fields, and local model paths are omitted",
@@ -7257,11 +7473,25 @@
                           },
                           "version": {
                             "description": "Ultralytics version",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "docs": {
                             "description": "Model documentation URL",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "startedAt": {
                             "type": "string",
@@ -7274,10 +7504,17 @@
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                           },
                           "classNames": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "metrics": {
                             "type": "object",
@@ -7336,8 +7573,15 @@
                           },
                           "plots": {
                             "description": "Validation plots",
-                            "type": "array",
-                            "items": {}
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {}
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "trainingError": {
                             "type": "object",
@@ -7802,7 +8046,14 @@
                             "type": "string"
                           },
                           "bestFitness": {
-                            "type": "number"
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           }
                         },
                         "required": [
@@ -7952,7 +8203,14 @@
                             },
                             "description": {
                               "description": "Model description",
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "status": {
                               "type": "string",
@@ -8032,11 +8290,25 @@
                             },
                             "bestEpoch": {
                               "description": "Best epoch number",
-                              "type": "number"
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "bestFitness": {
                               "description": "Best fitness score",
-                              "type": "number"
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "trainArgs": {
                               "description": "Public training configuration; dataset, unknown fields, and local model paths are omitted",
@@ -8457,11 +8729,25 @@
                             },
                             "version": {
                               "description": "Ultralytics version",
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "docs": {
                               "description": "Model documentation URL",
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "startedAt": {
                               "type": "string",
@@ -8474,10 +8760,17 @@
                               "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                             },
                             "classNames": {
-                              "type": "array",
-                              "items": {
-                                "type": "string"
-                              }
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "metrics": {
                               "type": "object",
@@ -8536,8 +8829,15 @@
                             },
                             "plots": {
                               "description": "Validation plots",
-                              "type": "array",
-                              "items": {}
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {}
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "trainingError": {
                               "type": "object",
@@ -11884,13 +12184,34 @@
                                       "type": "string"
                                     },
                                     "epochs": {
-                                      "type": "number"
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
                                     },
                                     "batch": {
-                                      "type": "number"
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
                                     },
                                     "imgsz": {
-                                      "type": "number"
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
                                     }
                                   },
                                   "additionalProperties": false
@@ -13246,7 +13567,14 @@
                           },
                           "statusMessage": {
                             "description": "Status details",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "region": {
                             "type": "string",
@@ -13636,7 +13964,14 @@
                         },
                         "statusMessage": {
                           "description": "Status details",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "region": {
                           "type": "string",
@@ -15538,6 +15873,10 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Stable transaction identifier"
+                          },
                           "type": {
                             "type": "string",
                             "description": "Transaction type"
@@ -15551,6 +15890,21 @@
                             "description": "Balance after transaction"
                           },
                           "modelId": {
+                            "type": "string"
+                          },
+                          "datasetId": {
+                            "type": "string"
+                          },
+                          "apiKeyId": {
+                            "type": "string"
+                          },
+                          "runId": {
+                            "type": "string"
+                          },
+                          "gpuType": {
+                            "type": "string"
+                          },
+                          "gpuDisplayName": {
                             "type": "string"
                           },
                           "period": {
@@ -15588,6 +15942,20 @@
                                   },
                                   "username": {
                                     "type": "string"
+                                  },
+                                  "datasetId": {
+                                    "type": "string"
+                                  },
+                                  "gpuType": {
+                                    "type": "string"
+                                  },
+                                  "gpuDisplayName": {
+                                    "type": "string"
+                                  },
+                                  "startedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                                   }
                                 },
                                 "required": [
@@ -15605,6 +15973,7 @@
                           }
                         },
                         "required": [
+                          "id",
                           "type",
                           "amountCents",
                           "balanceAfter",
@@ -17204,7 +17573,14 @@
                             "type": "string"
                           },
                           "description": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "username": {
                             "type": "string"
@@ -17221,7 +17597,14 @@
                             "type": "string"
                           },
                           "iconLetter": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "iconImage": {
                             "type": "string"
@@ -17285,7 +17668,14 @@
                             "type": "string"
                           },
                           "description": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "username": {
                             "type": "string"
@@ -17304,15 +17694,29 @@
                             "maximum": 9007199254740991
                           },
                           "classCount": {
-                            "type": "integer",
-                            "minimum": -9007199254740991,
-                            "maximum": 9007199254740991
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "classNames": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "classColors": {
                             "type": "object",
@@ -17340,10 +17744,17 @@
                             "type": "number"
                           },
                           "tags": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "splits": {
                             "type": "object",
@@ -17377,13 +17788,20 @@
                             "description": "Dataset split statistics"
                           },
                           "kptShape": {
-                            "type": "array",
-                            "prefixItems": [
+                            "anyOf": [
                               {
-                                "type": "number"
+                                "type": "array",
+                                "prefixItems": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "number"
+                                  }
+                                ]
                               },
                               {
-                                "type": "number"
+                                "type": "null"
                               }
                             ]
                           },
@@ -20215,13 +20633,15 @@
                     "available": {
                       "type": "boolean"
                     },
-                    "username": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "suggestion": {
                       "type": "string"
                     }
                   },
                   "required": [
-                    "available",
-                    "username"
+                    "available"
                   ],
                   "additionalProperties": false
                 }

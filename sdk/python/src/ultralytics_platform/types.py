@@ -68,14 +68,14 @@ DatasetsListResponseDatasetsItem = TypedDict(
         "username": str,
         "slug": str,
         "name": str,
-        "description": NotRequired[str],
+        "description": NotRequired[str | None],
         "visibility": Literal["public", "private"],
         "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
         "imageCount": float,
-        "classCount": NotRequired[float],
-        "classNames": NotRequired[list[str]],
+        "classCount": NotRequired[float | None],
+        "classNames": NotRequired[list[str] | None],
         "format": NotRequired[Literal["yolo", "coco", "voc", "raw"]],
-        "tags": NotRequired[list[str]],
+        "tags": NotRequired[list[str] | None],
         "license": NotRequired[
             Literal[
                 "None",
@@ -94,6 +94,7 @@ DatasetsListResponseDatasetsItem = TypedDict(
                 "Research-Only",
                 "Other",
             ]
+            | None
         ],
         "splits": NotRequired[DatasetsListResponseDatasetsItemSplits],
         "annotationCount": NotRequired[float],
@@ -104,8 +105,8 @@ DatasetsListResponseDatasetsItem = TypedDict(
         "sampleImages": NotRequired[list[DatasetsListResponseDatasetsItemSampleImagesItem]],
         "storageProvider": NotRequired[Literal["gcs", "s3", "azure"]],
         "classColors": NotRequired[dict[str, str]],
-        "kptShape": NotRequired[list[Any]],
-        "flipIdx": NotRequired[list[int]],
+        "kptShape": NotRequired[list[Any] | None],
+        "flipIdx": NotRequired[list[int] | None],
         "processingTimeMs": NotRequired[float],
         "processingError": NotRequired[DatasetsListResponseDatasetsItemProcessingError],
         "errorCount": NotRequired[float],
@@ -203,14 +204,14 @@ DatasetsRetrieveResponseDataset = TypedDict(
         "username": str,
         "slug": str,
         "name": str,
-        "description": NotRequired[str],
+        "description": NotRequired[str | None],
         "visibility": Literal["public", "private"],
         "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
         "imageCount": float,
-        "classCount": NotRequired[float],
-        "classNames": NotRequired[list[str]],
+        "classCount": NotRequired[float | None],
+        "classNames": NotRequired[list[str] | None],
         "format": NotRequired[Literal["yolo", "coco", "voc", "raw"]],
-        "tags": NotRequired[list[str]],
+        "tags": NotRequired[list[str] | None],
         "license": NotRequired[
             Literal[
                 "None",
@@ -229,6 +230,7 @@ DatasetsRetrieveResponseDataset = TypedDict(
                 "Research-Only",
                 "Other",
             ]
+            | None
         ],
         "splits": NotRequired[DatasetsRetrieveResponseDatasetSplits],
         "annotationCount": NotRequired[float],
@@ -239,8 +241,8 @@ DatasetsRetrieveResponseDataset = TypedDict(
         "sampleImages": NotRequired[list[DatasetsRetrieveResponseDatasetSampleImagesItem]],
         "storageProvider": NotRequired[Literal["gcs", "s3", "azure"]],
         "classColors": NotRequired[dict[str, str]],
-        "kptShape": NotRequired[list[Any]],
-        "flipIdx": NotRequired[list[int]],
+        "kptShape": NotRequired[list[Any] | None],
+        "flipIdx": NotRequired[list[int] | None],
         "processingTimeMs": NotRequired[float],
         "processingError": NotRequired[DatasetsRetrieveResponseDatasetProcessingError],
         "errorCount": NotRequired[float],
@@ -387,7 +389,7 @@ DatasetsRetrieveClassStatsResponse = TypedDict(
         "dimensionHeatmap": DatasetsRetrieveClassStatsResponseDimensionHeatmap,
         "classNames": list[str],
         "cached": bool,
-        "sampleSize": NotRequired[float],
+        "sampleSize": NotRequired[float | None],
     },
 )
 
@@ -858,9 +860,9 @@ ProjectsListResponseProjectsItem = TypedDict(
         "username": str,
         "slug": str,
         "name": str,
-        "description": NotRequired[str],
+        "description": NotRequired[str | None],
         "visibility": Literal["public", "private"],
-        "tags": NotRequired[list[str]],
+        "tags": NotRequired[list[str] | None],
         "license": NotRequired[
             Literal[
                 "None",
@@ -877,9 +879,10 @@ ProjectsListResponseProjectsItem = TypedDict(
                 "Ultralytics-Enterprise",
                 "Other",
             ]
+            | None
         ],
         "iconColor": NotRequired[str],
-        "iconLetter": NotRequired[str],
+        "iconLetter": NotRequired[str | None],
         "iconImage": NotRequired[str],
         "modelCount": float,
         "modelNames": NotRequired[list[str]],
@@ -888,7 +891,7 @@ ProjectsListResponseProjectsItem = TypedDict(
         "isStarred": bool,
         "archived": NotRequired[bool],
         "region": NotRequired[Literal["us", "eu", "ap"]],
-        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"]],
+        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | None],
         "clonedFrom": NotRequired[str],
         "cloneCount": NotRequired[float],
         "totalModelDownloadCount": NotRequired[float],
@@ -935,9 +938,9 @@ ProjectsRetrieveResponseProject = TypedDict(
         "username": str,
         "slug": str,
         "name": str,
-        "description": NotRequired[str],
+        "description": NotRequired[str | None],
         "visibility": Literal["public", "private"],
-        "tags": NotRequired[list[str]],
+        "tags": NotRequired[list[str] | None],
         "license": NotRequired[
             Literal[
                 "None",
@@ -954,15 +957,17 @@ ProjectsRetrieveResponseProject = TypedDict(
                 "Ultralytics-Enterprise",
                 "Other",
             ]
+            | None
         ],
         "iconColor": NotRequired[str],
-        "iconLetter": NotRequired[str],
+        "iconLetter": NotRequired[str | None],
         "iconImage": NotRequired[str],
+        "modelCount": float,
         "starCount": float,
         "isStarred": bool,
         "archived": NotRequired[bool],
         "region": NotRequired[Literal["us", "eu", "ap"]],
-        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"]],
+        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | None],
         "clonedFrom": NotRequired[str],
         "cloneCount": NotRequired[float],
         "totalModelDownloadCount": NotRequired[float],
@@ -1101,7 +1106,7 @@ ModelsListResponseModelsItem = TypedDict(
         "projectSlug": NotRequired[str],
         "slug": NotRequired[str],
         "name": str,
-        "description": NotRequired[str],
+        "description": NotRequired[str | None],
         "status": NotRequired[
             Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"]
         ],
@@ -1128,19 +1133,19 @@ ModelsListResponseModelsItem = TypedDict(
         "datasetVersion": NotRequired[ModelsListResponseModelsItemDatasetVersion],
         "sourceModelId": NotRequired[str],
         "epochs": NotRequired[float],
-        "bestEpoch": NotRequired[float],
-        "bestFitness": NotRequired[float],
+        "bestEpoch": NotRequired[float | None],
+        "bestFitness": NotRequired[float | None],
         "trainArgs": NotRequired[ModelsListResponseModelsItemTrainArgs],
-        "version": NotRequired[str],
-        "docs": NotRequired[str],
+        "version": NotRequired[str | None],
+        "docs": NotRequired[str | None],
         "startedAt": NotRequired[str],
         "completedAt": NotRequired[str],
-        "classNames": NotRequired[list[str]],
+        "classNames": NotRequired[list[str] | None],
         "metrics": NotRequired[dict[str, float]],
         "trainResults": NotRequired[list[ModelsListResponseModelsItemTrainResultsItem]],
         "hasWeights": bool,
         "file": NotRequired[ModelsListResponseModelsItemFile],
-        "plots": NotRequired[list[Any]],
+        "plots": NotRequired[list[Any] | None],
         "trainingError": NotRequired[ModelsListResponseModelsItemTrainingError],
         "starCount": float,
         "isStarred": bool,
@@ -1181,7 +1186,7 @@ ModelsListCompletedResponseModelsItem = TypedDict(
         "projectName": str,
         "projectIconColor": NotRequired[str],
         "projectIconLetter": NotRequired[str],
-        "bestFitness": NotRequired[float],
+        "bestFitness": NotRequired[float | None],
     },
 )
 
@@ -1305,7 +1310,7 @@ ModelsRetrieveResponseModel = TypedDict(
         "projectSlug": NotRequired[str],
         "slug": NotRequired[str],
         "name": str,
-        "description": NotRequired[str],
+        "description": NotRequired[str | None],
         "status": NotRequired[
             Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"]
         ],
@@ -1332,19 +1337,19 @@ ModelsRetrieveResponseModel = TypedDict(
         "datasetVersion": NotRequired[ModelsRetrieveResponseModelDatasetVersion],
         "sourceModelId": NotRequired[str],
         "epochs": NotRequired[float],
-        "bestEpoch": NotRequired[float],
-        "bestFitness": NotRequired[float],
+        "bestEpoch": NotRequired[float | None],
+        "bestFitness": NotRequired[float | None],
         "trainArgs": NotRequired[ModelsRetrieveResponseModelTrainArgs],
-        "version": NotRequired[str],
-        "docs": NotRequired[str],
+        "version": NotRequired[str | None],
+        "docs": NotRequired[str | None],
         "startedAt": NotRequired[str],
         "completedAt": NotRequired[str],
-        "classNames": NotRequired[list[str]],
+        "classNames": NotRequired[list[str] | None],
         "metrics": NotRequired[dict[str, float]],
         "trainResults": NotRequired[list[ModelsRetrieveResponseModelTrainResultsItem]],
         "hasWeights": bool,
         "file": NotRequired[ModelsRetrieveResponseModelFile],
-        "plots": NotRequired[list[Any]],
+        "plots": NotRequired[list[Any] | None],
         "trainingError": NotRequired[ModelsRetrieveResponseModelTrainingError],
         "starCount": float,
         "isStarred": bool,
@@ -1899,7 +1904,12 @@ ModelsRetrieveTrainingResponseJobCompute = TypedDict(
 
 ModelsRetrieveTrainingResponseJobTrainArgs = TypedDict(
     "ModelsRetrieveTrainingResponseJobTrainArgs",
-    {"model": NotRequired[str], "epochs": NotRequired[float], "batch": NotRequired[float], "imgsz": NotRequired[float]},
+    {
+        "model": NotRequired[str],
+        "epochs": NotRequired[float | str],
+        "batch": NotRequired[float | str],
+        "imgsz": NotRequired[float | str],
+    },
 )
 
 
@@ -2135,7 +2145,7 @@ DeploymentsListResponseDeploymentsItem = TypedDict(
         "name": str,
         "slug": str,
         "status": Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"],
-        "statusMessage": NotRequired[str],
+        "statusMessage": NotRequired[str | None],
         "region": str,
         "serviceUrl": NotRequired[str],
         "resources": DeploymentsListResponseDeploymentsItemResources,
@@ -2173,7 +2183,7 @@ DeploymentsRetrieveResponseDeployment = TypedDict(
         "name": str,
         "slug": str,
         "status": Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"],
-        "statusMessage": NotRequired[str],
+        "statusMessage": NotRequired[str | None],
         "region": str,
         "serviceUrl": NotRequired[str],
         "resources": DeploymentsRetrieveResponseDeploymentResources,
@@ -2713,7 +2723,8 @@ AccountPermanentlyDeleteAllTrashedItemsResponse = TypedDict(
 
 
 AccountRetrieveIfUsernameIsAvailableResponse = TypedDict(
-    "AccountRetrieveIfUsernameIsAvailableResponse", {"available": bool, "username": str}
+    "AccountRetrieveIfUsernameIsAvailableResponse",
+    {"available": bool, "error": NotRequired[str], "suggestion": NotRequired[str]},
 )
 
 
@@ -2775,17 +2786,32 @@ BillingRetrieveBalanceResponse = TypedDict(
 
 BillingListTransactionsResponseTransactionsItemModel = TypedDict(
     "BillingListTransactionsResponseTransactionsItemModel",
-    {"name": str, "slug": str, "projectSlug": str, "username": str},
+    {
+        "name": str,
+        "slug": str,
+        "projectSlug": str,
+        "username": str,
+        "datasetId": NotRequired[str],
+        "gpuType": NotRequired[str],
+        "gpuDisplayName": NotRequired[str],
+        "startedAt": NotRequired[str],
+    },
 )
 
 
 BillingListTransactionsResponseTransactionsItem = TypedDict(
     "BillingListTransactionsResponseTransactionsItem",
     {
+        "id": str,
         "type": str,
         "amountCents": float,
         "balanceAfter": float,
         "modelId": NotRequired[str],
+        "datasetId": NotRequired[str],
+        "apiKeyId": NotRequired[str],
+        "runId": NotRequired[str],
+        "gpuType": NotRequired[str],
+        "gpuDisplayName": NotRequired[str],
         "period": NotRequired[str],
         "createdAt": str,
         "receiptUrl": NotRequired[str | None],
@@ -2962,11 +2988,11 @@ ExploreRetrieveSearchResponseProjectsItem = TypedDict(
         "_id": str,
         "slug": str,
         "name": str,
-        "description": NotRequired[str],
+        "description": NotRequired[str | None],
         "username": str,
         "visibility": Literal["public", "private"],
         "iconColor": NotRequired[str],
-        "iconLetter": NotRequired[str],
+        "iconLetter": NotRequired[str | None],
         "iconImage": NotRequired[str],
         "modelCount": int,
         "modelNames": list[str],
@@ -3014,18 +3040,18 @@ ExploreRetrieveSearchResponseDatasetsItem = TypedDict(
         "_id": str,
         "slug": str,
         "name": str,
-        "description": NotRequired[str],
+        "description": NotRequired[str | None],
         "username": str,
         "visibility": Literal["public", "private"],
         "imageCount": int,
-        "classCount": NotRequired[int],
-        "classNames": NotRequired[list[str]],
+        "classCount": NotRequired[int | None],
+        "classNames": NotRequired[list[str] | None],
         "classColors": NotRequired[dict[str, str]],
         "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
         "totalBytes": NotRequired[float],
-        "tags": NotRequired[list[str]],
+        "tags": NotRequired[list[str] | None],
         "splits": NotRequired[ExploreRetrieveSearchResponseDatasetsItemSplits],
-        "kptShape": NotRequired[list[Any]],
+        "kptShape": NotRequired[list[Any] | None],
         "starCount": int,
         "sampleImages": list[ExploreRetrieveSearchResponseDatasetsItemSampleImagesItem],
         "userImageUrl": NotRequired[str],
