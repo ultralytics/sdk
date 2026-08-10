@@ -29,22 +29,18 @@ After opening a PR:
 ## Commands
 
 ```bash
-uv pip install -e ".[dev]" # install for development
-
-pytest tests -v                                               # run tests (pytest)
-pytest tests/test_with_pytest.py::test_add_numbers -v         # run one test
-python -m unittest discover tests -v                          # run tests (unittest)
-pytest tests -v --cov=./ --cov-report=xml:pytest-coverage.xml # coverage (CI command)
-example-cli-command                                           # run the example CLI entry point
-
-ruff format . && ruff check --fix . # format/lint (uv pip install ruff; config in pyproject.toml)
+uvx ruff@0.16.2 format --check --line-length 120 sdk/python
+uvx ruff@0.16.2 check sdk/python
+python3 -m compileall -q sdk/python/src
+uv build sdk/python
+uv run --with pytest --with ./sdk/python pytest tests -v
 ```
 
-CI matrix: Python 3.9/3.13/3.14 × ubuntu/macos/windows. CI runs the tests four ways — pytest and unittest, each with and without coverage — plus the CLI entry point, so tests must pass under both runners.
+CI checks Python 3.11 and 3.14 on Ubuntu. It downloads the pinned Platform contract, verifies `openapi.sha256`, regenerates both outputs with the pinned `ultralytics/openapi` revision, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install.
 
 ## Architecture
 
-This is the Ultralytics template for new Python packages — a minimal, fully wired example meant to be copied and adapted. `template/` is the package: `__init__.py` holds `__version__` (read by setuptools dynamic versioning in `pyproject.toml`), and `module1.py` holds the example `add_numbers()`/`main()` backing the `example-cli-command` entry point in `[project.scripts]`. `tests/` demonstrates the same tests in both pytest style (`test_with_pytest.py`) and unittest style (`test_with_unittest.py`). `format.yml` runs Ultralytics Actions on PRs (Ruff, Prettier, codespell, link checks, AI labels/summaries) and commits fixes back to the PR branch. `publish.yml` tags, releases, and (optionally) publishes to PyPI when `__version__` is bumped on `main`; its `check` job intentionally omits the `github.actor` maintainer gate that product repos keep for security, because a fork supplies its own.
+This repository contains generated SDKs and static API documentation for Ultralytics products. `openapi.config.json` defines the consumer configuration, while `openapi.sha256` pins the contract fetched from its upstream owner. `docs/` and `sdk/python/` are generated descendants and must never be edited manually; change the contract, consumer configuration, or generic generator instead, then regenerate. `tests/` owns focused consumer-level wire checks. `format.yml` runs Ultralytics Actions on pull requests, and `ci.yml` owns deterministic regeneration and package validation. PyPI publishing is intentionally disabled during initial validation.
 
 ## Conventions
 

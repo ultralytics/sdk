@@ -1,12 +1,9 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
 
-# Continuous Integration (CI) GitHub Actions tests
-
 name: CI
 
 permissions:
-  contents: read # Read code in PRs
-  id-token: write # Required for Codecov OIDC authentication
+  contents: read
 
 on:
   push:
@@ -14,19 +11,29 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: "0 0 * * *" # Runs at 00:00 UTC every day
+    - cron: "0 0 * * *"
 
 jobs:
   Test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.9", "3.13", "3.14"]
+        python-version: ["3.11", "3.14"]
 
     steps:
       - uses: actions/checkout@v7
+
+      - uses: actions/checkout@v7
+        with:
+          repository: ultralytics/openapi
+          ref: a8d8b84ffafc3cf0b87baa47976a2a35f4ea845c
+          path: .generator
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - uses: actions/setup-python@v7
         with:
@@ -34,37 +41,31 @@ jobs:
 
       - uses: ultralytics/actions/setup-uv@main
 
-      - name: Install dependencies
+      - name: Verify pinned OpenAPI contract
         run: |
-          uv pip install --system -e ".[dev]"
+          curl --fail --silent --show-error --location "$(python -c 'import json; print(json.load(open("openapi.config.json"))["upstream"])')" --output openapi.json
+          sha256sum --check openapi.sha256
 
-      - name: Option 1 - Python tests with pytest
+      - name: Regenerate docs and Python SDK
+        working-directory: .generator
+        env:
+          OPENAPI_CONFIG: ${{ github.workspace }}/openapi.config.json
         run: |
-          python -m pytest tests -v
+          bun install --frozen-lockfile
+          bun run generate
+          bun run build
 
-      - name: Option 2 - Python tests with unittest
+      - name: Check generated drift
         run: |
-          python -m unittest discover tests -v
+          diff --recursive --unified sdk/python .generator/generated/python
+          diff --recursive --unified docs .generator/out
 
-      - name: Option 3 - Python tests with pytest coverage
+      - name: Validate Python SDK
         run: |
-          python -m pytest tests -v --cov=./ --cov-report=xml:pytest-coverage.xml
-
-      - name: Option 4 - Python tests with unittest coverage
-        run: |
-          python -m coverage run --source=./ -m unittest discover tests -v && python -m coverage xml -o unittest-coverage.xml
-
-      - name: Run CLI tests
-        run: |
-          example-cli-command
-
-      - name: Upload coverage to Codecov
-        continue-on-error: true
-        uses: codecov/codecov-action@v7
-        with:
-          files: ./pytest-coverage.xml,./unittest-coverage.xml # optional (default = coverage.xml)
-          flags: template_coverage # optional
-          use_oidc: true
-          fail_ci_if_error: false
-          disable_search: true
-          plugins: noop
+          uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests
+          uvx ruff@0.16.2 check sdk/python tests
+          python -m compileall -q sdk/python/src
+          uv build --project sdk/python
+          unzip -l sdk/python/dist/*.whl | grep --quiet '\.dist-info/licenses/LICENSE$'
+          uv pip install --system pytest "git+file://${GITHUB_WORKSPACE}#subdirectory=sdk/python"
+          pytest tests -v
