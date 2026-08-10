@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: ultralytics/openapi
-          ref: 271c0b811e4743e7c3b06fb7da9513bb84a480d7
+          ref: 86ca5819820261ad8c3d29a33d00c2418086394e
           path: .generator
 
       - uses: oven-sh/setup-bun@v2
