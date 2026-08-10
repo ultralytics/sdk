@@ -55,6 +55,12 @@ jobs:
           bun run generate
           bun run build
 
+      - uses: actions/upload-artifact@v7
+        if: matrix.python-version == '3.11'
+        with:
+          name: generated-docs
+          path: .generator/out
+
       - name: Check generated drift
         run: |
           diff --recursive --unified sdk/python .generator/generated/python

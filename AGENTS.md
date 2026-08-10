@@ -29,8 +29,8 @@ After opening a PR:
 ## Commands
 
 ```bash
-uvx ruff@0.16.2 format --check --line-length 120 sdk/python
-uvx ruff@0.16.2 check sdk/python
+uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests
+uvx ruff@0.16.2 check sdk/python tests
 python3 -m compileall -q sdk/python/src
 uv build sdk/python
 uv run --with pytest --with ./sdk/python pytest tests -v
