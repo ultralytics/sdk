@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: ultralytics/openapi
-          ref: a8d8b84ffafc3cf0b87baa47976a2a35f4ea845c
+          ref: 1b489221123f8cb40be43c799d247453012b4126
           path: .generator
 
       - uses: oven-sh/setup-bun@v2
@@ -58,7 +58,8 @@ jobs:
       - name: Check generated drift
         run: |
           diff --recursive --unified sdk/python .generator/generated/python
-          diff --recursive --unified docs .generator/out
+          diff --unified docs/openapi.json .generator/out/openapi.json
+          diff --recursive --unified docs/_next/static .generator/out/_next/static
 
       - name: Validate Python SDK
         run: |
