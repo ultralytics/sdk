@@ -68,5 +68,5 @@ jobs:
           python -m compileall -q sdk/python/src
           uv build --project sdk/python
           unzip -l sdk/python/dist/*.whl | grep --quiet '\.dist-info/licenses/LICENSE$'
-          uv pip install --system pytest "git+file://${GITHUB_WORKSPACE}#subdirectory=sdk/python"
+          uv pip install --system pytest "git+file://${GITHUB_WORKSPACE}@$(git rev-parse HEAD)#subdirectory=sdk/python"
           pytest tests -v
