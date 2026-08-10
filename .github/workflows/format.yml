@@ -26,8 +26,8 @@ jobs:
         with:
           token: ${{ secrets._GITHUB_TOKEN || secrets.GITHUB_TOKEN }} # Auto-generated token
           labels: true # Auto-label issues/PRs using AI
-          python: true # Format Python with Ruff
-          prettier: true # Format YAML, JSON, Markdown, CSS
+          python: false # Generated Python is formatted and checked in CI
+          prettier: false # Generated docs are validated against the pinned generator
           swift: false # Format Swift (requires macos-latest)
           spelling: true # Check spelling with codespell
           links: true # Check broken links with Lychee

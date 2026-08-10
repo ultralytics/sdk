@@ -1,5 +1,3 @@
-# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-
 from __future__ import annotations
 
 from typing import Any, BinaryIO, Literal, cast
@@ -68,8 +66,7 @@ class Datasets:
             username (str, optional): Show datasets from this user instead of your own
             owner (str, optional): Team workspace to browse
             region (str, optional): Data region: us, eu, or ap
-            include_image_urls (bool, optional): Set true to include signed full-size sample image URLs (thumbnail
-                fallback)
+            include_image_urls (bool, optional): Set true to include signed full-size sample image URLs (thumbnail fallback)
             include_samples (bool, optional): Set false to omit sample images from the response
 
         Returns:
@@ -137,17 +134,14 @@ class Datasets:
             slug (str): slug request value.
             name (str): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"]): Dataset task type (depth coming
-                soon)
+            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"]): Dataset task type (depth coming soon)
             image_count (int): imageCount request value.
             class_names (list[str], optional): classNames request value.
             format (Literal["yolo", "coco", "voc", "raw", "ndjson"]): Dataset annotation format
             tags (list[str], optional): tags request value.
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional):
-                Dataset license identifier
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner (str, optional): Team owner username (creates resource in their workspace)
 
         Returns:
@@ -185,8 +179,7 @@ class Datasets:
         Returns full details for a dataset including class names, split counts, and sample images.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Owner username when using a dataset slug instead of an ID
 
         Returns:
@@ -247,21 +240,17 @@ class Datasets:
         Update dataset properties like name, description, metadata, visibility, tags, or class names.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             name (str, optional): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
             tags (list[str], optional): tags request value.
             class_names (list[str], optional): classNames request value.
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "voc", "raw", "ndjson"], optional): Dataset annotation format
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type
-                (depth coming soon)
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional):
-                Dataset license identifier
+            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""], optional): iconLetter request value.
 
@@ -300,8 +289,7 @@ class Datasets:
         Moves the dataset to trash. It can be restored within 30 days before permanent deletion.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
 
         Returns:
             (DatasetsDeleteResponse): The API response.
@@ -324,8 +312,7 @@ class Datasets:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
 
         Returns:
             (DatasetsRetrieveMetadataResponse): The API response.
@@ -358,8 +345,7 @@ class Datasets:
         Copies a public, owned, or shared dataset into your account or a workspace.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             name (str, optional): name request value.
             slug (str, optional): slug request value.
             description (str, optional): description request value.
@@ -396,8 +382,7 @@ class Datasets:
         Returns per-class annotation counts, image dimension distributions, and location heatmap data.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
 
         Returns:
             (DatasetsRetrieveClassStatsResponse): The API response.
@@ -422,8 +407,7 @@ class Datasets:
         Reassigns annotations from source classes to a target class, removes the source classes, and shifts remaining class IDs. This operation is not idempotent; re-fetch the dataset before retrying.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             source_class_ids (list[int]): sourceClassIds request value.
             target_class_id (int): targetClassId request value.
 
@@ -449,8 +433,7 @@ class Datasets:
         Deletes annotations in the selected classes, removes the classes, and shifts remaining class IDs.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             class_ids (list[int]): classIds request value.
 
         Returns:
@@ -477,8 +460,7 @@ class Datasets:
         Randomly reassigns images to train, validation, and test splits using percentages that total 100.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             train (int): Train split percentage
             val (int): Validation split percentage
             test (int): Test split percentage
@@ -539,8 +521,7 @@ class Datasets:
         Returns paginated dataset images. Labels are omitted by default and only included as capped preview annotations when includeLabels=true or overlayLabels=true.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Owner username for public dataset access
             limit (float, optional): Number of images to return (default 50, max 5000)
             offset (float, optional): Skip this many images for pagination
@@ -550,11 +531,8 @@ class Datasets:
             has_error (bool, optional): Filter by images with processing errors
             has_label (bool, optional): Filter by labeled status
             class_ids (str, optional): Comma-separated class IDs. Matches images containing any of the listed classes
-            search (str, optional): Case-insensitive substring search over the image name and custom metadata keys,
-                scalar values, and array entries (name suffix optional). Values nested inside sub-objects are not
-                matched. A 32-character hex string is an exact hash lookup instead
-            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional):
-                Sort order
+            search (str, optional): Case-insensitive substring search over the image name and custom metadata keys, scalar values, and array entries (name suffix optional). Values nested inside sub-objects are not matched. A 32-character hex string is an exact hash lookup instead
+            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (bool, optional): Set false to omit signed thumbnail URLs
             include_image_urls (bool, optional): Set true to include signed full-size image URLs
             include_labels (bool, optional): Set true to include capped preview labels
@@ -610,8 +588,7 @@ class Datasets:
         """Get selected dataset images.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
             include_labels (bool, optional): includeLabels query parameter.
             overlay_labels (bool, optional): overlayLabels query parameter.
@@ -652,8 +629,7 @@ class Datasets:
         Returns a signed URL for the current dataset or a saved version snapshot.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             v (int, optional): Saved version number
 
         Returns:
@@ -680,8 +656,7 @@ class Datasets:
         Creates an immutable numbered snapshot and returns its signed NDJSON download URL.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             description (str, optional): description request value.
 
         Returns:
@@ -704,8 +679,7 @@ class Datasets:
         """Update a dataset version description.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             version (int): version request value.
             description (str): description request value.
 
@@ -746,14 +720,10 @@ class Datasets:
             session_id (str, optional): Upload session ID from signed-url response
             source_url (str, optional): Remote dataset archive or NDJSON URL
             reference (dict[str, Any], optional): Connected cloud folder, or On Premise folder or archive
-            target_split (Literal["train", "val", "test"], optional): Target split for new images (overrides ZIP
-                structure)
+            target_split (Literal["train", "val", "test"], optional): Target split for new images (overrides ZIP structure)
             class_mapping (dict[str, Any], optional): User-confirmed mapping from incoming class names to existing
-            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content
-                conflicts
-            image_metadata (dict[str, Any], optional): Custom metadata keyed by each image's archive-relative path or
-                NDJSON file value. Paths are limited to 1,024 characters, top-level metadata keys to 128 characters, and
-                the entire serialized map to 500,000 characters.
+            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
+            image_metadata (dict[str, Any], optional): Custom metadata keyed by each image's archive-relative path or NDJSON file value. Paths are limited to 1,024 characters, top-level metadata keys to 128 characters, and the entire serialized map to 500,000 characters.
 
         Returns:
             (DatasetsIngestResponse): The API response.
@@ -786,8 +756,7 @@ class Datasets:
         """Get dataset analysis status.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
 
         Returns:
@@ -810,8 +779,7 @@ class Datasets:
         """Analyze dataset embeddings.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
 
         Returns:
@@ -834,8 +802,7 @@ class Datasets:
         """Cancel dataset analysis.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
 
         Returns:
@@ -860,8 +827,7 @@ class Datasets:
         """Get dataset clustering layout.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
             offset (int, optional): offset query parameter.
             limit (int, optional): limit query parameter.
@@ -890,8 +856,7 @@ class Datasets:
         """List models trained on a dataset.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
 
         Returns:
@@ -914,8 +879,7 @@ class Datasets:
         """Restore a saved dataset version.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             version (int): version request value.
 
         Returns:
@@ -998,8 +962,7 @@ class Datasets:
         """Upload a dataset icon.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             image (BinaryIO): WebP image, maximum 5 MB
             icon_color (str, optional): iconColor request value.
             icon_letter (str, optional): iconLetter request value.
@@ -1025,8 +988,7 @@ class Datasets:
         """Delete a dataset icon.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
 
         Returns:
             (DatasetsDeleteIconResponse): The API response.
@@ -1069,8 +1031,7 @@ class AsyncDatasets:
             username (str, optional): Show datasets from this user instead of your own
             owner (str, optional): Team workspace to browse
             region (str, optional): Data region: us, eu, or ap
-            include_image_urls (bool, optional): Set true to include signed full-size sample image URLs (thumbnail
-                fallback)
+            include_image_urls (bool, optional): Set true to include signed full-size sample image URLs (thumbnail fallback)
             include_samples (bool, optional): Set false to omit sample images from the response
 
         Returns:
@@ -1138,17 +1099,14 @@ class AsyncDatasets:
             slug (str): slug request value.
             name (str): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"]): Dataset task type (depth coming
-                soon)
+            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"]): Dataset task type (depth coming soon)
             image_count (int): imageCount request value.
             class_names (list[str], optional): classNames request value.
             format (Literal["yolo", "coco", "voc", "raw", "ndjson"]): Dataset annotation format
             tags (list[str], optional): tags request value.
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional):
-                Dataset license identifier
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner (str, optional): Team owner username (creates resource in their workspace)
 
         Returns:
@@ -1186,8 +1144,7 @@ class AsyncDatasets:
         Returns full details for a dataset including class names, split counts, and sample images.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Owner username when using a dataset slug instead of an ID
 
         Returns:
@@ -1248,21 +1205,17 @@ class AsyncDatasets:
         Update dataset properties like name, description, metadata, visibility, tags, or class names.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             name (str, optional): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
             tags (list[str], optional): tags request value.
             class_names (list[str], optional): classNames request value.
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "voc", "raw", "ndjson"], optional): Dataset annotation format
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type
-                (depth coming soon)
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional):
-                Dataset license identifier
+            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""], optional): iconLetter request value.
 
@@ -1301,8 +1254,7 @@ class AsyncDatasets:
         Moves the dataset to trash. It can be restored within 30 days before permanent deletion.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
 
         Returns:
             (DatasetsDeleteResponse): The API response.
@@ -1325,8 +1277,7 @@ class AsyncDatasets:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
 
         Returns:
             (DatasetsRetrieveMetadataResponse): The API response.
@@ -1359,8 +1310,7 @@ class AsyncDatasets:
         Copies a public, owned, or shared dataset into your account or a workspace.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             name (str, optional): name request value.
             slug (str, optional): slug request value.
             description (str, optional): description request value.
@@ -1397,8 +1347,7 @@ class AsyncDatasets:
         Returns per-class annotation counts, image dimension distributions, and location heatmap data.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
 
         Returns:
             (DatasetsRetrieveClassStatsResponse): The API response.
@@ -1423,8 +1372,7 @@ class AsyncDatasets:
         Reassigns annotations from source classes to a target class, removes the source classes, and shifts remaining class IDs. This operation is not idempotent; re-fetch the dataset before retrying.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             source_class_ids (list[int]): sourceClassIds request value.
             target_class_id (int): targetClassId request value.
 
@@ -1450,8 +1398,7 @@ class AsyncDatasets:
         Deletes annotations in the selected classes, removes the classes, and shifts remaining class IDs.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             class_ids (list[int]): classIds request value.
 
         Returns:
@@ -1478,8 +1425,7 @@ class AsyncDatasets:
         Randomly reassigns images to train, validation, and test splits using percentages that total 100.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             train (int): Train split percentage
             val (int): Validation split percentage
             test (int): Test split percentage
@@ -1540,8 +1486,7 @@ class AsyncDatasets:
         Returns paginated dataset images. Labels are omitted by default and only included as capped preview annotations when includeLabels=true or overlayLabels=true.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Owner username for public dataset access
             limit (float, optional): Number of images to return (default 50, max 5000)
             offset (float, optional): Skip this many images for pagination
@@ -1551,11 +1496,8 @@ class AsyncDatasets:
             has_error (bool, optional): Filter by images with processing errors
             has_label (bool, optional): Filter by labeled status
             class_ids (str, optional): Comma-separated class IDs. Matches images containing any of the listed classes
-            search (str, optional): Case-insensitive substring search over the image name and custom metadata keys,
-                scalar values, and array entries (name suffix optional). Values nested inside sub-objects are not
-                matched. A 32-character hex string is an exact hash lookup instead
-            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional):
-                Sort order
+            search (str, optional): Case-insensitive substring search over the image name and custom metadata keys, scalar values, and array entries (name suffix optional). Values nested inside sub-objects are not matched. A 32-character hex string is an exact hash lookup instead
+            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (bool, optional): Set false to omit signed thumbnail URLs
             include_image_urls (bool, optional): Set true to include signed full-size image URLs
             include_labels (bool, optional): Set true to include capped preview labels
@@ -1611,8 +1553,7 @@ class AsyncDatasets:
         """Get selected dataset images.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
             include_labels (bool, optional): includeLabels query parameter.
             overlay_labels (bool, optional): overlayLabels query parameter.
@@ -1653,8 +1594,7 @@ class AsyncDatasets:
         Returns a signed URL for the current dataset or a saved version snapshot.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             v (int, optional): Saved version number
 
         Returns:
@@ -1681,8 +1621,7 @@ class AsyncDatasets:
         Creates an immutable numbered snapshot and returns its signed NDJSON download URL.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             description (str, optional): description request value.
 
         Returns:
@@ -1705,8 +1644,7 @@ class AsyncDatasets:
         """Update a dataset version description.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             version (int): version request value.
             description (str): description request value.
 
@@ -1747,14 +1685,10 @@ class AsyncDatasets:
             session_id (str, optional): Upload session ID from signed-url response
             source_url (str, optional): Remote dataset archive or NDJSON URL
             reference (dict[str, Any], optional): Connected cloud folder, or On Premise folder or archive
-            target_split (Literal["train", "val", "test"], optional): Target split for new images (overrides ZIP
-                structure)
+            target_split (Literal["train", "val", "test"], optional): Target split for new images (overrides ZIP structure)
             class_mapping (dict[str, Any], optional): User-confirmed mapping from incoming class names to existing
-            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content
-                conflicts
-            image_metadata (dict[str, Any], optional): Custom metadata keyed by each image's archive-relative path or
-                NDJSON file value. Paths are limited to 1,024 characters, top-level metadata keys to 128 characters, and
-                the entire serialized map to 500,000 characters.
+            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
+            image_metadata (dict[str, Any], optional): Custom metadata keyed by each image's archive-relative path or NDJSON file value. Paths are limited to 1,024 characters, top-level metadata keys to 128 characters, and the entire serialized map to 500,000 characters.
 
         Returns:
             (DatasetsIngestResponse): The API response.
@@ -1787,8 +1721,7 @@ class AsyncDatasets:
         """Get dataset analysis status.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
 
         Returns:
@@ -1813,8 +1746,7 @@ class AsyncDatasets:
         """Analyze dataset embeddings.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
 
         Returns:
@@ -1839,8 +1771,7 @@ class AsyncDatasets:
         """Cancel dataset analysis.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
 
         Returns:
@@ -1865,8 +1796,7 @@ class AsyncDatasets:
         """Get dataset clustering layout.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
             offset (int, optional): offset query parameter.
             limit (int, optional): limit query parameter.
@@ -1895,8 +1825,7 @@ class AsyncDatasets:
         """List models trained on a dataset.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             username (str, optional): Dataset owner's username
 
         Returns:
@@ -1919,8 +1848,7 @@ class AsyncDatasets:
         """Restore a saved dataset version.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             version (int): version request value.
 
         Returns:
@@ -2003,8 +1931,7 @@ class AsyncDatasets:
         """Upload a dataset icon.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
             image (BinaryIO): WebP image, maximum 5 MB
             icon_color (str, optional): iconColor request value.
             icon_letter (str, optional): iconLetter request value.
@@ -2030,8 +1957,7 @@ class AsyncDatasets:
         """Delete a dataset icon.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from
-                platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
 
         Returns:
             (DatasetsDeleteIconResponse): The API response.

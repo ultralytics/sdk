@@ -1,5 +1,3 @@
-# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-
 from .account import Account as Account
 from .account import AsyncAccount as AsyncAccount
 from .activity import Activity as Activity

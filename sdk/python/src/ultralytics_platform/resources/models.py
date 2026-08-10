@@ -1,5 +1,3 @@
-# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-
 from __future__ import annotations
 
 from typing import Any, BinaryIO, Literal, cast
@@ -107,19 +105,15 @@ class Models:
             slug (str, optional): slug request value.
             name (str, optional): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
-            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): YOLO task
-                type
-            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): YOLO task type
+            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             train_results (list[dict[str, Any]], optional): trainResults request value.
             epochs (float, optional): epochs request value.
             metrics (dict[str, Any], optional): metrics request value.
             version (str, optional): version request value.
             docs (str, optional): Documentation URL from .pt file
-            environment (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            environment (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             completed_at (str, optional): completedAt request value.
 
         Returns:
@@ -223,7 +217,7 @@ class Models:
         model_id: str,
         *,
         name: str | NotGiven = NOT_GIVEN,
-        color: str | NotGiven | None = NOT_GIVEN,
+        color: str | None | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         status: Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"]
@@ -244,7 +238,7 @@ class Models:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
-        dataset_slug: str | NotGiven | None = NOT_GIVEN,
+        dataset_slug: str | None | NotGiven = NOT_GIVEN,
         train_args: dict[str, Any] | NotGiven = NOT_GIVEN,
         train_results: list[dict[str, Any]] | NotGiven = NOT_GIVEN,
         epochs: float | NotGiven = NOT_GIVEN,
@@ -262,15 +256,11 @@ class Models:
             name (str, optional): name request value.
             color (str | None, optional): color request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
-            status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional):
-                Training/model status
-            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional):
-                Project/model license identifier
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional): Training/model status
+            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             dataset_slug (str | None, optional): datasetSlug request value.
-            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             train_results (list[dict[str, Any]], optional): trainResults request value.
             epochs (float, optional): epochs request value.
             best_epoch (float, optional): bestEpoch request value.
@@ -638,19 +628,15 @@ class AsyncModels:
             slug (str, optional): slug request value.
             name (str, optional): name request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
-            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): YOLO task
-                type
-            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): YOLO task type
+            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             train_results (list[dict[str, Any]], optional): trainResults request value.
             epochs (float, optional): epochs request value.
             metrics (dict[str, Any], optional): metrics request value.
             version (str, optional): version request value.
             docs (str, optional): Documentation URL from .pt file
-            environment (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            environment (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             completed_at (str, optional): completedAt request value.
 
         Returns:
@@ -754,7 +740,7 @@ class AsyncModels:
         model_id: str,
         *,
         name: str | NotGiven = NOT_GIVEN,
-        color: str | NotGiven | None = NOT_GIVEN,
+        color: str | None | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         status: Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"]
@@ -775,7 +761,7 @@ class AsyncModels:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
-        dataset_slug: str | NotGiven | None = NOT_GIVEN,
+        dataset_slug: str | None | NotGiven = NOT_GIVEN,
         train_args: dict[str, Any] | NotGiven = NOT_GIVEN,
         train_results: list[dict[str, Any]] | NotGiven = NOT_GIVEN,
         epochs: float | NotGiven = NOT_GIVEN,
@@ -793,15 +779,11 @@ class AsyncModels:
             name (str, optional): name request value.
             color (str | None, optional): color request value.
             description (str, optional): description request value.
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
-            status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional):
-                Training/model status
-            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional):
-                Project/model license identifier
+            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional): Training/model status
+            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             dataset_slug (str | None, optional): datasetSlug request value.
-            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters
-                and the serialized object is limited to 500,000 characters.
+            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             train_results (list[dict[str, Any]], optional): trainResults request value.
             epochs (float, optional): epochs request value.
             best_epoch (float, optional): bestEpoch request value.

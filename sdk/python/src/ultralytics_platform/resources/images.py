@@ -1,5 +1,3 @@
-# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-
 from __future__ import annotations
 
 from typing import Any, Literal, cast
@@ -108,8 +106,7 @@ class Images:
 
         Args:
             image_id (str): Unique image ID returned by dataset image endpoints
-            metadata (dict[str, Any]): Custom metadata object. Top-level keys are limited to 128 characters and the
-                serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any]): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
 
         Returns:
             (ImagesUpdateMetadataResponse): The API response.
@@ -141,8 +138,7 @@ class Images:
         Args:
             image_ids (list[str]): imageIds request value.
             split (Literal["train", "val", "test"]): Dataset split type
-            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content
-                conflicts
+            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
 
         Returns:
             (ImagesUpdateBulkResponse): The API response.
@@ -340,8 +336,7 @@ class AsyncImages:
 
         Args:
             image_id (str): Unique image ID returned by dataset image endpoints
-            metadata (dict[str, Any]): Custom metadata object. Top-level keys are limited to 128 characters and the
-                serialized object is limited to 500,000 characters.
+            metadata (dict[str, Any]): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
 
         Returns:
             (ImagesUpdateMetadataResponse): The API response.
@@ -373,8 +368,7 @@ class AsyncImages:
         Args:
             image_ids (list[str]): imageIds request value.
             split (Literal["train", "val", "test"]): Dataset split type
-            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content
-                conflicts
+            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
 
         Returns:
             (ImagesUpdateBulkResponse): The API response.
