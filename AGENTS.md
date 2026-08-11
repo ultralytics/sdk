@@ -37,9 +37,11 @@ uv build sdk/python
 uv run --with pytest --with ./sdk/python pytest tests -v
 ```
 
-CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform contract against `openapi.sha256`, regenerates the Python output with the pinned `ultralytics/openapi` revision, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install. The scheduled and manual `Live` job downloads the upstream contract and fails when a new snapshot must be reviewed and pinned.
+CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform contract against `openapi.sha256`, regenerates the Python output from the `main` branch of `ultralytics/openapi`, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install. The scheduled and manual `Live` job downloads the upstream contract and fails when a new snapshot must be reviewed and pinned.
 
 ## Architecture
+
+- The API/docs/SDK repository chain always follows `main`: cross-repository `ultralytics/openapi` checkouts must use `ref: main` and must never pin a commit SHA or tag.
 
 This repository contains generated SDKs for Ultralytics products. `openapi.config.json` defines the consumer configuration, while the versioned `openapi.json` snapshot and `openapi.sha256` pin the exact contract consumed by CI. `sdk/python/` is a generated descendant and must never be edited manually; update the contract snapshot, consumer configuration, or generic generator and regenerate. `tests/` owns focused consumer-level wire checks. `format.yml` runs Ultralytics Actions on pull requests, `ci.yml` owns deterministic regeneration, upstream drift detection, and package validation, and `publish.yml` owns version-gated tagging, releases, and PyPI trusted publishing.
 
