@@ -98,28 +98,35 @@ jobs:
       - uses: ultralytics/actions/setup-uv@main
 
       - name: Sync live OpenAPI contract
-        id: sync
         run: |
           curl --fail --silent --show-error --location "$(python -c 'import json; print(json.load(open("openapi.config.json"))["upstream"])')" --output openapi.live.json
           if cmp --silent openapi.json openapi.live.json; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
             rm openapi.live.json
-            exit 0
+          else
+            mv openapi.live.json openapi.json
+            sha256sum openapi.json > openapi.sha256
           fi
-          mv openapi.live.json openapi.json
-          sha256sum openapi.json > openapi.sha256
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-          echo "hash=$(sha256sum openapi.json | cut -c1-12)" >> "$GITHUB_OUTPUT"
 
       - name: Regenerate Python SDK
-        if: steps.sync.outputs.changed == 'true'
         working-directory: .generator
         env:
           OPENAPI_CONFIG: ${{ github.workspace }}/openapi.config.json
         run: |
           bun install --frozen-lockfile
           bun run generate
-          rsync --archive --delete generated/python/ ../sdk/python/
+
+      - name: Apply generated changes
+        id: sync
+        run: |
+          if ! diff --recursive --brief .generator/generated/python sdk/python; then
+            rsync --archive --delete .generator/generated/python/ sdk/python/
+          fi
+          if git diff --quiet -- openapi.json openapi.sha256 sdk/python; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "hash=$(printf '%s\n%s\n' "$(sha256sum openapi.json)" "$(git -C .generator rev-parse HEAD)" | sha256sum | cut -c1-12)" >> "$GITHUB_OUTPUT"
 
       - name: Validate regenerated Python SDK
         if: steps.sync.outputs.changed == 'true'
@@ -148,11 +155,13 @@ jobs:
           if [ "$(gh pr list --head "$branch" --state all --json number --jq length)" -gt 0 ]; then
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          gh auth setup-git
-          git switch --create "$branch"
-          git add openapi.json openapi.sha256 sdk/python
-          git commit -m "Update Platform API contract"
-          git push --set-upstream origin "$branch"
+          if ! git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            gh auth setup-git
+            git switch --create "$branch"
+            git add openapi.json openapi.sha256 sdk/python
+            git commit -m "Update Platform API contract"
+            git push --set-upstream origin "$branch"
+          fi
           gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. Review this diff for semantic versioning impact (added, removed, or changed operations and schemas), then bump openapi.config.json python.version and regenerate before merge."
