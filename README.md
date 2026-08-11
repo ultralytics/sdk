@@ -80,7 +80,7 @@ Platform OpenAPI contract
 
 ## 🛠️ Validation
 
-[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) regenerates the Python SDK from the versioned contract with a pinned generator revision, then fails on contract mismatch or generated drift. Scheduled and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. Version bumps on `main` publish [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) to PyPI through trusted publishing.
+[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) regenerates the Python SDK from the versioned contract with the `main` branch of [Ultralytics OpenAPI](https://github.com/ultralytics/openapi), then fails on contract mismatch or generated drift. Scheduled and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. Version bumps on `main` publish [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) to PyPI through trusted publishing.
 
 ## 💡 Contribute
 

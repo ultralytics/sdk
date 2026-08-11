@@ -27,7 +27,7 @@ jobs:
           token: ${{ secrets._GITHUB_TOKEN || secrets.GITHUB_TOKEN }} # Auto-generated token
           labels: true # Auto-label issues/PRs using AI
           python: false # Generated Python is formatted and checked in CI
-          prettier: false # Generated docs are validated against the pinned generator
+          prettier: false # Generated docs are validated against OpenAPI main in CI
           swift: false # Format Swift (requires macos-latest)
           spelling: true # Check spelling with codespell
           links: false # Generated base-path links are validated by deterministic builds

@@ -29,7 +29,8 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: ultralytics/openapi
-          ref: bbc24c7db7645c7fcf0c907a7fcc8e0a2061f7e3
+          # Always consume the generator from main. Never pin this to a commit SHA or tag.
+          ref: main
           path: .generator
 
       - uses: oven-sh/setup-bun@v2
