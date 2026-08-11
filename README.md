@@ -29,12 +29,12 @@ Install directly from this repository while the first release is being validated
 uv pip install "git+https://github.com/ultralytics/sdk.git#subdirectory=sdk/python"
 ```
 
-Set `ULTRALYTICS_API_KEY`, then use the synchronous client:
+Pass your API key directly to the synchronous client:
 
 ```python
 from ultralytics_platform import Platform
 
-with Platform() as client:
+with Platform(api_key="YOUR_API_KEY") as client:
     datasets = client.datasets.list()
     training = client.training.start(model_id="model_id", train_args={"epochs": 10})
     model = client.models.retrieve("model_id")
@@ -51,7 +51,7 @@ from ultralytics_platform import AsyncPlatform
 
 
 async def main():
-    async with AsyncPlatform() as client:
+    async with AsyncPlatform(api_key="YOUR_API_KEY") as client:
         datasets = await client.datasets.list()
 
 
