@@ -29,7 +29,7 @@ Install directly from this repository while the first release is being validated
 uv pip install "git+https://github.com/ultralytics/sdk.git#subdirectory=sdk/python"
 ```
 
-Pass your API key directly as shown below. Alternatively, set `ULTRALYTICS_API_KEY` and omit the `api_key` argument.
+Pass your [Platform API key](https://platform.ultralytics.com/settings?tab=api-keys) directly as shown below. Alternatively, set `ULTRALYTICS_API_KEY` and omit the `api_key` argument.
 
 ```python
 from ultralytics_platform import Platform
