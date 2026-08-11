@@ -1,0 +1,144 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      pypi:
+        type: boolean
+        description: Publish to PyPI
+
+concurrency:
+  group: ${{ github.workflow }}
+  queue: max
+
+jobs:
+  check:
+    if: github.repository == 'ultralytics/sdk' && github.actor == 'glenn-jocher' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      increment: ${{ steps.check_pypi.outputs.increment }}
+      current_tag: ${{ steps.check_pypi.outputs.current_tag }}
+      build_ref: ${{ steps.build_ref.outputs.ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.14"
+      - id: check_pypi
+        shell: python
+        env:
+          PYPI_DISPATCH: ${{ github.event.inputs.pypi }}
+        run: |
+          import json
+          import os
+          import re
+          import tomllib
+          import urllib.error
+          import urllib.request
+
+          with open("sdk/python/pyproject.toml", "rb") as file:
+              project = tomllib.load(file)["project"]
+          local_version = project["version"]
+          if not re.fullmatch(r"\d+\.\d+\.\d+", local_version):
+              raise ValueError(f"Invalid release version: {local_version}")
+          try:
+              with urllib.request.urlopen(f"https://pypi.org/pypi/{project['name']}/json", timeout=30) as response:
+                  online_version = json.load(response)["info"]["version"]
+          except urllib.error.HTTPError as error:
+              if error.code != 404:
+                  raise
+              online_version = None
+          publish = True
+          if online_version:
+              local, online = (tuple(map(int, version.split("."))) for version in (local_version, online_version))
+              major, minor, patch = (new - old for new, old in zip(local, online))
+              publish = (
+                  (major == 0 and minor == 0 and 0 < patch <= 2)
+                  or (major == 0 and minor == 1 and local[2] == 0)
+                  or (major == 1 and local[1:] == (0, 0))
+              )
+          publish = publish or os.environ.get("PYPI_DISPATCH") == "true"  # manual recovery re-run
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"increment={str(publish).lower()}\ncurrent_tag=v{local_version}\n")
+          print(f"Local: {local_version}, PyPI: {online_version or 'Not Found'}")
+          if publish:
+              print('Ready to publish new version to PyPI ✅.')
+      - id: build_ref
+        if: steps.check_pypi.outputs.increment == 'true'
+        env:
+          CURRENT_TAG: ${{ steps.check_pypi.outputs.current_tag }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$CURRENT_TAG" >/dev/null 2>&1; then
+            echo "ref=$CURRENT_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=$CURRENT_SHA" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: check
+    if: needs.check.outputs.increment == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.check.outputs.build_ref }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.14"
+      - uses: ultralytics/actions/setup-uv@45a7a2d7c92b0d963c3a5fe7057895ad1e79ebc2
+      - run: uv build --project sdk/python
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: dist
+          path: sdk/python/dist/
+      - run: uv cache prune --ci
+
+  release:
+    needs: [check, build]
+    if: needs.check.outputs.increment == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.check.outputs.build_ref }}
+      - name: Tag and Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_TAG: ${{ needs.check.outputs.current_tag }}
+        run: |
+          if ! git ls-remote --exit-code --tags origin "refs/tags/$CURRENT_TAG" >/dev/null 2>&1; then
+            git config --global user.name "UltralyticsAssistant"
+            git config --global user.email "web@ultralytics.com"
+            git tag -a "$CURRENT_TAG" -m "$(git log -1 --pretty=%B)"
+            git push origin "$CURRENT_TAG"
+          fi
+          if ! gh release view "$CURRENT_TAG" >/dev/null 2>&1; then
+            gh release create "$CURRENT_TAG" --verify-tag --generate-notes --title "$CURRENT_TAG - $(git log -1 --pretty=%s)"
+          fi
+
+  publish:
+    needs: [check, release]
+    if: needs.check.outputs.increment == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: Release - PyPI
+      url: https://pypi.org/p/ultralytics-platform
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1.14
+        with:
+          skip-existing: true
