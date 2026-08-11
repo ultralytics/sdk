@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, BinaryIO, Literal, cast
+from typing import Any, Literal, cast
 
 from .._client import (
     NOT_GIVEN,
@@ -14,9 +14,7 @@ from .._client import (
 )
 from ..types import (
     ProjectsCloneResponse,
-    ProjectsCreateIconResponse,
     ProjectsCreateResponse,
-    ProjectsDeleteIconResponse,
     ProjectsDeleteResponse,
     ProjectsListResponse,
     ProjectsRetrieveMetadataResponse,
@@ -32,22 +30,16 @@ class Projects:
         self._client = client
 
     def list(
-        self,
-        *,
-        limit: float | None = None,
-        username: str | None = None,
-        owner: str | None = None,
-        region: str | None = None,
+        self, *, limit: float | None = None, owner: str | None = None, region: Literal["us", "eu", "ap"] | None = None
     ) -> ProjectsListResponse:
         """List your projects.
 
-        Returns your projects with pagination. Public projects from other users are also accessible when filtering by username.
+        Returns your projects with pagination.
 
         Args:
             limit (float, optional): Number of results to return (default 20, max 500)
-            username (str, optional): Show projects from this user instead of your own
             owner (str, optional): Team workspace to browse
-            region (str, optional): Data region: us, eu, or ap
+            region (Literal["us", "eu", "ap"], optional): Data region: us, eu, or ap
 
         Returns:
             (ProjectsListResponse): The API response.
@@ -63,7 +55,6 @@ class Projects:
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("owner", owner, style="form", explode=True),
                     *_query_parameter("region", region, style="form", explode=True),
                 ],
@@ -102,12 +93,12 @@ class Projects:
         Projects organize your models. Each model belongs to exactly one project.
 
         Args:
-            slug (str): slug request value.
-            name (str): name request value.
-            description (str, optional): description request value.
+            slug (str): URL slug
+            name (str): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
+            tags (list[str], optional): Resource tags
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             owner (str, optional): Team owner username (creates resource in their workspace)
 
@@ -136,12 +127,13 @@ class Projects:
             ),
         )
 
-    def retrieve(self, project_id: str, *, username: str | None = None) -> ProjectsRetrieveResponse:
+    def retrieve(self, project_id: str) -> ProjectsRetrieveResponse:
         """Get project details.
 
+        Returns one project and its model summary by project ID.
+
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-            username (str, optional): Owner username when using a project slug instead of an ID
+            project_id (str): Project ID
 
         Returns:
             (ProjectsRetrieveResponse): The API response.
@@ -155,7 +147,6 @@ class Projects:
                 "GET",
                 f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
@@ -194,16 +185,16 @@ class Projects:
         Update project properties like name, description, metadata, visibility, or tags.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-            name (str, optional): name request value.
-            description (str, optional): description request value.
+            project_id (str): Project ID
+            name (str, optional): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
+            tags (list[str], optional): Resource tags
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            archived (bool, optional): archived request value.
-            icon_color (str, optional): iconColor request value.
-            icon_letter (str | Literal[""] | None, optional): iconLetter request value.
+            archived (bool, optional): Whether the resource is archived
+            icon_color (str, optional): Icon color
+            icon_letter (str | Literal[""] | None, optional): Icon letter
             view_preferences (dict[str, Any], optional): Shared project-level model view defaults
 
         Returns:
@@ -239,7 +230,7 @@ class Projects:
         Moves the project and all its models to trash. Can be restored within 30 days.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project ID
 
         Returns:
             (ProjectsDeleteResponse): The API response.
@@ -262,7 +253,7 @@ class Projects:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project ID
 
         Returns:
             (ProjectsRetrieveMetadataResponse): The API response.
@@ -295,13 +286,13 @@ class Projects:
         Copies a public, owned, or shared project and its models into your account or a workspace.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-            name (str, optional): name request value.
-            slug (str, optional): slug request value.
-            description (str, optional): description request value.
+            project_id (str): Project ID
+            name (str, optional): Resource name
+            slug (str, optional): URL slug
+            description (str, optional): Resource description
             visibility (Literal["public", "private"], optional): Resource visibility
-            license (str, optional): license request value.
-            owner (str, optional): owner request value.
+            license (str, optional): License identifier
+            owner (str, optional): Workspace username
 
         Returns:
             (ProjectsCloneResponse): The API response.
@@ -326,60 +317,6 @@ class Projects:
             ),
         )
 
-    def create_icon(
-        self,
-        project_id: str,
-        *,
-        image: BinaryIO,
-        icon_color: str | NotGiven = NOT_GIVEN,
-        icon_letter: str | NotGiven = NOT_GIVEN,
-    ) -> ProjectsCreateIconResponse:
-        """Upload a project icon.
-
-        Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-            image (BinaryIO): WebP image, maximum 5 MB
-            icon_color (str, optional): iconColor request value.
-            icon_letter (str, optional): iconLetter request value.
-
-        Returns:
-            (ProjectsCreateIconResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ProjectsCreateIconResponse,
-            self._client.request(
-                "POST",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}/icon",
-                auth=("Authorization", "Bearer "),
-                data={"iconColor": icon_color, "iconLetter": icon_letter},
-                files={"image": image},
-            ),
-        )
-
-    def delete_icon(self, project_id: str) -> ProjectsDeleteIconResponse:
-        """Delete a project icon.
-
-        Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-
-        Returns:
-            (ProjectsDeleteIconResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ProjectsDeleteIconResponse,
-            self._client.request(
-                "DELETE",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}/icon",
-                auth=("Authorization", "Bearer "),
-            ),
-        )
-
 
 class AsyncProjects:
     """Asynchronous Projects API operations."""
@@ -388,22 +325,16 @@ class AsyncProjects:
         self._client = client
 
     async def list(
-        self,
-        *,
-        limit: float | None = None,
-        username: str | None = None,
-        owner: str | None = None,
-        region: str | None = None,
+        self, *, limit: float | None = None, owner: str | None = None, region: Literal["us", "eu", "ap"] | None = None
     ) -> ProjectsListResponse:
         """List your projects.
 
-        Returns your projects with pagination. Public projects from other users are also accessible when filtering by username.
+        Returns your projects with pagination.
 
         Args:
             limit (float, optional): Number of results to return (default 20, max 500)
-            username (str, optional): Show projects from this user instead of your own
             owner (str, optional): Team workspace to browse
-            region (str, optional): Data region: us, eu, or ap
+            region (Literal["us", "eu", "ap"], optional): Data region: us, eu, or ap
 
         Returns:
             (ProjectsListResponse): The API response.
@@ -419,7 +350,6 @@ class AsyncProjects:
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("owner", owner, style="form", explode=True),
                     *_query_parameter("region", region, style="form", explode=True),
                 ],
@@ -458,12 +388,12 @@ class AsyncProjects:
         Projects organize your models. Each model belongs to exactly one project.
 
         Args:
-            slug (str): slug request value.
-            name (str): name request value.
-            description (str, optional): description request value.
+            slug (str): URL slug
+            name (str): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
+            tags (list[str], optional): Resource tags
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             owner (str, optional): Team owner username (creates resource in their workspace)
 
@@ -492,12 +422,13 @@ class AsyncProjects:
             ),
         )
 
-    async def retrieve(self, project_id: str, *, username: str | None = None) -> ProjectsRetrieveResponse:
+    async def retrieve(self, project_id: str) -> ProjectsRetrieveResponse:
         """Get project details.
 
+        Returns one project and its model summary by project ID.
+
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-            username (str, optional): Owner username when using a project slug instead of an ID
+            project_id (str): Project ID
 
         Returns:
             (ProjectsRetrieveResponse): The API response.
@@ -511,7 +442,6 @@ class AsyncProjects:
                 "GET",
                 f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
@@ -550,16 +480,16 @@ class AsyncProjects:
         Update project properties like name, description, metadata, visibility, or tags.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-            name (str, optional): name request value.
-            description (str, optional): description request value.
+            project_id (str): Project ID
+            name (str, optional): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
+            tags (list[str], optional): Resource tags
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            archived (bool, optional): archived request value.
-            icon_color (str, optional): iconColor request value.
-            icon_letter (str | Literal[""] | None, optional): iconLetter request value.
+            archived (bool, optional): Whether the resource is archived
+            icon_color (str, optional): Icon color
+            icon_letter (str | Literal[""] | None, optional): Icon letter
             view_preferences (dict[str, Any], optional): Shared project-level model view defaults
 
         Returns:
@@ -595,7 +525,7 @@ class AsyncProjects:
         Moves the project and all its models to trash. Can be restored within 30 days.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project ID
 
         Returns:
             (ProjectsDeleteResponse): The API response.
@@ -618,7 +548,7 @@ class AsyncProjects:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
+            project_id (str): Project ID
 
         Returns:
             (ProjectsRetrieveMetadataResponse): The API response.
@@ -651,13 +581,13 @@ class AsyncProjects:
         Copies a public, owned, or shared project and its models into your account or a workspace.
 
         Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-            name (str, optional): name request value.
-            slug (str, optional): slug request value.
-            description (str, optional): description request value.
+            project_id (str): Project ID
+            name (str, optional): Resource name
+            slug (str, optional): URL slug
+            description (str, optional): Resource description
             visibility (Literal["public", "private"], optional): Resource visibility
-            license (str, optional): license request value.
-            owner (str, optional): owner request value.
+            license (str, optional): License identifier
+            owner (str, optional): Workspace username
 
         Returns:
             (ProjectsCloneResponse): The API response.
@@ -679,59 +609,5 @@ class AsyncProjects:
                     "license": license,
                     "owner": owner,
                 },
-            ),
-        )
-
-    async def create_icon(
-        self,
-        project_id: str,
-        *,
-        image: BinaryIO,
-        icon_color: str | NotGiven = NOT_GIVEN,
-        icon_letter: str | NotGiven = NOT_GIVEN,
-    ) -> ProjectsCreateIconResponse:
-        """Upload a project icon.
-
-        Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-            image (BinaryIO): WebP image, maximum 5 MB
-            icon_color (str, optional): iconColor request value.
-            icon_letter (str, optional): iconLetter request value.
-
-        Returns:
-            (ProjectsCreateIconResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ProjectsCreateIconResponse,
-            await self._client.request(
-                "POST",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}/icon",
-                auth=("Authorization", "Bearer "),
-                data={"iconColor": icon_color, "iconLetter": icon_letter},
-                files={"image": image},
-            ),
-        )
-
-    async def delete_icon(self, project_id: str) -> ProjectsDeleteIconResponse:
-        """Delete a project icon.
-
-        Args:
-            project_id (str): Project URL name or ID, e.g. `my-project` from platform.ultralytics.com/username/my-project
-
-        Returns:
-            (ProjectsDeleteIconResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ProjectsDeleteIconResponse,
-            await self._client.request(
-                "DELETE",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}/icon",
-                auth=("Authorization", "Bearer "),
             ),
         )

@@ -60,7 +60,7 @@ class Images:
 
         Args:
             image_id (str): Unique image ID returned by dataset image endpoints
-            labels (list[dict[str, Any]]): labels request value.
+            labels (list[dict[str, Any]]): Image annotations
 
         Returns:
             (ImagesUpdateLabelsResponse): The API response.
@@ -138,7 +138,7 @@ class Images:
         Moves images to a target split (train, val, or test). Filename and content conflicts require one basket-wide skip, keep-both, or replace policy. Maximum 1000 per batch.
 
         Args:
-            image_ids (list[str]): imageIds request value.
+            image_ids (list[str]): Image IDs
             split (Literal["train", "val", "test"]): Dataset split type
             conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
 
@@ -164,7 +164,7 @@ class Images:
         Deletes multiple images and their annotations from the dataset. Removes files from storage in the background. Maximum 1000 images per batch.
 
         Args:
-            image_ids (list[str]): imageIds request value.
+            image_ids (list[str]): Image IDs
 
         Returns:
             (ImagesDeleteBulkResponse): The API response.
@@ -216,8 +216,10 @@ class Images:
     def retrieve_signed_urls(self, *, image_ids: list[str]) -> ImagesRetrieveSignedUrlsResponse:
         """Get signed image URLs.
 
+        Returns temporary signed URLs for the requested image IDs.
+
         Args:
-            image_ids (list[str]): imageIds request value.
+            image_ids (list[str]): Image IDs
 
         Returns:
             (ImagesRetrieveSignedUrlsResponse): The API response.
@@ -234,6 +236,8 @@ class Images:
 
     def delete(self, image_id: str) -> ImagesDeleteResponse:
         """Delete an image.
+
+        Permanently deletes one image and its associated labels from a dataset.
 
         Args:
             image_id (str): Unique image ID returned by dataset image endpoints
@@ -290,7 +294,7 @@ class AsyncImages:
 
         Args:
             image_id (str): Unique image ID returned by dataset image endpoints
-            labels (list[dict[str, Any]]): labels request value.
+            labels (list[dict[str, Any]]): Image annotations
 
         Returns:
             (ImagesUpdateLabelsResponse): The API response.
@@ -368,7 +372,7 @@ class AsyncImages:
         Moves images to a target split (train, val, or test). Filename and content conflicts require one basket-wide skip, keep-both, or replace policy. Maximum 1000 per batch.
 
         Args:
-            image_ids (list[str]): imageIds request value.
+            image_ids (list[str]): Image IDs
             split (Literal["train", "val", "test"]): Dataset split type
             conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
 
@@ -394,7 +398,7 @@ class AsyncImages:
         Deletes multiple images and their annotations from the dataset. Removes files from storage in the background. Maximum 1000 images per batch.
 
         Args:
-            image_ids (list[str]): imageIds request value.
+            image_ids (list[str]): Image IDs
 
         Returns:
             (ImagesDeleteBulkResponse): The API response.
@@ -446,8 +450,10 @@ class AsyncImages:
     async def retrieve_signed_urls(self, *, image_ids: list[str]) -> ImagesRetrieveSignedUrlsResponse:
         """Get signed image URLs.
 
+        Returns temporary signed URLs for the requested image IDs.
+
         Args:
-            image_ids (list[str]): imageIds request value.
+            image_ids (list[str]): Image IDs
 
         Returns:
             (ImagesRetrieveSignedUrlsResponse): The API response.
@@ -464,6 +470,8 @@ class AsyncImages:
 
     async def delete(self, image_id: str) -> ImagesDeleteResponse:
         """Delete an image.
+
+        Permanently deletes one image and its associated labels from a dataset.
 
         Args:
             image_id (str): Unique image ID returned by dataset image endpoints

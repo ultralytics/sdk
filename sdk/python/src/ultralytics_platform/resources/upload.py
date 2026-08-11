@@ -37,10 +37,10 @@ class Upload:
 
         Args:
             asset_type (Literal["models", "datasets", "images", "videos"]): Asset type being uploaded
-            asset_id (str): assetId request value.
-            filename (str): filename request value.
-            content_type (str): contentType request value.
-            total_bytes (float): totalBytes request value.
+            asset_id (str): Asset ID
+            filename (str): File name
+            content_type (str): File content type
+            total_bytes (float): Total size in bytes
 
         Returns:
             (UploadRetrieveFileUrlResponse): The API response.
@@ -70,8 +70,8 @@ class Upload:
         Call this after uploading a file to the signed URL. Dataset uploads are verified here, then processed by a separate /api/datasets/ingest call.
 
         Args:
-            session_id (str): sessionId request value.
-            checksum (str, optional): checksum request value.
+            session_id (str): Upload session ID
+            checksum (str, optional): SHA-256 checksum
 
         Returns:
             (UploadCompleteResponse): The API response.
@@ -111,10 +111,10 @@ class AsyncUpload:
 
         Args:
             asset_type (Literal["models", "datasets", "images", "videos"]): Asset type being uploaded
-            asset_id (str): assetId request value.
-            filename (str): filename request value.
-            content_type (str): contentType request value.
-            total_bytes (float): totalBytes request value.
+            asset_id (str): Asset ID
+            filename (str): File name
+            content_type (str): File content type
+            total_bytes (float): Total size in bytes
 
         Returns:
             (UploadRetrieveFileUrlResponse): The API response.
@@ -144,8 +144,8 @@ class AsyncUpload:
         Call this after uploading a file to the signed URL. Dataset uploads are verified here, then processed by a separate /api/datasets/ingest call.
 
         Args:
-            session_id (str): sessionId request value.
-            checksum (str, optional): checksum request value.
+            session_id (str): Upload session ID
+            checksum (str, optional): SHA-256 checksum
 
         Returns:
             (UploadCompleteResponse): The API response.

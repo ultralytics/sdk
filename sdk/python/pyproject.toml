@@ -6,7 +6,7 @@ build-backend = "uv_build"
 
 [project]
 name = "ultralytics-platform"
-version = "0.0.1"
+version = "0.1.0"
 description = "Python client for Ultralytics Platform API"
 readme = "README.md"
 license = "AGPL-3.0-only"

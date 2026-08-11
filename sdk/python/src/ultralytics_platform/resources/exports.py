@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 from .._client import (
     NOT_GIVEN,
@@ -17,7 +17,6 @@ from ..types import (
     ExportsDeleteResponse,
     ExportsListResponse,
     ExportsRetrieveResponse,
-    ExportsTrackDownloadResponse,
 )
 
 
@@ -27,14 +26,20 @@ class Exports:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def list(self, *, model_id: str, status: str | None = None, limit: float | None = None) -> ExportsListResponse:
+    def list(
+        self,
+        *,
+        model_id: str,
+        status: Literal["queued", "starting", "running", "completed", "failed", "cancelled"] | None = None,
+        limit: float | None = None,
+    ) -> ExportsListResponse:
         """List model exports.
 
         Returns export jobs for a model, including status and download URLs for completed exports.
 
         Args:
-            model_id (str): Model name or ID (required)
-            status (str, optional): Filter by status: queued, running, completed, failed
+            model_id (str): Model ID
+            status (Literal["queued", "starting", "running", "completed", "failed", "cancelled"], optional): Export status filter
             limit (float, optional): Number of results to return (default 20, max 100)
 
         Returns:
@@ -61,19 +66,76 @@ class Exports:
         self,
         *,
         model_id: str,
-        format: str,
-        gpu_type: str | NotGiven = NOT_GIVEN,
-        args: dict[str, Any] | NotGiven = NOT_GIVEN,
+        format: Literal[
+            "onnx",
+            "torchscript",
+            "openvino",
+            "engine",
+            "coreml",
+            "litert",
+            "pb",
+            "saved_model",
+            "paddle",
+            "ncnn",
+            "edgetpu",
+            "mnn",
+            "rknn",
+            "qnn",
+            "imx",
+            "axelera",
+            "executorch",
+            "deepx",
+            "hailo",
+            "ascend",
+        ],
+        gpu_type: Literal[
+            "rtx-2000-ada",
+            "rtx-a4500",
+            "rtx-a5000",
+            "rtx-4000-ada",
+            "l4",
+            "a40",
+            "rtx-3090",
+            "rtx-a6000",
+            "rtx-pro-4000",
+            "rtx-pro-4500",
+            "rtx-4090",
+            "rtx-6000-ada",
+            "l40s",
+            "rtx-pro-5000",
+            "rtx-5090",
+            "l40",
+            "a100-80gb-pcie",
+            "a100-80gb-sxm",
+            "rtx-pro-6000",
+            "h100-pcie",
+            "h100-nvl",
+            "h100-sxm",
+            "h200-nvl",
+            "h200-sxm",
+            "b200",
+            "b300",
+            "jetson-thor-t5000",
+            "jetson-thor-t4000",
+            "jetson-agx-orin-64gb",
+            "jetson-agx-orin-32gb",
+            "jetson-orin-nx-16gb",
+            "jetson-orin-nx-8gb",
+            "jetson-orin-nano-8gb",
+            "jetson-orin-nano-4gb",
+        ]
+        | NotGiven = NOT_GIVEN,
+        args: dict[str, Any] | None | NotGiven = NOT_GIVEN,
     ) -> ExportsCreateResponse:
         """Export model to a new format.
 
         Converts a trained model to a different format for deployment (ONNX, TensorRT, CoreML, LiteRT, etc.).
 
         Args:
-            model_id (str): Model to export (name or ID)
-            format (str): Target format: onnx, engine, coreml, litert, openvino, torchscript, etc.
-            gpu_type (str, optional): GPU type (required for TensorRT/engine exports)
-            args (dict[str, Any], optional): Additional export options (e.g. imgsz, quantize, dynamic)
+            model_id (str): Model ID to export
+            format (Literal["onnx", "torchscript", "openvino", "engine", "coreml", "litert", "pb", "saved_model", "paddle", "ncnn", "edgetpu", "mnn", "rknn", "qnn", "imx", "axelera", "executorch", "deepx", "hailo", "ascend"]): Target export format
+            gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300", "jetson-thor-t5000", "jetson-thor-t4000", "jetson-agx-orin-64gb", "jetson-agx-orin-32gb", "jetson-orin-nx-16gb", "jetson-orin-nx-8gb", "jetson-orin-nano-8gb", "jetson-orin-nano-4gb"], optional): Target GPU type for TensorRT exports
+            args (dict[str, Any] | None, optional): Additional export options
 
         Returns:
             (ExportsCreateResponse): The API response.
@@ -97,7 +159,7 @@ class Exports:
         Returns one export job, including a signed download URL when complete.
 
         Args:
-            export_id (str): exportId path parameter.
+            export_id (str): Export ID
 
         Returns:
             (ExportsRetrieveResponse): The API response.
@@ -120,7 +182,7 @@ class Exports:
         Cancels an active export or deletes a finished export and its file.
 
         Args:
-            export_id (str): exportId path parameter.
+            export_id (str): Export ID
 
         Returns:
             (ExportsDeleteResponse): The API response.
@@ -137,27 +199,6 @@ class Exports:
             ),
         )
 
-    def track_download(self, export_id: str) -> ExportsTrackDownloadResponse:
-        """Track an export download.
-
-        Args:
-            export_id (str): exportId path parameter.
-
-        Returns:
-            (ExportsTrackDownloadResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ExportsTrackDownloadResponse,
-            self._client.request(
-                "POST",
-                f"/api/exports/{_path_parameter(export_id, explode=False, allow_reserved=False)}/track-download",
-                auth=("Authorization", "Bearer "),
-            ),
-        )
-
 
 class AsyncExports:
     """Asynchronous Exports API operations."""
@@ -166,15 +207,19 @@ class AsyncExports:
         self._client = client
 
     async def list(
-        self, *, model_id: str, status: str | None = None, limit: float | None = None
+        self,
+        *,
+        model_id: str,
+        status: Literal["queued", "starting", "running", "completed", "failed", "cancelled"] | None = None,
+        limit: float | None = None,
     ) -> ExportsListResponse:
         """List model exports.
 
         Returns export jobs for a model, including status and download URLs for completed exports.
 
         Args:
-            model_id (str): Model name or ID (required)
-            status (str, optional): Filter by status: queued, running, completed, failed
+            model_id (str): Model ID
+            status (Literal["queued", "starting", "running", "completed", "failed", "cancelled"], optional): Export status filter
             limit (float, optional): Number of results to return (default 20, max 100)
 
         Returns:
@@ -201,19 +246,76 @@ class AsyncExports:
         self,
         *,
         model_id: str,
-        format: str,
-        gpu_type: str | NotGiven = NOT_GIVEN,
-        args: dict[str, Any] | NotGiven = NOT_GIVEN,
+        format: Literal[
+            "onnx",
+            "torchscript",
+            "openvino",
+            "engine",
+            "coreml",
+            "litert",
+            "pb",
+            "saved_model",
+            "paddle",
+            "ncnn",
+            "edgetpu",
+            "mnn",
+            "rknn",
+            "qnn",
+            "imx",
+            "axelera",
+            "executorch",
+            "deepx",
+            "hailo",
+            "ascend",
+        ],
+        gpu_type: Literal[
+            "rtx-2000-ada",
+            "rtx-a4500",
+            "rtx-a5000",
+            "rtx-4000-ada",
+            "l4",
+            "a40",
+            "rtx-3090",
+            "rtx-a6000",
+            "rtx-pro-4000",
+            "rtx-pro-4500",
+            "rtx-4090",
+            "rtx-6000-ada",
+            "l40s",
+            "rtx-pro-5000",
+            "rtx-5090",
+            "l40",
+            "a100-80gb-pcie",
+            "a100-80gb-sxm",
+            "rtx-pro-6000",
+            "h100-pcie",
+            "h100-nvl",
+            "h100-sxm",
+            "h200-nvl",
+            "h200-sxm",
+            "b200",
+            "b300",
+            "jetson-thor-t5000",
+            "jetson-thor-t4000",
+            "jetson-agx-orin-64gb",
+            "jetson-agx-orin-32gb",
+            "jetson-orin-nx-16gb",
+            "jetson-orin-nx-8gb",
+            "jetson-orin-nano-8gb",
+            "jetson-orin-nano-4gb",
+        ]
+        | NotGiven = NOT_GIVEN,
+        args: dict[str, Any] | None | NotGiven = NOT_GIVEN,
     ) -> ExportsCreateResponse:
         """Export model to a new format.
 
         Converts a trained model to a different format for deployment (ONNX, TensorRT, CoreML, LiteRT, etc.).
 
         Args:
-            model_id (str): Model to export (name or ID)
-            format (str): Target format: onnx, engine, coreml, litert, openvino, torchscript, etc.
-            gpu_type (str, optional): GPU type (required for TensorRT/engine exports)
-            args (dict[str, Any], optional): Additional export options (e.g. imgsz, quantize, dynamic)
+            model_id (str): Model ID to export
+            format (Literal["onnx", "torchscript", "openvino", "engine", "coreml", "litert", "pb", "saved_model", "paddle", "ncnn", "edgetpu", "mnn", "rknn", "qnn", "imx", "axelera", "executorch", "deepx", "hailo", "ascend"]): Target export format
+            gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300", "jetson-thor-t5000", "jetson-thor-t4000", "jetson-agx-orin-64gb", "jetson-agx-orin-32gb", "jetson-orin-nx-16gb", "jetson-orin-nx-8gb", "jetson-orin-nano-8gb", "jetson-orin-nano-4gb"], optional): Target GPU type for TensorRT exports
+            args (dict[str, Any] | None, optional): Additional export options
 
         Returns:
             (ExportsCreateResponse): The API response.
@@ -237,7 +339,7 @@ class AsyncExports:
         Returns one export job, including a signed download URL when complete.
 
         Args:
-            export_id (str): exportId path parameter.
+            export_id (str): Export ID
 
         Returns:
             (ExportsRetrieveResponse): The API response.
@@ -260,7 +362,7 @@ class AsyncExports:
         Cancels an active export or deletes a finished export and its file.
 
         Args:
-            export_id (str): exportId path parameter.
+            export_id (str): Export ID
 
         Returns:
             (ExportsDeleteResponse): The API response.
@@ -273,27 +375,6 @@ class AsyncExports:
             await self._client.request(
                 "DELETE",
                 f"/api/exports/{_path_parameter(export_id, explode=False, allow_reserved=False)}",
-                auth=("Authorization", "Bearer "),
-            ),
-        )
-
-    async def track_download(self, export_id: str) -> ExportsTrackDownloadResponse:
-        """Track an export download.
-
-        Args:
-            export_id (str): exportId path parameter.
-
-        Returns:
-            (ExportsTrackDownloadResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ExportsTrackDownloadResponse,
-            await self._client.request(
-                "POST",
-                f"/api/exports/{_path_parameter(export_id, explode=False, allow_reserved=False)}/track-download",
                 auth=("Authorization", "Bearer "),
             ),
         )
