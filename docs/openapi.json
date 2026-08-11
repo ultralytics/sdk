@@ -246,7 +246,14 @@
                           },
                           "description": {
                             "description": "Dataset description",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "visibility": {
                             "type": "string",
@@ -275,14 +282,28 @@
                           },
                           "classCount": {
                             "description": "Number of classes",
-                            "type": "number"
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "classNames": {
                             "description": "Class names",
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "format": {
                             "description": "Annotation format",
@@ -296,30 +317,45 @@
                           },
                           "tags": {
                             "description": "Tags",
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "license": {
                             "description": "License",
-                            "type": "string",
-                            "enum": [
-                              "None",
-                              "CC0-1.0",
-                              "CC-BY-2.5",
-                              "CC-BY-4.0",
-                              "CC-BY-SA-4.0",
-                              "CC-BY-NC-4.0",
-                              "CC-BY-NC-SA-4.0",
-                              "CC-BY-ND-4.0",
-                              "CC-BY-NC-ND-4.0",
-                              "Apache-2.0",
-                              "MIT",
-                              "AGPL-3.0",
-                              "GPL-3.0",
-                              "Research-Only",
-                              "Other"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "None",
+                                  "CC0-1.0",
+                                  "CC-BY-2.5",
+                                  "CC-BY-4.0",
+                                  "CC-BY-SA-4.0",
+                                  "CC-BY-NC-4.0",
+                                  "CC-BY-NC-SA-4.0",
+                                  "CC-BY-ND-4.0",
+                                  "CC-BY-NC-ND-4.0",
+                                  "Apache-2.0",
+                                  "MIT",
+                                  "AGPL-3.0",
+                                  "GPL-3.0",
+                                  "Research-Only",
+                                  "Other"
+                                ],
+                                "description": "Dataset license"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "splits": {
@@ -481,24 +517,38 @@
                           },
                           "kptShape": {
                             "description": "Pose keypoint shape [num_keypoints, dims]",
-                            "type": "array",
-                            "prefixItems": [
+                            "anyOf": [
                               {
-                                "type": "number"
+                                "type": "array",
+                                "prefixItems": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "number"
+                                  }
+                                ]
                               },
                               {
-                                "type": "number"
+                                "type": "null"
                               }
                             ]
                           },
                           "flipIdx": {
                             "description": "Pose keypoint horizontal-flip indices",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "minimum": 0,
-                              "maximum": 9007199254740991
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "processingTimeMs": {
                             "description": "Backend processing time in milliseconds",
@@ -1028,7 +1078,14 @@
                         },
                         "description": {
                           "description": "Dataset description",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "visibility": {
                           "type": "string",
@@ -1057,14 +1114,28 @@
                         },
                         "classCount": {
                           "description": "Number of classes",
-                          "type": "number"
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "classNames": {
                           "description": "Class names",
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "format": {
                           "description": "Annotation format",
@@ -1078,30 +1149,45 @@
                         },
                         "tags": {
                           "description": "Tags",
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "license": {
                           "description": "License",
-                          "type": "string",
-                          "enum": [
-                            "None",
-                            "CC0-1.0",
-                            "CC-BY-2.5",
-                            "CC-BY-4.0",
-                            "CC-BY-SA-4.0",
-                            "CC-BY-NC-4.0",
-                            "CC-BY-NC-SA-4.0",
-                            "CC-BY-ND-4.0",
-                            "CC-BY-NC-ND-4.0",
-                            "Apache-2.0",
-                            "MIT",
-                            "AGPL-3.0",
-                            "GPL-3.0",
-                            "Research-Only",
-                            "Other"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "None",
+                                "CC0-1.0",
+                                "CC-BY-2.5",
+                                "CC-BY-4.0",
+                                "CC-BY-SA-4.0",
+                                "CC-BY-NC-4.0",
+                                "CC-BY-NC-SA-4.0",
+                                "CC-BY-ND-4.0",
+                                "CC-BY-NC-ND-4.0",
+                                "Apache-2.0",
+                                "MIT",
+                                "AGPL-3.0",
+                                "GPL-3.0",
+                                "Research-Only",
+                                "Other"
+                              ],
+                              "description": "Dataset license"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "splits": {
@@ -1263,24 +1349,38 @@
                         },
                         "kptShape": {
                           "description": "Pose keypoint shape [num_keypoints, dims]",
-                          "type": "array",
-                          "prefixItems": [
+                          "anyOf": [
                             {
-                              "type": "number"
+                              "type": "array",
+                              "prefixItems": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ]
                             },
                             {
-                              "type": "number"
+                              "type": "null"
                             }
                           ]
                         },
                         "flipIdx": {
                           "description": "Pose keypoint horizontal-flip indices",
-                          "type": "array",
-                          "items": {
-                            "type": "integer",
-                            "minimum": 0,
-                            "maximum": 9007199254740991
-                          }
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "processingTimeMs": {
                           "description": "Backend processing time in milliseconds",
@@ -2444,7 +2544,14 @@
                     },
                     "sampleSize": {
                       "description": "Number of images included; set only when stats came from a capped subset",
-                      "type": "number"
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     }
                   },
                   "required": [
@@ -5417,7 +5524,14 @@
                           },
                           "description": {
                             "description": "Project description",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "visibility": {
                             "type": "string",
@@ -5429,28 +5543,43 @@
                           },
                           "tags": {
                             "description": "Tags",
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "license": {
                             "description": "License",
-                            "type": "string",
-                            "enum": [
-                              "None",
-                              "Apache-2.0",
-                              "MIT",
-                              "BSD-3-Clause",
-                              "AGPL-3.0",
-                              "GPL-3.0",
-                              "LGPL-3.0",
-                              "MPL-2.0",
-                              "EUPL-1.1",
-                              "Unlicense",
-                              "CC0-1.0",
-                              "Ultralytics-Enterprise",
-                              "Other"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "None",
+                                  "Apache-2.0",
+                                  "MIT",
+                                  "BSD-3-Clause",
+                                  "AGPL-3.0",
+                                  "GPL-3.0",
+                                  "LGPL-3.0",
+                                  "MPL-2.0",
+                                  "EUPL-1.1",
+                                  "Unlicense",
+                                  "CC0-1.0",
+                                  "Ultralytics-Enterprise",
+                                  "Other"
+                                ],
+                                "description": "License"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "iconColor": {
@@ -5459,7 +5588,14 @@
                           },
                           "iconLetter": {
                             "description": "Icon letter(s)",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "iconImage": {
                             "description": "Icon image URL",
@@ -5503,15 +5639,23 @@
                           },
                           "task": {
                             "description": "Default task type for models in this project",
-                            "type": "string",
-                            "enum": [
-                              "detect",
-                              "segment",
-                              "semantic",
-                              "depth",
-                              "classify",
-                              "pose",
-                              "obb"
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "detect",
+                                  "segment",
+                                  "semantic",
+                                  "depth",
+                                  "classify",
+                                  "pose",
+                                  "obb"
+                                ],
+                                "description": "YOLO task type"
+                              },
+                              {
+                                "type": "null"
+                              }
                             ]
                           },
                           "clonedFrom": {
@@ -5883,7 +6027,14 @@
                         },
                         "description": {
                           "description": "Project description",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "visibility": {
                           "type": "string",
@@ -5895,28 +6046,43 @@
                         },
                         "tags": {
                           "description": "Tags",
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                          "anyOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "license": {
                           "description": "License",
-                          "type": "string",
-                          "enum": [
-                            "None",
-                            "Apache-2.0",
-                            "MIT",
-                            "BSD-3-Clause",
-                            "AGPL-3.0",
-                            "GPL-3.0",
-                            "LGPL-3.0",
-                            "MPL-2.0",
-                            "EUPL-1.1",
-                            "Unlicense",
-                            "CC0-1.0",
-                            "Ultralytics-Enterprise",
-                            "Other"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "None",
+                                "Apache-2.0",
+                                "MIT",
+                                "BSD-3-Clause",
+                                "AGPL-3.0",
+                                "GPL-3.0",
+                                "LGPL-3.0",
+                                "MPL-2.0",
+                                "EUPL-1.1",
+                                "Unlicense",
+                                "CC0-1.0",
+                                "Ultralytics-Enterprise",
+                                "Other"
+                              ],
+                              "description": "License"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "iconColor": {
@@ -5925,11 +6091,22 @@
                         },
                         "iconLetter": {
                           "description": "Icon letter(s)",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "iconImage": {
                           "description": "Icon image URL",
                           "type": "string"
+                        },
+                        "modelCount": {
+                          "type": "number",
+                          "description": "Number of models"
                         },
                         "starCount": {
                           "type": "number",
@@ -5954,15 +6131,23 @@
                         },
                         "task": {
                           "description": "Default task type for models in this project",
-                          "type": "string",
-                          "enum": [
-                            "detect",
-                            "segment",
-                            "semantic",
-                            "depth",
-                            "classify",
-                            "pose",
-                            "obb"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "detect",
+                                "segment",
+                                "semantic",
+                                "depth",
+                                "classify",
+                                "pose",
+                                "obb"
+                              ],
+                              "description": "YOLO task type"
+                            },
+                            {
+                              "type": "null"
+                            }
                           ]
                         },
                         "clonedFrom": {
@@ -6035,6 +6220,7 @@
                         "slug",
                         "name",
                         "visibility",
+                        "modelCount",
                         "starCount",
                         "isStarred",
                         "createdAt",
@@ -6662,7 +6848,7 @@
             "name": "projectId",
             "in": "query",
             "required": false,
-            "description": "Project name or ID",
+            "description": "Project name or ID; required when listing models",
             "schema": {
               "type": "string"
             }
@@ -6681,6 +6867,15 @@
             "in": "query",
             "required": false,
             "description": "Project name, e.g. `my-project` (use with username)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "required": false,
+            "description": "Model name (use with username and projectSlug for a single-model lookup)",
             "schema": {
               "type": "string"
             }
@@ -6715,145 +6910,614 @@
         ],
         "responses": {
           "200": {
-            "description": "List of models",
+            "description": "A model list or single-model lookup result",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "models": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "_id": {
-                            "type": "string",
-                            "description": "Model ID"
-                          },
-                          "username": {
-                            "description": "Owner's username",
-                            "type": "string"
-                          },
-                          "projectId": {
-                            "description": "Parent project ID",
-                            "type": "string"
-                          },
-                          "projectSlug": {
-                            "description": "Parent project URL, e.g. `my-project`",
-                            "type": "string"
-                          },
-                          "slug": {
-                            "description": "Model URL, e.g. `my-model` from platform.ultralytics.com/username/my-project/my-model",
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string",
-                            "description": "Display name"
-                          },
-                          "description": {
-                            "description": "Model description",
-                            "type": "string"
-                          },
-                          "status": {
-                            "type": "string",
-                            "enum": [
-                              "pending",
-                              "untrained",
-                              "starting",
-                              "running",
-                              "completed",
-                              "failed",
-                              "cancelled"
-                            ],
-                            "description": "Training/model status"
-                          },
-                          "task": {
-                            "type": "string",
-                            "enum": [
-                              "detect",
-                              "segment",
-                              "semantic",
-                              "depth",
-                              "classify",
-                              "pose",
-                              "obb"
-                            ],
-                            "description": "YOLO task type"
-                          },
-                          "color": {
-                            "type": "string"
-                          },
-                          "license": {
-                            "type": "string",
-                            "enum": [
-                              "None",
-                              "Apache-2.0",
-                              "MIT",
-                              "BSD-3-Clause",
-                              "AGPL-3.0",
-                              "GPL-3.0",
-                              "LGPL-3.0",
-                              "MPL-2.0",
-                              "EUPL-1.1",
-                              "Unlicense",
-                              "CC0-1.0",
-                              "Ultralytics-Enterprise",
-                              "Other"
-                            ],
-                            "description": "License"
-                          },
-                          "datasetId": {
-                            "description": "Source dataset ID",
-                            "type": "string"
-                          },
-                          "datasetVersion": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "models": {
+                          "type": "array",
+                          "items": {
                             "type": "object",
                             "properties": {
-                              "version": {
+                              "_id": {
+                                "type": "string",
+                                "description": "Model ID"
+                              },
+                              "username": {
+                                "description": "Owner's username",
+                                "type": "string"
+                              },
+                              "projectId": {
+                                "description": "Parent project ID",
+                                "type": "string"
+                              },
+                              "projectSlug": {
+                                "description": "Parent project URL, e.g. `my-project`",
+                                "type": "string"
+                              },
+                              "slug": {
+                                "description": "Model URL, e.g. `my-model` from platform.ultralytics.com/username/my-project/my-model",
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Display name"
+                              },
+                              "description": {
+                                "description": "Model description",
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "pending",
+                                  "untrained",
+                                  "starting",
+                                  "running",
+                                  "completed",
+                                  "failed",
+                                  "cancelled"
+                                ],
+                                "description": "Training/model status"
+                              },
+                              "task": {
+                                "type": "string",
+                                "enum": [
+                                  "detect",
+                                  "segment",
+                                  "semantic",
+                                  "depth",
+                                  "classify",
+                                  "pose",
+                                  "obb"
+                                ],
+                                "description": "YOLO task type"
+                              },
+                              "color": {
+                                "type": "string"
+                              },
+                              "license": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "enum": [
+                                      "None",
+                                      "Apache-2.0",
+                                      "MIT",
+                                      "BSD-3-Clause",
+                                      "AGPL-3.0",
+                                      "GPL-3.0",
+                                      "LGPL-3.0",
+                                      "MPL-2.0",
+                                      "EUPL-1.1",
+                                      "Unlicense",
+                                      "CC0-1.0",
+                                      "Ultralytics-Enterprise",
+                                      "Other"
+                                    ],
+                                    "description": "License"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "datasetId": {
+                                "description": "Source dataset ID",
+                                "type": "string"
+                              },
+                              "datasetVersion": {
+                                "type": "object",
+                                "properties": {
+                                  "version": {
+                                    "type": "number"
+                                  },
+                                  "contentHash": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "version",
+                                  "contentHash"
+                                ],
+                                "additionalProperties": false
+                              },
+                              "sourceModelId": {
+                                "description": "Source model ID",
+                                "type": "string"
+                              },
+                              "epochs": {
+                                "description": "Total epochs",
                                 "type": "number"
                               },
-                              "contentHash": {
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "version",
-                              "contentHash"
-                            ],
-                            "additionalProperties": false
-                          },
-                          "sourceModelId": {
-                            "description": "Source model ID",
-                            "type": "string"
-                          },
-                          "epochs": {
-                            "description": "Total epochs",
-                            "type": "number"
-                          },
-                          "bestEpoch": {
-                            "description": "Best epoch number",
-                            "type": "number"
-                          },
-                          "bestFitness": {
-                            "description": "Best fitness score",
-                            "type": "number"
-                          },
-                          "trainArgs": {
-                            "description": "Public training configuration; dataset, unknown fields, and local model paths are omitted",
-                            "type": "object",
-                            "properties": {
-                              "model": {
-                                "type": "string",
-                                "pattern": "^(?:[A-Za-z0-9][A-Za-z0-9_.-]*\\.(?:pt|ya?ml)|ul:\\/\\/[A-Za-z0-9][A-Za-z0-9_.-]*\\/[A-Za-z0-9][A-Za-z0-9_.-]*\\/[A-Za-z0-9][A-Za-z0-9_.-]*)$"
+                              "bestEpoch": {
+                                "description": "Best epoch number",
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               },
-                              "classes": {
+                              "bestFitness": {
+                                "description": "Best fitness score",
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "trainArgs": {
+                                "description": "Public training configuration; dataset, unknown fields, and local model paths are omitted",
+                                "type": "object",
+                                "properties": {
+                                  "model": {
+                                    "type": "string",
+                                    "pattern": "^(?:[A-Za-z0-9][A-Za-z0-9_.-]*\\.(?:pt|ya?ml)|ul:\\/\\/[A-Za-z0-9][A-Za-z0-9_.-]*\\/[A-Za-z0-9][A-Za-z0-9_.-]*\\/[A-Za-z0-9][A-Za-z0-9_.-]*)$"
+                                  },
+                                  "classes": {
+                                    "anyOf": [
+                                      {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "integer",
+                                          "minimum": 0,
+                                          "maximum": 9007199254740991
+                                        }
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "lr0": {
+                                    "description": "Initial learning rate. Higher values (e.g. 0.01) train faster but may be unstable; lower values (e.g., 0.001) are safer but slower.",
+                                    "default": 0.01,
+                                    "type": "number",
+                                    "minimum": 0.0001,
+                                    "maximum": 0.1
+                                  },
+                                  "lrf": {
+                                    "description": "Final learning rate factor. Controls how fast learning is at the end of training. Lower values help the model fine-tune.",
+                                    "default": 0.01,
+                                    "type": "number",
+                                    "minimum": 0.01,
+                                    "maximum": 1
+                                  },
+                                  "momentum": {
+                                    "description": "Controls how much past updates influence current optimization. Higher values (e.g. 0.9) speed up training but may overshoot.",
+                                    "default": 0.937,
+                                    "type": "number",
+                                    "minimum": 0.6,
+                                    "maximum": 0.98
+                                  },
+                                  "weight_decay": {
+                                    "description": "L2 regularization to prevent overfitting. Higher values reduce complexity but may slow learning.",
+                                    "default": 0.0005,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 0.001
+                                  },
+                                  "warmup_epochs": {
+                                    "description": "Gradually increases the learning rate over the first N epochs to stabilize training.",
+                                    "default": 3,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 5
+                                  },
+                                  "warmup_momentum": {
+                                    "description": "Gradually increases momentum during warmup to stabilize early training.",
+                                    "default": 0.8,
+                                    "type": "number",
+                                    "minimum": 0.5,
+                                    "maximum": 0.95
+                                  },
+                                  "warmup_bias_lr": {
+                                    "description": "Learning rate for bias parameters during warmup phase to help stabilize early training.",
+                                    "default": 0.1,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 0.2
+                                  },
+                                  "optimizer": {
+                                    "description": "Optimization algorithm. Auto selects the best optimizer based on model and training setup.",
+                                    "default": "auto",
+                                    "type": "string",
+                                    "enum": [
+                                      "auto",
+                                      "SGD",
+                                      "MuSGD",
+                                      "Adam",
+                                      "AdamW",
+                                      "NAdam",
+                                      "RAdam",
+                                      "RMSProp",
+                                      "Adamax"
+                                    ]
+                                  },
+                                  "box": {
+                                    "description": "Bounding box loss weight. Adjusts how localization errors impact training.",
+                                    "default": 7.5,
+                                    "type": "number",
+                                    "minimum": 1,
+                                    "maximum": 50
+                                  },
+                                  "cls": {
+                                    "description": "Classification loss weight. Adjusts how class prediction errors contribute to total loss.",
+                                    "default": 0.5,
+                                    "type": "number",
+                                    "minimum": 0.2,
+                                    "maximum": 4
+                                  },
+                                  "dfl": {
+                                    "description": "Distribution Focal Loss weight. Adjusts how much DFL impacts box regression accuracy.",
+                                    "default": 1.5,
+                                    "type": "number",
+                                    "minimum": 0.4,
+                                    "maximum": 6
+                                  },
+                                  "pose": {
+                                    "description": "Pose loss weight (pose task only). Controls keypoint localization importance.",
+                                    "default": 12,
+                                    "type": "number",
+                                    "minimum": 1,
+                                    "maximum": 50
+                                  },
+                                  "kobj": {
+                                    "description": "Keypoint objectness weight (pose task only). Controls keypoint visibility prediction.",
+                                    "default": 1,
+                                    "type": "number",
+                                    "minimum": 0.5,
+                                    "maximum": 10
+                                  },
+                                  "label_smoothing": {
+                                    "description": "Label smoothing factor. Adds regularization by softening one-hot labels.",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 0.1
+                                  },
+                                  "hsv_h": {
+                                    "description": "HSV-Hue augmentation range for color variation.",
+                                    "default": 0.015,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 0.1
+                                  },
+                                  "hsv_s": {
+                                    "description": "HSV-Saturation augmentation range for color variation.",
+                                    "default": 0.7,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "hsv_v": {
+                                    "description": "HSV-Value (brightness) augmentation range for lighting variation.",
+                                    "default": 0.4,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "degrees": {
+                                    "description": "Image rotation range in degrees for augmentation.",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": -45,
+                                    "maximum": 45
+                                  },
+                                  "translate": {
+                                    "description": "Image translation range (fraction of image size) for position augmentation.",
+                                    "default": 0.1,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "scale": {
+                                    "description": "Image scaling range for size augmentation.",
+                                    "default": 0.5,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "shear": {
+                                    "description": "Image shear range in degrees for shape augmentation.",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": -10,
+                                    "maximum": 10
+                                  },
+                                  "perspective": {
+                                    "description": "Perspective transformation range for view augmentation.",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 0.001
+                                  },
+                                  "flipud": {
+                                    "description": "Probability of vertical flip augmentation.",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "fliplr": {
+                                    "description": "Probability of horizontal flip augmentation.",
+                                    "default": 0.5,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "mosaic": {
+                                    "description": "Probability of mosaic augmentation (combining 4 images into one).",
+                                    "default": 1,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "mixup": {
+                                    "description": "Probability of mixup augmentation (blending two images).",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "copy_paste": {
+                                    "description": "Probability of copy-paste augmentation (segment task). Copies objects to new positions.",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "epochs": {
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 10000,
+                                    "description": "Total number of training epochs. More epochs allow the model to learn more but take longer."
+                                  },
+                                  "batch": {
+                                    "description": "Batch size for training. Use -1 for auto-batch to fit available GPU memory, or set a fixed size.",
+                                    "default": -1,
+                                    "type": "integer",
+                                    "minimum": -1,
+                                    "maximum": 512
+                                  },
+                                  "imgsz": {
+                                    "description": "Input image size for training. Larger sizes improve accuracy but use more memory and time.",
+                                    "default": 640,
+                                    "type": "integer",
+                                    "minimum": 32,
+                                    "maximum": 4096
+                                  },
+                                  "pretrained": {
+                                    "description": "Start from pretrained weights. Disable to keep the selected model architecture with random weights.",
+                                    "default": true,
+                                    "type": "boolean"
+                                  },
+                                  "patience": {
+                                    "description": "Early stopping patience. Epochs to wait after no improvement before stopping. Lower values save time but risk early termination.",
+                                    "default": 100,
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 1000
+                                  },
+                                  "time": {
+                                    "description": "Training time limit in hours. Training stops after this time regardless of epochs.",
+                                    "anyOf": [
+                                      {
+                                        "type": "number",
+                                        "minimum": 0.1,
+                                        "maximum": 720
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "seed": {
+                                    "description": "Random seed for reproducibility. Use 0 for random behavior.",
+                                    "default": 0,
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 2147483647
+                                  },
+                                  "deterministic": {
+                                    "description": "Ensures exact reproducibility by disabling GPU randomness. May slow down training.",
+                                    "default": true,
+                                    "type": "boolean"
+                                  },
+                                  "amp": {
+                                    "description": "Mixed precision training (FP16 + FP32). Speeds up training and reduces memory usage on modern GPUs.",
+                                    "default": true,
+                                    "type": "boolean"
+                                  },
+                                  "cos_lr": {
+                                    "description": "Cosine learning rate scheduler. Gradually reduces LR following a cosine curve for smoother training.",
+                                    "default": false,
+                                    "type": "boolean"
+                                  },
+                                  "compile": {
+                                    "description": "Compile the model with torch.compile for faster training on modern GPUs after a slower first epoch. Also accepts a compile mode name (default, reduce-overhead, max-autotune, max-autotune-no-cudagraphs).",
+                                    "default": false,
+                                    "anyOf": [
+                                      {
+                                        "type": "boolean"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "enum": [
+                                          "default",
+                                          "reduce-overhead",
+                                          "max-autotune",
+                                          "max-autotune-no-cudagraphs"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  "close_mosaic": {
+                                    "description": "Disable mosaic augmentation in final N epochs for better fine-tuning. Set 0 to keep always on.",
+                                    "default": 10,
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 50
+                                  },
+                                  "save_period": {
+                                    "description": "Save checkpoint every N epochs. -1 saves only best and last.",
+                                    "default": -1,
+                                    "type": "integer",
+                                    "minimum": -1,
+                                    "maximum": 100
+                                  },
+                                  "fraction": {
+                                    "description": "Fraction of dataset to use for training (1.0 = full dataset).",
+                                    "default": 1,
+                                    "type": "number",
+                                    "minimum": 0.1,
+                                    "maximum": 1
+                                  },
+                                  "freeze": {
+                                    "description": "Number of layers to freeze. Retains pretrained features. Use null to train all layers.",
+                                    "anyOf": [
+                                      {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 100
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "single_cls": {
+                                    "description": "Treat all classes as a single class. Useful for class-agnostic detection.",
+                                    "default": false,
+                                    "type": "boolean"
+                                  },
+                                  "rect": {
+                                    "description": "Rectangular training. Reduces padding but may lower accuracy due to less randomization.",
+                                    "default": false,
+                                    "type": "boolean"
+                                  },
+                                  "multi_scale": {
+                                    "description": "Multi-scale range as a fraction of imgsz. 0 disables, otherwise trains at varying sizes (max 0.9).",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 0.9
+                                  },
+                                  "val": {
+                                    "description": "Run validation during training. Disable for faster training (not recommended).",
+                                    "default": true,
+                                    "type": "boolean"
+                                  },
+                                  "resume": {
+                                    "type": "boolean"
+                                  },
+                                  "device": {
+                                    "description": "Training device. Auto selects best available (CUDA > MPS > CPU).",
+                                    "default": "auto",
+                                    "type": "string",
+                                    "enum": [
+                                      "0",
+                                      "auto",
+                                      "cpu",
+                                      "mps"
+                                    ]
+                                  },
+                                  "cache": {
+                                    "description": "Dataset caching strategy. RAM is fastest but uses more memory. Disk is slower but saves RAM. False loads on-the-fly.",
+                                    "default": "false",
+                                    "type": "string",
+                                    "enum": [
+                                      "ram",
+                                      "disk",
+                                      "false"
+                                    ]
+                                  },
+                                  "workers": {
+                                    "description": "Number of data loader workers for parallel loading.",
+                                    "default": 8,
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 64
+                                  },
+                                  "dropout": {
+                                    "description": "Dropout rate for classification head regularization.",
+                                    "default": 0,
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "iou": {
+                                    "description": "IoU threshold for NMS during validation.",
+                                    "default": 0.7,
+                                    "type": "number",
+                                    "minimum": 0.1,
+                                    "maximum": 0.9
+                                  },
+                                  "max_det": {
+                                    "description": "Maximum detections per image during inference.",
+                                    "default": 300,
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 10000
+                                  }
+                                },
+                                "additionalProperties": false
+                              },
+                              "version": {
+                                "description": "Ultralytics version",
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "docs": {
+                                "description": "Model documentation URL",
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "startedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                              },
+                              "completedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                              },
+                              "classNames": {
                                 "anyOf": [
                                   {
                                     "type": "array",
                                     "items": {
-                                      "type": "integer",
-                                      "minimum": 0,
-                                      "maximum": 9007199254740991
+                                      "type": "string"
                                     }
                                   },
                                   {
@@ -6861,440 +7525,764 @@
                                   }
                                 ]
                               },
-                              "lr0": {
-                                "description": "Initial learning rate. Higher values (e.g. 0.01) train faster but may be unstable; lower values (e.g., 0.001) are safer but slower.",
-                                "default": 0.01,
-                                "type": "number",
-                                "minimum": 0.0001,
-                                "maximum": 0.1
+                              "metrics": {
+                                "type": "object",
+                                "propertyNames": {
+                                  "type": "string"
+                                },
+                                "additionalProperties": {
+                                  "type": "number"
+                                }
                               },
-                              "lrf": {
-                                "description": "Final learning rate factor. Controls how fast learning is at the end of training. Lower values help the model fine-tune.",
-                                "default": 0.01,
-                                "type": "number",
-                                "minimum": 0.01,
-                                "maximum": 1
+                              "trainResults": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "epoch": {
+                                      "type": "number"
+                                    },
+                                    "metrics": {
+                                      "type": "object",
+                                      "propertyNames": {
+                                        "type": "string"
+                                      },
+                                      "additionalProperties": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "fitness": {
+                                      "type": "number"
+                                    },
+                                    "timestamp": {
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                    }
+                                  },
+                                  "additionalProperties": false
+                                }
                               },
-                              "momentum": {
-                                "description": "Controls how much past updates influence current optimization. Higher values (e.g. 0.9) speed up training but may overshoot.",
-                                "default": 0.937,
-                                "type": "number",
-                                "minimum": 0.6,
-                                "maximum": 0.98
+                              "hasWeights": {
+                                "type": "boolean",
+                                "description": "Whether trained or uploaded model weights are available"
                               },
-                              "weight_decay": {
-                                "description": "L2 regularization to prevent overfitting. Higher values reduce complexity but may slow learning.",
-                                "default": 0.0005,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 0.001
+                              "file": {
+                                "description": "Model file size",
+                                "type": "object",
+                                "properties": {
+                                  "size": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "size"
+                                ],
+                                "additionalProperties": false
                               },
-                              "warmup_epochs": {
-                                "description": "Gradually increases the learning rate over the first N epochs to stabilize training.",
-                                "default": 3,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 5
-                              },
-                              "warmup_momentum": {
-                                "description": "Gradually increases momentum during warmup to stabilize early training.",
-                                "default": 0.8,
-                                "type": "number",
-                                "minimum": 0.5,
-                                "maximum": 0.95
-                              },
-                              "warmup_bias_lr": {
-                                "description": "Learning rate for bias parameters during warmup phase to help stabilize early training.",
-                                "default": 0.1,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 0.2
-                              },
-                              "optimizer": {
-                                "description": "Optimization algorithm. Auto selects the best optimizer based on model and training setup.",
-                                "default": "auto",
-                                "type": "string",
-                                "enum": [
-                                  "auto",
-                                  "SGD",
-                                  "MuSGD",
-                                  "Adam",
-                                  "AdamW",
-                                  "NAdam",
-                                  "RAdam",
-                                  "RMSProp",
-                                  "Adamax"
-                                ]
-                              },
-                              "box": {
-                                "description": "Bounding box loss weight. Adjusts how localization errors impact training.",
-                                "default": 7.5,
-                                "type": "number",
-                                "minimum": 1,
-                                "maximum": 50
-                              },
-                              "cls": {
-                                "description": "Classification loss weight. Adjusts how class prediction errors contribute to total loss.",
-                                "default": 0.5,
-                                "type": "number",
-                                "minimum": 0.2,
-                                "maximum": 4
-                              },
-                              "dfl": {
-                                "description": "Distribution Focal Loss weight. Adjusts how much DFL impacts box regression accuracy.",
-                                "default": 1.5,
-                                "type": "number",
-                                "minimum": 0.4,
-                                "maximum": 6
-                              },
-                              "pose": {
-                                "description": "Pose loss weight (pose task only). Controls keypoint localization importance.",
-                                "default": 12,
-                                "type": "number",
-                                "minimum": 1,
-                                "maximum": 50
-                              },
-                              "kobj": {
-                                "description": "Keypoint objectness weight (pose task only). Controls keypoint visibility prediction.",
-                                "default": 1,
-                                "type": "number",
-                                "minimum": 0.5,
-                                "maximum": 10
-                              },
-                              "label_smoothing": {
-                                "description": "Label smoothing factor. Adds regularization by softening one-hot labels.",
-                                "default": 0,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 0.1
-                              },
-                              "hsv_h": {
-                                "description": "HSV-Hue augmentation range for color variation.",
-                                "default": 0.015,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 0.1
-                              },
-                              "hsv_s": {
-                                "description": "HSV-Saturation augmentation range for color variation.",
-                                "default": 0.7,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "hsv_v": {
-                                "description": "HSV-Value (brightness) augmentation range for lighting variation.",
-                                "default": 0.4,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "degrees": {
-                                "description": "Image rotation range in degrees for augmentation.",
-                                "default": 0,
-                                "type": "number",
-                                "minimum": -45,
-                                "maximum": 45
-                              },
-                              "translate": {
-                                "description": "Image translation range (fraction of image size) for position augmentation.",
-                                "default": 0.1,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "scale": {
-                                "description": "Image scaling range for size augmentation.",
-                                "default": 0.5,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "shear": {
-                                "description": "Image shear range in degrees for shape augmentation.",
-                                "default": 0,
-                                "type": "number",
-                                "minimum": -10,
-                                "maximum": 10
-                              },
-                              "perspective": {
-                                "description": "Perspective transformation range for view augmentation.",
-                                "default": 0,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 0.001
-                              },
-                              "flipud": {
-                                "description": "Probability of vertical flip augmentation.",
-                                "default": 0,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "fliplr": {
-                                "description": "Probability of horizontal flip augmentation.",
-                                "default": 0.5,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "mosaic": {
-                                "description": "Probability of mosaic augmentation (combining 4 images into one).",
-                                "default": 1,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "mixup": {
-                                "description": "Probability of mixup augmentation (blending two images).",
-                                "default": 0,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "copy_paste": {
-                                "description": "Probability of copy-paste augmentation (segment task). Copies objects to new positions.",
-                                "default": 0,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "epochs": {
-                                "type": "integer",
-                                "minimum": 1,
-                                "maximum": 10000,
-                                "description": "Total number of training epochs. More epochs allow the model to learn more but take longer."
-                              },
-                              "batch": {
-                                "description": "Batch size for training. Use -1 for auto-batch to fit available GPU memory, or set a fixed size.",
-                                "default": -1,
-                                "type": "integer",
-                                "minimum": -1,
-                                "maximum": 512
-                              },
-                              "imgsz": {
-                                "description": "Input image size for training. Larger sizes improve accuracy but use more memory and time.",
-                                "default": 640,
-                                "type": "integer",
-                                "minimum": 32,
-                                "maximum": 4096
-                              },
-                              "pretrained": {
-                                "description": "Start from pretrained weights. Disable to keep the selected model architecture with random weights.",
-                                "default": true,
-                                "type": "boolean"
-                              },
-                              "patience": {
-                                "description": "Early stopping patience. Epochs to wait after no improvement before stopping. Lower values save time but risk early termination.",
-                                "default": 100,
-                                "type": "integer",
-                                "minimum": 1,
-                                "maximum": 1000
-                              },
-                              "time": {
-                                "description": "Training time limit in hours. Training stops after this time regardless of epochs.",
+                              "plots": {
+                                "description": "Validation plots",
                                 "anyOf": [
                                   {
-                                    "type": "number",
-                                    "minimum": 0.1,
-                                    "maximum": 720
+                                    "type": "array",
+                                    "items": {}
                                   },
                                   {
                                     "type": "null"
                                   }
                                 ]
                               },
-                              "seed": {
-                                "description": "Random seed for reproducibility. Use 0 for random behavior.",
-                                "default": 0,
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 2147483647
-                              },
-                              "deterministic": {
-                                "description": "Ensures exact reproducibility by disabling GPU randomness. May slow down training.",
-                                "default": true,
-                                "type": "boolean"
-                              },
-                              "amp": {
-                                "description": "Mixed precision training (FP16 + FP32). Speeds up training and reduces memory usage on modern GPUs.",
-                                "default": true,
-                                "type": "boolean"
-                              },
-                              "cos_lr": {
-                                "description": "Cosine learning rate scheduler. Gradually reduces LR following a cosine curve for smoother training.",
-                                "default": false,
-                                "type": "boolean"
-                              },
-                              "compile": {
-                                "description": "Compile the model with torch.compile for faster training on modern GPUs after a slower first epoch. Also accepts a compile mode name (default, reduce-overhead, max-autotune, max-autotune-no-cudagraphs).",
-                                "default": false,
-                                "anyOf": [
-                                  {
-                                    "type": "boolean"
-                                  },
-                                  {
+                              "trainingError": {
+                                "type": "object",
+                                "properties": {
+                                  "message": {
                                     "type": "string",
-                                    "enum": [
-                                      "default",
-                                      "reduce-overhead",
-                                      "max-autotune",
-                                      "max-autotune-no-cudagraphs"
-                                    ]
-                                  }
-                                ]
-                              },
-                              "close_mosaic": {
-                                "description": "Disable mosaic augmentation in final N epochs for better fine-tuning. Set 0 to keep always on.",
-                                "default": 10,
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 50
-                              },
-                              "save_period": {
-                                "description": "Save checkpoint every N epochs. -1 saves only best and last.",
-                                "default": -1,
-                                "type": "integer",
-                                "minimum": -1,
-                                "maximum": 100
-                              },
-                              "fraction": {
-                                "description": "Fraction of dataset to use for training (1.0 = full dataset).",
-                                "default": 1,
-                                "type": "number",
-                                "minimum": 0.1,
-                                "maximum": 1
-                              },
-                              "freeze": {
-                                "description": "Number of layers to freeze. Retains pretrained features. Use null to train all layers.",
-                                "anyOf": [
-                                  {
-                                    "type": "integer",
-                                    "minimum": 0,
-                                    "maximum": 100
+                                    "description": "Client-safe training failure message"
                                   },
-                                  {
-                                    "type": "null"
+                                  "code": {
+                                    "type": "string"
+                                  },
+                                  "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                                   }
-                                ]
+                                },
+                                "required": [
+                                  "message",
+                                  "timestamp"
+                                ],
+                                "additionalProperties": false
                               },
-                              "single_cls": {
-                                "description": "Treat all classes as a single class. Useful for class-agnostic detection.",
-                                "default": false,
-                                "type": "boolean"
-                              },
-                              "rect": {
-                                "description": "Rectangular training. Reduces padding but may lower accuracy due to less randomization.",
-                                "default": false,
-                                "type": "boolean"
-                              },
-                              "multi_scale": {
-                                "description": "Multi-scale range as a fraction of imgsz. 0 disables, otherwise trains at varying sizes (max 0.9).",
-                                "default": 0,
+                              "starCount": {
                                 "type": "number",
-                                "minimum": 0,
-                                "maximum": 0.9
+                                "description": "Number of stars"
                               },
-                              "val": {
-                                "description": "Run validation during training. Disable for faster training (not recommended).",
-                                "default": true,
-                                "type": "boolean"
+                              "isStarred": {
+                                "type": "boolean",
+                                "description": "Whether current user starred this"
                               },
-                              "resume": {
-                                "type": "boolean"
+                              "clonedFrom": {
+                                "description": "Source model ID if this is a clone",
+                                "type": "string"
                               },
-                              "device": {
-                                "description": "Training device. Auto selects best available (CUDA > MPS > CPU).",
-                                "default": "auto",
+                              "downloadCount": {
+                                "description": "Download count",
+                                "type": "number"
+                              },
+                              "cloneCount": {
+                                "description": "Clone count",
+                                "type": "number"
+                              },
+                              "createdAt": {
+                                "description": "Creation timestamp",
                                 "type": "string",
-                                "enum": [
-                                  "0",
-                                  "auto",
-                                  "cpu",
-                                  "mps"
-                                ]
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                               },
-                              "cache": {
-                                "description": "Dataset caching strategy. RAM is fastest but uses more memory. Disk is slower but saves RAM. False loads on-the-fly.",
-                                "default": "false",
+                              "updatedAt": {
+                                "description": "Last update timestamp",
                                 "type": "string",
-                                "enum": [
-                                  "ram",
-                                  "disk",
-                                  "false"
-                                ]
-                              },
-                              "workers": {
-                                "description": "Number of data loader workers for parallel loading.",
-                                "default": 8,
-                                "type": "integer",
-                                "minimum": 0,
-                                "maximum": 64
-                              },
-                              "dropout": {
-                                "description": "Dropout rate for classification head regularization.",
-                                "default": 0,
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 1
-                              },
-                              "iou": {
-                                "description": "IoU threshold for NMS during validation.",
-                                "default": 0.7,
-                                "type": "number",
-                                "minimum": 0.1,
-                                "maximum": 0.9
-                              },
-                              "max_det": {
-                                "description": "Maximum detections per image during inference.",
-                                "default": 300,
-                                "type": "integer",
-                                "minimum": 1,
-                                "maximum": 10000
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                               }
                             },
-                            "additionalProperties": false
-                          },
-                          "version": {
-                            "description": "Ultralytics version",
-                            "type": "string"
-                          },
-                          "docs": {
-                            "description": "Model documentation URL",
-                            "type": "string"
-                          },
-                          "startedAt": {
-                            "type": "string",
-                            "format": "date-time",
-                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
-                          },
-                          "completedAt": {
-                            "type": "string",
-                            "format": "date-time",
-                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
-                          },
-                          "classNames": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "metrics": {
-                            "type": "object",
-                            "propertyNames": {
-                              "type": "string"
-                            },
-                            "additionalProperties": {
-                              "type": "number"
-                            }
-                          },
-                          "trainResults": {
-                            "type": "array",
-                            "items": {
+                            "required": [
+                              "_id",
+                              "name",
+                              "hasWeights",
+                              "starCount",
+                              "isStarred"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Model summary"
+                          }
+                        },
+                        "region": {
+                          "type": "string",
+                          "enum": [
+                            "us",
+                            "eu",
+                            "ap"
+                          ],
+                          "description": "Data region"
+                        }
+                      },
+                      "required": [
+                        "models",
+                        "region"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Response from GET /api/models"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "model": {
+                          "anyOf": [
+                            {
                               "type": "object",
                               "properties": {
-                                "epoch": {
+                                "_id": {
+                                  "type": "string",
+                                  "description": "Model ID"
+                                },
+                                "username": {
+                                  "description": "Owner's username",
+                                  "type": "string"
+                                },
+                                "projectId": {
+                                  "description": "Parent project ID",
+                                  "type": "string"
+                                },
+                                "projectSlug": {
+                                  "type": "string"
+                                },
+                                "slug": {
+                                  "description": "Model URL, e.g. `my-model` from platform.ultralytics.com/username/my-project/my-model",
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Display name"
+                                },
+                                "description": {
+                                  "description": "Model description",
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "pending",
+                                    "untrained",
+                                    "starting",
+                                    "running",
+                                    "completed",
+                                    "failed",
+                                    "cancelled"
+                                  ],
+                                  "description": "Training/model status"
+                                },
+                                "task": {
+                                  "type": "string",
+                                  "enum": [
+                                    "detect",
+                                    "segment",
+                                    "semantic",
+                                    "depth",
+                                    "classify",
+                                    "pose",
+                                    "obb"
+                                  ],
+                                  "description": "YOLO task type"
+                                },
+                                "color": {
+                                  "type": "string"
+                                },
+                                "license": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "None",
+                                        "Apache-2.0",
+                                        "MIT",
+                                        "BSD-3-Clause",
+                                        "AGPL-3.0",
+                                        "GPL-3.0",
+                                        "LGPL-3.0",
+                                        "MPL-2.0",
+                                        "EUPL-1.1",
+                                        "Unlicense",
+                                        "CC0-1.0",
+                                        "Ultralytics-Enterprise",
+                                        "Other"
+                                      ],
+                                      "description": "License"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "datasetId": {
+                                  "description": "Source dataset ID",
+                                  "type": "string"
+                                },
+                                "datasetVersion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "version": {
+                                      "type": "number"
+                                    },
+                                    "contentHash": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "version",
+                                    "contentHash"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "sourceModelId": {
+                                  "description": "Source model ID",
+                                  "type": "string"
+                                },
+                                "epochs": {
+                                  "description": "Total epochs",
                                   "type": "number"
+                                },
+                                "bestEpoch": {
+                                  "description": "Best epoch number",
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "bestFitness": {
+                                  "description": "Best fitness score",
+                                  "anyOf": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "trainArgs": {
+                                  "description": "Public training configuration; dataset, unknown fields, and local model paths are omitted",
+                                  "type": "object",
+                                  "properties": {
+                                    "model": {
+                                      "type": "string",
+                                      "pattern": "^(?:[A-Za-z0-9][A-Za-z0-9_.-]*\\.(?:pt|ya?ml)|ul:\\/\\/[A-Za-z0-9][A-Za-z0-9_.-]*\\/[A-Za-z0-9][A-Za-z0-9_.-]*\\/[A-Za-z0-9][A-Za-z0-9_.-]*)$"
+                                    },
+                                    "classes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "maximum": 9007199254740991
+                                          }
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "lr0": {
+                                      "description": "Initial learning rate. Higher values (e.g. 0.01) train faster but may be unstable; lower values (e.g., 0.001) are safer but slower.",
+                                      "default": 0.01,
+                                      "type": "number",
+                                      "minimum": 0.0001,
+                                      "maximum": 0.1
+                                    },
+                                    "lrf": {
+                                      "description": "Final learning rate factor. Controls how fast learning is at the end of training. Lower values help the model fine-tune.",
+                                      "default": 0.01,
+                                      "type": "number",
+                                      "minimum": 0.01,
+                                      "maximum": 1
+                                    },
+                                    "momentum": {
+                                      "description": "Controls how much past updates influence current optimization. Higher values (e.g. 0.9) speed up training but may overshoot.",
+                                      "default": 0.937,
+                                      "type": "number",
+                                      "minimum": 0.6,
+                                      "maximum": 0.98
+                                    },
+                                    "weight_decay": {
+                                      "description": "L2 regularization to prevent overfitting. Higher values reduce complexity but may slow learning.",
+                                      "default": 0.0005,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 0.001
+                                    },
+                                    "warmup_epochs": {
+                                      "description": "Gradually increases the learning rate over the first N epochs to stabilize training.",
+                                      "default": 3,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 5
+                                    },
+                                    "warmup_momentum": {
+                                      "description": "Gradually increases momentum during warmup to stabilize early training.",
+                                      "default": 0.8,
+                                      "type": "number",
+                                      "minimum": 0.5,
+                                      "maximum": 0.95
+                                    },
+                                    "warmup_bias_lr": {
+                                      "description": "Learning rate for bias parameters during warmup phase to help stabilize early training.",
+                                      "default": 0.1,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 0.2
+                                    },
+                                    "optimizer": {
+                                      "description": "Optimization algorithm. Auto selects the best optimizer based on model and training setup.",
+                                      "default": "auto",
+                                      "type": "string",
+                                      "enum": [
+                                        "auto",
+                                        "SGD",
+                                        "MuSGD",
+                                        "Adam",
+                                        "AdamW",
+                                        "NAdam",
+                                        "RAdam",
+                                        "RMSProp",
+                                        "Adamax"
+                                      ]
+                                    },
+                                    "box": {
+                                      "description": "Bounding box loss weight. Adjusts how localization errors impact training.",
+                                      "default": 7.5,
+                                      "type": "number",
+                                      "minimum": 1,
+                                      "maximum": 50
+                                    },
+                                    "cls": {
+                                      "description": "Classification loss weight. Adjusts how class prediction errors contribute to total loss.",
+                                      "default": 0.5,
+                                      "type": "number",
+                                      "minimum": 0.2,
+                                      "maximum": 4
+                                    },
+                                    "dfl": {
+                                      "description": "Distribution Focal Loss weight. Adjusts how much DFL impacts box regression accuracy.",
+                                      "default": 1.5,
+                                      "type": "number",
+                                      "minimum": 0.4,
+                                      "maximum": 6
+                                    },
+                                    "pose": {
+                                      "description": "Pose loss weight (pose task only). Controls keypoint localization importance.",
+                                      "default": 12,
+                                      "type": "number",
+                                      "minimum": 1,
+                                      "maximum": 50
+                                    },
+                                    "kobj": {
+                                      "description": "Keypoint objectness weight (pose task only). Controls keypoint visibility prediction.",
+                                      "default": 1,
+                                      "type": "number",
+                                      "minimum": 0.5,
+                                      "maximum": 10
+                                    },
+                                    "label_smoothing": {
+                                      "description": "Label smoothing factor. Adds regularization by softening one-hot labels.",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 0.1
+                                    },
+                                    "hsv_h": {
+                                      "description": "HSV-Hue augmentation range for color variation.",
+                                      "default": 0.015,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 0.1
+                                    },
+                                    "hsv_s": {
+                                      "description": "HSV-Saturation augmentation range for color variation.",
+                                      "default": 0.7,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "hsv_v": {
+                                      "description": "HSV-Value (brightness) augmentation range for lighting variation.",
+                                      "default": 0.4,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "degrees": {
+                                      "description": "Image rotation range in degrees for augmentation.",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": -45,
+                                      "maximum": 45
+                                    },
+                                    "translate": {
+                                      "description": "Image translation range (fraction of image size) for position augmentation.",
+                                      "default": 0.1,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "scale": {
+                                      "description": "Image scaling range for size augmentation.",
+                                      "default": 0.5,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "shear": {
+                                      "description": "Image shear range in degrees for shape augmentation.",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": -10,
+                                      "maximum": 10
+                                    },
+                                    "perspective": {
+                                      "description": "Perspective transformation range for view augmentation.",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 0.001
+                                    },
+                                    "flipud": {
+                                      "description": "Probability of vertical flip augmentation.",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "fliplr": {
+                                      "description": "Probability of horizontal flip augmentation.",
+                                      "default": 0.5,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "mosaic": {
+                                      "description": "Probability of mosaic augmentation (combining 4 images into one).",
+                                      "default": 1,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "mixup": {
+                                      "description": "Probability of mixup augmentation (blending two images).",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "copy_paste": {
+                                      "description": "Probability of copy-paste augmentation (segment task). Copies objects to new positions.",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "epochs": {
+                                      "type": "integer",
+                                      "minimum": 1,
+                                      "maximum": 10000,
+                                      "description": "Total number of training epochs. More epochs allow the model to learn more but take longer."
+                                    },
+                                    "batch": {
+                                      "description": "Batch size for training. Use -1 for auto-batch to fit available GPU memory, or set a fixed size.",
+                                      "default": -1,
+                                      "type": "integer",
+                                      "minimum": -1,
+                                      "maximum": 512
+                                    },
+                                    "imgsz": {
+                                      "description": "Input image size for training. Larger sizes improve accuracy but use more memory and time.",
+                                      "default": 640,
+                                      "type": "integer",
+                                      "minimum": 32,
+                                      "maximum": 4096
+                                    },
+                                    "pretrained": {
+                                      "description": "Start from pretrained weights. Disable to keep the selected model architecture with random weights.",
+                                      "default": true,
+                                      "type": "boolean"
+                                    },
+                                    "patience": {
+                                      "description": "Early stopping patience. Epochs to wait after no improvement before stopping. Lower values save time but risk early termination.",
+                                      "default": 100,
+                                      "type": "integer",
+                                      "minimum": 1,
+                                      "maximum": 1000
+                                    },
+                                    "time": {
+                                      "description": "Training time limit in hours. Training stops after this time regardless of epochs.",
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0.1,
+                                          "maximum": 720
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "seed": {
+                                      "description": "Random seed for reproducibility. Use 0 for random behavior.",
+                                      "default": 0,
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 2147483647
+                                    },
+                                    "deterministic": {
+                                      "description": "Ensures exact reproducibility by disabling GPU randomness. May slow down training.",
+                                      "default": true,
+                                      "type": "boolean"
+                                    },
+                                    "amp": {
+                                      "description": "Mixed precision training (FP16 + FP32). Speeds up training and reduces memory usage on modern GPUs.",
+                                      "default": true,
+                                      "type": "boolean"
+                                    },
+                                    "cos_lr": {
+                                      "description": "Cosine learning rate scheduler. Gradually reduces LR following a cosine curve for smoother training.",
+                                      "default": false,
+                                      "type": "boolean"
+                                    },
+                                    "compile": {
+                                      "description": "Compile the model with torch.compile for faster training on modern GPUs after a slower first epoch. Also accepts a compile mode name (default, reduce-overhead, max-autotune, max-autotune-no-cudagraphs).",
+                                      "default": false,
+                                      "anyOf": [
+                                        {
+                                          "type": "boolean"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "default",
+                                            "reduce-overhead",
+                                            "max-autotune",
+                                            "max-autotune-no-cudagraphs"
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    "close_mosaic": {
+                                      "description": "Disable mosaic augmentation in final N epochs for better fine-tuning. Set 0 to keep always on.",
+                                      "default": 10,
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 50
+                                    },
+                                    "save_period": {
+                                      "description": "Save checkpoint every N epochs. -1 saves only best and last.",
+                                      "default": -1,
+                                      "type": "integer",
+                                      "minimum": -1,
+                                      "maximum": 100
+                                    },
+                                    "fraction": {
+                                      "description": "Fraction of dataset to use for training (1.0 = full dataset).",
+                                      "default": 1,
+                                      "type": "number",
+                                      "minimum": 0.1,
+                                      "maximum": 1
+                                    },
+                                    "freeze": {
+                                      "description": "Number of layers to freeze. Retains pretrained features. Use null to train all layers.",
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0,
+                                          "maximum": 100
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "single_cls": {
+                                      "description": "Treat all classes as a single class. Useful for class-agnostic detection.",
+                                      "default": false,
+                                      "type": "boolean"
+                                    },
+                                    "rect": {
+                                      "description": "Rectangular training. Reduces padding but may lower accuracy due to less randomization.",
+                                      "default": false,
+                                      "type": "boolean"
+                                    },
+                                    "multi_scale": {
+                                      "description": "Multi-scale range as a fraction of imgsz. 0 disables, otherwise trains at varying sizes (max 0.9).",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 0.9
+                                    },
+                                    "val": {
+                                      "description": "Run validation during training. Disable for faster training (not recommended).",
+                                      "default": true,
+                                      "type": "boolean"
+                                    },
+                                    "resume": {
+                                      "type": "boolean"
+                                    },
+                                    "device": {
+                                      "description": "Training device. Auto selects best available (CUDA > MPS > CPU).",
+                                      "default": "auto",
+                                      "type": "string",
+                                      "enum": [
+                                        "0",
+                                        "auto",
+                                        "cpu",
+                                        "mps"
+                                      ]
+                                    },
+                                    "cache": {
+                                      "description": "Dataset caching strategy. RAM is fastest but uses more memory. Disk is slower but saves RAM. False loads on-the-fly.",
+                                      "default": "false",
+                                      "type": "string",
+                                      "enum": [
+                                        "ram",
+                                        "disk",
+                                        "false"
+                                      ]
+                                    },
+                                    "workers": {
+                                      "description": "Number of data loader workers for parallel loading.",
+                                      "default": 8,
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "maximum": 64
+                                    },
+                                    "dropout": {
+                                      "description": "Dropout rate for classification head regularization.",
+                                      "default": 0,
+                                      "type": "number",
+                                      "minimum": 0,
+                                      "maximum": 1
+                                    },
+                                    "iou": {
+                                      "description": "IoU threshold for NMS during validation.",
+                                      "default": 0.7,
+                                      "type": "number",
+                                      "minimum": 0.1,
+                                      "maximum": 0.9
+                                    },
+                                    "max_det": {
+                                      "description": "Maximum detections per image during inference.",
+                                      "default": 300,
+                                      "type": "integer",
+                                      "minimum": 1,
+                                      "maximum": 10000
+                                    }
+                                  },
+                                  "additionalProperties": false
+                                },
+                                "version": {
+                                  "description": "Ultralytics version",
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "docs": {
+                                  "description": "Model documentation URL",
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "startedAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                },
+                                "completedAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                },
+                                "classNames": {
+                                  "anyOf": [
+                                    {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
                                 },
                                 "metrics": {
                                   "type": "object",
@@ -7305,122 +8293,235 @@
                                     "type": "number"
                                   }
                                 },
-                                "fitness": {
+                                "trainResults": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "epoch": {
+                                        "type": "number"
+                                      },
+                                      "metrics": {
+                                        "type": "object",
+                                        "propertyNames": {
+                                          "type": "string"
+                                        },
+                                        "additionalProperties": {
+                                          "type": "number"
+                                        }
+                                      },
+                                      "fitness": {
+                                        "type": "number"
+                                      },
+                                      "timestamp": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                      }
+                                    },
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "hasWeights": {
+                                  "type": "boolean",
+                                  "description": "Whether trained or uploaded model weights are available"
+                                },
+                                "file": {
+                                  "description": "Model file size",
+                                  "type": "object",
+                                  "properties": {
+                                    "size": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": [
+                                    "size"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "plots": {
+                                  "description": "Validation plots",
+                                  "anyOf": [
+                                    {
+                                      "type": "array",
+                                      "items": {}
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "trainingError": {
+                                  "type": "object",
+                                  "properties": {
+                                    "message": {
+                                      "type": "string",
+                                      "description": "Client-safe training failure message"
+                                    },
+                                    "code": {
+                                      "type": "string"
+                                    },
+                                    "timestamp": {
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                    }
+                                  },
+                                  "required": [
+                                    "message",
+                                    "timestamp"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                "starCount": {
+                                  "type": "number",
+                                  "description": "Number of stars"
+                                },
+                                "isStarred": {
+                                  "type": "boolean",
+                                  "description": "Whether current user starred this"
+                                },
+                                "clonedFrom": {
+                                  "description": "Source model ID if this is a clone",
+                                  "type": "string"
+                                },
+                                "downloadCount": {
+                                  "description": "Download count",
                                   "type": "number"
                                 },
-                                "timestamp": {
+                                "cloneCount": {
+                                  "description": "Clone count",
+                                  "type": "number"
+                                },
+                                "createdAt": {
+                                  "description": "Creation timestamp",
                                   "type": "string",
                                   "format": "date-time",
                                   "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                },
+                                "updatedAt": {
+                                  "description": "Last update timestamp",
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                                },
+                                "sourceModel": {
+                                  "type": "object",
+                                  "properties": {
+                                    "username": {
+                                      "type": "string",
+                                      "description": "Owner username of the source model"
+                                    },
+                                    "projectSlug": {
+                                      "type": "string",
+                                      "description": "Source project slug"
+                                    },
+                                    "projectName": {
+                                      "type": "string",
+                                      "description": "Source project name"
+                                    },
+                                    "projectIconColor": {
+                                      "description": "Source project icon color",
+                                      "type": "string"
+                                    },
+                                    "projectIconLetter": {
+                                      "description": "Source project icon letter",
+                                      "type": "string"
+                                    },
+                                    "projectIconImage": {
+                                      "description": "Signed source project icon image URL",
+                                      "type": "string"
+                                    },
+                                    "modelSlug": {
+                                      "type": "string",
+                                      "description": "Source model slug"
+                                    },
+                                    "modelName": {
+                                      "type": "string",
+                                      "description": "Source model name"
+                                    }
+                                  },
+                                  "required": [
+                                    "username",
+                                    "projectSlug",
+                                    "projectName",
+                                    "modelSlug",
+                                    "modelName"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "Linked source model information"
+                                },
+                                "baseModel": {
+                                  "description": "Root model filename used for training",
+                                  "type": "string"
+                                },
+                                "projectLicense": {
+                                  "description": "Parent project license",
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "None",
+                                        "Apache-2.0",
+                                        "MIT",
+                                        "BSD-3-Clause",
+                                        "AGPL-3.0",
+                                        "GPL-3.0",
+                                        "LGPL-3.0",
+                                        "MPL-2.0",
+                                        "EUPL-1.1",
+                                        "Unlicense",
+                                        "CC0-1.0",
+                                        "Ultralytics-Enterprise",
+                                        "Other"
+                                      ],
+                                      "description": "License"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "projectName": {
+                                  "type": "string"
+                                },
+                                "projectVisibility": {
+                                  "type": "string",
+                                  "enum": [
+                                    "public",
+                                    "private"
+                                  ],
+                                  "description": "Visibility"
+                                },
+                                "projectUserId": {
+                                  "type": "string"
                                 }
                               },
+                              "required": [
+                                "_id",
+                                "projectSlug",
+                                "name",
+                                "hasWeights",
+                                "starCount",
+                                "isStarred",
+                                "projectName",
+                                "projectVisibility"
+                              ],
                               "additionalProperties": false
+                            },
+                            {
+                              "type": "null"
                             }
-                          },
-                          "hasWeights": {
-                            "type": "boolean",
-                            "description": "Whether trained or uploaded model weights are available"
-                          },
-                          "file": {
-                            "description": "Model file size",
-                            "type": "object",
-                            "properties": {
-                              "size": {
-                                "type": "number"
-                              }
-                            },
-                            "required": [
-                              "size"
-                            ],
-                            "additionalProperties": false
-                          },
-                          "plots": {
-                            "description": "Validation plots",
-                            "type": "array",
-                            "items": {}
-                          },
-                          "trainingError": {
-                            "type": "object",
-                            "properties": {
-                              "message": {
-                                "type": "string",
-                                "description": "Client-safe training failure message"
-                              },
-                              "code": {
-                                "type": "string"
-                              },
-                              "timestamp": {
-                                "type": "string",
-                                "format": "date-time",
-                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
-                              }
-                            },
-                            "required": [
-                              "message",
-                              "timestamp"
-                            ],
-                            "additionalProperties": false
-                          },
-                          "starCount": {
-                            "type": "number",
-                            "description": "Number of stars"
-                          },
-                          "isStarred": {
-                            "type": "boolean",
-                            "description": "Whether current user starred this"
-                          },
-                          "clonedFrom": {
-                            "description": "Source model ID if this is a clone",
-                            "type": "string"
-                          },
-                          "downloadCount": {
-                            "description": "Download count",
-                            "type": "number"
-                          },
-                          "cloneCount": {
-                            "description": "Clone count",
-                            "type": "number"
-                          },
-                          "createdAt": {
-                            "description": "Creation timestamp",
-                            "type": "string",
-                            "format": "date-time",
-                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
-                          },
-                          "updatedAt": {
-                            "description": "Last update timestamp",
-                            "type": "string",
-                            "format": "date-time",
-                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
-                          }
-                        },
-                        "required": [
-                          "_id",
-                          "name",
-                          "hasWeights",
-                          "starCount",
-                          "isStarred"
-                        ],
-                        "additionalProperties": false,
-                        "description": "Model summary"
-                      }
-                    },
-                    "region": {
-                      "type": "string",
-                      "enum": [
-                        "us",
-                        "eu",
-                        "ap"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "model"
                       ],
-                      "description": "Data region"
+                      "additionalProperties": false,
+                      "description": "Response from GET /api/models with username, projectSlug, and slug"
                     }
-                  },
-                  "required": [
-                    "models",
-                    "region"
-                  ],
-                  "additionalProperties": false,
-                  "description": "Response from GET /api/models"
+                  ]
                 }
               }
             }
@@ -7802,7 +8903,14 @@
                             "type": "string"
                           },
                           "bestFitness": {
-                            "type": "number"
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           }
                         },
                         "required": [
@@ -7952,7 +9060,14 @@
                             },
                             "description": {
                               "description": "Model description",
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "status": {
                               "type": "string",
@@ -7984,23 +9099,30 @@
                               "type": "string"
                             },
                             "license": {
-                              "type": "string",
-                              "enum": [
-                                "None",
-                                "Apache-2.0",
-                                "MIT",
-                                "BSD-3-Clause",
-                                "AGPL-3.0",
-                                "GPL-3.0",
-                                "LGPL-3.0",
-                                "MPL-2.0",
-                                "EUPL-1.1",
-                                "Unlicense",
-                                "CC0-1.0",
-                                "Ultralytics-Enterprise",
-                                "Other"
-                              ],
-                              "description": "License"
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "None",
+                                    "Apache-2.0",
+                                    "MIT",
+                                    "BSD-3-Clause",
+                                    "AGPL-3.0",
+                                    "GPL-3.0",
+                                    "LGPL-3.0",
+                                    "MPL-2.0",
+                                    "EUPL-1.1",
+                                    "Unlicense",
+                                    "CC0-1.0",
+                                    "Ultralytics-Enterprise",
+                                    "Other"
+                                  ],
+                                  "description": "License"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "datasetId": {
                               "description": "Source dataset ID",
@@ -8032,11 +9154,25 @@
                             },
                             "bestEpoch": {
                               "description": "Best epoch number",
-                              "type": "number"
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "bestFitness": {
                               "description": "Best fitness score",
-                              "type": "number"
+                              "anyOf": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "trainArgs": {
                               "description": "Public training configuration; dataset, unknown fields, and local model paths are omitted",
@@ -8457,11 +9593,25 @@
                             },
                             "version": {
                               "description": "Ultralytics version",
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "docs": {
                               "description": "Model documentation URL",
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "startedAt": {
                               "type": "string",
@@ -8474,10 +9624,17 @@
                               "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                             },
                             "classNames": {
-                              "type": "array",
-                              "items": {
-                                "type": "string"
-                              }
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "metrics": {
                               "type": "object",
@@ -8536,8 +9693,15 @@
                             },
                             "plots": {
                               "description": "Validation plots",
-                              "type": "array",
-                              "items": {}
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {}
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             },
                             "trainingError": {
                               "type": "object",
@@ -8645,21 +9809,29 @@
                             },
                             "projectLicense": {
                               "description": "Parent project license",
-                              "type": "string",
-                              "enum": [
-                                "None",
-                                "Apache-2.0",
-                                "MIT",
-                                "BSD-3-Clause",
-                                "AGPL-3.0",
-                                "GPL-3.0",
-                                "LGPL-3.0",
-                                "MPL-2.0",
-                                "EUPL-1.1",
-                                "Unlicense",
-                                "CC0-1.0",
-                                "Ultralytics-Enterprise",
-                                "Other"
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "enum": [
+                                    "None",
+                                    "Apache-2.0",
+                                    "MIT",
+                                    "BSD-3-Clause",
+                                    "AGPL-3.0",
+                                    "GPL-3.0",
+                                    "LGPL-3.0",
+                                    "MPL-2.0",
+                                    "EUPL-1.1",
+                                    "Unlicense",
+                                    "CC0-1.0",
+                                    "Ultralytics-Enterprise",
+                                    "Other"
+                                  ],
+                                  "description": "License"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             }
                           },
@@ -11884,13 +13056,34 @@
                                       "type": "string"
                                     },
                                     "epochs": {
-                                      "type": "number"
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
                                     },
                                     "batch": {
-                                      "type": "number"
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
                                     },
                                     "imgsz": {
-                                      "type": "number"
+                                      "anyOf": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
                                     }
                                   },
                                   "additionalProperties": false
@@ -13246,7 +14439,14 @@
                           },
                           "statusMessage": {
                             "description": "Status details",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "region": {
                             "type": "string",
@@ -13636,7 +14836,14 @@
                         },
                         "statusMessage": {
                           "description": "Status details",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
                         "region": {
                           "type": "string",
@@ -15538,6 +16745,10 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Stable transaction identifier"
+                          },
                           "type": {
                             "type": "string",
                             "description": "Transaction type"
@@ -15551,6 +16762,21 @@
                             "description": "Balance after transaction"
                           },
                           "modelId": {
+                            "type": "string"
+                          },
+                          "datasetId": {
+                            "type": "string"
+                          },
+                          "apiKeyId": {
+                            "type": "string"
+                          },
+                          "runId": {
+                            "type": "string"
+                          },
+                          "gpuType": {
+                            "type": "string"
+                          },
+                          "gpuDisplayName": {
                             "type": "string"
                           },
                           "period": {
@@ -15588,6 +16814,20 @@
                                   },
                                   "username": {
                                     "type": "string"
+                                  },
+                                  "datasetId": {
+                                    "type": "string"
+                                  },
+                                  "gpuType": {
+                                    "type": "string"
+                                  },
+                                  "gpuDisplayName": {
+                                    "type": "string"
+                                  },
+                                  "startedAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
                                   }
                                 },
                                 "required": [
@@ -15605,6 +16845,7 @@
                           }
                         },
                         "required": [
+                          "id",
                           "type",
                           "amountCents",
                           "balanceAfter",
@@ -16670,11 +17911,18 @@
                                 "type": "string"
                               },
                               "metadata": {
-                                "type": "object",
-                                "propertyNames": {
-                                  "type": "string"
-                                },
-                                "additionalProperties": {}
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               },
                               "timestamp": {
                                 "type": "string",
@@ -16829,11 +18077,18 @@
                                 "type": "string"
                               },
                               "metadata": {
-                                "type": "object",
-                                "propertyNames": {
-                                  "type": "string"
-                                },
-                                "additionalProperties": {}
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
                               },
                               "timestamp": {
                                 "type": "string",
@@ -17204,7 +18459,14 @@
                             "type": "string"
                           },
                           "description": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "username": {
                             "type": "string"
@@ -17221,7 +18483,14 @@
                             "type": "string"
                           },
                           "iconLetter": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "iconImage": {
                             "type": "string"
@@ -17285,7 +18554,14 @@
                             "type": "string"
                           },
                           "description": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "username": {
                             "type": "string"
@@ -17304,15 +18580,29 @@
                             "maximum": 9007199254740991
                           },
                           "classCount": {
-                            "type": "integer",
-                            "minimum": -9007199254740991,
-                            "maximum": 9007199254740991
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "classNames": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "classColors": {
                             "type": "object",
@@ -17340,10 +18630,17 @@
                             "type": "number"
                           },
                           "tags": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                            "anyOf": [
+                              {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "splits": {
                             "type": "object",
@@ -17377,13 +18674,20 @@
                             "description": "Dataset split statistics"
                           },
                           "kptShape": {
-                            "type": "array",
-                            "prefixItems": [
+                            "anyOf": [
                               {
-                                "type": "number"
+                                "type": "array",
+                                "prefixItems": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "number"
+                                  }
+                                ]
                               },
                               {
-                                "type": "number"
+                                "type": "null"
                               }
                             ]
                           },
@@ -20215,13 +21519,15 @@
                     "available": {
                       "type": "boolean"
                     },
-                    "username": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "suggestion": {
                       "type": "string"
                     }
                   },
                   "required": [
-                    "available",
-                    "username"
+                    "available"
                   ],
                   "additionalProperties": false
                 }

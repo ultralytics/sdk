@@ -41,6 +41,7 @@ class Models:
         project_id: str | None = None,
         username: str | None = None,
         project_slug: str | None = None,
+        slug: str | None = None,
         limit: float | None = None,
         fields: str | None = None,
         ids: str | None = None,
@@ -50,9 +51,10 @@ class Models:
         Returns models for a project. Specify the project by name or ID.
 
         Args:
-            project_id (str, optional): Project name or ID
+            project_id (str, optional): Project name or ID; required when listing models
             username (str, optional): Project owner's username (for browsing other users' public models)
             project_slug (str, optional): Project name, e.g. `my-project` (use with username)
+            slug (str, optional): Model name (use with username and projectSlug for a single-model lookup)
             limit (float, optional): Number of results to return (default 20, max 100)
             fields (str, optional): Response detail level: 'summary' or 'charts'
             ids (str, optional): Comma-separated model IDs to return
@@ -73,6 +75,7 @@ class Models:
                     *_query_parameter("projectId", project_id, style="form", explode=True),
                     *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("projectSlug", project_slug, style="form", explode=True),
+                    *_query_parameter("slug", slug, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                     *_query_parameter("fields", fields, style="form", explode=True),
                     *_query_parameter("ids", ids, style="form", explode=True),
@@ -564,6 +567,7 @@ class AsyncModels:
         project_id: str | None = None,
         username: str | None = None,
         project_slug: str | None = None,
+        slug: str | None = None,
         limit: float | None = None,
         fields: str | None = None,
         ids: str | None = None,
@@ -573,9 +577,10 @@ class AsyncModels:
         Returns models for a project. Specify the project by name or ID.
 
         Args:
-            project_id (str, optional): Project name or ID
+            project_id (str, optional): Project name or ID; required when listing models
             username (str, optional): Project owner's username (for browsing other users' public models)
             project_slug (str, optional): Project name, e.g. `my-project` (use with username)
+            slug (str, optional): Model name (use with username and projectSlug for a single-model lookup)
             limit (float, optional): Number of results to return (default 20, max 100)
             fields (str, optional): Response detail level: 'summary' or 'charts'
             ids (str, optional): Comma-separated model IDs to return
@@ -596,6 +601,7 @@ class AsyncModels:
                     *_query_parameter("projectId", project_id, style="form", explode=True),
                     *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("projectSlug", project_slug, style="form", explode=True),
+                    *_query_parameter("slug", slug, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                     *_query_parameter("fields", fields, style="form", explode=True),
                     *_query_parameter("ids", ids, style="form", explode=True),
