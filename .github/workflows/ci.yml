@@ -79,6 +79,10 @@ jobs:
         with:
           python-version: "3.14"
       - uses: ultralytics/actions/setup-uv@main
+      - name: Verify pinned OpenAPI contract
+        run: |
+          curl --fail --silent --show-error --location "$(python -c 'import json; print(json.load(open("openapi.config.json"))["upstream"])')" --output openapi.json
+          sha256sum --check openapi.sha256
       - name: Validate every read-only production endpoint
         env:
           ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}

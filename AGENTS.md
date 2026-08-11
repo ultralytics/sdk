@@ -29,6 +29,8 @@ After opening a PR:
 ## Commands
 
 ```bash
+curl --fail --silent --show-error --location "$(python3 -c 'import json; print(json.load(open("openapi.config.json"))["upstream"])')" --output openapi.json
+sha256sum --check openapi.sha256
 uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests
 uvx ruff@0.16.2 check sdk/python tests
 python3 -m compileall -q sdk/python/src
