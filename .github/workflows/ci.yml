@@ -32,6 +32,7 @@ jobs:
           # Always consume the generator from main. Never pin this to a commit SHA or tag.
           ref: main
           path: .generator
+          persist-credentials: false
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -118,10 +119,12 @@ jobs:
       - name: Apply generated changes
         id: sync
         run: |
+          sdk_changed=false
           if ! diff --recursive --brief .generator/generated/python sdk/python; then
+            sdk_changed=true
             rsync --archive --delete .generator/generated/python/ sdk/python/
           fi
-          if git diff --quiet -- openapi.json openapi.sha256 sdk/python; then
+          if [ "$sdk_changed" = false ] && git diff --quiet -- openapi.json openapi.sha256 sdk/python; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
