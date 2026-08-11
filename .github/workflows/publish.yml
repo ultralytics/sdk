@@ -89,7 +89,7 @@ jobs:
     if: needs.check.outputs.increment == 'True'
     runs-on: ubuntu-latest
     environment:
-      name: release - pypi
+      name: Release - PyPI
       url: https://pypi.org/p/ultralytics-platform
     permissions:
       id-token: write
