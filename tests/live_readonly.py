@@ -155,7 +155,7 @@ def main() -> None:
     with Platform() as sdk:
         sdk.account.retrieve_summary()
     asyncio.run(validate_async_sdk())
-    document = json.loads((ROOT / "openapi.json").read_text())
+    document = json.loads((ROOT / "docs/openapi.json").read_text())
     headers = {"Authorization": f"Bearer {os.environ['ULTRALYTICS_API_KEY']}"}
     with httpx.Client(base_url=BASE_URL, headers=headers, follow_redirects=True, timeout=30) as client:
         validate_gets(document, client)
