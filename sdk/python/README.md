@@ -5,7 +5,7 @@ Typed synchronous and asynchronous Python clients generated from the Ultralytics
 ## Installation
 
 ```bash
-uv pip install "git+https://github.com/ultralytics/sdk.git#subdirectory=sdk/python"
+uv pip install ultralytics-platform
 ```
 
 ## Usage

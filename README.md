@@ -23,10 +23,10 @@ Typed SDKs for the Ultralytics Platform API, generated from a pinned contract wi
 
 ## 🐍 Python
 
-Install directly from this repository while the first release is being validated:
+Install from PyPI:
 
 ```bash
-uv pip install "git+https://github.com/ultralytics/sdk.git#subdirectory=sdk/python"
+uv pip install ultralytics-platform
 ```
 
 Pass your [Platform API key](https://platform.ultralytics.com/settings?tab=api-keys) directly as shown below. Alternatively, set `ULTRALYTICS_API_KEY` and omit the `api_key` argument.
@@ -78,7 +78,7 @@ Platform OpenAPI contract
 
 ## 🛠️ Validation
 
-CI regenerates the Python SDK from the versioned contract with a pinned generator revision, then fails on contract mismatch or generated drift. Scheduled and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. No package is published to PyPI yet.
+CI regenerates the Python SDK from the versioned contract with a pinned generator revision, then fails on contract mismatch or generated drift. Scheduled and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. Version bumps on `main` publish `ultralytics-platform` to PyPI through trusted publishing.
 
 ## 💡 Contribute
 
