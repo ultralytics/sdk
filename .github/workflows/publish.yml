@@ -18,10 +18,11 @@ jobs:
     if: github.repository == 'ultralytics/sdk' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     outputs:
       increment: ${{ steps.check_pypi.outputs.increment }}
       current_tag: ${{ steps.check_pypi.outputs.current_tag }}
+      build_ref: ${{ steps.build_ref.outputs.ref }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
@@ -60,20 +61,16 @@ jobs:
           print(f"Local: {local_version}, PyPI: {online_version or 'Not Found'}")
           if publish:
               print('Ready to publish new version to PyPI ✅.')
-      - name: Tag and Release
+      - id: build_ref
         if: steps.check_pypi.outputs.increment == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CURRENT_TAG: ${{ steps.check_pypi.outputs.current_tag }}
+          CURRENT_SHA: ${{ github.sha }}
         run: |
-          if [ -z "$(git ls-remote --tags origin "refs/tags/$CURRENT_TAG")" ]; then
-            git config --global user.name "UltralyticsAssistant"
-            git config --global user.email "web@ultralytics.com"
-            git tag -a "$CURRENT_TAG" -m "$(git log -1 --pretty=%B)"
-            git push origin "$CURRENT_TAG"
-          fi
-          if ! gh release view "$CURRENT_TAG" >/dev/null 2>&1; then
-            gh release create "$CURRENT_TAG" --verify-tag --generate-notes --title "$CURRENT_TAG - $(git log -1 --pretty=%s)"
+          if git ls-remote --exit-code --tags origin "refs/tags/$CURRENT_TAG" >/dev/null 2>&1; then
+            echo "ref=$CURRENT_TAG" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=$CURRENT_SHA" >> "$GITHUB_OUTPUT"
           fi
 
   build:
@@ -85,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          ref: ${{ needs.check.outputs.current_tag }}
+          ref: ${{ needs.check.outputs.build_ref }}
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.14"
@@ -97,8 +94,33 @@ jobs:
           path: sdk/python/dist/
       - run: uv cache prune --ci
 
-  publish:
+  release:
     needs: [check, build]
+    if: needs.check.outputs.increment == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.check.outputs.build_ref }}
+      - name: Tag and Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_TAG: ${{ needs.check.outputs.current_tag }}
+        run: |
+          if ! git ls-remote --exit-code --tags origin "refs/tags/$CURRENT_TAG" >/dev/null 2>&1; then
+            git config --global user.name "UltralyticsAssistant"
+            git config --global user.email "web@ultralytics.com"
+            git tag -a "$CURRENT_TAG" -m "$(git log -1 --pretty=%B)"
+            git push origin "$CURRENT_TAG"
+          fi
+          if ! gh release view "$CURRENT_TAG" >/dev/null 2>&1; then
+            gh release create "$CURRENT_TAG" --verify-tag --generate-notes --title "$CURRENT_TAG - $(git log -1 --pretty=%s)"
+          fi
+
+  publish:
+    needs: [check, release]
     if: needs.check.outputs.increment == 'true'
     runs-on: ubuntu-latest
     environment:
