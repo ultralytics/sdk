@@ -5,9 +5,6 @@
   "apiKey": {
     "environment": "ULTRALYTICS_API_KEY"
   },
-  "docs": {
-    "basePath": "/api/docs"
-  },
   "header": "Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license",
   "license": {
     "id": "AGPL-3.0-only",

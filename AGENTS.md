@@ -29,6 +29,8 @@ After opening a PR:
 ## Commands
 
 ```bash
+curl --fail --silent --show-error --location "$(python3 -c 'import json; print(json.load(open("openapi.config.json"))["upstream"])')" --output openapi.json
+sha256sum --check openapi.sha256
 uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests
 uvx ruff@0.16.2 check sdk/python tests
 python3 -m compileall -q sdk/python/src
@@ -36,11 +38,11 @@ uv build sdk/python
 uv run --with pytest --with ./sdk/python pytest tests -v
 ```
 
-CI checks Python 3.11 and 3.14 on Ubuntu. It downloads the pinned Platform contract, verifies `openapi.sha256`, regenerates both outputs with the pinned `ultralytics/openapi` revision, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install.
+CI checks Python 3.11 and 3.14 on Ubuntu. It downloads the pinned Platform contract, verifies `openapi.sha256`, regenerates the Python output with the pinned `ultralytics/openapi` revision, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install.
 
 ## Architecture
 
-This repository contains generated SDKs and static API documentation for Ultralytics products. `openapi.config.json` defines the consumer configuration, while `openapi.sha256` pins the contract fetched from its upstream owner. `docs/` and `sdk/python/` are generated descendants and must never be edited manually; change the contract, consumer configuration, or generic generator instead, then regenerate. `tests/` owns focused consumer-level wire checks. `format.yml` runs Ultralytics Actions on pull requests, and `ci.yml` owns deterministic regeneration and package validation. PyPI publishing is intentionally disabled during initial validation.
+This repository contains generated SDKs for Ultralytics products. `openapi.config.json` defines the consumer configuration, while `openapi.sha256` pins the contract fetched from its upstream owner. `sdk/python/` is a generated descendant and must never be edited manually; change the contract, consumer configuration, or generic generator instead, then regenerate. `tests/` owns focused consumer-level wire checks. `format.yml` runs Ultralytics Actions on pull requests, and `ci.yml` owns deterministic regeneration and package validation. PyPI publishing is intentionally disabled during initial validation.
 
 ## Conventions
 

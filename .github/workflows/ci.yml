@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: ultralytics/openapi
-          ref: ee26dcd3c1c60eb06098b5d6851146705dc5b710
+          ref: dabe398bf5c2277d70e5c5808362b17cbcb814ee
           path: .generator
 
       - uses: oven-sh/setup-bun@v2
@@ -47,20 +47,17 @@ jobs:
           curl --fail --silent --show-error --location "$(python -c 'import json; print(json.load(open("openapi.config.json"))["upstream"])')" --output openapi.json
           sha256sum --check openapi.sha256
 
-      - name: Regenerate docs and Python SDK
+      - name: Regenerate Python SDK
         working-directory: .generator
         env:
           OPENAPI_CONFIG: ${{ github.workspace }}/openapi.config.json
         run: |
           bun install --frozen-lockfile
           bun run generate
-          bun run build
 
       - name: Check generated drift
         run: |
           diff --recursive --unified sdk/python .generator/generated/python
-          find .generator/out -type d -empty -delete
-          diff --recursive --unified docs .generator/out
 
       - name: Validate Python SDK
         run: |
@@ -82,6 +79,10 @@ jobs:
         with:
           python-version: "3.14"
       - uses: ultralytics/actions/setup-uv@main
+      - name: Verify pinned OpenAPI contract
+        run: |
+          curl --fail --silent --show-error --location "$(python -c 'import json; print(json.load(open("openapi.config.json"))["upstream"])')" --output openapi.json
+          sha256sum --check openapi.sha256
       - name: Validate every read-only production endpoint
         env:
           ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}

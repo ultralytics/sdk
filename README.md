@@ -11,11 +11,11 @@
 [![Ultralytics Forums](https://img.shields.io/discourse/users?server=https%3A%2F%2Fcommunity.ultralytics.com&logo=discourse&label=Forums&color=blue)](https://community.ultralytics.com)
 [![Ultralytics Reddit](https://img.shields.io/reddit/subreddit-subscribers/ultralytics?style=flat&logo=reddit&logoColor=white&label=Reddit&color=blue)](https://reddit.com/r/ultralytics)
 
-Typed SDKs and interactive documentation for the Ultralytics Platform API. Every output is generated from the same pinned OpenAPI contract with [Ultralytics OpenAPI](https://github.com/ultralytics/openapi).
+Typed SDKs for the Ultralytics Platform API, generated from a pinned contract with [Ultralytics OpenAPI](https://github.com/ultralytics/openapi). The [interactive API reference](https://platform.ultralytics.com/api/docs) renders the live contract directly and includes Python SDK examples.
 
 | Output                        | Status      |
 | ----------------------------- | ----------- |
-| Interactive API documentation | Available   |
+| [Interactive API reference](https://platform.ultralytics.com/api/docs) | Available   |
 | Python SDK                    | Available   |
 | TypeScript SDK                | Coming soon |
 | Go SDK                        | Coming soon |
@@ -66,19 +66,18 @@ Platform owns the API contract. This repository pins that contract and commits o
 
 ```text
 Platform OpenAPI contract
-    ├── docs/          # Static interactive API reference
     └── sdk/
-        ├── python/  # ultralytics-platform
-        ├── typescript/ (coming soon)
-        ├── go/         (coming soon)
-        └── java/       (coming soon)
+        ├── python/     # ultralytics-platform
+        ├── typescript/ # coming soon
+        ├── go/         # coming soon
+        └── java/       # coming soon
 ```
 
 `openapi.config.json` contains product and package configuration. `openapi.sha256` pins the exact consumed contract. Generated files are never edited manually; update the contract, configuration, or generator and regenerate.
 
 ## 🛠️ Validation
 
-CI regenerates the docs and Python SDK with a pinned generator revision, then fails on contract mismatch or generated drift. It also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. No package is published to PyPI yet.
+CI regenerates the Python SDK with a pinned generator revision, then fails on contract mismatch or generated drift. It also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. No package is published to PyPI yet.
 
 ## 💡 Contribute
 
@@ -90,7 +89,7 @@ API shape changes belong in the Platform OpenAPI contract; generated files in th
 
 ## 📄 License
 
-- **AGPL-3.0 License**: The generated SDKs and documentation are licensed under the [AGPL-3.0 License](LICENSE).
+- **AGPL-3.0 License**: The generated SDKs are licensed under the [AGPL-3.0 License](LICENSE).
 - **Enterprise License**: Commercial licensing is available separately through [Ultralytics Licensing](https://www.ultralytics.com/license).
 
 ## 📫 Contact

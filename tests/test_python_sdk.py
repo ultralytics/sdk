@@ -54,7 +54,7 @@ def operations(client: Platform | AsyncPlatform) -> list[Any]:
 
 
 def expected_requests() -> list[tuple[str, str]]:
-    document = json.loads((ROOT / "docs/openapi.json").read_text())
+    document = json.loads((ROOT / "openapi.json").read_text())
     return sorted(
         (method.upper(), re.sub(r"\{[^}]+\}", "test", path))
         for path, path_item in document["paths"].items()
