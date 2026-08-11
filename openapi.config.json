@@ -17,6 +17,7 @@
     "install": "uv pip install ultralytics-platform",
     "package": "ultralytics_platform",
     "project": "ultralytics-platform",
+    "readme": "README.python.md",
     "version": "0.0.1"
   }
 }

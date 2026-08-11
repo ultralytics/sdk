@@ -6,24 +6,25 @@
 
 [![Ultralytics Actions](https://github.com/ultralytics/sdk/actions/workflows/format.yml/badge.svg)](https://github.com/ultralytics/sdk/actions/workflows/format.yml)
 [![CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ultralytics/sdk/actions/workflows/ci.yml)
+[![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-platform?logo=pypi&logoColor=white)](https://pypi.org/project/ultralytics-platform/) [![Ultralytics Downloads](https://static.pepy.tech/badge/ultralytics-platform)](https://clickpy.clickhouse.com/dashboard/ultralytics-platform) [![Python >=3.11](https://img.shields.io/badge/python-%E2%89%A53.11-blue?logo=python&logoColor=gold)](https://pypi.org/project/ultralytics-platform/)
 
 [![Ultralytics Discord](https://img.shields.io/discord/1089800235347353640?logo=discord&logoColor=white&label=Discord&color=blue)](https://discord.com/invite/ultralytics)
 [![Ultralytics Forums](https://img.shields.io/discourse/users?server=https%3A%2F%2Fcommunity.ultralytics.com&logo=discourse&label=Forums&color=blue)](https://community.ultralytics.com)
 [![Ultralytics Reddit](https://img.shields.io/reddit/subreddit-subscribers/ultralytics?style=flat&logo=reddit&logoColor=white&label=Reddit&color=blue)](https://reddit.com/r/ultralytics)
 
-Typed SDKs for the Ultralytics Platform API, generated from a pinned contract with [Ultralytics OpenAPI](https://github.com/ultralytics/openapi). The [interactive API reference](https://platform.ultralytics.com/api/docs) renders the live contract directly and includes Python SDK examples.
+Typed SDKs for the [Ultralytics Platform API](https://platform.ultralytics.com), generated from a pinned contract with [Ultralytics OpenAPI](https://github.com/ultralytics/openapi). The [interactive API reference](https://platform.ultralytics.com/api/docs) renders the live contract directly and includes Python SDK examples.
 
 | Output                        | Status      |
 | ----------------------------- | ----------- |
 | [Interactive API reference](https://platform.ultralytics.com/api/docs) | Available   |
-| Python SDK                    | Available   |
+| [Python SDK](https://pypi.org/project/ultralytics-platform/) | Available   |
 | TypeScript SDK                | Coming soon |
 | Go SDK                        | Coming soon |
 | Java SDK                      | Coming soon |
 
 ## 🐍 Python
 
-Install from PyPI:
+Install [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) from PyPI in a [**Python >=3.11**](https://www.python.org/) environment:
 
 ```bash
 uv pip install ultralytics-platform
@@ -62,11 +63,12 @@ The package includes typed responses, multipart uploads, retries for temporary f
 
 ## 🧩 One Contract, Multiple Outputs
 
-Platform owns the API contract. This repository pins a versioned snapshot with its generated descendants:
+[Ultralytics Platform](https://platform.ultralytics.com) owns the API contract. This repository pins a versioned snapshot with its generated descendants:
 
 ```text
 Platform OpenAPI contract
-    ├── openapi.json # Versioned contract snapshot
+    ├── openapi.json      # Versioned contract snapshot
+    ├── README.python.md  # Python package README source
     └── sdk/
         ├── python/     # ultralytics-platform
         ├── typescript/ # coming soon
@@ -74,11 +76,11 @@ Platform OpenAPI contract
         └── java/       # coming soon
 ```
 
-`openapi.config.json` contains product and package configuration. `openapi.json` and `openapi.sha256` pin the exact consumed contract. Generated files are never edited manually; update the contract snapshot, configuration, or generator and regenerate.
+`openapi.config.json` contains product and package configuration, including the source path for `README.python.md`. `openapi.json` and `openapi.sha256` pin the exact consumed contract. Generated files are never edited manually; update the contract snapshot, configuration, package README source, or generator and regenerate.
 
 ## 🛠️ Validation
 
-CI regenerates the Python SDK from the versioned contract with a pinned generator revision, then fails on contract mismatch or generated drift. Scheduled and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. Version bumps on `main` publish `ultralytics-platform` to PyPI through trusted publishing.
+[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) regenerates the Python SDK from the versioned contract with a pinned generator revision, then fails on contract mismatch or generated drift. Scheduled and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. Version bumps on `main` publish [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) to PyPI through trusted publishing.
 
 ## 💡 Contribute
 
