@@ -11,25 +11,25 @@
 [![Ultralytics Forums](https://img.shields.io/discourse/users?server=https%3A%2F%2Fcommunity.ultralytics.com&logo=discourse&label=Forums&color=blue)](https://community.ultralytics.com)
 [![Ultralytics Reddit](https://img.shields.io/reddit/subreddit-subscribers/ultralytics?style=flat&logo=reddit&logoColor=white&label=Reddit&color=blue)](https://reddit.com/r/ultralytics)
 
-Typed SDKs and interactive documentation for the Ultralytics Platform API. Every output is generated from the same pinned OpenAPI contract with [Ultralytics OpenAPI](https://github.com/ultralytics/openapi).
+Ultralytics Platform API 的类型化 SDK 和交互式文档。所有输出均使用 [Ultralytics OpenAPI](https://github.com/ultralytics/openapi)，从同一份固定版本的 OpenAPI 契约生成。
 
-| Output                        | Status      |
-| ----------------------------- | ----------- |
-| Interactive API documentation | Available   |
-| Python SDK                    | Available   |
-| TypeScript SDK                | Coming soon |
-| Go SDK                        | Coming soon |
-| Java SDK                      | Coming soon |
+| 输出 | 状态 |
+| --- | --- |
+| 交互式 API 文档 | 已可用 |
+| Python SDK | 已可用 |
+| TypeScript SDK | 即将推出 |
+| Go SDK | 即将推出 |
+| Java SDK | 即将推出 |
 
 ## 🐍 Python
 
-Install directly from this repository while the first release is being validated:
+首个版本验证期间，可直接从此仓库安装：
 
 ```bash
 uv pip install "git+https://github.com/ultralytics/sdk.git#subdirectory=sdk/python"
 ```
 
-Set `ULTRALYTICS_API_KEY`, then use the synchronous client:
+设置 `ULTRALYTICS_API_KEY`，然后使用同步客户端：
 
 ```python
 from ultralytics_platform import Platform
@@ -42,7 +42,7 @@ with Platform() as client:
     deployment = client.deployments.create(model_id="model_id", name="production", region="us-central1")
 ```
 
-The asynchronous client exposes the same resource tree:
+异步客户端提供相同的资源树：
 
 ```python
 import asyncio
@@ -58,44 +58,44 @@ async def main():
 asyncio.run(main())
 ```
 
-The package includes typed responses, multipart uploads, retries for temporary failures, structured API errors, custom HTTP clients, and context-manager cleanup. It requires Python 3.11 or newer.
+该包包含类型化响应、多部分上传、临时故障重试、结构化 API 错误、自定义 HTTP 客户端以及上下文管理器清理功能。它需要 Python 3.11 或更高版本。
 
-## 🧩 One Contract, Multiple Outputs
+## 🧩 一份契约，多种输出
 
-Platform owns the API contract. This repository pins that contract and commits only generated descendants:
+Platform 拥有 API 契约。此仓库固定该契约的版本，并仅提交生成的派生文件：
 
 ```text
-Platform OpenAPI contract
-    ├── docs/          # Static interactive API reference
+Platform OpenAPI 契约
+    ├── docs/          # 静态交互式 API 参考
     └── sdk/
-        ├── python/  # ultralytics-platform
-        ├── typescript/ (coming soon)
-        ├── go/         (coming soon)
-        └── java/       (coming soon)
+        ├── python/     # ultralytics-platform
+        ├── typescript/（即将推出）
+        ├── go/        （即将推出）
+        └── java/      （即将推出）
 ```
 
-`openapi.config.json` contains product and package configuration. `openapi.sha256` pins the exact consumed contract. Generated files are never edited manually; update the contract, configuration, or generator and regenerate.
+`openapi.config.json` 包含产品和软件包配置。`openapi.sha256` 固定所使用契约的确切版本。切勿手动编辑生成的文件；请更新契约、配置或生成器，然后重新生成。
 
-## 🛠️ Validation
+## 🛠️ 验证
 
-CI regenerates the docs and Python SDK with a pinned generator revision, then fails on contract mismatch or generated drift. It also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. No package is published to PyPI yet.
+CI 使用固定版本的生成器重新生成文档和 Python SDK，并在契约不匹配或生成内容漂移时失败。它还会格式化和检查 Python、编译软件包、构建 wheel、通过 Git 子目录边界进行安装，并使用模拟传输测试具有代表性的同步和异步请求。目前尚未向 PyPI 发布任何软件包。
 
-## 💡 Contribute
+## 💡 贡献
 
-Ultralytics thrives on community collaboration, and we deeply value your contributions! Please see our [Contributing Guide](https://docs.ultralytics.com/help/contributing) for details on how you can get involved. We also encourage you to share your feedback through our [Survey](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey). A huge thank you 🙏 to all our contributors!
+Ultralytics 因社区协作而蓬勃发展，我们非常重视您的贡献！请参阅[贡献指南](https://docs.ultralytics.com/zh/help/contributing)，了解参与方式。我们也欢迎您通过[问卷调查](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey)分享反馈。衷心感谢 🙏 所有贡献者！
 
-API shape changes belong in the Platform OpenAPI contract; generated files in this repository should not be edited directly.
+API 结构变更应在 Platform OpenAPI 契约中完成；不应直接编辑此仓库中的生成文件。
 
-[![Ultralytics open-source contributors](https://raw.githubusercontent.com/ultralytics/assets/main/im/image-contributors.png)](https://github.com/ultralytics/sdk/graphs/contributors)
+[![Ultralytics 开源贡献者](https://raw.githubusercontent.com/ultralytics/assets/main/im/image-contributors.png)](https://github.com/ultralytics/sdk/graphs/contributors)
 
-## 📄 License
+## 📄 许可证
 
-- **AGPL-3.0 License**: The generated SDKs and documentation are licensed under the [AGPL-3.0 License](LICENSE).
-- **Enterprise License**: Commercial licensing is available separately through [Ultralytics Licensing](https://www.ultralytics.com/license).
+- **AGPL-3.0 许可证**：生成的 SDK 和文档采用 [AGPL-3.0 许可证](LICENSE)。
+- **企业许可证**：商业许可证可通过 [Ultralytics Licensing](https://www.ultralytics.com/license) 单独获取。
 
-## 📫 Contact
+## 📫 联系我们
 
-For bug reports or feature suggestions related to Ultralytics SDKs, please submit an issue via [GitHub Issues](https://github.com/ultralytics/sdk/issues). Join our [Discord](https://discord.com/invite/ultralytics) community for discussions and support!
+如需报告与 Ultralytics SDK 相关的错误或提出功能建议，请通过 [GitHub Issues](https://github.com/ultralytics/sdk/issues) 提交。欢迎加入我们的 [Discord](https://discord.com/invite/ultralytics) 社区参与讨论并获取支持！
 
 <br>
 <div align="center">
