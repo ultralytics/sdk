@@ -62,10 +62,11 @@ asyncio.run(main())
 
 ## 🧩 一份契约，多种输出
 
-Platform 拥有 API 契约。此仓库固定该契约的版本，并仅提交生成的派生文件：
+Platform 拥有 API 契约。此仓库固定契约快照的版本，并将其与生成的派生文件一起提交：
 
 ```text
 Platform OpenAPI 契约
+    ├── openapi.json # 版本化的契约快照
     └── sdk/
         ├── python/     # ultralytics-platform
         ├── typescript/（即将推出）
@@ -73,11 +74,11 @@ Platform OpenAPI 契约
         └── java/      （即将推出）
 ```
 
-`openapi.config.json` 包含产品和软件包配置。`openapi.sha256` 固定所使用契约的确切版本。切勿手动编辑生成的文件；请更新契约、配置或生成器，然后重新生成。
+`openapi.config.json` 包含产品和软件包配置。`openapi.json` 和 `openapi.sha256` 固定所使用契约的确切版本。切勿手动编辑生成的文件；请更新契约快照、配置或生成器，然后重新生成。
 
 ## 🛠️ 验证
 
-CI 使用固定版本的生成器重新生成 Python SDK，并在契约不匹配或生成内容漂移时失败。它还会格式化和检查 Python、编译软件包、构建 wheel、通过 Git 子目录边界进行安装，并使用模拟传输测试具有代表性的同步和异步请求。目前尚未向 PyPI 发布任何软件包。
+CI 使用版本化的契约和固定版本的生成器重新生成 Python SDK，并在契约不匹配或生成内容漂移时失败。计划任务和手动运行会检测上游契约变更，而不会中断无关的拉取请求。CI 还会格式化和检查 Python、编译软件包、构建 wheel、通过 Git 子目录边界进行安装，并使用模拟传输测试具有代表性的同步和异步请求。目前尚未向 PyPI 发布任何软件包。
 
 ## 💡 贡献
 

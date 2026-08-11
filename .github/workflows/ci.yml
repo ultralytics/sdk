@@ -43,9 +43,7 @@ jobs:
       - uses: ultralytics/actions/setup-uv@main
 
       - name: Verify pinned OpenAPI contract
-        run: |
-          curl --fail --silent --show-error --location "$(python -c 'import json; print(json.load(open("openapi.config.json"))["upstream"])')" --output openapi.json
-          sha256sum --check openapi.sha256
+        run: sha256sum --check openapi.sha256
 
       - name: Regenerate Python SDK
         working-directory: .generator

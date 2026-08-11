@@ -62,10 +62,11 @@ The package includes typed responses, multipart uploads, retries for temporary f
 
 ## 🧩 One Contract, Multiple Outputs
 
-Platform owns the API contract. This repository pins that contract and commits only generated descendants:
+Platform owns the API contract. This repository pins a versioned snapshot with its generated descendants:
 
 ```text
 Platform OpenAPI contract
+    ├── openapi.json # Versioned contract snapshot
     └── sdk/
         ├── python/     # ultralytics-platform
         ├── typescript/ # coming soon
@@ -73,11 +74,11 @@ Platform OpenAPI contract
         └── java/       # coming soon
 ```
 
-`openapi.config.json` contains product and package configuration. `openapi.sha256` pins the exact consumed contract. Generated files are never edited manually; update the contract, configuration, or generator and regenerate.
+`openapi.config.json` contains product and package configuration. `openapi.json` and `openapi.sha256` pin the exact consumed contract. Generated files are never edited manually; update the contract snapshot, configuration, or generator and regenerate.
 
 ## 🛠️ Validation
 
-CI regenerates the Python SDK with a pinned generator revision, then fails on contract mismatch or generated drift. It also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. No package is published to PyPI yet.
+CI regenerates the Python SDK from the versioned contract with a pinned generator revision, then fails on contract mismatch or generated drift. Scheduled and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. No package is published to PyPI yet.
 
 ## 💡 Contribute
 
