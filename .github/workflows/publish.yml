@@ -112,17 +112,5 @@ jobs:
           name: dist
           path: dist/
       - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1.14
-        id: publish
-        continue-on-error: true
-        with:
-          skip-existing: true
-      - name: Clean partial attestations
-        if: steps.publish.outcome == 'failure'
-        run: |
-          rm -f dist/*.publish.attestation
-          sleep 30
-      - name: Retry publish
-        if: steps.publish.outcome == 'failure'
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1.14
         with:
           skip-existing: true
