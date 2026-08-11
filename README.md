@@ -45,10 +45,17 @@ with Platform() as client:
 The asynchronous client exposes the same resource tree:
 
 ```python
+import asyncio
+
 from ultralytics_platform import AsyncPlatform
 
-async with AsyncPlatform() as client:
-    datasets = await client.datasets.list()
+
+async def main():
+    async with AsyncPlatform() as client:
+        datasets = await client.datasets.list()
+
+
+asyncio.run(main())
 ```
 
 The package includes typed responses, multipart uploads, retries for temporary failures, structured API errors, custom HTTP clients, and context-manager cleanup. It requires Python 3.11 or newer.
@@ -83,10 +90,8 @@ API shape changes belong in the Platform OpenAPI contract; generated files in th
 
 ## 📄 License
 
-Ultralytics offers two licensing options:
-
-- **AGPL-3.0 License**: An [OSI-approved](https://opensource.org/license/agpl-3.0) open-source license ideal for students, researchers, and enthusiasts who value open collaboration. See the [LICENSE](LICENSE) file for details.
-- **Enterprise License**: Designed for commercial use, this license allows integrating Ultralytics software and AI models into commercial products without AGPL-3.0's open-source requirements. For enterprise solutions, contact [Ultralytics Licensing](https://www.ultralytics.com/license).
+- **AGPL-3.0 License**: The generated SDKs and documentation are licensed under the [AGPL-3.0 License](LICENSE).
+- **Enterprise License**: Commercial licensing is available separately through [Ultralytics Licensing](https://www.ultralytics.com/license).
 
 ## 📫 Contact
 

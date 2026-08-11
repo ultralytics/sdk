@@ -45,10 +45,17 @@ with Platform() as client:
 异步客户端提供相同的资源树：
 
 ```python
+import asyncio
+
 from ultralytics_platform import AsyncPlatform
 
-async with AsyncPlatform() as client:
-    datasets = await client.datasets.list()
+
+async def main():
+    async with AsyncPlatform() as client:
+        datasets = await client.datasets.list()
+
+
+asyncio.run(main())
 ```
 
 该包包含类型化响应、多部分上传、临时故障重试、结构化 API 错误、自定义 HTTP 客户端以及上下文管理器清理功能。它需要 Python 3.11 或更高版本。
@@ -83,10 +90,8 @@ API 结构变更应在 Platform OpenAPI 契约中完成；不应直接编辑此�
 
 ## 📄 许可证
 
-Ultralytics 提供两种许可证选项：
-
-- **AGPL-3.0 许可证**：经 [OSI 认证](https://opensource.org/license/agpl-3.0)的开源许可证，适合重视开放协作的学生、研究人员和爱好者。详情请参阅 [LICENSE](LICENSE) 文件。
-- **企业许可证**：专为商业用途设计，允许将 Ultralytics 软件和 AI 模型集成到商业产品中，而无需遵循 AGPL-3.0 的开源要求。如需企业解决方案，请联系 [Ultralytics Licensing](https://www.ultralytics.com/license)。
+- **AGPL-3.0 许可证**：生成的 SDK 和文档采用 [AGPL-3.0 许可证](LICENSE)。
+- **企业许可证**：商业许可证可通过 [Ultralytics Licensing](https://www.ultralytics.com/license) 单独获取。
 
 ## 📫 联系我们
 
