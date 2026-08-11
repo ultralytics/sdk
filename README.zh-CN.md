@@ -29,7 +29,7 @@ Ultralytics Platform API 的类型化 SDK，使用 [Ultralytics OpenAPI](https:/
 uv pip install "git+https://github.com/ultralytics/sdk.git#subdirectory=sdk/python"
 ```
 
-将 API 密钥直接传递给同步客户端：
+如下所示，您可以直接传递 API 密钥。或者，设置 `ULTRALYTICS_API_KEY` 并省略 `api_key` 参数。
 
 ```python
 from ultralytics_platform import Platform
