@@ -67,7 +67,7 @@ asyncio.run(main())
 
 ## 📄 License
 
-This SDK is licensed under the [AGPL-3.0 License](LICENSE). Commercial licensing is available through [Ultralytics Licensing](https://www.ultralytics.com/license).
+This SDK is licensed under the [AGPL-3.0 License](https://spdx.org/licenses/AGPL-3.0-only.html). Commercial licensing is available through [Ultralytics Licensing](https://www.ultralytics.com/license).
 
 ## 🤝 Community
 

@@ -41,7 +41,7 @@ CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform con
 
 ## Architecture
 
-This repository contains generated SDKs for Ultralytics products. `openapi.config.json` defines the consumer configuration, while the versioned `openapi.json` snapshot and `openapi.sha256` pin the exact contract consumed by CI. `sdk/python/` is a generated descendant and must never be edited manually; update the contract snapshot, consumer configuration, or generic generator and regenerate. `tests/` owns focused consumer-level wire checks. `format.yml` runs Ultralytics Actions on pull requests, and `ci.yml` owns deterministic regeneration, upstream drift detection, and package validation. PyPI publishing is intentionally disabled during initial validation.
+This repository contains generated SDKs for Ultralytics products. `openapi.config.json` defines the consumer configuration, while the versioned `openapi.json` snapshot and `openapi.sha256` pin the exact contract consumed by CI. `sdk/python/` is a generated descendant and must never be edited manually; update the contract snapshot, consumer configuration, or generic generator and regenerate. `tests/` owns focused consumer-level wire checks. `format.yml` runs Ultralytics Actions on pull requests, `ci.yml` owns deterministic regeneration, upstream drift detection, and package validation, and `publish.yml` owns version-gated tagging, releases, and PyPI trusted publishing.
 
 ## Conventions
 

@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   check:
-    if: github.repository == 'ultralytics/sdk' && github.ref == 'refs/heads/main'
+    if: github.repository == 'ultralytics/sdk' && github.actor == 'glenn-jocher' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -52,9 +52,15 @@ jobs:
               if error.code != 404:
                   raise
               online_version = None
-          publish = online_version is None or tuple(map(int, local_version.split("."))) > tuple(
-              map(int, online_version.split("."))
-          )
+          publish = True
+          if online_version:
+              local, online = (tuple(map(int, version.split("."))) for version in (local_version, online_version))
+              major, minor, patch = (new - old for new, old in zip(local, online))
+              publish = (
+                  (major == 0 and minor == 0 and 0 < patch <= 2)
+                  or (major == 0 and minor == 1 and local[2] == 0)
+                  or (major == 1 and local[1:] == (0, 0))
+              )
           publish = publish or os.environ.get("PYPI_DISPATCH") == "true"  # manual recovery re-run
           with open(os.environ["GITHUB_OUTPUT"], "a") as output:
               output.write(f"increment={str(publish).lower()}\ncurrent_tag=v{local_version}\n")
