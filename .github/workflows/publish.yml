@@ -1,3 +1,7 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
+# Publish pip package to PyPI https://pypi.org/project/ultralytics-platform/
+
 name: Publish to PyPI
 
 on:
@@ -18,127 +22,159 @@ jobs:
     if: github.repository == 'ultralytics/sdk' && github.actor == 'glenn-jocher' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     outputs:
       increment: ${{ steps.check_pypi.outputs.increment }}
       current_tag: ${{ steps.check_pypi.outputs.current_tag }}
-      build_ref: ${{ steps.build_ref.outputs.ref }}
+      previous_tag: ${{ steps.check_pypi.outputs.previous_tag }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          python-version: "3.14"
+          python-version: "3.x"
+      - uses: ultralytics/actions/setup-uv@main
+      - run: uv pip install --system --no-cache ultralytics-actions
       - id: check_pypi
         shell: python
         env:
           PYPI_DISPATCH: ${{ github.event.inputs.pypi }}
         run: |
-          import json
           import os
-          import re
-          import tomllib
-          import urllib.error
-          import urllib.request
-
-          with open("sdk/python/pyproject.toml", "rb") as file:
-              project = tomllib.load(file)["project"]
-          local_version = project["version"]
-          if not re.fullmatch(r"\d+\.\d+\.\d+", local_version):
-              raise ValueError(f"Invalid release version: {local_version}")
-          try:
-              with urllib.request.urlopen(f"https://pypi.org/pypi/{project['name']}/json", timeout=30) as response:
-                  online_version = json.load(response)["info"]["version"]
-          except urllib.error.HTTPError as error:
-              if error.code != 404:
-                  raise
-              online_version = None
-          publish = True
-          if online_version:
-              local, online = (tuple(map(int, version.split("."))) for version in (local_version, online_version))
-              major, minor, patch = (new - old for new, old in zip(local, online))
-              publish = (
-                  (major == 0 and minor == 0 and 0 < patch <= 2)
-                  or (major == 0 and minor == 1 and local[2] == 0)
-                  or (major == 1 and local[1:] == (0, 0))
-              )
+          from actions.utils import check_pypi_version
+          local_version, online_version, publish = check_pypi_version("sdk/python/pyproject.toml")
           publish = publish or os.environ.get("PYPI_DISPATCH") == "true"  # manual recovery re-run
-          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-              output.write(f"increment={str(publish).lower()}\ncurrent_tag=v{local_version}\n")
-          print(f"Local: {local_version}, PyPI: {online_version or 'Not Found'}")
+          os.system(f'echo "increment={publish}" >> $GITHUB_OUTPUT')
+          os.system(f'echo "current_tag=v{local_version}" >> $GITHUB_OUTPUT')
+          if online_version != local_version:  # empty on recovery re-runs so summarize falls back to the true previous tag
+              os.system(f'echo "previous_tag=v{online_version}" >> $GITHUB_OUTPUT')
           if publish:
               print('Ready to publish new version to PyPI ✅.')
-      - id: build_ref
-        if: steps.check_pypi.outputs.increment == 'true'
-        env:
-          CURRENT_TAG: ${{ steps.check_pypi.outputs.current_tag }}
-          CURRENT_SHA: ${{ github.sha }}
-        run: |
-          if git ls-remote --exit-code --tags origin "refs/tags/$CURRENT_TAG" >/dev/null 2>&1; then
-            echo "ref=$CURRENT_TAG" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=$CURRENT_SHA" >> "$GITHUB_OUTPUT"
-          fi
-
-  build:
-    needs: check
-    if: needs.check.outputs.increment == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          ref: ${{ needs.check.outputs.build_ref }}
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
-        with:
-          python-version: "3.14"
-      - uses: ultralytics/actions/setup-uv@45a7a2d7c92b0d963c3a5fe7057895ad1e79ebc2
-      - run: uv build --project sdk/python
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: dist
-          path: sdk/python/dist/
-      - run: uv cache prune --ci
-
-  release:
-    needs: [check, build]
-    if: needs.check.outputs.increment == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          ref: ${{ needs.check.outputs.build_ref }}
       - name: Tag and Release
+        if: steps.check_pypi.outputs.increment == 'True'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CURRENT_TAG: ${{ needs.check.outputs.current_tag }}
+          CURRENT_TAG: ${{ steps.check_pypi.outputs.current_tag }}
+          PREVIOUS_TAG: ${{ steps.check_pypi.outputs.previous_tag }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          if ! git ls-remote --exit-code --tags origin "refs/tags/$CURRENT_TAG" >/dev/null 2>&1; then
+          if [ -z "$(git ls-remote --tags origin "refs/tags/$CURRENT_TAG")" ]; then
             git config --global user.name "UltralyticsAssistant"
             git config --global user.email "web@ultralytics.com"
             git tag -a "$CURRENT_TAG" -m "$(git log -1 --pretty=%B)"
             git push origin "$CURRENT_TAG"
           fi
           if ! gh release view "$CURRENT_TAG" >/dev/null 2>&1; then
-            gh release create "$CURRENT_TAG" --verify-tag --generate-notes --title "$CURRENT_TAG - $(git log -1 --pretty=%s)"
+            [ -n "$PREVIOUS_TAG" ] || git fetch --unshallow --tags # summarize resolves the previous tag from git history
+            ultralytics-actions-summarize-release
           fi
+          uv cache prune --ci
+
+  build:
+    needs: check
+    if: needs.check.outputs.increment == 'True'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - uses: ultralytics/actions/setup-uv@main
+      - run: uv pip install --system --no-cache build
+      - run: python -m build sdk/python
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: sdk/python/dist/
+      - run: uv cache prune --ci
 
   publish:
-    needs: [check, release]
-    if: needs.check.outputs.increment == 'true'
+    needs: [check, build]
+    if: needs.check.outputs.increment == 'True'
     runs-on: ubuntu-latest
-    environment:
+    environment: # for GitHub Deployments tab
       name: Release - PyPI
       url: https://pypi.org/p/ultralytics-platform
     permissions:
-      id-token: write
+      id-token: write # for PyPI trusted publishing
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist/
-      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1.14
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        id: publish
+        continue-on-error: true
+        with:
+          skip-existing: true # tolerate recovery re-runs after partial failures
+      - name: Clean partial attestations # leftover *.publish.attestation files make the retry fail pre-existence checks
+        if: steps.publish.outcome == 'failure'
+        run: |
+          rm -f dist/*.publish.attestation
+          sleep 30
+      - name: Retry publish # transient sigstore/Rekor or PyPI network failures
+        if: steps.publish.outcome == 'failure'
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           skip-existing: true
+
+  sbom:
+    needs: [check, build, publish]
+    if: needs.check.outputs.increment == 'True'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - uses: ultralytics/actions/setup-uv@main
+      - run: |
+          uv venv sbom-env
+          uv pip install -e sdk/python
+        env:
+          VIRTUAL_ENV: sbom-env
+      - uses: anchore/sbom-action@v0
+        with:
+          format: spdx-json
+          output-file: sbom.spdx.json
+          path: sbom-env
+      - run: gh release upload ${{ needs.check.outputs.current_tag }} sbom.spdx.json --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify:
+    needs: [check, publish, sbom]
+    if: always() && needs.check.outputs.increment == 'True'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Get release title
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.check.outputs.current_tag }}
+        run: |
+          TITLE=$(gh release view "$TAG" --json name -q .name 2>/dev/null | tr -d '\n\r"\\') || TITLE=""
+          TITLE=$(printf '%s' "$TITLE" | sed -E "s@#([0-9]+)@<https://github.com/$GH_REPO/pull/\1|#\1>@g")
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+      - name: Notify Success
+        if: needs.publish.result == 'success' && needs.sbom.result == 'success' && github.event_name == 'push'
+        uses: slackapi/slack-github-action@v4.0.0
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_LLM }}
+          payload: |
+            text: "*${{ github.workflow }}* ✅ `${{ github.repository }}` ${{ steps.release.outputs.title || needs.check.outputs.current_tag }}  <https://github.com/${{ github.repository }}/releases/tag/${{ needs.check.outputs.current_tag }}|*Release*>  ·  <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|*Run*>"
+      - name: Notify Failure
+        if: needs.publish.result != 'success' || needs.sbom.result != 'success'
+        uses: slackapi/slack-github-action@v4.0.0
+        with:
+          webhook-type: incoming-webhook
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_LLM }}
+          payload: |
+            text: "*${{ github.workflow }}* ❌ `${{ github.repository }}` ${{ needs.check.outputs.current_tag }}  <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|*Run*>"
