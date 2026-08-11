@@ -15,6 +15,6 @@
     "install": "uv pip install ultralytics-platform",
     "package": "ultralytics_platform",
     "project": "ultralytics-platform",
-    "version": "0.1.0"
+    "version": "0.0.1"
   }
 }
