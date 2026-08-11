@@ -522,9 +522,17 @@ DatasetsRetrieveSelectedImagesResponse = TypedDict(
 )
 
 
-DatasetsRetrieveExportResponse = TypedDict(
-    "DatasetsRetrieveExportResponse", {"downloadUrl": str, "version": NotRequired[int], "cached": NotRequired[bool]}
+DatasetsRetrieveExportResponseVariant1 = TypedDict(
+    "DatasetsRetrieveExportResponseVariant1", {"downloadUrl": str, "version": int}
 )
+
+
+DatasetsRetrieveExportResponseVariant2 = TypedDict(
+    "DatasetsRetrieveExportResponseVariant2", {"downloadUrl": str, "cached": bool}
+)
+
+
+DatasetsRetrieveExportResponse = DatasetsRetrieveExportResponseVariant1 | DatasetsRetrieveExportResponseVariant2
 
 
 DatasetsCreateExportResponse = TypedDict(
@@ -1007,13 +1015,13 @@ ProjectsCreateIconResponse = TypedDict("ProjectsCreateIconResponse", {"success":
 ProjectsDeleteIconResponse = TypedDict("ProjectsDeleteIconResponse", {"success": Literal[True]})
 
 
-ModelsListResponseModelsItemDatasetVersion = TypedDict(
-    "ModelsListResponseModelsItemDatasetVersion", {"version": float, "contentHash": str}
+ModelsListResponseVariant1ModelsItemDatasetVersion = TypedDict(
+    "ModelsListResponseVariant1ModelsItemDatasetVersion", {"version": float, "contentHash": str}
 )
 
 
-ModelsListResponseModelsItemTrainArgs = TypedDict(
-    "ModelsListResponseModelsItemTrainArgs",
+ModelsListResponseVariant1ModelsItemTrainArgs = TypedDict(
+    "ModelsListResponseVariant1ModelsItemTrainArgs",
     {
         "model": NotRequired[str],
         "classes": NotRequired[list[int] | None],
@@ -1078,8 +1086,8 @@ ModelsListResponseModelsItemTrainArgs = TypedDict(
 )
 
 
-ModelsListResponseModelsItemTrainResultsItem = TypedDict(
-    "ModelsListResponseModelsItemTrainResultsItem",
+ModelsListResponseVariant1ModelsItemTrainResultsItem = TypedDict(
+    "ModelsListResponseVariant1ModelsItemTrainResultsItem",
     {
         "epoch": NotRequired[float],
         "metrics": NotRequired[dict[str, float]],
@@ -1089,16 +1097,16 @@ ModelsListResponseModelsItemTrainResultsItem = TypedDict(
 )
 
 
-ModelsListResponseModelsItemFile = TypedDict("ModelsListResponseModelsItemFile", {"size": float})
+ModelsListResponseVariant1ModelsItemFile = TypedDict("ModelsListResponseVariant1ModelsItemFile", {"size": float})
 
 
-ModelsListResponseModelsItemTrainingError = TypedDict(
-    "ModelsListResponseModelsItemTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
+ModelsListResponseVariant1ModelsItemTrainingError = TypedDict(
+    "ModelsListResponseVariant1ModelsItemTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
 )
 
 
-ModelsListResponseModelsItem = TypedDict(
-    "ModelsListResponseModelsItem",
+ModelsListResponseVariant1ModelsItem = TypedDict(
+    "ModelsListResponseVariant1ModelsItem",
     {
         "_id": str,
         "username": NotRequired[str],
@@ -1131,23 +1139,23 @@ ModelsListResponseModelsItem = TypedDict(
             | None
         ],
         "datasetId": NotRequired[str],
-        "datasetVersion": NotRequired[ModelsListResponseModelsItemDatasetVersion],
+        "datasetVersion": NotRequired[ModelsListResponseVariant1ModelsItemDatasetVersion],
         "sourceModelId": NotRequired[str],
         "epochs": NotRequired[float],
         "bestEpoch": NotRequired[float | None],
         "bestFitness": NotRequired[float | None],
-        "trainArgs": NotRequired[ModelsListResponseModelsItemTrainArgs],
+        "trainArgs": NotRequired[ModelsListResponseVariant1ModelsItemTrainArgs],
         "version": NotRequired[str | None],
         "docs": NotRequired[str | None],
         "startedAt": NotRequired[str],
         "completedAt": NotRequired[str],
         "classNames": NotRequired[list[str] | None],
         "metrics": NotRequired[dict[str, float]],
-        "trainResults": NotRequired[list[ModelsListResponseModelsItemTrainResultsItem]],
+        "trainResults": NotRequired[list[ModelsListResponseVariant1ModelsItemTrainResultsItem]],
         "hasWeights": bool,
-        "file": NotRequired[ModelsListResponseModelsItemFile],
+        "file": NotRequired[ModelsListResponseVariant1ModelsItemFile],
         "plots": NotRequired[list[Any] | None],
-        "trainingError": NotRequired[ModelsListResponseModelsItemTrainingError],
+        "trainingError": NotRequired[ModelsListResponseVariant1ModelsItemTrainingError],
         "starCount": float,
         "isStarred": bool,
         "clonedFrom": NotRequired[str],
@@ -1159,13 +1167,19 @@ ModelsListResponseModelsItem = TypedDict(
 )
 
 
-ModelsListResponseModelDatasetVersion = TypedDict(
-    "ModelsListResponseModelDatasetVersion", {"version": float, "contentHash": str}
+ModelsListResponseVariant1 = TypedDict(
+    "ModelsListResponseVariant1",
+    {"models": list[ModelsListResponseVariant1ModelsItem], "region": Literal["us", "eu", "ap"]},
 )
 
 
-ModelsListResponseModelTrainArgs = TypedDict(
-    "ModelsListResponseModelTrainArgs",
+ModelsListResponseVariant2ModelDatasetVersion = TypedDict(
+    "ModelsListResponseVariant2ModelDatasetVersion", {"version": float, "contentHash": str}
+)
+
+
+ModelsListResponseVariant2ModelTrainArgs = TypedDict(
+    "ModelsListResponseVariant2ModelTrainArgs",
     {
         "model": NotRequired[str],
         "classes": NotRequired[list[int] | None],
@@ -1230,8 +1244,8 @@ ModelsListResponseModelTrainArgs = TypedDict(
 )
 
 
-ModelsListResponseModelTrainResultsItem = TypedDict(
-    "ModelsListResponseModelTrainResultsItem",
+ModelsListResponseVariant2ModelTrainResultsItem = TypedDict(
+    "ModelsListResponseVariant2ModelTrainResultsItem",
     {
         "epoch": NotRequired[float],
         "metrics": NotRequired[dict[str, float]],
@@ -1241,16 +1255,16 @@ ModelsListResponseModelTrainResultsItem = TypedDict(
 )
 
 
-ModelsListResponseModelFile = TypedDict("ModelsListResponseModelFile", {"size": float})
+ModelsListResponseVariant2ModelFile = TypedDict("ModelsListResponseVariant2ModelFile", {"size": float})
 
 
-ModelsListResponseModelTrainingError = TypedDict(
-    "ModelsListResponseModelTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
+ModelsListResponseVariant2ModelTrainingError = TypedDict(
+    "ModelsListResponseVariant2ModelTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
 )
 
 
-ModelsListResponseModelSourceModel = TypedDict(
-    "ModelsListResponseModelSourceModel",
+ModelsListResponseVariant2ModelSourceModel = TypedDict(
+    "ModelsListResponseVariant2ModelSourceModel",
     {
         "username": str,
         "projectSlug": str,
@@ -1264,8 +1278,8 @@ ModelsListResponseModelSourceModel = TypedDict(
 )
 
 
-ModelsListResponseModel = TypedDict(
-    "ModelsListResponseModel",
+ModelsListResponseVariant2Model = TypedDict(
+    "ModelsListResponseVariant2Model",
     {
         "_id": str,
         "username": NotRequired[str],
@@ -1298,23 +1312,23 @@ ModelsListResponseModel = TypedDict(
             | None
         ],
         "datasetId": NotRequired[str],
-        "datasetVersion": NotRequired[ModelsListResponseModelDatasetVersion],
+        "datasetVersion": NotRequired[ModelsListResponseVariant2ModelDatasetVersion],
         "sourceModelId": NotRequired[str],
         "epochs": NotRequired[float],
         "bestEpoch": NotRequired[float | None],
         "bestFitness": NotRequired[float | None],
-        "trainArgs": NotRequired[ModelsListResponseModelTrainArgs],
+        "trainArgs": NotRequired[ModelsListResponseVariant2ModelTrainArgs],
         "version": NotRequired[str | None],
         "docs": NotRequired[str | None],
         "startedAt": NotRequired[str],
         "completedAt": NotRequired[str],
         "classNames": NotRequired[list[str] | None],
         "metrics": NotRequired[dict[str, float]],
-        "trainResults": NotRequired[list[ModelsListResponseModelTrainResultsItem]],
+        "trainResults": NotRequired[list[ModelsListResponseVariant2ModelTrainResultsItem]],
         "hasWeights": bool,
-        "file": NotRequired[ModelsListResponseModelFile],
+        "file": NotRequired[ModelsListResponseVariant2ModelFile],
         "plots": NotRequired[list[Any] | None],
-        "trainingError": NotRequired[ModelsListResponseModelTrainingError],
+        "trainingError": NotRequired[ModelsListResponseVariant2ModelTrainingError],
         "starCount": float,
         "isStarred": bool,
         "clonedFrom": NotRequired[str],
@@ -1322,7 +1336,7 @@ ModelsListResponseModel = TypedDict(
         "cloneCount": NotRequired[float],
         "createdAt": NotRequired[str],
         "updatedAt": NotRequired[str],
-        "sourceModel": NotRequired[ModelsListResponseModelSourceModel],
+        "sourceModel": NotRequired[ModelsListResponseVariant2ModelSourceModel],
         "baseModel": NotRequired[str],
         "projectLicense": NotRequired[
             Literal[
@@ -1349,14 +1363,10 @@ ModelsListResponseModel = TypedDict(
 )
 
 
-ModelsListResponse = TypedDict(
-    "ModelsListResponse",
-    {
-        "models": NotRequired[list[ModelsListResponseModelsItem]],
-        "region": NotRequired[Literal["us", "eu", "ap"]],
-        "model": NotRequired[ModelsListResponseModel | None],
-    },
-)
+ModelsListResponseVariant2 = TypedDict("ModelsListResponseVariant2", {"model": ModelsListResponseVariant2Model | None})
+
+
+ModelsListResponse = ModelsListResponseVariant1 | ModelsListResponseVariant2
 
 
 ModelsCreateResponse = TypedDict(
@@ -1392,13 +1402,13 @@ ModelsListCompletedResponse = TypedDict(
 )
 
 
-ModelsRetrieveResponseModelDatasetVersion = TypedDict(
-    "ModelsRetrieveResponseModelDatasetVersion", {"version": float, "contentHash": str}
+ModelsRetrieveResponseVariant1ModelDatasetVersion = TypedDict(
+    "ModelsRetrieveResponseVariant1ModelDatasetVersion", {"version": float, "contentHash": str}
 )
 
 
-ModelsRetrieveResponseModelTrainArgs = TypedDict(
-    "ModelsRetrieveResponseModelTrainArgs",
+ModelsRetrieveResponseVariant1ModelTrainArgs = TypedDict(
+    "ModelsRetrieveResponseVariant1ModelTrainArgs",
     {
         "model": NotRequired[str],
         "classes": NotRequired[list[int] | None],
@@ -1463,8 +1473,8 @@ ModelsRetrieveResponseModelTrainArgs = TypedDict(
 )
 
 
-ModelsRetrieveResponseModelTrainResultsItem = TypedDict(
-    "ModelsRetrieveResponseModelTrainResultsItem",
+ModelsRetrieveResponseVariant1ModelTrainResultsItem = TypedDict(
+    "ModelsRetrieveResponseVariant1ModelTrainResultsItem",
     {
         "epoch": NotRequired[float],
         "metrics": NotRequired[dict[str, float]],
@@ -1474,16 +1484,16 @@ ModelsRetrieveResponseModelTrainResultsItem = TypedDict(
 )
 
 
-ModelsRetrieveResponseModelFile = TypedDict("ModelsRetrieveResponseModelFile", {"size": float})
+ModelsRetrieveResponseVariant1ModelFile = TypedDict("ModelsRetrieveResponseVariant1ModelFile", {"size": float})
 
 
-ModelsRetrieveResponseModelTrainingError = TypedDict(
-    "ModelsRetrieveResponseModelTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
+ModelsRetrieveResponseVariant1ModelTrainingError = TypedDict(
+    "ModelsRetrieveResponseVariant1ModelTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
 )
 
 
-ModelsRetrieveResponseModelSourceModel = TypedDict(
-    "ModelsRetrieveResponseModelSourceModel",
+ModelsRetrieveResponseVariant1ModelSourceModel = TypedDict(
+    "ModelsRetrieveResponseVariant1ModelSourceModel",
     {
         "username": str,
         "projectSlug": str,
@@ -1497,8 +1507,8 @@ ModelsRetrieveResponseModelSourceModel = TypedDict(
 )
 
 
-ModelsRetrieveResponseModel = TypedDict(
-    "ModelsRetrieveResponseModel",
+ModelsRetrieveResponseVariant1Model = TypedDict(
+    "ModelsRetrieveResponseVariant1Model",
     {
         "_id": str,
         "username": NotRequired[str],
@@ -1531,23 +1541,23 @@ ModelsRetrieveResponseModel = TypedDict(
             | None
         ],
         "datasetId": NotRequired[str],
-        "datasetVersion": NotRequired[ModelsRetrieveResponseModelDatasetVersion],
+        "datasetVersion": NotRequired[ModelsRetrieveResponseVariant1ModelDatasetVersion],
         "sourceModelId": NotRequired[str],
         "epochs": NotRequired[float],
         "bestEpoch": NotRequired[float | None],
         "bestFitness": NotRequired[float | None],
-        "trainArgs": NotRequired[ModelsRetrieveResponseModelTrainArgs],
+        "trainArgs": NotRequired[ModelsRetrieveResponseVariant1ModelTrainArgs],
         "version": NotRequired[str | None],
         "docs": NotRequired[str | None],
         "startedAt": NotRequired[str],
         "completedAt": NotRequired[str],
         "classNames": NotRequired[list[str] | None],
         "metrics": NotRequired[dict[str, float]],
-        "trainResults": NotRequired[list[ModelsRetrieveResponseModelTrainResultsItem]],
+        "trainResults": NotRequired[list[ModelsRetrieveResponseVariant1ModelTrainResultsItem]],
         "hasWeights": bool,
-        "file": NotRequired[ModelsRetrieveResponseModelFile],
+        "file": NotRequired[ModelsRetrieveResponseVariant1ModelFile],
         "plots": NotRequired[list[Any] | None],
-        "trainingError": NotRequired[ModelsRetrieveResponseModelTrainingError],
+        "trainingError": NotRequired[ModelsRetrieveResponseVariant1ModelTrainingError],
         "starCount": float,
         "isStarred": bool,
         "clonedFrom": NotRequired[str],
@@ -1555,7 +1565,7 @@ ModelsRetrieveResponseModel = TypedDict(
         "cloneCount": NotRequired[float],
         "createdAt": NotRequired[str],
         "updatedAt": NotRequired[str],
-        "sourceModel": NotRequired[ModelsRetrieveResponseModelSourceModel],
+        "sourceModel": NotRequired[ModelsRetrieveResponseVariant1ModelSourceModel],
         "baseModel": NotRequired[str],
         "projectLicense": NotRequired[
             Literal[
@@ -1579,8 +1589,13 @@ ModelsRetrieveResponseModel = TypedDict(
 )
 
 
-ModelsRetrieveResponseAnalysisCoverage = TypedDict(
-    "ModelsRetrieveResponseAnalysisCoverage",
+ModelsRetrieveResponseVariant1 = TypedDict(
+    "ModelsRetrieveResponseVariant1", {"model": ModelsRetrieveResponseVariant1Model, "isOwner": bool}
+)
+
+
+ModelsRetrieveResponseVariant2AnalysisCoverage = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCoverage",
     {
         "mode": Literal["full", "sampled", "tails", "partial", "unavailable"],
         "omittedMiddle": int,
@@ -1589,25 +1604,25 @@ ModelsRetrieveResponseAnalysisCoverage = TypedDict(
 )
 
 
-ModelsRetrieveResponseAnalysisScatterSample = TypedDict(
-    "ModelsRetrieveResponseAnalysisScatterSample", {"eligible": int, "rows": list[list[Any]]}
+ModelsRetrieveResponseVariant2AnalysisScatterSample = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisScatterSample", {"eligible": int, "rows": list[list[Any]]}
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsWorstMetricsF1 = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsWorstMetricsF1",
+ModelsRetrieveResponseVariant2AnalysisCohortsWorstMetricsF1 = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsWorstMetricsF1",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsWorstMetrics = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsWorstMetrics",
-    {"tp": int, "fp": int, "fn": int, "f1": ModelsRetrieveResponseAnalysisCohortsWorstMetricsF1 | None},
+ModelsRetrieveResponseVariant2AnalysisCohortsWorstMetrics = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsWorstMetrics",
+    {"tp": int, "fp": int, "fn": int, "f1": ModelsRetrieveResponseVariant2AnalysisCohortsWorstMetricsF1 | None},
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsWorstExamplesItemLabelsItem = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsWorstExamplesItemLabelsItem",
+ModelsRetrieveResponseVariant2AnalysisCohortsWorstExamplesItemLabelsItem = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsWorstExamplesItemLabelsItem",
     {
         "classId": int,
         "bbox": NotRequired[list[Any]],
@@ -1619,8 +1634,8 @@ ModelsRetrieveResponseAnalysisCohortsWorstExamplesItemLabelsItem = TypedDict(
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsWorstExamplesItem = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsWorstExamplesItem",
+ModelsRetrieveResponseVariant2AnalysisCohortsWorstExamplesItem = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsWorstExamplesItem",
     {
         "imageId": NotRequired[str],
         "hash": str,
@@ -1634,36 +1649,36 @@ ModelsRetrieveResponseAnalysisCohortsWorstExamplesItem = TypedDict(
         "pixels": NotRequired[float],
         "aspectRatio": NotRequired[float],
         "instanceCount": NotRequired[int],
-        "labels": NotRequired[list[ModelsRetrieveResponseAnalysisCohortsWorstExamplesItemLabelsItem]],
+        "labels": NotRequired[list[ModelsRetrieveResponseVariant2AnalysisCohortsWorstExamplesItemLabelsItem]],
     },
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsWorst = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsWorst",
+ModelsRetrieveResponseVariant2AnalysisCohortsWorst = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsWorst",
     {
         "count": int,
         "matched": int,
-        "metrics": ModelsRetrieveResponseAnalysisCohortsWorstMetrics,
-        "examples": list[ModelsRetrieveResponseAnalysisCohortsWorstExamplesItem],
+        "metrics": ModelsRetrieveResponseVariant2AnalysisCohortsWorstMetrics,
+        "examples": list[ModelsRetrieveResponseVariant2AnalysisCohortsWorstExamplesItem],
     },
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsBestMetricsF1 = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsBestMetricsF1",
+ModelsRetrieveResponseVariant2AnalysisCohortsBestMetricsF1 = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsBestMetricsF1",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsBestMetrics = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsBestMetrics",
-    {"tp": int, "fp": int, "fn": int, "f1": ModelsRetrieveResponseAnalysisCohortsBestMetricsF1 | None},
+ModelsRetrieveResponseVariant2AnalysisCohortsBestMetrics = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsBestMetrics",
+    {"tp": int, "fp": int, "fn": int, "f1": ModelsRetrieveResponseVariant2AnalysisCohortsBestMetricsF1 | None},
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsBestExamplesItemLabelsItem = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsBestExamplesItemLabelsItem",
+ModelsRetrieveResponseVariant2AnalysisCohortsBestExamplesItemLabelsItem = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsBestExamplesItemLabelsItem",
     {
         "classId": int,
         "bbox": NotRequired[list[Any]],
@@ -1675,8 +1690,8 @@ ModelsRetrieveResponseAnalysisCohortsBestExamplesItemLabelsItem = TypedDict(
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsBestExamplesItem = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsBestExamplesItem",
+ModelsRetrieveResponseVariant2AnalysisCohortsBestExamplesItem = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsBestExamplesItem",
     {
         "imageId": NotRequired[str],
         "hash": str,
@@ -1690,286 +1705,289 @@ ModelsRetrieveResponseAnalysisCohortsBestExamplesItem = TypedDict(
         "pixels": NotRequired[float],
         "aspectRatio": NotRequired[float],
         "instanceCount": NotRequired[int],
-        "labels": NotRequired[list[ModelsRetrieveResponseAnalysisCohortsBestExamplesItemLabelsItem]],
+        "labels": NotRequired[list[ModelsRetrieveResponseVariant2AnalysisCohortsBestExamplesItemLabelsItem]],
     },
 )
 
 
-ModelsRetrieveResponseAnalysisCohortsBest = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohortsBest",
+ModelsRetrieveResponseVariant2AnalysisCohortsBest = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohortsBest",
     {
         "count": int,
         "matched": int,
-        "metrics": ModelsRetrieveResponseAnalysisCohortsBestMetrics,
-        "examples": list[ModelsRetrieveResponseAnalysisCohortsBestExamplesItem],
+        "metrics": ModelsRetrieveResponseVariant2AnalysisCohortsBestMetrics,
+        "examples": list[ModelsRetrieveResponseVariant2AnalysisCohortsBestExamplesItem],
     },
 )
 
 
-ModelsRetrieveResponseAnalysisCohorts = TypedDict(
-    "ModelsRetrieveResponseAnalysisCohorts",
-    {"worst": ModelsRetrieveResponseAnalysisCohortsWorst, "best": ModelsRetrieveResponseAnalysisCohortsBest},
+ModelsRetrieveResponseVariant2AnalysisCohorts = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisCohorts",
+    {
+        "worst": ModelsRetrieveResponseVariant2AnalysisCohortsWorst,
+        "best": ModelsRetrieveResponseVariant2AnalysisCohortsBest,
+    },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsWidthWorst = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsWidthWorst",
+ModelsRetrieveResponseVariant2AnalysisComparisonsWidthWorst = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsWidthWorst",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsWidthBest = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsWidthBest",
+ModelsRetrieveResponseVariant2AnalysisComparisonsWidthBest = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsWidthBest",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsWidthRelationshipFit = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsWidthRelationshipFit",
+ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationshipFit = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationshipFit",
     {"slope": float, "intercept": float, "pearsonR": float, "rSquared": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsWidthRelationshipCovariance = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsWidthRelationshipCovariance",
+ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationshipCovariance = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationshipCovariance",
     {"mean": list[Any], "eigenvalues": list[Any], "eigenvectors": list[Any]},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsWidthRelationship = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsWidthRelationship",
+ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationship = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationship",
     {
         "count": int,
-        "fit": ModelsRetrieveResponseAnalysisComparisonsWidthRelationshipFit | None,
-        "covariance": ModelsRetrieveResponseAnalysisComparisonsWidthRelationshipCovariance | None,
+        "fit": ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationshipFit | None,
+        "covariance": ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationshipCovariance | None,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsWidth = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsWidth",
+ModelsRetrieveResponseVariant2AnalysisComparisonsWidth = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsWidth",
     {
-        "worst": ModelsRetrieveResponseAnalysisComparisonsWidthWorst | None,
-        "best": ModelsRetrieveResponseAnalysisComparisonsWidthBest | None,
-        "relationship": ModelsRetrieveResponseAnalysisComparisonsWidthRelationship,
+        "worst": ModelsRetrieveResponseVariant2AnalysisComparisonsWidthWorst | None,
+        "best": ModelsRetrieveResponseVariant2AnalysisComparisonsWidthBest | None,
+        "relationship": ModelsRetrieveResponseVariant2AnalysisComparisonsWidthRelationship,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsHeightWorst = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsHeightWorst",
+ModelsRetrieveResponseVariant2AnalysisComparisonsHeightWorst = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsHeightWorst",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsHeightBest = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsHeightBest",
+ModelsRetrieveResponseVariant2AnalysisComparisonsHeightBest = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsHeightBest",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsHeightRelationshipFit = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsHeightRelationshipFit",
+ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationshipFit = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationshipFit",
     {"slope": float, "intercept": float, "pearsonR": float, "rSquared": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsHeightRelationshipCovariance = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsHeightRelationshipCovariance",
+ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationshipCovariance = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationshipCovariance",
     {"mean": list[Any], "eigenvalues": list[Any], "eigenvectors": list[Any]},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsHeightRelationship = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsHeightRelationship",
+ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationship = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationship",
     {
         "count": int,
-        "fit": ModelsRetrieveResponseAnalysisComparisonsHeightRelationshipFit | None,
-        "covariance": ModelsRetrieveResponseAnalysisComparisonsHeightRelationshipCovariance | None,
+        "fit": ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationshipFit | None,
+        "covariance": ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationshipCovariance | None,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsHeight = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsHeight",
+ModelsRetrieveResponseVariant2AnalysisComparisonsHeight = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsHeight",
     {
-        "worst": ModelsRetrieveResponseAnalysisComparisonsHeightWorst | None,
-        "best": ModelsRetrieveResponseAnalysisComparisonsHeightBest | None,
-        "relationship": ModelsRetrieveResponseAnalysisComparisonsHeightRelationship,
+        "worst": ModelsRetrieveResponseVariant2AnalysisComparisonsHeightWorst | None,
+        "best": ModelsRetrieveResponseVariant2AnalysisComparisonsHeightBest | None,
+        "relationship": ModelsRetrieveResponseVariant2AnalysisComparisonsHeightRelationship,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsPixelsWorst = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsPixelsWorst",
+ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsWorst = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsWorst",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsPixelsBest = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsPixelsBest",
+ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsBest = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsBest",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsPixelsRelationshipFit = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsPixelsRelationshipFit",
+ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationshipFit = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationshipFit",
     {"slope": float, "intercept": float, "pearsonR": float, "rSquared": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsPixelsRelationshipCovariance = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsPixelsRelationshipCovariance",
+ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationshipCovariance = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationshipCovariance",
     {"mean": list[Any], "eigenvalues": list[Any], "eigenvectors": list[Any]},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsPixelsRelationship = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsPixelsRelationship",
+ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationship = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationship",
     {
         "count": int,
-        "fit": ModelsRetrieveResponseAnalysisComparisonsPixelsRelationshipFit | None,
-        "covariance": ModelsRetrieveResponseAnalysisComparisonsPixelsRelationshipCovariance | None,
+        "fit": ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationshipFit | None,
+        "covariance": ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationshipCovariance | None,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsPixels = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsPixels",
+ModelsRetrieveResponseVariant2AnalysisComparisonsPixels = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsPixels",
     {
-        "worst": ModelsRetrieveResponseAnalysisComparisonsPixelsWorst | None,
-        "best": ModelsRetrieveResponseAnalysisComparisonsPixelsBest | None,
-        "relationship": ModelsRetrieveResponseAnalysisComparisonsPixelsRelationship,
+        "worst": ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsWorst | None,
+        "best": ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsBest | None,
+        "relationship": ModelsRetrieveResponseVariant2AnalysisComparisonsPixelsRelationship,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsAspectRatioWorst = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsAspectRatioWorst",
+ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioWorst = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioWorst",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsAspectRatioBest = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsAspectRatioBest",
+ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioBest = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioBest",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationshipFit = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationshipFit",
+ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationshipFit = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationshipFit",
     {"slope": float, "intercept": float, "pearsonR": float, "rSquared": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationshipCovariance = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationshipCovariance",
+ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationshipCovariance = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationshipCovariance",
     {"mean": list[Any], "eigenvalues": list[Any], "eigenvectors": list[Any]},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationship = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationship",
+ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationship = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationship",
     {
         "count": int,
-        "fit": ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationshipFit | None,
-        "covariance": ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationshipCovariance | None,
+        "fit": ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationshipFit | None,
+        "covariance": ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationshipCovariance | None,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsAspectRatio = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsAspectRatio",
+ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatio = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatio",
     {
-        "worst": ModelsRetrieveResponseAnalysisComparisonsAspectRatioWorst | None,
-        "best": ModelsRetrieveResponseAnalysisComparisonsAspectRatioBest | None,
-        "relationship": ModelsRetrieveResponseAnalysisComparisonsAspectRatioRelationship,
+        "worst": ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioWorst | None,
+        "best": ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioBest | None,
+        "relationship": ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatioRelationship,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsInstanceCountWorst = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsInstanceCountWorst",
+ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountWorst = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountWorst",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsInstanceCountBest = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsInstanceCountBest",
+ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountBest = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountBest",
     {"count": int, "min": float, "p25": float, "median": float, "p75": float, "max": float, "mean": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationshipFit = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationshipFit",
+ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationshipFit = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationshipFit",
     {"slope": float, "intercept": float, "pearsonR": float, "rSquared": float},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationshipCovariance = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationshipCovariance",
+ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationshipCovariance = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationshipCovariance",
     {"mean": list[Any], "eigenvalues": list[Any], "eigenvectors": list[Any]},
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationship = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationship",
+ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationship = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationship",
     {
         "count": int,
-        "fit": ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationshipFit | None,
-        "covariance": ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationshipCovariance | None,
+        "fit": ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationshipFit | None,
+        "covariance": ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationshipCovariance | None,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsInstanceCount = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsInstanceCount",
+ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCount = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCount",
     {
-        "worst": ModelsRetrieveResponseAnalysisComparisonsInstanceCountWorst | None,
-        "best": ModelsRetrieveResponseAnalysisComparisonsInstanceCountBest | None,
-        "relationship": ModelsRetrieveResponseAnalysisComparisonsInstanceCountRelationship,
+        "worst": ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountWorst | None,
+        "best": ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountBest | None,
+        "relationship": ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCountRelationship,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsClassPresenceItemWorst = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsClassPresenceItemWorst", {"count": int, "prevalence": float}
+ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItemWorst = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItemWorst", {"count": int, "prevalence": float}
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsClassPresenceItemBest = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsClassPresenceItemBest", {"count": int, "prevalence": float}
+ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItemBest = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItemBest", {"count": int, "prevalence": float}
 )
 
 
-ModelsRetrieveResponseAnalysisComparisonsClassPresenceItem = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisonsClassPresenceItem",
+ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItem = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItem",
     {
         "classId": int,
         "name": str,
-        "worst": ModelsRetrieveResponseAnalysisComparisonsClassPresenceItemWorst,
-        "best": ModelsRetrieveResponseAnalysisComparisonsClassPresenceItemBest,
+        "worst": ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItemWorst,
+        "best": ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItemBest,
         "prevalenceDifference": float,
     },
 )
 
 
-ModelsRetrieveResponseAnalysisComparisons = TypedDict(
-    "ModelsRetrieveResponseAnalysisComparisons",
+ModelsRetrieveResponseVariant2AnalysisComparisons = TypedDict(
+    "ModelsRetrieveResponseVariant2AnalysisComparisons",
     {
-        "width": ModelsRetrieveResponseAnalysisComparisonsWidth,
-        "height": ModelsRetrieveResponseAnalysisComparisonsHeight,
-        "pixels": ModelsRetrieveResponseAnalysisComparisonsPixels,
-        "aspectRatio": ModelsRetrieveResponseAnalysisComparisonsAspectRatio,
-        "instanceCount": ModelsRetrieveResponseAnalysisComparisonsInstanceCount,
-        "classPresence": list[ModelsRetrieveResponseAnalysisComparisonsClassPresenceItem],
+        "width": ModelsRetrieveResponseVariant2AnalysisComparisonsWidth,
+        "height": ModelsRetrieveResponseVariant2AnalysisComparisonsHeight,
+        "pixels": ModelsRetrieveResponseVariant2AnalysisComparisonsPixels,
+        "aspectRatio": ModelsRetrieveResponseVariant2AnalysisComparisonsAspectRatio,
+        "instanceCount": ModelsRetrieveResponseVariant2AnalysisComparisonsInstanceCount,
+        "classPresence": list[ModelsRetrieveResponseVariant2AnalysisComparisonsClassPresenceItem],
         "classPresenceTruncated": bool,
     },
 )
 
 
-ModelsRetrieveResponseAnalysis = TypedDict(
-    "ModelsRetrieveResponseAnalysis",
+ModelsRetrieveResponseVariant2Analysis = TypedDict(
+    "ModelsRetrieveResponseVariant2Analysis",
     {
         "population": int,
         "retained": int,
@@ -1977,22 +1995,20 @@ ModelsRetrieveResponseAnalysis = TypedDict(
         "unmatched": int,
         "traitsAvailable": bool,
         "sourceSplit": Literal["train", "val"] | None,
-        "coverage": ModelsRetrieveResponseAnalysisCoverage,
-        "scatterSample": ModelsRetrieveResponseAnalysisScatterSample,
-        "cohorts": ModelsRetrieveResponseAnalysisCohorts,
-        "comparisons": ModelsRetrieveResponseAnalysisComparisons | None,
+        "coverage": ModelsRetrieveResponseVariant2AnalysisCoverage,
+        "scatterSample": ModelsRetrieveResponseVariant2AnalysisScatterSample,
+        "cohorts": ModelsRetrieveResponseVariant2AnalysisCohorts,
+        "comparisons": ModelsRetrieveResponseVariant2AnalysisComparisons | None,
     },
 )
 
 
-ModelsRetrieveResponse = TypedDict(
-    "ModelsRetrieveResponse",
-    {
-        "model": NotRequired[ModelsRetrieveResponseModel],
-        "isOwner": NotRequired[bool],
-        "analysis": NotRequired[ModelsRetrieveResponseAnalysis | None],
-    },
+ModelsRetrieveResponseVariant2 = TypedDict(
+    "ModelsRetrieveResponseVariant2", {"analysis": ModelsRetrieveResponseVariant2Analysis | None}
 )
+
+
+ModelsRetrieveResponse = ModelsRetrieveResponseVariant1 | ModelsRetrieveResponseVariant2
 
 
 ModelsUpdateResponse = TypedDict("ModelsUpdateResponse", {"success": Literal[True]})
@@ -2121,7 +2137,7 @@ ModelsRetrieveTrainingResponseJob = TypedDict(
         "compute": ModelsRetrieveTrainingResponseJobCompute | None,
         "trainArgs": ModelsRetrieveTrainingResponseJobTrainArgs | None,
         "epochMetrics": dict[str, Any] | None,
-        "error": Any | None,
+        "error": Any,
         "createdAt": str,
         "updatedAt": str,
     },
@@ -2460,13 +2476,13 @@ DeploymentsRetrieveHealthResponse = TypedDict(
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeRange = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeRange", {"start": str, "end": str}
+DeploymentsRetrieveMetricsResponseVariant1TimeRange = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeRange", {"start": str, "end": str}
 )
 
 
-DeploymentsRetrieveMetricsResponseSummary = TypedDict(
-    "DeploymentsRetrieveMetricsResponseSummary",
+DeploymentsRetrieveMetricsResponseVariant1Summary = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1Summary",
     {
         "totalRequests": float,
         "errorCount": float,
@@ -2479,68 +2495,75 @@ DeploymentsRetrieveMetricsResponseSummary = TypedDict(
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeSeriesRequestsItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeSeriesRequestsItem", {"timestamp": str, "value": float}
+DeploymentsRetrieveMetricsResponseVariant1TimeSeriesRequestsItem = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesRequestsItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeSeriesErrorsItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeSeriesErrorsItem", {"timestamp": str, "value": float}
+DeploymentsRetrieveMetricsResponseVariant1TimeSeriesErrorsItem = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesErrorsItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeSeriesLatencyP50Item = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeSeriesLatencyP50Item", {"timestamp": str, "value": float}
+DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP50Item = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP50Item", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeSeriesLatencyP95Item = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeSeriesLatencyP95Item", {"timestamp": str, "value": float}
+DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP95Item = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP95Item", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeSeriesCpuUtilizationItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeSeriesCpuUtilizationItem", {"timestamp": str, "value": float}
+DeploymentsRetrieveMetricsResponseVariant1TimeSeriesCpuUtilizationItem = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesCpuUtilizationItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeSeriesMemoryUtilizationItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeSeriesMemoryUtilizationItem", {"timestamp": str, "value": float}
+DeploymentsRetrieveMetricsResponseVariant1TimeSeriesMemoryUtilizationItem = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesMemoryUtilizationItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeSeriesInstanceCountItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeSeriesInstanceCountItem", {"timestamp": str, "value": float}
+DeploymentsRetrieveMetricsResponseVariant1TimeSeriesInstanceCountItem = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesInstanceCountItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseTimeSeries = TypedDict(
-    "DeploymentsRetrieveMetricsResponseTimeSeries",
+DeploymentsRetrieveMetricsResponseVariant1TimeSeries = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1TimeSeries",
     {
-        "requests": list[DeploymentsRetrieveMetricsResponseTimeSeriesRequestsItem],
-        "errors": list[DeploymentsRetrieveMetricsResponseTimeSeriesErrorsItem],
-        "latencyP50": list[DeploymentsRetrieveMetricsResponseTimeSeriesLatencyP50Item],
-        "latencyP95": list[DeploymentsRetrieveMetricsResponseTimeSeriesLatencyP95Item],
-        "cpuUtilization": list[DeploymentsRetrieveMetricsResponseTimeSeriesCpuUtilizationItem],
-        "memoryUtilization": list[DeploymentsRetrieveMetricsResponseTimeSeriesMemoryUtilizationItem],
-        "instanceCount": list[DeploymentsRetrieveMetricsResponseTimeSeriesInstanceCountItem],
+        "requests": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesRequestsItem],
+        "errors": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesErrorsItem],
+        "latencyP50": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP50Item],
+        "latencyP95": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP95Item],
+        "cpuUtilization": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesCpuUtilizationItem],
+        "memoryUtilization": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesMemoryUtilizationItem],
+        "instanceCount": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesInstanceCountItem],
     },
 )
 
 
-DeploymentsRetrieveMetricsResponse = TypedDict(
-    "DeploymentsRetrieveMetricsResponse",
+DeploymentsRetrieveMetricsResponseVariant1 = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant1",
     {
-        "deploymentId": NotRequired[str],
-        "region": NotRequired[str],
-        "timeRange": NotRequired[DeploymentsRetrieveMetricsResponseTimeRange],
-        "summary": NotRequired[DeploymentsRetrieveMetricsResponseSummary],
-        "timeSeries": NotRequired[DeploymentsRetrieveMetricsResponseTimeSeries],
-        "requests24h": NotRequired[list[float]],
-        "totalRequests": NotRequired[float],
-        "errorRate": NotRequired[float],
-        "avgLatencyMs": NotRequired[float],
+        "deploymentId": str,
+        "region": str,
+        "timeRange": DeploymentsRetrieveMetricsResponseVariant1TimeRange,
+        "summary": DeploymentsRetrieveMetricsResponseVariant1Summary,
+        "timeSeries": DeploymentsRetrieveMetricsResponseVariant1TimeSeries,
     },
+)
+
+
+DeploymentsRetrieveMetricsResponseVariant2 = TypedDict(
+    "DeploymentsRetrieveMetricsResponseVariant2",
+    {"requests24h": list[float], "totalRequests": float, "errorRate": float, "avgLatencyMs": float},
+)
+
+
+DeploymentsRetrieveMetricsResponse = (
+    DeploymentsRetrieveMetricsResponseVariant1 | DeploymentsRetrieveMetricsResponseVariant2
 )
 
 
@@ -3079,8 +3102,8 @@ BillingListUsageSummaryResponse = TypedDict(
 )
 
 
-ActivityListResponseEventsItem = TypedDict(
-    "ActivityListResponseEventsItem",
+ActivityListResponseVariant1EventsItem = TypedDict(
+    "ActivityListResponseVariant1EventsItem",
     {
         "_id": str,
         "userId": str,
@@ -3108,7 +3131,7 @@ ActivityListResponseEventsItem = TypedDict(
         ],
         "resourceId": NotRequired[str],
         "resourceName": NotRequired[str],
-        "metadata": NotRequired[dict[str, Any]],
+        "metadata": NotRequired[dict[str, Any] | None],
         "timestamp": str,
         "seen": bool,
         "archived": bool,
@@ -3116,14 +3139,20 @@ ActivityListResponseEventsItem = TypedDict(
 )
 
 
-ActivityListResponseFilters = TypedDict(
-    "ActivityListResponseFilters",
+ActivityListResponseVariant1 = TypedDict(
+    "ActivityListResponseVariant1",
+    {"events": list[ActivityListResponseVariant1EventsItem], "total": float, "unseenCount": float},
+)
+
+
+ActivityListResponseVariant2Filters = TypedDict(
+    "ActivityListResponseVariant2Filters",
     {"archived": bool, "search": NotRequired[str], "start": NotRequired[str], "end": NotRequired[str]},
 )
 
 
-ActivityListResponseActivityItem = TypedDict(
-    "ActivityListResponseActivityItem",
+ActivityListResponseVariant2ActivityItem = TypedDict(
+    "ActivityListResponseVariant2ActivityItem",
     {
         "_id": str,
         "userId": str,
@@ -3151,7 +3180,7 @@ ActivityListResponseActivityItem = TypedDict(
         ],
         "resourceId": NotRequired[str],
         "resourceName": NotRequired[str],
-        "metadata": NotRequired[dict[str, Any]],
+        "metadata": NotRequired[dict[str, Any] | None],
         "timestamp": str,
         "seen": bool,
         "archived": bool,
@@ -3159,19 +3188,19 @@ ActivityListResponseActivityItem = TypedDict(
 )
 
 
-ActivityListResponse = TypedDict(
-    "ActivityListResponse",
+ActivityListResponseVariant2 = TypedDict(
+    "ActivityListResponseVariant2",
     {
-        "events": NotRequired[list[ActivityListResponseEventsItem]],
-        "total": NotRequired[float],
-        "unseenCount": NotRequired[float],
-        "exportedAt": NotRequired[str],
-        "app": NotRequired[Literal["alpha"]],
-        "owner": NotRequired[str],
-        "filters": NotRequired[ActivityListResponseFilters],
-        "activity": NotRequired[list[ActivityListResponseActivityItem]],
+        "exportedAt": str,
+        "app": Literal["alpha"],
+        "owner": str,
+        "filters": ActivityListResponseVariant2Filters,
+        "activity": list[ActivityListResponseVariant2ActivityItem],
     },
 )
+
+
+ActivityListResponse = ActivityListResponseVariant1 | ActivityListResponseVariant2
 
 
 ActivityCreateMarkSeenResponse = TypedDict("ActivityCreateMarkSeenResponse", {"success": Literal[True]})

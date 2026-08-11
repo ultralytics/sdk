@@ -6,6 +6,7 @@ permissions:
   contents: read
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
@@ -28,7 +29,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: ultralytics/openapi
-          ref: 9f4d283b8b0022910c32a1c9439ccab5120f13ef
+          ref: ce2e7a8eb45f7c0aa41366ea36a858241833eb99
           path: .generator
 
       - uses: oven-sh/setup-bun@v2
@@ -70,3 +71,20 @@ jobs:
           unzip -l sdk/python/dist/*.whl | grep --quiet '\.dist-info/licenses/LICENSE$'
           uv pip install --system pytest "git+file://${GITHUB_WORKSPACE}@$(git rev-parse HEAD)#subdirectory=sdk/python"
           pytest tests -v
+
+  Live:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - uses: ultralytics/actions/setup-uv@main
+      - name: Validate every read-only production endpoint
+        env:
+          ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}
+        run: |
+          uv pip install --system jsonschema "./sdk/python"
+          python tests/live_readonly.py
