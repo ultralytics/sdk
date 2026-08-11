@@ -74,16 +74,19 @@ DatasetsListResponseDatasetsItem = TypedDict(
         "imageCount": float,
         "classCount": NotRequired[float | None],
         "classNames": NotRequired[list[str] | None],
-        "format": NotRequired[Literal["yolo", "coco", "voc", "raw"]],
+        "format": NotRequired[Literal["yolo", "coco", "voc", "raw", "ndjson"]],
         "tags": NotRequired[list[str] | None],
         "license": NotRequired[
             Literal[
                 "None",
                 "CC0-1.0",
+                "PDM-1.0",
                 "CC-BY-2.5",
                 "CC-BY-4.0",
+                "CC-BY-NC-2.0",
                 "CC-BY-SA-4.0",
                 "CC-BY-NC-4.0",
+                "CC-BY-NC-SA-3.0",
                 "CC-BY-NC-SA-4.0",
                 "CC-BY-ND-4.0",
                 "CC-BY-NC-ND-4.0",
@@ -210,16 +213,19 @@ DatasetsRetrieveResponseDataset = TypedDict(
         "imageCount": float,
         "classCount": NotRequired[float | None],
         "classNames": NotRequired[list[str] | None],
-        "format": NotRequired[Literal["yolo", "coco", "voc", "raw"]],
+        "format": NotRequired[Literal["yolo", "coco", "voc", "raw", "ndjson"]],
         "tags": NotRequired[list[str] | None],
         "license": NotRequired[
             Literal[
                 "None",
                 "CC0-1.0",
+                "PDM-1.0",
                 "CC-BY-2.5",
                 "CC-BY-4.0",
+                "CC-BY-NC-2.0",
                 "CC-BY-SA-4.0",
                 "CC-BY-NC-4.0",
+                "CC-BY-NC-SA-3.0",
                 "CC-BY-NC-SA-4.0",
                 "CC-BY-ND-4.0",
                 "CC-BY-NC-ND-4.0",
@@ -723,12 +729,6 @@ DatasetsImportFromRoboflowResponse = TypedDict(
 )
 
 
-DatasetsCreateIconResponse = TypedDict("DatasetsCreateIconResponse", {"success": Literal[True], "downloadUrl": str})
-
-
-DatasetsDeleteIconResponse = TypedDict("DatasetsDeleteIconResponse", {"success": Literal[True]})
-
-
 ImagesRetrieveLabelsResponseLabelsItem = TypedDict(
     "ImagesRetrieveLabelsResponseLabelsItem",
     {
@@ -1009,19 +1009,13 @@ ProjectsCloneResponse = TypedDict(
 )
 
 
-ProjectsCreateIconResponse = TypedDict("ProjectsCreateIconResponse", {"success": Literal[True], "downloadUrl": str})
-
-
-ProjectsDeleteIconResponse = TypedDict("ProjectsDeleteIconResponse", {"success": Literal[True]})
-
-
-ModelsListResponseVariant1ModelsItemDatasetVersion = TypedDict(
-    "ModelsListResponseVariant1ModelsItemDatasetVersion", {"version": float, "contentHash": str}
+ModelsListResponseModelsItemDatasetVersion = TypedDict(
+    "ModelsListResponseModelsItemDatasetVersion", {"version": float, "contentHash": str}
 )
 
 
-ModelsListResponseVariant1ModelsItemTrainArgs = TypedDict(
-    "ModelsListResponseVariant1ModelsItemTrainArgs",
+ModelsListResponseModelsItemTrainArgs = TypedDict(
+    "ModelsListResponseModelsItemTrainArgs",
     {
         "model": NotRequired[str],
         "classes": NotRequired[list[int] | None],
@@ -1086,8 +1080,8 @@ ModelsListResponseVariant1ModelsItemTrainArgs = TypedDict(
 )
 
 
-ModelsListResponseVariant1ModelsItemTrainResultsItem = TypedDict(
-    "ModelsListResponseVariant1ModelsItemTrainResultsItem",
+ModelsListResponseModelsItemTrainResultsItem = TypedDict(
+    "ModelsListResponseModelsItemTrainResultsItem",
     {
         "epoch": NotRequired[float],
         "metrics": NotRequired[dict[str, float]],
@@ -1097,16 +1091,16 @@ ModelsListResponseVariant1ModelsItemTrainResultsItem = TypedDict(
 )
 
 
-ModelsListResponseVariant1ModelsItemFile = TypedDict("ModelsListResponseVariant1ModelsItemFile", {"size": float})
+ModelsListResponseModelsItemFile = TypedDict("ModelsListResponseModelsItemFile", {"size": float})
 
 
-ModelsListResponseVariant1ModelsItemTrainingError = TypedDict(
-    "ModelsListResponseVariant1ModelsItemTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
+ModelsListResponseModelsItemTrainingError = TypedDict(
+    "ModelsListResponseModelsItemTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
 )
 
 
-ModelsListResponseVariant1ModelsItem = TypedDict(
-    "ModelsListResponseVariant1ModelsItem",
+ModelsListResponseModelsItem = TypedDict(
+    "ModelsListResponseModelsItem",
     {
         "_id": str,
         "username": NotRequired[str],
@@ -1139,23 +1133,23 @@ ModelsListResponseVariant1ModelsItem = TypedDict(
             | None
         ],
         "datasetId": NotRequired[str],
-        "datasetVersion": NotRequired[ModelsListResponseVariant1ModelsItemDatasetVersion],
+        "datasetVersion": NotRequired[ModelsListResponseModelsItemDatasetVersion],
         "sourceModelId": NotRequired[str],
         "epochs": NotRequired[float],
         "bestEpoch": NotRequired[float | None],
         "bestFitness": NotRequired[float | None],
-        "trainArgs": NotRequired[ModelsListResponseVariant1ModelsItemTrainArgs],
+        "trainArgs": NotRequired[ModelsListResponseModelsItemTrainArgs],
         "version": NotRequired[str | None],
         "docs": NotRequired[str | None],
         "startedAt": NotRequired[str],
         "completedAt": NotRequired[str],
         "classNames": NotRequired[list[str] | None],
         "metrics": NotRequired[dict[str, float]],
-        "trainResults": NotRequired[list[ModelsListResponseVariant1ModelsItemTrainResultsItem]],
+        "trainResults": NotRequired[list[ModelsListResponseModelsItemTrainResultsItem]],
         "hasWeights": bool,
-        "file": NotRequired[ModelsListResponseVariant1ModelsItemFile],
+        "file": NotRequired[ModelsListResponseModelsItemFile],
         "plots": NotRequired[list[Any] | None],
-        "trainingError": NotRequired[ModelsListResponseVariant1ModelsItemTrainingError],
+        "trainingError": NotRequired[ModelsListResponseModelsItemTrainingError],
         "starCount": float,
         "isStarred": bool,
         "clonedFrom": NotRequired[str],
@@ -1167,206 +1161,9 @@ ModelsListResponseVariant1ModelsItem = TypedDict(
 )
 
 
-ModelsListResponseVariant1 = TypedDict(
-    "ModelsListResponseVariant1",
-    {"models": list[ModelsListResponseVariant1ModelsItem], "region": Literal["us", "eu", "ap"]},
+ModelsListResponse = TypedDict(
+    "ModelsListResponse", {"models": list[ModelsListResponseModelsItem], "region": Literal["us", "eu", "ap"]}
 )
-
-
-ModelsListResponseVariant2ModelDatasetVersion = TypedDict(
-    "ModelsListResponseVariant2ModelDatasetVersion", {"version": float, "contentHash": str}
-)
-
-
-ModelsListResponseVariant2ModelTrainArgs = TypedDict(
-    "ModelsListResponseVariant2ModelTrainArgs",
-    {
-        "model": NotRequired[str],
-        "classes": NotRequired[list[int] | None],
-        "lr0": NotRequired[float],
-        "lrf": NotRequired[float],
-        "momentum": NotRequired[float],
-        "weight_decay": NotRequired[float],
-        "warmup_epochs": NotRequired[float],
-        "warmup_momentum": NotRequired[float],
-        "warmup_bias_lr": NotRequired[float],
-        "optimizer": NotRequired[
-            Literal["auto", "SGD", "MuSGD", "Adam", "AdamW", "NAdam", "RAdam", "RMSProp", "Adamax"]
-        ],
-        "box": NotRequired[float],
-        "cls": NotRequired[float],
-        "dfl": NotRequired[float],
-        "pose": NotRequired[float],
-        "kobj": NotRequired[float],
-        "label_smoothing": NotRequired[float],
-        "hsv_h": NotRequired[float],
-        "hsv_s": NotRequired[float],
-        "hsv_v": NotRequired[float],
-        "degrees": NotRequired[float],
-        "translate": NotRequired[float],
-        "scale": NotRequired[float],
-        "shear": NotRequired[float],
-        "perspective": NotRequired[float],
-        "flipud": NotRequired[float],
-        "fliplr": NotRequired[float],
-        "mosaic": NotRequired[float],
-        "mixup": NotRequired[float],
-        "copy_paste": NotRequired[float],
-        "epochs": NotRequired[int],
-        "batch": NotRequired[int],
-        "imgsz": NotRequired[int],
-        "pretrained": NotRequired[bool],
-        "patience": NotRequired[int],
-        "time": NotRequired[float | None],
-        "seed": NotRequired[int],
-        "deterministic": NotRequired[bool],
-        "amp": NotRequired[bool],
-        "cos_lr": NotRequired[bool],
-        "compile": NotRequired[
-            bool | Literal["default", "reduce-overhead", "max-autotune", "max-autotune-no-cudagraphs"]
-        ],
-        "close_mosaic": NotRequired[int],
-        "save_period": NotRequired[int],
-        "fraction": NotRequired[float],
-        "freeze": NotRequired[int | None],
-        "single_cls": NotRequired[bool],
-        "rect": NotRequired[bool],
-        "multi_scale": NotRequired[float],
-        "val": NotRequired[bool],
-        "resume": NotRequired[bool],
-        "device": NotRequired[Literal["0", "auto", "cpu", "mps"]],
-        "cache": NotRequired[Literal["ram", "disk", "false"]],
-        "workers": NotRequired[int],
-        "dropout": NotRequired[float],
-        "iou": NotRequired[float],
-        "max_det": NotRequired[int],
-    },
-)
-
-
-ModelsListResponseVariant2ModelTrainResultsItem = TypedDict(
-    "ModelsListResponseVariant2ModelTrainResultsItem",
-    {
-        "epoch": NotRequired[float],
-        "metrics": NotRequired[dict[str, float]],
-        "fitness": NotRequired[float],
-        "timestamp": NotRequired[str],
-    },
-)
-
-
-ModelsListResponseVariant2ModelFile = TypedDict("ModelsListResponseVariant2ModelFile", {"size": float})
-
-
-ModelsListResponseVariant2ModelTrainingError = TypedDict(
-    "ModelsListResponseVariant2ModelTrainingError", {"message": str, "code": NotRequired[str], "timestamp": str}
-)
-
-
-ModelsListResponseVariant2ModelSourceModel = TypedDict(
-    "ModelsListResponseVariant2ModelSourceModel",
-    {
-        "username": str,
-        "projectSlug": str,
-        "projectName": str,
-        "projectIconColor": NotRequired[str],
-        "projectIconLetter": NotRequired[str],
-        "projectIconImage": NotRequired[str],
-        "modelSlug": str,
-        "modelName": str,
-    },
-)
-
-
-ModelsListResponseVariant2Model = TypedDict(
-    "ModelsListResponseVariant2Model",
-    {
-        "_id": str,
-        "username": NotRequired[str],
-        "projectId": NotRequired[str],
-        "projectSlug": str,
-        "slug": NotRequired[str],
-        "name": str,
-        "description": NotRequired[str | None],
-        "status": NotRequired[
-            Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"]
-        ],
-        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"]],
-        "color": NotRequired[str],
-        "license": NotRequired[
-            Literal[
-                "None",
-                "Apache-2.0",
-                "MIT",
-                "BSD-3-Clause",
-                "AGPL-3.0",
-                "GPL-3.0",
-                "LGPL-3.0",
-                "MPL-2.0",
-                "EUPL-1.1",
-                "Unlicense",
-                "CC0-1.0",
-                "Ultralytics-Enterprise",
-                "Other",
-            ]
-            | None
-        ],
-        "datasetId": NotRequired[str],
-        "datasetVersion": NotRequired[ModelsListResponseVariant2ModelDatasetVersion],
-        "sourceModelId": NotRequired[str],
-        "epochs": NotRequired[float],
-        "bestEpoch": NotRequired[float | None],
-        "bestFitness": NotRequired[float | None],
-        "trainArgs": NotRequired[ModelsListResponseVariant2ModelTrainArgs],
-        "version": NotRequired[str | None],
-        "docs": NotRequired[str | None],
-        "startedAt": NotRequired[str],
-        "completedAt": NotRequired[str],
-        "classNames": NotRequired[list[str] | None],
-        "metrics": NotRequired[dict[str, float]],
-        "trainResults": NotRequired[list[ModelsListResponseVariant2ModelTrainResultsItem]],
-        "hasWeights": bool,
-        "file": NotRequired[ModelsListResponseVariant2ModelFile],
-        "plots": NotRequired[list[Any] | None],
-        "trainingError": NotRequired[ModelsListResponseVariant2ModelTrainingError],
-        "starCount": float,
-        "isStarred": bool,
-        "clonedFrom": NotRequired[str],
-        "downloadCount": NotRequired[float],
-        "cloneCount": NotRequired[float],
-        "createdAt": NotRequired[str],
-        "updatedAt": NotRequired[str],
-        "sourceModel": NotRequired[ModelsListResponseVariant2ModelSourceModel],
-        "baseModel": NotRequired[str],
-        "projectLicense": NotRequired[
-            Literal[
-                "None",
-                "Apache-2.0",
-                "MIT",
-                "BSD-3-Clause",
-                "AGPL-3.0",
-                "GPL-3.0",
-                "LGPL-3.0",
-                "MPL-2.0",
-                "EUPL-1.1",
-                "Unlicense",
-                "CC0-1.0",
-                "Ultralytics-Enterprise",
-                "Other",
-            ]
-            | None
-        ],
-        "projectName": str,
-        "projectVisibility": Literal["public", "private"],
-        "projectUserId": NotRequired[str],
-    },
-)
-
-
-ModelsListResponseVariant2 = TypedDict("ModelsListResponseVariant2", {"model": ModelsListResponseVariant2Model | None})
-
-
-ModelsListResponse = ModelsListResponseVariant1 | ModelsListResponseVariant2
 
 
 ModelsCreateResponse = TypedDict(
@@ -1378,27 +1175,6 @@ ModelsCreateResponse = TypedDict(
         "slug": str,
         "region": Literal["us", "eu", "ap"],
     },
-)
-
-
-ModelsListCompletedResponseModelsItem = TypedDict(
-    "ModelsListCompletedResponseModelsItem",
-    {
-        "_id": str,
-        "slug": str,
-        "name": str,
-        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
-        "projectSlug": str,
-        "projectName": str,
-        "projectIconColor": NotRequired[str],
-        "projectIconLetter": NotRequired[str],
-        "bestFitness": NotRequired[float | None],
-    },
-)
-
-
-ModelsListCompletedResponse = TypedDict(
-    "ModelsListCompletedResponse", {"models": list[ModelsListCompletedResponseModelsItem]}
 )
 
 
@@ -2164,9 +1940,6 @@ ModelsDeleteTrainingResponse = TypedDict(
 )
 
 
-ModelsTrackDownloadResponse = TypedDict("ModelsTrackDownloadResponse", {"success": Literal[True]})
-
-
 TrainingStartResponseEstimatedCost = TypedDict(
     "TrainingStartResponseEstimatedCost", {"pricePerHour": float, "gpuMemoryGb": float}
 )
@@ -2338,9 +2111,6 @@ ExportsRetrieveResponse = TypedDict("ExportsRetrieveResponse", {"export": Export
 ExportsDeleteResponse = TypedDict(
     "ExportsDeleteResponse", {"success": Literal[True], "action": Literal["cancelled", "deleted"]}
 )
-
-
-ExportsTrackDownloadResponse = TypedDict("ExportsTrackDownloadResponse", {"success": Literal[True]})
 
 
 DeploymentsListResponseDeploymentsItemResources = TypedDict(
@@ -2600,732 +2370,6 @@ DeploymentsStopResponse = TypedDict(
 )
 
 
-AccountRetrieveSummaryResponseCounts = TypedDict(
-    "AccountRetrieveSummaryResponseCounts", {"projects": int, "datasets": int, "models": int}
-)
-
-
-AccountRetrieveSummaryResponseTeamsItem = TypedDict(
-    "AccountRetrieveSummaryResponseTeamsItem", {"username": str, "fullName": NotRequired[str], "role": str}
-)
-
-
-AccountRetrieveSummaryResponse = TypedDict(
-    "AccountRetrieveSummaryResponse",
-    {
-        "username": str,
-        "name": str,
-        "accountType": Literal["personal", "team"],
-        "plan": Literal["free", "pro", "enterprise"],
-        "creditsCents": int,
-        "counts": AccountRetrieveSummaryResponseCounts,
-        "teams": list[AccountRetrieveSummaryResponseTeamsItem],
-    },
-)
-
-
-AccountListApiKeysResponseKeysItem = TypedDict(
-    "AccountListApiKeysResponseKeysItem",
-    {
-        "keyId": str,
-        "name": str,
-        "keyPrefix": str,
-        "lastUsedAt": NotRequired[str],
-        "usageCount": float,
-        "createdAt": str,
-    },
-)
-
-
-AccountListApiKeysResponse = TypedDict("AccountListApiKeysResponse", {"keys": list[AccountListApiKeysResponseKeysItem]})
-
-
-AccountCreateApiKeyResponse = TypedDict(
-    "AccountCreateApiKeyResponse", {"keyId": str, "key": str, "keyPrefix": str, "name": str, "createdAt": str}
-)
-
-
-AccountRevokeApiKeyResponse = TypedDict("AccountRevokeApiKeyResponse", {"deleted": Literal[True], "keyId": str})
-
-
-AccountRetrieveStorageUsageResponseUsageProjects = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageProjects", {"current": float, "limit": float, "percent": float}
-)
-
-
-AccountRetrieveStorageUsageResponseUsageDatasets = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageDatasets", {"current": float, "limit": float, "percent": float}
-)
-
-
-AccountRetrieveStorageUsageResponseUsageModels = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageModels", {"current": float, "limit": float, "percent": float}
-)
-
-
-AccountRetrieveStorageUsageResponseUsageImages = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageImages", {"current": float, "limit": float, "percent": float}
-)
-
-
-AccountRetrieveStorageUsageResponseUsageAnnotations = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageAnnotations", {"current": float}
-)
-
-
-AccountRetrieveStorageUsageResponseUsageDeployments = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageDeployments", {"current": float, "limit": float, "percent": float}
-)
-
-
-AccountRetrieveStorageUsageResponseUsageStorage = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageStorage", {"current": float, "limit": float, "percent": float}
-)
-
-
-AccountRetrieveStorageUsageResponseUsage = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsage",
-    {
-        "projects": NotRequired[AccountRetrieveStorageUsageResponseUsageProjects],
-        "datasets": NotRequired[AccountRetrieveStorageUsageResponseUsageDatasets],
-        "models": NotRequired[AccountRetrieveStorageUsageResponseUsageModels],
-        "images": NotRequired[AccountRetrieveStorageUsageResponseUsageImages],
-        "annotations": NotRequired[AccountRetrieveStorageUsageResponseUsageAnnotations],
-        "deployments": NotRequired[AccountRetrieveStorageUsageResponseUsageDeployments],
-        "storage": AccountRetrieveStorageUsageResponseUsageStorage,
-    },
-)
-
-
-AccountRetrieveStorageUsageResponseBreakdownByCategoryDatasets = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownByCategoryDatasets", {"bytes": float, "count": float}
-)
-
-
-AccountRetrieveStorageUsageResponseBreakdownByCategoryModels = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownByCategoryModels", {"bytes": float, "count": float}
-)
-
-
-AccountRetrieveStorageUsageResponseBreakdownByCategoryExports = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownByCategoryExports", {"bytes": float, "count": float}
-)
-
-
-AccountRetrieveStorageUsageResponseBreakdownByCategory = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownByCategory",
-    {
-        "datasets": AccountRetrieveStorageUsageResponseBreakdownByCategoryDatasets,
-        "models": AccountRetrieveStorageUsageResponseBreakdownByCategoryModels,
-        "exports": AccountRetrieveStorageUsageResponseBreakdownByCategoryExports,
-    },
-)
-
-
-AccountRetrieveStorageUsageResponseBreakdownTopItemsItem = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownTopItemsItem",
-    {
-        "_id": str,
-        "name": str,
-        "slug": NotRequired[str],
-        "sizeBytes": float,
-        "type": Literal["project", "dataset", "model", "export"],
-        "parentName": NotRequired[str],
-        "parentSlug": NotRequired[str],
-    },
-)
-
-
-AccountRetrieveStorageUsageResponseBreakdown = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdown",
-    {
-        "byCategory": AccountRetrieveStorageUsageResponseBreakdownByCategory,
-        "topItems": list[AccountRetrieveStorageUsageResponseBreakdownTopItemsItem],
-    },
-)
-
-
-AccountRetrieveStorageUsageResponse = TypedDict(
-    "AccountRetrieveStorageUsageResponse",
-    {
-        "tier": Literal["free", "pro", "enterprise"],
-        "usage": AccountRetrieveStorageUsageResponseUsage,
-        "updatedAt": str | None,
-        "breakdown": AccountRetrieveStorageUsageResponseBreakdown,
-        "region": Literal["us", "eu", "ap"],
-        "username": str,
-    },
-)
-
-
-AccountRetrieveProfileSettingsResponseSocials = TypedDict(
-    "AccountRetrieveProfileSettingsResponseSocials",
-    {
-        "github": NotRequired[str],
-        "linkedin": NotRequired[str],
-        "twitter": NotRequired[str],
-        "discord": NotRequired[str],
-        "youtube": NotRequired[str],
-        "scholar": NotRequired[str],
-        "website": NotRequired[str],
-    },
-)
-
-
-AccountRetrieveProfileSettingsResponse = TypedDict(
-    "AccountRetrieveProfileSettingsResponse",
-    {
-        "displayName": str,
-        "company": str,
-        "useCase": str,
-        "bio": str,
-        "socials": NotRequired[AccountRetrieveProfileSettingsResponseSocials],
-        "plan": Literal["free", "pro", "enterprise"],
-        "username": str,
-        "email": str,
-        "imageUrl": str,
-        "accountType": Literal["personal", "team"],
-        "iconColor": NotRequired[str],
-        "iconLetter": NotRequired[str],
-        "region": Literal["us", "eu", "ap"],
-    },
-)
-
-
-AccountUpdateProfileSettingsResponse = TypedDict("AccountUpdateProfileSettingsResponse", {"success": Literal[True]})
-
-
-AccountListCloudStorageIntegrationsResponseIntegrationsItem = TypedDict(
-    "AccountListCloudStorageIntegrationsResponseIntegrationsItem",
-    {
-        "id": str,
-        "provider": Literal["gcs", "s3", "azure"],
-        "credentialIdentity": str,
-        "targets": list[str],
-        "createdAt": str,
-    },
-)
-
-
-AccountListCloudStorageIntegrationsResponse = TypedDict(
-    "AccountListCloudStorageIntegrationsResponse",
-    {"integrations": list[AccountListCloudStorageIntegrationsResponseIntegrationsItem]},
-)
-
-
-AccountConnectCloudStorageResponse = TypedDict(
-    "AccountConnectCloudStorageResponse",
-    {
-        "id": str,
-        "provider": Literal["gcs", "s3", "azure"],
-        "credentialIdentity": str,
-        "targets": list[str],
-        "createdAt": str,
-    },
-)
-
-
-AccountDiscoverCloudStorageLocationsResponse = TypedDict(
-    "AccountDiscoverCloudStorageLocationsResponse", {"targets": list[str]}
-)
-
-
-AccountBrowseCloudStorageObjectsResponseEntriesItem = TypedDict(
-    "AccountBrowseCloudStorageObjectsResponseEntriesItem",
-    {
-        "kind": Literal["folder", "file"],
-        "name": str,
-        "key": str,
-        "size": NotRequired[float],
-        "updatedAt": NotRequired[str],
-    },
-)
-
-
-AccountBrowseCloudStorageObjectsResponse = TypedDict(
-    "AccountBrowseCloudStorageObjectsResponse",
-    {"entries": list[AccountBrowseCloudStorageObjectsResponseEntriesItem], "cursor": NotRequired[str]},
-)
-
-
-AccountRetrieveTrashResponseItemsItemParentProject = TypedDict(
-    "AccountRetrieveTrashResponseItemsItemParentProject", {"_id": str, "name": str, "slug": str}
-)
-
-
-AccountRetrieveTrashResponseItemsItem = TypedDict(
-    "AccountRetrieveTrashResponseItemsItem",
-    {
-        "_id": str,
-        "type": Literal["project", "dataset", "model"],
-        "name": str,
-        "slug": str,
-        "trashedAt": str,
-        "daysRemaining": int,
-        "cascadedCount": NotRequired[int],
-        "parentProject": NotRequired[AccountRetrieveTrashResponseItemsItemParentProject],
-        "sizeBytes": NotRequired[float],
-    },
-)
-
-
-AccountRetrieveTrashResponseSummaryByTypeProjects = TypedDict(
-    "AccountRetrieveTrashResponseSummaryByTypeProjects", {"count": int}
-)
-
-
-AccountRetrieveTrashResponseSummaryByTypeDatasets = TypedDict(
-    "AccountRetrieveTrashResponseSummaryByTypeDatasets", {"count": int, "sizeBytes": float}
-)
-
-
-AccountRetrieveTrashResponseSummaryByTypeModels = TypedDict(
-    "AccountRetrieveTrashResponseSummaryByTypeModels", {"count": int, "sizeBytes": float}
-)
-
-
-AccountRetrieveTrashResponseSummaryByTypeExports = TypedDict(
-    "AccountRetrieveTrashResponseSummaryByTypeExports", {"count": int, "sizeBytes": float}
-)
-
-
-AccountRetrieveTrashResponseSummaryByType = TypedDict(
-    "AccountRetrieveTrashResponseSummaryByType",
-    {
-        "projects": AccountRetrieveTrashResponseSummaryByTypeProjects,
-        "datasets": AccountRetrieveTrashResponseSummaryByTypeDatasets,
-        "models": AccountRetrieveTrashResponseSummaryByTypeModels,
-        "exports": AccountRetrieveTrashResponseSummaryByTypeExports,
-    },
-)
-
-
-AccountRetrieveTrashResponseSummary = TypedDict(
-    "AccountRetrieveTrashResponseSummary",
-    {"totalItems": int, "totalSizeBytes": float, "byType": AccountRetrieveTrashResponseSummaryByType},
-)
-
-
-AccountRetrieveTrashResponse = TypedDict(
-    "AccountRetrieveTrashResponse",
-    {
-        "items": list[AccountRetrieveTrashResponseItemsItem],
-        "total": float,
-        "page": int,
-        "limit": int,
-        "totalPages": int,
-        "summary": AccountRetrieveTrashResponseSummary,
-        "region": Literal["us", "eu", "ap"],
-    },
-)
-
-
-AccountRestoreTrashedItemResponse = TypedDict(
-    "AccountRestoreTrashedItemResponse", {"success": Literal[True], "restoredModels": NotRequired[int]}
-)
-
-
-AccountPermanentlyDeleteTrashedItemResponse = TypedDict(
-    "AccountPermanentlyDeleteTrashedItemResponse",
-    {"success": Literal[True], "deletedCount": int, "cascadedModels": NotRequired[int]},
-)
-
-
-AccountPermanentlyDeleteAllTrashedItemsResponseDeleted = TypedDict(
-    "AccountPermanentlyDeleteAllTrashedItemsResponseDeleted",
-    {"projects": int, "datasets": int, "models": int, "deployments": int},
-)
-
-
-AccountPermanentlyDeleteAllTrashedItemsResponse = TypedDict(
-    "AccountPermanentlyDeleteAllTrashedItemsResponse",
-    {"success": Literal[True], "deleted": AccountPermanentlyDeleteAllTrashedItemsResponseDeleted, "totalDeleted": int},
-)
-
-
-AccountRetrieveIfUsernameIsAvailableResponse = TypedDict(
-    "AccountRetrieveIfUsernameIsAvailableResponse",
-    {"available": bool, "error": NotRequired[str], "suggestion": NotRequired[str]},
-)
-
-
-AccountRetrievePublicUserProfileResponseUserSocials = TypedDict(
-    "AccountRetrievePublicUserProfileResponseUserSocials",
-    {
-        "github": NotRequired[str],
-        "linkedin": NotRequired[str],
-        "twitter": NotRequired[str],
-        "discord": NotRequired[str],
-        "youtube": NotRequired[str],
-        "scholar": NotRequired[str],
-        "website": NotRequired[str],
-    },
-)
-
-
-AccountRetrievePublicUserProfileResponseUser = TypedDict(
-    "AccountRetrievePublicUserProfileResponseUser",
-    {
-        "username": str,
-        "fullName": NotRequired[str],
-        "imageUrl": NotRequired[str],
-        "accountType": Literal["personal", "team"],
-        "iconColor": NotRequired[str],
-        "iconLetter": NotRequired[str],
-        "bio": NotRequired[str],
-        "company": NotRequired[str],
-        "useCase": NotRequired[str],
-        "socials": NotRequired[AccountRetrievePublicUserProfileResponseUserSocials],
-        "followerCount": int,
-        "isFollowed": bool,
-    },
-)
-
-
-AccountRetrievePublicUserProfileResponse = TypedDict(
-    "AccountRetrievePublicUserProfileResponse", {"user": AccountRetrievePublicUserProfileResponseUser}
-)
-
-
-AccountFollowOrUnfollowUserResponse = TypedDict(
-    "AccountFollowOrUnfollowUserResponse", {"followed": bool, "followerCount": int}
-)
-
-
-AccountUploadWorkspaceIconResponse = TypedDict(
-    "AccountUploadWorkspaceIconResponse", {"success": Literal[True], "downloadUrl": str}
-)
-
-
-AccountDeleteWorkspaceIconResponse = TypedDict("AccountDeleteWorkspaceIconResponse", {"success": Literal[True]})
-
-
-BillingRetrieveBalanceResponse = TypedDict(
-    "BillingRetrieveBalanceResponse", {"creditsCents": float, "plan": Literal["free", "pro", "enterprise"]}
-)
-
-
-BillingListTransactionsResponseTransactionsItemModel = TypedDict(
-    "BillingListTransactionsResponseTransactionsItemModel",
-    {
-        "name": str,
-        "slug": str,
-        "projectSlug": str,
-        "username": str,
-        "datasetId": NotRequired[str],
-        "gpuType": NotRequired[str],
-        "gpuDisplayName": NotRequired[str],
-        "startedAt": NotRequired[str],
-    },
-)
-
-
-BillingListTransactionsResponseTransactionsItem = TypedDict(
-    "BillingListTransactionsResponseTransactionsItem",
-    {
-        "id": str,
-        "type": str,
-        "amountCents": float,
-        "balanceAfter": float,
-        "modelId": NotRequired[str],
-        "datasetId": NotRequired[str],
-        "apiKeyId": NotRequired[str],
-        "runId": NotRequired[str],
-        "gpuType": NotRequired[str],
-        "gpuDisplayName": NotRequired[str],
-        "period": NotRequired[str],
-        "createdAt": str,
-        "receiptUrl": NotRequired[str | None],
-        "model": NotRequired[BillingListTransactionsResponseTransactionsItemModel | None],
-    },
-)
-
-
-BillingListTransactionsResponse = TypedDict(
-    "BillingListTransactionsResponse", {"transactions": list[BillingListTransactionsResponseTransactionsItem]}
-)
-
-
-BillingListUsageSummaryResponsePlan = TypedDict(
-    "BillingListUsageSummaryResponsePlan",
-    {
-        "planId": Literal["free", "pro", "enterprise"],
-        "name": str,
-        "status": Literal["active", "past_due"],
-        "cancelAtPeriodEnd": bool,
-        "paymentFailedAt": NotRequired[str],
-        "billingCycle": NotRequired[Literal["monthly", "yearly"]],
-        "currentPeriodEnd": NotRequired[str],
-        "enterpriseLicenseEnd": NotRequired[str],
-        "licenseExpired": NotRequired[bool],
-    },
-)
-
-
-BillingListUsageSummaryResponseMetricsItem = TypedDict(
-    "BillingListUsageSummaryResponseMetricsItem",
-    {
-        "metricId": Literal["storage_bytes"],
-        "kind": Literal["GAUGE"],
-        "period": Literal["NONE"],
-        "limit": float,
-        "used": float,
-        "remaining": float,
-        "overageAllowed": bool,
-    },
-)
-
-
-BillingListUsageSummaryResponseTrainingCredit = TypedDict(
-    "BillingListUsageSummaryResponseTrainingCredit", {"monthlyGrant": float, "balanceAvailable": float}
-)
-
-
-BillingListUsageSummaryResponseFeatures = TypedDict(
-    "BillingListUsageSummaryResponseFeatures", {"privateProjects": bool, "teams": bool, "enterpriseLicense": bool}
-)
-
-
-BillingListUsageSummaryResponse = TypedDict(
-    "BillingListUsageSummaryResponse",
-    {
-        "plan": BillingListUsageSummaryResponsePlan,
-        "metrics": list[BillingListUsageSummaryResponseMetricsItem],
-        "trainingCredit": BillingListUsageSummaryResponseTrainingCredit,
-        "features": BillingListUsageSummaryResponseFeatures,
-        "creditsCents": float,
-        "paidSeats": NotRequired[float],
-        "currentSeats": NotRequired[float],
-        "maxSeats": NotRequired[float],
-        "nextInvoiceCents": NotRequired[float],
-    },
-)
-
-
-ActivityListResponseVariant1EventsItem = TypedDict(
-    "ActivityListResponseVariant1EventsItem",
-    {
-        "_id": str,
-        "userId": str,
-        "userEmail": str,
-        "userName": str,
-        "action": Literal[
-            "created",
-            "updated",
-            "deleted",
-            "trashed",
-            "restored",
-            "started",
-            "completed",
-            "failed",
-            "cancelled",
-            "uploaded",
-            "shared",
-            "unshared",
-            "exported",
-            "cloned",
-            "analyzed",
-        ],
-        "resourceType": Literal[
-            "project", "dataset", "model", "training", "export", "deployment", "settings", "onboarding", "api_key"
-        ],
-        "resourceId": NotRequired[str],
-        "resourceName": NotRequired[str],
-        "metadata": NotRequired[dict[str, Any] | None],
-        "timestamp": str,
-        "seen": bool,
-        "archived": bool,
-    },
-)
-
-
-ActivityListResponseVariant1 = TypedDict(
-    "ActivityListResponseVariant1",
-    {"events": list[ActivityListResponseVariant1EventsItem], "total": float, "unseenCount": float},
-)
-
-
-ActivityListResponseVariant2Filters = TypedDict(
-    "ActivityListResponseVariant2Filters",
-    {"archived": bool, "search": NotRequired[str], "start": NotRequired[str], "end": NotRequired[str]},
-)
-
-
-ActivityListResponseVariant2ActivityItem = TypedDict(
-    "ActivityListResponseVariant2ActivityItem",
-    {
-        "_id": str,
-        "userId": str,
-        "userEmail": str,
-        "userName": str,
-        "action": Literal[
-            "created",
-            "updated",
-            "deleted",
-            "trashed",
-            "restored",
-            "started",
-            "completed",
-            "failed",
-            "cancelled",
-            "uploaded",
-            "shared",
-            "unshared",
-            "exported",
-            "cloned",
-            "analyzed",
-        ],
-        "resourceType": Literal[
-            "project", "dataset", "model", "training", "export", "deployment", "settings", "onboarding", "api_key"
-        ],
-        "resourceId": NotRequired[str],
-        "resourceName": NotRequired[str],
-        "metadata": NotRequired[dict[str, Any] | None],
-        "timestamp": str,
-        "seen": bool,
-        "archived": bool,
-    },
-)
-
-
-ActivityListResponseVariant2 = TypedDict(
-    "ActivityListResponseVariant2",
-    {
-        "exportedAt": str,
-        "app": Literal["alpha"],
-        "owner": str,
-        "filters": ActivityListResponseVariant2Filters,
-        "activity": list[ActivityListResponseVariant2ActivityItem],
-    },
-)
-
-
-ActivityListResponse = ActivityListResponseVariant1 | ActivityListResponseVariant2
-
-
-ActivityCreateMarkSeenResponse = TypedDict("ActivityCreateMarkSeenResponse", {"success": Literal[True]})
-
-
-ActivityArchiveResponse = TypedDict("ActivityArchiveResponse", {"success": Literal[True]})
-
-
-ExploreRetrieveSearchResponseProjectsItem = TypedDict(
-    "ExploreRetrieveSearchResponseProjectsItem",
-    {
-        "_id": str,
-        "slug": str,
-        "name": str,
-        "description": NotRequired[str | None],
-        "username": str,
-        "visibility": Literal["public", "private"],
-        "iconColor": NotRequired[str],
-        "iconLetter": NotRequired[str | None],
-        "iconImage": NotRequired[str],
-        "modelCount": int,
-        "modelNames": list[str],
-        "totalBytes": float,
-        "starCount": int,
-        "userImageUrl": NotRequired[str],
-        "updatedAt": str,
-    },
-)
-
-
-ExploreRetrieveSearchResponseDatasetsItemSplits = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItemSplits", {"train": float, "val": float, "test": float, "labeled": float}
-)
-
-
-ExploreRetrieveSearchResponseDatasetsItemSampleImagesItemLabelsItem = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItemSampleImagesItemLabelsItem",
-    {
-        "classId": float,
-        "bbox": NotRequired[list[float]],
-        "segments": NotRequired[list[float]],
-        "keypoints": NotRequired[list[float]],
-        "obb": NotRequired[list[float]],
-        "skeletonId": NotRequired[str],
-    },
-)
-
-
-ExploreRetrieveSearchResponseDatasetsItemSampleImagesItem = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItemSampleImagesItem",
-    {
-        "url": str,
-        "imageUrl": NotRequired[str],
-        "width": float,
-        "height": float,
-        "labels": NotRequired[list[ExploreRetrieveSearchResponseDatasetsItemSampleImagesItemLabelsItem]],
-    },
-)
-
-
-ExploreRetrieveSearchResponseDatasetsItem = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItem",
-    {
-        "_id": str,
-        "slug": str,
-        "name": str,
-        "description": NotRequired[str | None],
-        "username": str,
-        "visibility": Literal["public", "private"],
-        "imageCount": int,
-        "classCount": NotRequired[int | None],
-        "classNames": NotRequired[list[str] | None],
-        "classColors": NotRequired[dict[str, str]],
-        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
-        "totalBytes": NotRequired[float],
-        "tags": NotRequired[list[str] | None],
-        "splits": NotRequired[ExploreRetrieveSearchResponseDatasetsItemSplits],
-        "kptShape": NotRequired[list[Any] | None],
-        "starCount": int,
-        "sampleImages": list[ExploreRetrieveSearchResponseDatasetsItemSampleImagesItem],
-        "userImageUrl": NotRequired[str],
-        "updatedAt": str,
-    },
-)
-
-
-ExploreRetrieveSearchResponse = TypedDict(
-    "ExploreRetrieveSearchResponse",
-    {
-        "projects": list[ExploreRetrieveSearchResponseProjectsItem],
-        "datasets": list[ExploreRetrieveSearchResponseDatasetsItem],
-        "hasMore": bool,
-    },
-)
-
-
-ExploreRetrieveSidebarResponseProjectsItem = TypedDict(
-    "ExploreRetrieveSidebarResponseProjectsItem",
-    {
-        "_id": str,
-        "slug": str,
-        "name": str,
-        "modelCount": int,
-        "iconColor": NotRequired[str],
-        "iconLetter": NotRequired[str],
-        "iconImage": NotRequired[str],
-    },
-)
-
-
-ExploreRetrieveSidebarResponseDatasetsItem = TypedDict(
-    "ExploreRetrieveSidebarResponseDatasetsItem",
-    {"_id": str, "slug": str, "name": str, "imageCount": NotRequired[int], "thumbnail": NotRequired[str]},
-)
-
-
-ExploreRetrieveSidebarResponse = TypedDict(
-    "ExploreRetrieveSidebarResponse",
-    {
-        "projects": list[ExploreRetrieveSidebarResponseProjectsItem],
-        "datasets": list[ExploreRetrieveSidebarResponseDatasetsItem],
-    },
-)
-
-
 UploadRetrieveFileUrlResponse = TypedDict(
     "UploadRetrieveFileUrlResponse", {"sessionId": str, "uploadUrl": str, "expiresAt": str}
 )
@@ -3339,73 +2383,137 @@ UploadCompleteResponse = TypedDict(
 )
 
 
-TeamsListResponseTeamsItem = TypedDict(
-    "TeamsListResponseTeamsItem",
+StorageIntegrationsListCloudStorageIntegrationsResponseIntegrationsItem = TypedDict(
+    "StorageIntegrationsListCloudStorageIntegrationsResponseIntegrationsItem",
     {
-        "userId": str,
-        "username": str,
-        "fullName": NotRequired[str],
-        "imageUrl": NotRequired[str],
-        "iconColor": NotRequired[str],
-        "iconLetter": NotRequired[str],
-        "plan": Literal["free", "pro", "enterprise"],
+        "id": str,
+        "provider": Literal["gcs", "s3", "azure"],
+        "credentialIdentity": str,
+        "targets": list[str],
+        "createdAt": str,
+    },
+)
+
+
+StorageIntegrationsListCloudStorageIntegrationsResponse = TypedDict(
+    "StorageIntegrationsListCloudStorageIntegrationsResponse",
+    {"integrations": list[StorageIntegrationsListCloudStorageIntegrationsResponseIntegrationsItem]},
+)
+
+
+StorageIntegrationsConnectCloudStorageResponse = TypedDict(
+    "StorageIntegrationsConnectCloudStorageResponse",
+    {
+        "id": str,
+        "provider": Literal["gcs", "s3", "azure"],
+        "credentialIdentity": str,
+        "targets": list[str],
+        "createdAt": str,
+    },
+)
+
+
+StorageIntegrationsDiscoverCloudStorageLocationsResponse = TypedDict(
+    "StorageIntegrationsDiscoverCloudStorageLocationsResponse", {"targets": list[str]}
+)
+
+
+StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem = TypedDict(
+    "StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem",
+    {
+        "kind": Literal["folder", "file"],
+        "name": str,
+        "key": str,
+        "size": NotRequired[float],
+        "updatedAt": NotRequired[str],
+    },
+)
+
+
+StorageIntegrationsBrowseCloudStorageObjectsResponse = TypedDict(
+    "StorageIntegrationsBrowseCloudStorageObjectsResponse",
+    {"entries": list[StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem], "cursor": NotRequired[str]},
+)
+
+
+LifecycleRetrieveTrashResponseItemsItemParentProject = TypedDict(
+    "LifecycleRetrieveTrashResponseItemsItemParentProject", {"_id": str, "name": str, "slug": str}
+)
+
+
+LifecycleRetrieveTrashResponseItemsItem = TypedDict(
+    "LifecycleRetrieveTrashResponseItemsItem",
+    {
+        "_id": str,
+        "type": Literal["project", "dataset", "model"],
+        "name": str,
+        "slug": str,
+        "trashedAt": str,
+        "daysRemaining": int,
+        "cascadedCount": NotRequired[int],
+        "parentProject": NotRequired[LifecycleRetrieveTrashResponseItemsItemParentProject],
+        "sizeBytes": NotRequired[float],
+    },
+)
+
+
+LifecycleRetrieveTrashResponseSummaryByTypeProjects = TypedDict(
+    "LifecycleRetrieveTrashResponseSummaryByTypeProjects", {"count": int}
+)
+
+
+LifecycleRetrieveTrashResponseSummaryByTypeDatasets = TypedDict(
+    "LifecycleRetrieveTrashResponseSummaryByTypeDatasets", {"count": int, "sizeBytes": float}
+)
+
+
+LifecycleRetrieveTrashResponseSummaryByTypeModels = TypedDict(
+    "LifecycleRetrieveTrashResponseSummaryByTypeModels", {"count": int, "sizeBytes": float}
+)
+
+
+LifecycleRetrieveTrashResponseSummaryByTypeExports = TypedDict(
+    "LifecycleRetrieveTrashResponseSummaryByTypeExports", {"count": int, "sizeBytes": float}
+)
+
+
+LifecycleRetrieveTrashResponseSummaryByType = TypedDict(
+    "LifecycleRetrieveTrashResponseSummaryByType",
+    {
+        "projects": LifecycleRetrieveTrashResponseSummaryByTypeProjects,
+        "datasets": LifecycleRetrieveTrashResponseSummaryByTypeDatasets,
+        "models": LifecycleRetrieveTrashResponseSummaryByTypeModels,
+        "exports": LifecycleRetrieveTrashResponseSummaryByTypeExports,
+    },
+)
+
+
+LifecycleRetrieveTrashResponseSummary = TypedDict(
+    "LifecycleRetrieveTrashResponseSummary",
+    {"totalItems": int, "totalSizeBytes": float, "byType": LifecycleRetrieveTrashResponseSummaryByType},
+)
+
+
+LifecycleRetrieveTrashResponse = TypedDict(
+    "LifecycleRetrieveTrashResponse",
+    {
+        "items": list[LifecycleRetrieveTrashResponseItemsItem],
+        "total": float,
+        "page": int,
+        "limit": int,
+        "totalPages": int,
+        "summary": LifecycleRetrieveTrashResponseSummary,
         "region": Literal["us", "eu", "ap"],
-        "role": str,
-        "deniedReason": NotRequired[str],
     },
 )
 
 
-TeamsListResponse = TypedDict("TeamsListResponse", {"teams": list[TeamsListResponseTeamsItem]})
-
-
-TeamsCreateResponseTeam = TypedDict(
-    "TeamsCreateResponseTeam",
-    {
-        "userId": str,
-        "username": str,
-        "fullName": str,
-        "iconColor": str,
-        "iconLetter": str,
-        "plan": str,
-        "region": str,
-        "role": str,
-    },
+LifecycleRestoreTrashedItemResponse = TypedDict(
+    "LifecycleRestoreTrashedItemResponse", {"success": Literal[True], "restoredModels": NotRequired[int]}
 )
 
 
-TeamsCreateResponse = TypedDict("TeamsCreateResponse", {"team": TeamsCreateResponseTeam})
-
-
-TeamsListMembersResponseMembersItem = TypedDict(
-    "TeamsListMembersResponseMembersItem",
-    {
-        "userId": NotRequired[str],
-        "username": str,
-        "email": str,
-        "role": str,
-        "status": Literal["pending", "active"],
-        "joinedAt": str,
-        "imageUrl": NotRequired[str],
-        "invitedBy": NotRequired[str],
-        "inviteId": NotRequired[str],
-        "inviteCreatedAt": NotRequired[str],
-    },
+LifecyclePermanentlyDeleteTrashedItemResponse = TypedDict(
+    "LifecyclePermanentlyDeleteTrashedItemResponse",
+    {"success": Literal[True], "deletedCount": int, "cascadedModels": NotRequired[int]},
 )
-
-
-TeamsListMembersResponse = TypedDict(
-    "TeamsListMembersResponse", {"members": list[TeamsListMembersResponseMembersItem], "maxSeats": float}
-)
-
-
-TeamsInviteResponse = TypedDict("TeamsInviteResponse", {"invited": Literal[True], "email": str})
-
-
-TeamsChangeMemberRoleResponse = TypedDict("TeamsChangeMemberRoleResponse", {"success": Literal[True]})
-
-
-TeamsRemoveMemberOrLeaveResponse = TypedDict("TeamsRemoveMemberOrLeaveResponse", {"success": Literal[True]})
-
-
-TeamsTransferOwnershipResponse = TypedDict("TeamsTransferOwnershipResponse", {"success": Literal[True]})

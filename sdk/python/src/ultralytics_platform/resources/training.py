@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 from .._client import (
     NOT_GIVEN,
@@ -23,16 +23,50 @@ class Training:
         self._client = client
 
     def start(
-        self, *, model_id: str, train_args: dict[str, Any], gpu_type: str | NotGiven = NOT_GIVEN
+        self,
+        *,
+        model_id: str,
+        train_args: dict[str, Any],
+        gpu_type: Literal[
+            "rtx-2000-ada",
+            "rtx-a4500",
+            "rtx-a5000",
+            "rtx-4000-ada",
+            "l4",
+            "a40",
+            "rtx-3090",
+            "rtx-a6000",
+            "rtx-pro-4000",
+            "rtx-pro-4500",
+            "rtx-4090",
+            "rtx-6000-ada",
+            "l40s",
+            "rtx-pro-5000",
+            "rtx-5090",
+            "l40",
+            "a100-80gb-pcie",
+            "a100-80gb-sxm",
+            "rtx-pro-6000",
+            "h100-pcie",
+            "h100-nvl",
+            "h100-sxm",
+            "h200-nvl",
+            "h200-sxm",
+            "b200",
+            "b300",
+        ]
+        | NotGiven = NOT_GIVEN,
+        capture_dataset_version: bool | NotGiven = NOT_GIVEN,
     ) -> TrainingStartResponse:
         """Start cloud training.
 
         Launches YOLO training on a cloud GPU. Training costs are deducted from your credit balance based on GPU type and duration.
 
         Args:
-            model_id (str): Model to train (name or ID)
-            gpu_type (str, optional): GPU to use (default: rtx-4090). Options: rtx-4090, a100, h100
-            train_args (dict[str, Any]): trainArgs request value.
+            model_id (str): Model ID to train
+            gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300"], optional): Cloud GPU to use
+            capture_dataset_version (bool, optional): Save an immutable dataset version for this run
+            train_args (dict[str, Any]): YOLO training arguments
 
         Returns:
             (TrainingStartResponse): The API response.
@@ -46,12 +80,19 @@ class Training:
                 "POST",
                 "/api/training/start",
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "gpuType": gpu_type, "trainArgs": train_args},
+                json={
+                    "modelId": model_id,
+                    "gpuType": gpu_type,
+                    "captureDatasetVersion": capture_dataset_version,
+                    "trainArgs": train_args,
+                },
             ),
         )
 
     def retrieve_gpu_availability(self) -> TrainingRetrieveGpuAvailabilityResponse:
         """Get GPU availability.
+
+        Returns current cloud training capacity for each supported GPU type.
 
         Returns:
             (TrainingRetrieveGpuAvailabilityResponse): The API response.
@@ -71,16 +112,50 @@ class AsyncTraining:
         self._client = client
 
     async def start(
-        self, *, model_id: str, train_args: dict[str, Any], gpu_type: str | NotGiven = NOT_GIVEN
+        self,
+        *,
+        model_id: str,
+        train_args: dict[str, Any],
+        gpu_type: Literal[
+            "rtx-2000-ada",
+            "rtx-a4500",
+            "rtx-a5000",
+            "rtx-4000-ada",
+            "l4",
+            "a40",
+            "rtx-3090",
+            "rtx-a6000",
+            "rtx-pro-4000",
+            "rtx-pro-4500",
+            "rtx-4090",
+            "rtx-6000-ada",
+            "l40s",
+            "rtx-pro-5000",
+            "rtx-5090",
+            "l40",
+            "a100-80gb-pcie",
+            "a100-80gb-sxm",
+            "rtx-pro-6000",
+            "h100-pcie",
+            "h100-nvl",
+            "h100-sxm",
+            "h200-nvl",
+            "h200-sxm",
+            "b200",
+            "b300",
+        ]
+        | NotGiven = NOT_GIVEN,
+        capture_dataset_version: bool | NotGiven = NOT_GIVEN,
     ) -> TrainingStartResponse:
         """Start cloud training.
 
         Launches YOLO training on a cloud GPU. Training costs are deducted from your credit balance based on GPU type and duration.
 
         Args:
-            model_id (str): Model to train (name or ID)
-            gpu_type (str, optional): GPU to use (default: rtx-4090). Options: rtx-4090, a100, h100
-            train_args (dict[str, Any]): trainArgs request value.
+            model_id (str): Model ID to train
+            gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300"], optional): Cloud GPU to use
+            capture_dataset_version (bool, optional): Save an immutable dataset version for this run
+            train_args (dict[str, Any]): YOLO training arguments
 
         Returns:
             (TrainingStartResponse): The API response.
@@ -94,12 +169,19 @@ class AsyncTraining:
                 "POST",
                 "/api/training/start",
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "gpuType": gpu_type, "trainArgs": train_args},
+                json={
+                    "modelId": model_id,
+                    "gpuType": gpu_type,
+                    "captureDatasetVersion": capture_dataset_version,
+                    "trainArgs": train_args,
+                },
             ),
         )
 
     async def retrieve_gpu_availability(self) -> TrainingRetrieveGpuAvailabilityResponse:
         """Get GPU availability.
+
+        Returns current cloud training capacity for each supported GPU type.
 
         Returns:
             (TrainingRetrieveGpuAvailabilityResponse): The API response.

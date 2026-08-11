@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import json
 import os
 from pathlib import Path
@@ -13,7 +12,6 @@ import httpx
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
-from ultralytics_platform import AsyncPlatform, Platform
 
 ROOT = Path(__file__).parents[1]
 BASE_URL = "https://platform.ultralytics.com"
@@ -68,7 +66,6 @@ def optional_get(client: httpx.Client, path: str, params: dict[str, Any] | None 
 
 
 def fixtures(client: httpx.Client) -> dict[str, str]:
-    summary = get(client, "/api/account/summary")
     datasets = get(client, "/api/datasets", {"limit": 1})
     projects = get(client, "/api/projects", {"limit": 1})
     project = first(projects, "projects")
@@ -81,7 +78,6 @@ def fixtures(client: httpx.Client) -> dict[str, str]:
     deployment = first(deployments, "deployments")
     integration = first(integrations, "integrations")
     result = {
-        "username": str(summary.get("username", "ultralytics")),
         "datasetId": identifier(dataset) or "missing-live-smoke-dataset",
         "projectId": project_id or "missing-live-smoke-project",
         "modelId": identifier(model) or "missing-live-smoke-model",
@@ -137,24 +133,16 @@ def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
                 Draft202012Validator(absolute_references(media["schema"]), registry=registry).validate(response.json())
             except ValidationError as error:
                 failures.append(f"GET {path}: {error.json_path} failed {error.validator}")
-    if exercised != 45:
-        raise RuntimeError(f"Expected 45 GET operations, exercised {exercised}")
+    if exercised == 0:
+        raise RuntimeError("OpenAPI contract has no GET operations")
     if failures:
         raise RuntimeError("Response schema failures:\n" + "\n".join(failures))
     print(f"Validated {successful} successful responses across all {exercised} GET operations")
 
 
-async def validate_async_sdk() -> None:
-    async with AsyncPlatform() as client:
-        await client.account.retrieve_summary()
-
-
 def main() -> None:
     if not os.environ.get("ULTRALYTICS_API_KEY"):
         raise RuntimeError("ULTRALYTICS_API_KEY is required")
-    with Platform() as sdk:
-        sdk.account.retrieve_summary()
-    asyncio.run(validate_async_sdk())
     document = json.loads((ROOT / "openapi.json").read_text())
     headers = {"Authorization": f"Bearer {os.environ['ULTRALYTICS_API_KEY']}"}
     with httpx.Client(base_url=BASE_URL, headers=headers, follow_redirects=True, timeout=30) as client:

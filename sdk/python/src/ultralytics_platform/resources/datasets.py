@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, BinaryIO, Literal, cast
+from typing import Any, Literal, cast
 
 from .._client import (
     NOT_GIVEN,
@@ -16,11 +16,9 @@ from ..types import (
     DatasetsCloneResponse,
     DatasetsCreateEmbeddingsResponse,
     DatasetsCreateExportResponse,
-    DatasetsCreateIconResponse,
     DatasetsCreateResponse,
     DatasetsDeleteClassesResponse,
     DatasetsDeleteEmbeddingsResponse,
-    DatasetsDeleteIconResponse,
     DatasetsDeleteResponse,
     DatasetsImportFromRoboflowResponse,
     DatasetsIngestResponse,
@@ -53,9 +51,8 @@ class Datasets:
         self,
         *,
         limit: int | None = None,
-        username: str | None = None,
         owner: str | None = None,
-        region: str | None = None,
+        region: Literal["us", "eu", "ap"] | None = None,
         include_image_urls: bool | None = None,
         include_samples: bool | None = None,
     ) -> DatasetsListResponse:
@@ -65,9 +62,8 @@ class Datasets:
 
         Args:
             limit (int, optional): Number of results to return (default 1000)
-            username (str, optional): Show datasets from this user instead of your own
             owner (str, optional): Team workspace to browse
-            region (str, optional): Data region: us, eu, or ap
+            region (Literal["us", "eu", "ap"], optional): Data region: us, eu, or ap
             include_image_urls (bool, optional): Set true to include signed full-size sample image URLs (thumbnail fallback)
             include_samples (bool, optional): Set false to omit sample images from the response
 
@@ -85,7 +81,6 @@ class Datasets:
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("owner", owner, style="form", explode=True),
                     *_query_parameter("region", region, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
@@ -99,13 +94,13 @@ class Datasets:
         *,
         slug: str,
         name: str,
-        task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"],
-        image_count: int,
-        format: Literal["yolo", "coco", "voc", "raw", "ndjson"],
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
+        task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
+        image_count: int | NotGiven = NOT_GIVEN,
         class_names: list[str] | NotGiven = NOT_GIVEN,
+        format: Literal["yolo", "coco", "voc", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
         tags: list[str] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
@@ -132,17 +127,19 @@ class Datasets:
     ) -> DatasetsCreateResponse:
         """Create a new dataset.
 
+        Creates an empty dataset in your personal workspace or a team workspace.
+
         Args:
-            slug (str): slug request value.
-            name (str): name request value.
-            description (str, optional): description request value.
+            slug (str): URL slug
+            name (str): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"]): Dataset task type (depth coming soon)
-            image_count (int): imageCount request value.
-            class_names (list[str], optional): classNames request value.
-            format (Literal["yolo", "coco", "voc", "raw", "ndjson"]): Dataset annotation format
-            tags (list[str], optional): tags request value.
+            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
+            image_count (int, optional): Number of images
+            class_names (list[str], optional): Class names
+            format (Literal["yolo", "coco", "voc", "raw", "ndjson"], optional): Dataset annotation format
+            tags (list[str], optional): Resource tags
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner (str, optional): Team owner username (creates resource in their workspace)
 
@@ -175,14 +172,13 @@ class Datasets:
             ),
         )
 
-    def retrieve(self, dataset_id: str, *, username: str | None = None) -> DatasetsRetrieveResponse:
+    def retrieve(self, dataset_id: str) -> DatasetsRetrieveResponse:
         """Get dataset details.
 
         Returns full details for a dataset including class names, split counts, and sample images.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Owner username when using a dataset slug instead of an ID
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsRetrieveResponse): The API response.
@@ -196,7 +192,6 @@ class Datasets:
                 "GET",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
@@ -242,19 +237,19 @@ class Datasets:
         Update dataset properties like name, description, metadata, visibility, tags, or class names.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            name (str, optional): name request value.
-            description (str, optional): description request value.
+            dataset_id (str): Dataset ID
+            name (str, optional): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
-            class_names (list[str], optional): classNames request value.
-            class_colors (dict[str, Any], optional): classColors request value.
+            tags (list[str], optional): Resource tags
+            class_names (list[str], optional): Class names
+            class_colors (dict[str, Any], optional): Class colors keyed by class name
             format (Literal["yolo", "coco", "voc", "raw", "ndjson"], optional): Dataset annotation format
             task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
-            icon_color (str, optional): iconColor request value.
-            icon_letter (str | Literal[""], optional): iconLetter request value.
+            icon_color (str, optional): Icon color
+            icon_letter (str | Literal[""], optional): Icon letter
 
         Returns:
             (DatasetsUpdateResponse): The API response.
@@ -291,7 +286,7 @@ class Datasets:
         Moves the dataset to trash. It can be restored within 30 days before permanent deletion.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsDeleteResponse): The API response.
@@ -314,7 +309,7 @@ class Datasets:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsRetrieveMetadataResponse): The API response.
@@ -347,13 +342,13 @@ class Datasets:
         Copies a public, owned, or shared dataset into your account or a workspace.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            name (str, optional): name request value.
-            slug (str, optional): slug request value.
-            description (str, optional): description request value.
+            dataset_id (str): Dataset ID
+            name (str, optional): Resource name
+            slug (str, optional): URL slug
+            description (str, optional): Resource description
             visibility (Literal["public", "private"], optional): Resource visibility
-            license (str, optional): license request value.
-            owner (str, optional): owner request value.
+            license (str, optional): License identifier
+            owner (str, optional): Workspace username
 
         Returns:
             (DatasetsCloneResponse): The API response.
@@ -384,7 +379,7 @@ class Datasets:
         Returns per-class annotation counts, image dimension distributions, and location heatmap data.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsRetrieveClassStatsResponse): The API response.
@@ -409,9 +404,9 @@ class Datasets:
         Reassigns annotations from source classes to a target class, removes the source classes, and shifts remaining class IDs. This operation is not idempotent; re-fetch the dataset before retrying.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            source_class_ids (list[int]): sourceClassIds request value.
-            target_class_id (int): targetClassId request value.
+            dataset_id (str): Dataset ID
+            source_class_ids (list[int]): Source Class IDS
+            target_class_id (int): Target Class ID
 
         Returns:
             (DatasetsMergeClassesResponse): The API response.
@@ -435,8 +430,8 @@ class Datasets:
         Deletes annotations in the selected classes, removes the classes, and shifts remaining class IDs.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            class_ids (list[int]): classIds request value.
+            dataset_id (str): Dataset ID
+            class_ids (list[int]): Class IDS
 
         Returns:
             (DatasetsDeleteClassesResponse): The API response.
@@ -462,7 +457,7 @@ class Datasets:
         Randomly reassigns images to train, validation, and test splits using percentages that total 100.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
             train (int): Train split percentage
             val (int): Validation split percentage
             test (int): Test split percentage
@@ -487,7 +482,6 @@ class Datasets:
         self,
         dataset_id: str,
         *,
-        username: str | None = None,
         limit: float | None = None,
         offset: float | None = None,
         cursor: str | None = None,
@@ -515,16 +509,13 @@ class Datasets:
         include_thumbnails: bool | None = None,
         include_image_urls: bool | None = None,
         include_labels: bool | None = None,
-        overlay_labels: bool | None = None,
-        for_export: bool | None = None,
     ) -> DatasetsListImagesResponse:
         """List images in a dataset.
 
-        Returns paginated dataset images. Labels are omitted by default and only included as capped preview annotations when includeLabels=true or overlayLabels=true.
+        Returns paginated dataset images. Labels are omitted by default and only included as capped preview annotations when includeLabels=true.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Owner username for public dataset access
+            dataset_id (str): Dataset ID
             limit (float, optional): Number of images to return (default 50, max 5000)
             offset (float, optional): Skip this many images for pagination
             cursor (str, optional): Cursor from a previous response for efficient newest/oldest pagination
@@ -538,8 +529,6 @@ class Datasets:
             include_thumbnails (bool, optional): Set false to omit signed thumbnail URLs
             include_image_urls (bool, optional): Set true to include signed full-size image URLs
             include_labels (bool, optional): Set true to include capped preview labels
-            overlay_labels (bool, optional): Alias for includeLabels used by gallery overlays
-            for_export (bool, optional): Set true to include full labels and image URLs for export-style consumers
 
         Returns:
             (DatasetsListImagesResponse): The API response.
@@ -554,7 +543,6 @@ class Datasets:
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/images",
                 auth=("Authorization", "Bearer "),
                 params=[
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                     *_query_parameter("offset", offset, style="form", explode=True),
                     *_query_parameter("cursor", cursor, style="form", explode=True),
@@ -568,8 +556,6 @@ class Datasets:
                     *_query_parameter("includeThumbnails", include_thumbnails, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
                     *_query_parameter("includeLabels", include_labels, style="form", explode=True),
-                    *_query_parameter("overlayLabels", overlay_labels, style="form", explode=True),
-                    *_query_parameter("forExport", for_export, style="form", explode=True),
                 ],
             ),
         )
@@ -579,26 +565,20 @@ class Datasets:
         dataset_id: str,
         *,
         image_ids: list[str],
-        username: str | None = None,
         include_labels: bool | None = None,
-        overlay_labels: bool | None = None,
         include_thumbnails: bool | None = None,
         include_image_urls: bool | None = None,
-        for_export: bool | None = None,
-        sort: str | None = None,
     ) -> DatasetsRetrieveSelectedImagesResponse:
         """Get selected dataset images.
 
+        Returns selected dataset images by ID with optional labels and signed URLs.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
-            include_labels (bool, optional): includeLabels query parameter.
-            overlay_labels (bool, optional): overlayLabels query parameter.
-            include_thumbnails (bool, optional): includeThumbnails query parameter.
-            include_image_urls (bool, optional): includeImageUrls query parameter.
-            for_export (bool, optional): forExport query parameter.
-            sort (str, optional): sort query parameter.
-            image_ids (list[str]): imageIds request value.
+            dataset_id (str): Dataset ID
+            include_labels (bool, optional): Include Labels
+            include_thumbnails (bool, optional): Include Thumbnails
+            include_image_urls (bool, optional): Include Image URLS
+            image_ids (list[str]): Image IDs
 
         Returns:
             (DatasetsRetrieveSelectedImagesResponse): The API response.
@@ -613,13 +593,9 @@ class Datasets:
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/images",
                 auth=("Authorization", "Bearer "),
                 params=[
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("includeLabels", include_labels, style="form", explode=True),
-                    *_query_parameter("overlayLabels", overlay_labels, style="form", explode=True),
                     *_query_parameter("includeThumbnails", include_thumbnails, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
-                    *_query_parameter("forExport", for_export, style="form", explode=True),
-                    *_query_parameter("sort", sort, style="form", explode=True),
                 ],
                 json={"imageIds": image_ids},
             ),
@@ -631,7 +607,7 @@ class Datasets:
         Returns a signed URL for the current dataset or a saved version snapshot.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
             v (int, optional): Saved version number
 
         Returns:
@@ -658,8 +634,8 @@ class Datasets:
         Creates an immutable numbered snapshot and returns its signed NDJSON download URL.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            description (str, optional): description request value.
+            dataset_id (str): Dataset ID
+            description (str, optional): Resource description
 
         Returns:
             (DatasetsCreateExportResponse): The API response.
@@ -680,10 +656,12 @@ class Datasets:
     def update_export(self, dataset_id: str, *, version: int, description: str) -> DatasetsUpdateExportResponse:
         """Update a dataset version description.
 
+        Updates the description stored on an existing saved dataset version.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            version (int): version request value.
-            description (str): description request value.
+            dataset_id (str): Dataset ID
+            version (int): Version identifier
+            description (str): Resource description
 
         Returns:
             (DatasetsUpdateExportResponse): The API response.
@@ -752,14 +730,13 @@ class Datasets:
             ),
         )
 
-    def retrieve_embeddings(
-        self, dataset_id: str, *, username: str | None = None
-    ) -> DatasetsRetrieveEmbeddingsResponse:
+    def retrieve_embeddings(self, dataset_id: str) -> DatasetsRetrieveEmbeddingsResponse:
         """Get dataset analysis status.
 
+        Returns the current embedding analysis status for a dataset.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsRetrieveEmbeddingsResponse): The API response.
@@ -773,16 +750,16 @@ class Datasets:
                 "GET",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/embeddings",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
-    def create_embeddings(self, dataset_id: str, *, username: str | None = None) -> DatasetsCreateEmbeddingsResponse:
+    def create_embeddings(self, dataset_id: str) -> DatasetsCreateEmbeddingsResponse:
         """Analyze dataset embeddings.
 
+        Starts embedding extraction and clustering for a dataset.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsCreateEmbeddingsResponse): The API response.
@@ -796,16 +773,16 @@ class Datasets:
                 "POST",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/embeddings",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
-    def delete_embeddings(self, dataset_id: str, *, username: str | None = None) -> DatasetsDeleteEmbeddingsResponse:
+    def delete_embeddings(self, dataset_id: str) -> DatasetsDeleteEmbeddingsResponse:
         """Cancel dataset analysis.
 
+        Cancels an active dataset embedding analysis job.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsDeleteEmbeddingsResponse): The API response.
@@ -819,20 +796,20 @@ class Datasets:
                 "DELETE",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/embeddings",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
     def retrieve_images_clustering(
-        self, dataset_id: str, *, username: str | None = None, offset: int | None = None, limit: int | None = None
+        self, dataset_id: str, *, offset: int | None = None, limit: int | None = None
     ) -> DatasetsRetrieveImagesClusteringResponse:
         """Get dataset clustering layout.
 
+        Returns clustered image coordinates for visualizing a completed dataset analysis.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
-            offset (int, optional): offset query parameter.
-            limit (int, optional): limit query parameter.
+            dataset_id (str): Dataset ID
+            offset (int, optional): Offset
+            limit (int, optional): Limit
 
         Returns:
             (DatasetsRetrieveImagesClusteringResponse): The API response.
@@ -847,19 +824,19 @@ class Datasets:
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/images/clustering",
                 auth=("Authorization", "Bearer "),
                 params=[
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("offset", offset, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                 ],
             ),
         )
 
-    def list_models(self, dataset_id: str, *, username: str | None = None) -> DatasetsListModelsResponse:
+    def list_models(self, dataset_id: str) -> DatasetsListModelsResponse:
         """List models trained on a dataset.
 
+        Returns models whose training data references the selected dataset.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsListModelsResponse): The API response.
@@ -873,16 +850,17 @@ class Datasets:
                 "GET",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/models",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
     def restore(self, dataset_id: str, *, version: int) -> DatasetsRestoreResponse:
         """Restore a saved dataset version.
 
+        Restores dataset files, labels, and metadata from a previously saved version.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            version (int): version request value.
+            dataset_id (str): Dataset ID
+            version (int): Version identifier
 
         Returns:
             (DatasetsRestoreResponse): The API response.
@@ -905,9 +883,11 @@ class Datasets:
     ) -> DatasetsPreviewRoboflowImportResponse:
         """Preview a Roboflow import.
 
+        Validates a Roboflow API key and lists datasets available for import.
+
         Args:
             owner (str, optional): Workspace username
-            api_key (str): apiKey request value.
+            api_key (str): API key
 
         Returns:
             (DatasetsPreviewRoboflowImportResponse): The API response.
@@ -931,10 +911,12 @@ class Datasets:
     ) -> DatasetsImportFromRoboflowResponse:
         """Import datasets from Roboflow.
 
+        Imports selected Roboflow dataset versions into an Ultralytics workspace.
+
         Args:
             owner (str, optional): Workspace username
-            api_key (str): apiKey request value.
-            items (list[dict[str, Any]]): items request value.
+            api_key (str): API key
+            items (list[dict[str, Any]]): Items
 
         Returns:
             (DatasetsImportFromRoboflowResponse): The API response.
@@ -953,60 +935,6 @@ class Datasets:
             ),
         )
 
-    def create_icon(
-        self,
-        dataset_id: str,
-        *,
-        image: BinaryIO,
-        icon_color: str | NotGiven = NOT_GIVEN,
-        icon_letter: str | NotGiven = NOT_GIVEN,
-    ) -> DatasetsCreateIconResponse:
-        """Upload a dataset icon.
-
-        Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            image (BinaryIO): WebP image, maximum 5 MB
-            icon_color (str, optional): iconColor request value.
-            icon_letter (str, optional): iconLetter request value.
-
-        Returns:
-            (DatasetsCreateIconResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            DatasetsCreateIconResponse,
-            self._client.request(
-                "POST",
-                f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/icon",
-                auth=("Authorization", "Bearer "),
-                data={"iconColor": icon_color, "iconLetter": icon_letter},
-                files={"image": image},
-            ),
-        )
-
-    def delete_icon(self, dataset_id: str) -> DatasetsDeleteIconResponse:
-        """Delete a dataset icon.
-
-        Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-
-        Returns:
-            (DatasetsDeleteIconResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            DatasetsDeleteIconResponse,
-            self._client.request(
-                "DELETE",
-                f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/icon",
-                auth=("Authorization", "Bearer "),
-            ),
-        )
-
 
 class AsyncDatasets:
     """Asynchronous Datasets API operations."""
@@ -1018,9 +946,8 @@ class AsyncDatasets:
         self,
         *,
         limit: int | None = None,
-        username: str | None = None,
         owner: str | None = None,
-        region: str | None = None,
+        region: Literal["us", "eu", "ap"] | None = None,
         include_image_urls: bool | None = None,
         include_samples: bool | None = None,
     ) -> DatasetsListResponse:
@@ -1030,9 +957,8 @@ class AsyncDatasets:
 
         Args:
             limit (int, optional): Number of results to return (default 1000)
-            username (str, optional): Show datasets from this user instead of your own
             owner (str, optional): Team workspace to browse
-            region (str, optional): Data region: us, eu, or ap
+            region (Literal["us", "eu", "ap"], optional): Data region: us, eu, or ap
             include_image_urls (bool, optional): Set true to include signed full-size sample image URLs (thumbnail fallback)
             include_samples (bool, optional): Set false to omit sample images from the response
 
@@ -1050,7 +976,6 @@ class AsyncDatasets:
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("owner", owner, style="form", explode=True),
                     *_query_parameter("region", region, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
@@ -1064,13 +989,13 @@ class AsyncDatasets:
         *,
         slug: str,
         name: str,
-        task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"],
-        image_count: int,
-        format: Literal["yolo", "coco", "voc", "raw", "ndjson"],
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
+        task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
+        image_count: int | NotGiven = NOT_GIVEN,
         class_names: list[str] | NotGiven = NOT_GIVEN,
+        format: Literal["yolo", "coco", "voc", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
         tags: list[str] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
@@ -1097,17 +1022,19 @@ class AsyncDatasets:
     ) -> DatasetsCreateResponse:
         """Create a new dataset.
 
+        Creates an empty dataset in your personal workspace or a team workspace.
+
         Args:
-            slug (str): slug request value.
-            name (str): name request value.
-            description (str, optional): description request value.
+            slug (str): URL slug
+            name (str): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"]): Dataset task type (depth coming soon)
-            image_count (int): imageCount request value.
-            class_names (list[str], optional): classNames request value.
-            format (Literal["yolo", "coco", "voc", "raw", "ndjson"]): Dataset annotation format
-            tags (list[str], optional): tags request value.
+            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
+            image_count (int, optional): Number of images
+            class_names (list[str], optional): Class names
+            format (Literal["yolo", "coco", "voc", "raw", "ndjson"], optional): Dataset annotation format
+            tags (list[str], optional): Resource tags
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner (str, optional): Team owner username (creates resource in their workspace)
 
@@ -1140,14 +1067,13 @@ class AsyncDatasets:
             ),
         )
 
-    async def retrieve(self, dataset_id: str, *, username: str | None = None) -> DatasetsRetrieveResponse:
+    async def retrieve(self, dataset_id: str) -> DatasetsRetrieveResponse:
         """Get dataset details.
 
         Returns full details for a dataset including class names, split counts, and sample images.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Owner username when using a dataset slug instead of an ID
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsRetrieveResponse): The API response.
@@ -1161,7 +1087,6 @@ class AsyncDatasets:
                 "GET",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
@@ -1207,19 +1132,19 @@ class AsyncDatasets:
         Update dataset properties like name, description, metadata, visibility, tags, or class names.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            name (str, optional): name request value.
-            description (str, optional): description request value.
+            dataset_id (str): Dataset ID
+            name (str, optional): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
-            class_names (list[str], optional): classNames request value.
-            class_colors (dict[str, Any], optional): classColors request value.
+            tags (list[str], optional): Resource tags
+            class_names (list[str], optional): Class names
+            class_colors (dict[str, Any], optional): Class colors keyed by class name
             format (Literal["yolo", "coco", "voc", "raw", "ndjson"], optional): Dataset annotation format
             task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
-            icon_color (str, optional): iconColor request value.
-            icon_letter (str | Literal[""], optional): iconLetter request value.
+            icon_color (str, optional): Icon color
+            icon_letter (str | Literal[""], optional): Icon letter
 
         Returns:
             (DatasetsUpdateResponse): The API response.
@@ -1256,7 +1181,7 @@ class AsyncDatasets:
         Moves the dataset to trash. It can be restored within 30 days before permanent deletion.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsDeleteResponse): The API response.
@@ -1279,7 +1204,7 @@ class AsyncDatasets:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsRetrieveMetadataResponse): The API response.
@@ -1312,13 +1237,13 @@ class AsyncDatasets:
         Copies a public, owned, or shared dataset into your account or a workspace.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            name (str, optional): name request value.
-            slug (str, optional): slug request value.
-            description (str, optional): description request value.
+            dataset_id (str): Dataset ID
+            name (str, optional): Resource name
+            slug (str, optional): URL slug
+            description (str, optional): Resource description
             visibility (Literal["public", "private"], optional): Resource visibility
-            license (str, optional): license request value.
-            owner (str, optional): owner request value.
+            license (str, optional): License identifier
+            owner (str, optional): Workspace username
 
         Returns:
             (DatasetsCloneResponse): The API response.
@@ -1349,7 +1274,7 @@ class AsyncDatasets:
         Returns per-class annotation counts, image dimension distributions, and location heatmap data.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsRetrieveClassStatsResponse): The API response.
@@ -1374,9 +1299,9 @@ class AsyncDatasets:
         Reassigns annotations from source classes to a target class, removes the source classes, and shifts remaining class IDs. This operation is not idempotent; re-fetch the dataset before retrying.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            source_class_ids (list[int]): sourceClassIds request value.
-            target_class_id (int): targetClassId request value.
+            dataset_id (str): Dataset ID
+            source_class_ids (list[int]): Source Class IDS
+            target_class_id (int): Target Class ID
 
         Returns:
             (DatasetsMergeClassesResponse): The API response.
@@ -1400,8 +1325,8 @@ class AsyncDatasets:
         Deletes annotations in the selected classes, removes the classes, and shifts remaining class IDs.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            class_ids (list[int]): classIds request value.
+            dataset_id (str): Dataset ID
+            class_ids (list[int]): Class IDS
 
         Returns:
             (DatasetsDeleteClassesResponse): The API response.
@@ -1427,7 +1352,7 @@ class AsyncDatasets:
         Randomly reassigns images to train, validation, and test splits using percentages that total 100.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
             train (int): Train split percentage
             val (int): Validation split percentage
             test (int): Test split percentage
@@ -1452,7 +1377,6 @@ class AsyncDatasets:
         self,
         dataset_id: str,
         *,
-        username: str | None = None,
         limit: float | None = None,
         offset: float | None = None,
         cursor: str | None = None,
@@ -1480,16 +1404,13 @@ class AsyncDatasets:
         include_thumbnails: bool | None = None,
         include_image_urls: bool | None = None,
         include_labels: bool | None = None,
-        overlay_labels: bool | None = None,
-        for_export: bool | None = None,
     ) -> DatasetsListImagesResponse:
         """List images in a dataset.
 
-        Returns paginated dataset images. Labels are omitted by default and only included as capped preview annotations when includeLabels=true or overlayLabels=true.
+        Returns paginated dataset images. Labels are omitted by default and only included as capped preview annotations when includeLabels=true.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Owner username for public dataset access
+            dataset_id (str): Dataset ID
             limit (float, optional): Number of images to return (default 50, max 5000)
             offset (float, optional): Skip this many images for pagination
             cursor (str, optional): Cursor from a previous response for efficient newest/oldest pagination
@@ -1503,8 +1424,6 @@ class AsyncDatasets:
             include_thumbnails (bool, optional): Set false to omit signed thumbnail URLs
             include_image_urls (bool, optional): Set true to include signed full-size image URLs
             include_labels (bool, optional): Set true to include capped preview labels
-            overlay_labels (bool, optional): Alias for includeLabels used by gallery overlays
-            for_export (bool, optional): Set true to include full labels and image URLs for export-style consumers
 
         Returns:
             (DatasetsListImagesResponse): The API response.
@@ -1519,7 +1438,6 @@ class AsyncDatasets:
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/images",
                 auth=("Authorization", "Bearer "),
                 params=[
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                     *_query_parameter("offset", offset, style="form", explode=True),
                     *_query_parameter("cursor", cursor, style="form", explode=True),
@@ -1533,8 +1451,6 @@ class AsyncDatasets:
                     *_query_parameter("includeThumbnails", include_thumbnails, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
                     *_query_parameter("includeLabels", include_labels, style="form", explode=True),
-                    *_query_parameter("overlayLabels", overlay_labels, style="form", explode=True),
-                    *_query_parameter("forExport", for_export, style="form", explode=True),
                 ],
             ),
         )
@@ -1544,26 +1460,20 @@ class AsyncDatasets:
         dataset_id: str,
         *,
         image_ids: list[str],
-        username: str | None = None,
         include_labels: bool | None = None,
-        overlay_labels: bool | None = None,
         include_thumbnails: bool | None = None,
         include_image_urls: bool | None = None,
-        for_export: bool | None = None,
-        sort: str | None = None,
     ) -> DatasetsRetrieveSelectedImagesResponse:
         """Get selected dataset images.
 
+        Returns selected dataset images by ID with optional labels and signed URLs.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
-            include_labels (bool, optional): includeLabels query parameter.
-            overlay_labels (bool, optional): overlayLabels query parameter.
-            include_thumbnails (bool, optional): includeThumbnails query parameter.
-            include_image_urls (bool, optional): includeImageUrls query parameter.
-            for_export (bool, optional): forExport query parameter.
-            sort (str, optional): sort query parameter.
-            image_ids (list[str]): imageIds request value.
+            dataset_id (str): Dataset ID
+            include_labels (bool, optional): Include Labels
+            include_thumbnails (bool, optional): Include Thumbnails
+            include_image_urls (bool, optional): Include Image URLS
+            image_ids (list[str]): Image IDs
 
         Returns:
             (DatasetsRetrieveSelectedImagesResponse): The API response.
@@ -1578,13 +1488,9 @@ class AsyncDatasets:
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/images",
                 auth=("Authorization", "Bearer "),
                 params=[
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("includeLabels", include_labels, style="form", explode=True),
-                    *_query_parameter("overlayLabels", overlay_labels, style="form", explode=True),
                     *_query_parameter("includeThumbnails", include_thumbnails, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
-                    *_query_parameter("forExport", for_export, style="form", explode=True),
-                    *_query_parameter("sort", sort, style="form", explode=True),
                 ],
                 json={"imageIds": image_ids},
             ),
@@ -1596,7 +1502,7 @@ class AsyncDatasets:
         Returns a signed URL for the current dataset or a saved version snapshot.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
+            dataset_id (str): Dataset ID
             v (int, optional): Saved version number
 
         Returns:
@@ -1623,8 +1529,8 @@ class AsyncDatasets:
         Creates an immutable numbered snapshot and returns its signed NDJSON download URL.
 
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            description (str, optional): description request value.
+            dataset_id (str): Dataset ID
+            description (str, optional): Resource description
 
         Returns:
             (DatasetsCreateExportResponse): The API response.
@@ -1645,10 +1551,12 @@ class AsyncDatasets:
     async def update_export(self, dataset_id: str, *, version: int, description: str) -> DatasetsUpdateExportResponse:
         """Update a dataset version description.
 
+        Updates the description stored on an existing saved dataset version.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            version (int): version request value.
-            description (str): description request value.
+            dataset_id (str): Dataset ID
+            version (int): Version identifier
+            description (str): Resource description
 
         Returns:
             (DatasetsUpdateExportResponse): The API response.
@@ -1717,14 +1625,13 @@ class AsyncDatasets:
             ),
         )
 
-    async def retrieve_embeddings(
-        self, dataset_id: str, *, username: str | None = None
-    ) -> DatasetsRetrieveEmbeddingsResponse:
+    async def retrieve_embeddings(self, dataset_id: str) -> DatasetsRetrieveEmbeddingsResponse:
         """Get dataset analysis status.
 
+        Returns the current embedding analysis status for a dataset.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsRetrieveEmbeddingsResponse): The API response.
@@ -1738,18 +1645,16 @@ class AsyncDatasets:
                 "GET",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/embeddings",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
-    async def create_embeddings(
-        self, dataset_id: str, *, username: str | None = None
-    ) -> DatasetsCreateEmbeddingsResponse:
+    async def create_embeddings(self, dataset_id: str) -> DatasetsCreateEmbeddingsResponse:
         """Analyze dataset embeddings.
 
+        Starts embedding extraction and clustering for a dataset.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsCreateEmbeddingsResponse): The API response.
@@ -1763,18 +1668,16 @@ class AsyncDatasets:
                 "POST",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/embeddings",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
-    async def delete_embeddings(
-        self, dataset_id: str, *, username: str | None = None
-    ) -> DatasetsDeleteEmbeddingsResponse:
+    async def delete_embeddings(self, dataset_id: str) -> DatasetsDeleteEmbeddingsResponse:
         """Cancel dataset analysis.
 
+        Cancels an active dataset embedding analysis job.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsDeleteEmbeddingsResponse): The API response.
@@ -1788,20 +1691,20 @@ class AsyncDatasets:
                 "DELETE",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/embeddings",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
     async def retrieve_images_clustering(
-        self, dataset_id: str, *, username: str | None = None, offset: int | None = None, limit: int | None = None
+        self, dataset_id: str, *, offset: int | None = None, limit: int | None = None
     ) -> DatasetsRetrieveImagesClusteringResponse:
         """Get dataset clustering layout.
 
+        Returns clustered image coordinates for visualizing a completed dataset analysis.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
-            offset (int, optional): offset query parameter.
-            limit (int, optional): limit query parameter.
+            dataset_id (str): Dataset ID
+            offset (int, optional): Offset
+            limit (int, optional): Limit
 
         Returns:
             (DatasetsRetrieveImagesClusteringResponse): The API response.
@@ -1816,19 +1719,19 @@ class AsyncDatasets:
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/images/clustering",
                 auth=("Authorization", "Bearer "),
                 params=[
-                    *_query_parameter("username", username, style="form", explode=True),
                     *_query_parameter("offset", offset, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                 ],
             ),
         )
 
-    async def list_models(self, dataset_id: str, *, username: str | None = None) -> DatasetsListModelsResponse:
+    async def list_models(self, dataset_id: str) -> DatasetsListModelsResponse:
         """List models trained on a dataset.
 
+        Returns models whose training data references the selected dataset.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            username (str, optional): Dataset owner's username
+            dataset_id (str): Dataset ID
 
         Returns:
             (DatasetsListModelsResponse): The API response.
@@ -1842,16 +1745,17 @@ class AsyncDatasets:
                 "GET",
                 f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/models",
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
     async def restore(self, dataset_id: str, *, version: int) -> DatasetsRestoreResponse:
         """Restore a saved dataset version.
 
+        Restores dataset files, labels, and metadata from a previously saved version.
+
         Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            version (int): version request value.
+            dataset_id (str): Dataset ID
+            version (int): Version identifier
 
         Returns:
             (DatasetsRestoreResponse): The API response.
@@ -1874,9 +1778,11 @@ class AsyncDatasets:
     ) -> DatasetsPreviewRoboflowImportResponse:
         """Preview a Roboflow import.
 
+        Validates a Roboflow API key and lists datasets available for import.
+
         Args:
             owner (str, optional): Workspace username
-            api_key (str): apiKey request value.
+            api_key (str): API key
 
         Returns:
             (DatasetsPreviewRoboflowImportResponse): The API response.
@@ -1900,10 +1806,12 @@ class AsyncDatasets:
     ) -> DatasetsImportFromRoboflowResponse:
         """Import datasets from Roboflow.
 
+        Imports selected Roboflow dataset versions into an Ultralytics workspace.
+
         Args:
             owner (str, optional): Workspace username
-            api_key (str): apiKey request value.
-            items (list[dict[str, Any]]): items request value.
+            api_key (str): API key
+            items (list[dict[str, Any]]): Items
 
         Returns:
             (DatasetsImportFromRoboflowResponse): The API response.
@@ -1919,59 +1827,5 @@ class AsyncDatasets:
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("owner", owner, style="form", explode=True)],
                 json={"apiKey": api_key, "items": items},
-            ),
-        )
-
-    async def create_icon(
-        self,
-        dataset_id: str,
-        *,
-        image: BinaryIO,
-        icon_color: str | NotGiven = NOT_GIVEN,
-        icon_letter: str | NotGiven = NOT_GIVEN,
-    ) -> DatasetsCreateIconResponse:
-        """Upload a dataset icon.
-
-        Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-            image (BinaryIO): WebP image, maximum 5 MB
-            icon_color (str, optional): iconColor request value.
-            icon_letter (str, optional): iconLetter request value.
-
-        Returns:
-            (DatasetsCreateIconResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            DatasetsCreateIconResponse,
-            await self._client.request(
-                "POST",
-                f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/icon",
-                auth=("Authorization", "Bearer "),
-                data={"iconColor": icon_color, "iconLetter": icon_letter},
-                files={"image": image},
-            ),
-        )
-
-    async def delete_icon(self, dataset_id: str) -> DatasetsDeleteIconResponse:
-        """Delete a dataset icon.
-
-        Args:
-            dataset_id (str): Dataset URL name or ID, e.g. `my-dataset` from platform.ultralytics.com/username/datasets/my-dataset
-
-        Returns:
-            (DatasetsDeleteIconResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            DatasetsDeleteIconResponse,
-            await self._client.request(
-                "DELETE",
-                f"/api/datasets/{_path_parameter(dataset_id, explode=False, allow_reserved=False)}/icon",
-                auth=("Authorization", "Bearer "),
             ),
         )

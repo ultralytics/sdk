@@ -34,15 +34,19 @@ class Deployments:
         self._client = client
 
     def list(
-        self, *, model_id: str | None = None, status: str | None = None, limit: float | None = None
+        self,
+        *,
+        model_id: str | None = None,
+        status: Literal["creating", "ready", "stopped", "failed"] | None = None,
+        limit: float | None = None,
     ) -> DeploymentsListResponse:
         """List your deployments.
 
         Returns your deployed inference endpoints.
 
         Args:
-            model_id (str, optional): Filter by model (name or ID)
-            status (str, optional): Filter by status: creating, ready, stopped, failed
+            model_id (str, optional): Filter by model ID
+            status (Literal["creating", "ready", "stopped", "failed"], optional): Deployment status filter
             limit (float, optional): Number of results to return (default 20, max 100)
 
         Returns:
@@ -120,9 +124,9 @@ class Deployments:
         Creates a dedicated inference endpoint for a model. The endpoint runs on Google Cloud and scales automatically.
 
         Args:
-            model_id (str): modelId request value.
-            name (str): name request value.
-            region (Literal["asia-east1", "asia-northeast1", "asia-northeast2", "asia-south1", "asia-southeast3", "europe-north1", "europe-north2", "europe-southwest1", "europe-west1", "europe-west4", "europe-west8", "europe-west9", "me-west1", "northamerica-south1", "us-central1", "us-east1", "us-east4", "us-east5", "us-south1", "us-west1", "africa-south1", "asia-east2", "asia-northeast3", "asia-southeast1", "asia-southeast2", "asia-south2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-west10", "europe-west12", "europe-west2", "europe-west3", "europe-west6", "me-central1", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "southamerica-west1", "us-west2", "us-west3", "us-west4"]): region request value.
+            model_id (str): Model ID
+            name (str): Resource name
+            region (Literal["asia-east1", "asia-northeast1", "asia-northeast2", "asia-south1", "asia-southeast3", "europe-north1", "europe-north2", "europe-southwest1", "europe-west1", "europe-west4", "europe-west8", "europe-west9", "me-west1", "northamerica-south1", "us-central1", "us-east1", "us-east4", "us-east5", "us-south1", "us-west1", "africa-south1", "asia-east2", "asia-northeast3", "asia-southeast1", "asia-southeast2", "asia-south2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-west10", "europe-west12", "europe-west2", "europe-west3", "europe-west6", "me-central1", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "southamerica-west1", "us-west2", "us-west3", "us-west4"]): Cloud region
 
         Returns:
             (DeploymentsCreateResponse): The API response.
@@ -146,7 +150,7 @@ class Deployments:
         Returns deployment configuration, status, and service URL.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsRetrieveResponse): The API response.
@@ -171,8 +175,8 @@ class Deployments:
         Rolls out a new model revision while preserving the deployment ID, region, API key, and endpoint URL. An optional name is applied when the replacement becomes ready. The current revision continues serving until then.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
-            model_id (str): modelId request value.
+            deployment_id (str): Deployment ID
+            model_id (str): Model ID
             name (str, optional): Optional new deployment display name
 
         Returns:
@@ -197,7 +201,7 @@ class Deployments:
         Permanently stops and removes the inference endpoint. This cannot be undone.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsDeleteResponse): The API response.
@@ -232,7 +236,7 @@ class Deployments:
         Send multipart/form-data with a file or source plus optional conf, iou, imgsz, normalize, and decimals fields to your dedicated deployment endpoint.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
             conf (float, optional): Confidence threshold (default 0.25)
             iou (float, optional): IoU threshold (default 0.7)
             imgsz (int, optional): Inference image size (default 640)
@@ -261,9 +265,9 @@ class Deployments:
                     "normalize": normalize,
                     "decimals": decimals,
                     "bits": bits,
-                    "file": file,
                     "source": source,
                 },
+                files={"file": file},
             ),
         )
 
@@ -273,7 +277,7 @@ class Deployments:
         Pings the deployment endpoint and returns response time. Also warms up cold instances.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsRetrieveHealthResponse): The API response.
@@ -302,7 +306,7 @@ class Deployments:
         Returns request volume, latency percentiles, error rates, and resource utilization over time.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
             range (Literal["1h", "6h", "24h", "7d", "30d"], optional): Time window (default: 24h)
             sparkline (bool, optional): Return the compact 24-hour dashboard summary
 
@@ -338,7 +342,7 @@ class Deployments:
         Returns recent log entries from the deployment service for debugging.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
             severity (str, optional): Comma-separated levels: DEBUG, INFO, WARNING, ERROR, or CRITICAL
             limit (float, optional): Number of log entries (default 50, max 200)
             page_token (str, optional): Token for loading more entries
@@ -369,7 +373,7 @@ class Deployments:
         Resumes a previously stopped deployment. Takes 1-2 minutes to become ready.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsStartResponse): The API response.
@@ -392,7 +396,7 @@ class Deployments:
         Stops the deployment to save costs. No charges while stopped. Can be restarted anytime.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsStopResponse): The API response.
@@ -417,15 +421,19 @@ class AsyncDeployments:
         self._client = client
 
     async def list(
-        self, *, model_id: str | None = None, status: str | None = None, limit: float | None = None
+        self,
+        *,
+        model_id: str | None = None,
+        status: Literal["creating", "ready", "stopped", "failed"] | None = None,
+        limit: float | None = None,
     ) -> DeploymentsListResponse:
         """List your deployments.
 
         Returns your deployed inference endpoints.
 
         Args:
-            model_id (str, optional): Filter by model (name or ID)
-            status (str, optional): Filter by status: creating, ready, stopped, failed
+            model_id (str, optional): Filter by model ID
+            status (Literal["creating", "ready", "stopped", "failed"], optional): Deployment status filter
             limit (float, optional): Number of results to return (default 20, max 100)
 
         Returns:
@@ -503,9 +511,9 @@ class AsyncDeployments:
         Creates a dedicated inference endpoint for a model. The endpoint runs on Google Cloud and scales automatically.
 
         Args:
-            model_id (str): modelId request value.
-            name (str): name request value.
-            region (Literal["asia-east1", "asia-northeast1", "asia-northeast2", "asia-south1", "asia-southeast3", "europe-north1", "europe-north2", "europe-southwest1", "europe-west1", "europe-west4", "europe-west8", "europe-west9", "me-west1", "northamerica-south1", "us-central1", "us-east1", "us-east4", "us-east5", "us-south1", "us-west1", "africa-south1", "asia-east2", "asia-northeast3", "asia-southeast1", "asia-southeast2", "asia-south2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-west10", "europe-west12", "europe-west2", "europe-west3", "europe-west6", "me-central1", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "southamerica-west1", "us-west2", "us-west3", "us-west4"]): region request value.
+            model_id (str): Model ID
+            name (str): Resource name
+            region (Literal["asia-east1", "asia-northeast1", "asia-northeast2", "asia-south1", "asia-southeast3", "europe-north1", "europe-north2", "europe-southwest1", "europe-west1", "europe-west4", "europe-west8", "europe-west9", "me-west1", "northamerica-south1", "us-central1", "us-east1", "us-east4", "us-east5", "us-south1", "us-west1", "africa-south1", "asia-east2", "asia-northeast3", "asia-southeast1", "asia-southeast2", "asia-south2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-west10", "europe-west12", "europe-west2", "europe-west3", "europe-west6", "me-central1", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "southamerica-west1", "us-west2", "us-west3", "us-west4"]): Cloud region
 
         Returns:
             (DeploymentsCreateResponse): The API response.
@@ -529,7 +537,7 @@ class AsyncDeployments:
         Returns deployment configuration, status, and service URL.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsRetrieveResponse): The API response.
@@ -554,8 +562,8 @@ class AsyncDeployments:
         Rolls out a new model revision while preserving the deployment ID, region, API key, and endpoint URL. An optional name is applied when the replacement becomes ready. The current revision continues serving until then.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
-            model_id (str): modelId request value.
+            deployment_id (str): Deployment ID
+            model_id (str): Model ID
             name (str, optional): Optional new deployment display name
 
         Returns:
@@ -580,7 +588,7 @@ class AsyncDeployments:
         Permanently stops and removes the inference endpoint. This cannot be undone.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsDeleteResponse): The API response.
@@ -615,7 +623,7 @@ class AsyncDeployments:
         Send multipart/form-data with a file or source plus optional conf, iou, imgsz, normalize, and decimals fields to your dedicated deployment endpoint.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
             conf (float, optional): Confidence threshold (default 0.25)
             iou (float, optional): IoU threshold (default 0.7)
             imgsz (int, optional): Inference image size (default 640)
@@ -644,9 +652,9 @@ class AsyncDeployments:
                     "normalize": normalize,
                     "decimals": decimals,
                     "bits": bits,
-                    "file": file,
                     "source": source,
                 },
+                files={"file": file},
             ),
         )
 
@@ -656,7 +664,7 @@ class AsyncDeployments:
         Pings the deployment endpoint and returns response time. Also warms up cold instances.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsRetrieveHealthResponse): The API response.
@@ -685,7 +693,7 @@ class AsyncDeployments:
         Returns request volume, latency percentiles, error rates, and resource utilization over time.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
             range (Literal["1h", "6h", "24h", "7d", "30d"], optional): Time window (default: 24h)
             sparkline (bool, optional): Return the compact 24-hour dashboard summary
 
@@ -721,7 +729,7 @@ class AsyncDeployments:
         Returns recent log entries from the deployment service for debugging.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
             severity (str, optional): Comma-separated levels: DEBUG, INFO, WARNING, ERROR, or CRITICAL
             limit (float, optional): Number of log entries (default 50, max 200)
             page_token (str, optional): Token for loading more entries
@@ -752,7 +760,7 @@ class AsyncDeployments:
         Resumes a previously stopped deployment. Takes 1-2 minutes to become ready.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsStartResponse): The API response.
@@ -775,7 +783,7 @@ class AsyncDeployments:
         Stops the deployment to save costs. No charges while stopped. Can be restarted anytime.
 
         Args:
-            deployment_id (str): Deployment URL name or ID
+            deployment_id (str): Deployment ID
 
         Returns:
             (DeploymentsStopResponse): The API response.

@@ -17,14 +17,12 @@ from ..types import (
     ModelsCreateResponse,
     ModelsDeleteResponse,
     ModelsDeleteTrainingResponse,
-    ModelsListCompletedResponse,
     ModelsListResponse,
     ModelsPredictResponse,
     ModelsRetrieveFilesResponse,
     ModelsRetrieveMetadataResponse,
     ModelsRetrieveResponse,
     ModelsRetrieveTrainingResponse,
-    ModelsTrackDownloadResponse,
     ModelsUpdateResponse,
 )
 
@@ -36,25 +34,14 @@ class Models:
         self._client = client
 
     def list(
-        self,
-        *,
-        project_id: str | None = None,
-        username: str | None = None,
-        project_slug: str | None = None,
-        slug: str | None = None,
-        limit: float | None = None,
-        fields: str | None = None,
-        ids: str | None = None,
+        self, *, project_id: str, limit: float | None = None, fields: str | None = None, ids: str | None = None
     ) -> ModelsListResponse:
         """List models in a project.
 
-        Returns models for a project. Specify the project by name or ID.
+        Returns models for a project ID.
 
         Args:
-            project_id (str, optional): Project name or ID; required when listing models
-            username (str, optional): Project owner's username (for browsing other users' public models)
-            project_slug (str, optional): Project name, e.g. `my-project` (use with username)
-            slug (str, optional): Model name (use with username and projectSlug for a single-model lookup)
+            project_id (str): Project ID
             limit (float, optional): Number of results to return (default 20, max 100)
             fields (str, optional): Response detail level: 'summary' or 'charts'
             ids (str, optional): Comma-separated model IDs to return
@@ -73,9 +60,6 @@ class Models:
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("projectId", project_id, style="form", explode=True),
-                    *_query_parameter("username", username, style="form", explode=True),
-                    *_query_parameter("projectSlug", project_slug, style="form", explode=True),
-                    *_query_parameter("slug", slug, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                     *_query_parameter("fields", fields, style="form", explode=True),
                     *_query_parameter("ids", ids, style="form", explode=True),
@@ -106,20 +90,20 @@ class Models:
         Creates a model inside a project. The model can then be trained or have weights uploaded.
 
         Args:
-            project_id (str): projectId request value.
-            slug (str, optional): slug request value.
-            name (str, optional): name request value.
-            description (str, optional): description request value.
+            project_id (str): Project ID
+            slug (str, optional): URL slug
+            name (str, optional): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): YOLO task type
             train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            train_results (list[dict[str, Any]], optional): trainResults request value.
-            epochs (float, optional): epochs request value.
-            metrics (dict[str, Any], optional): metrics request value.
-            version (str, optional): version request value.
+            train_results (list[dict[str, Any]], optional): Per-epoch training results
+            epochs (float, optional): Epochs
+            metrics (dict[str, Any], optional): Metrics
+            version (str, optional): Version identifier
             docs (str, optional): Documentation URL from .pt file
             environment (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            completed_at (str, optional): completedAt request value.
+            completed_at (str, optional): Completed At
 
         Returns:
             (ModelsCreateResponse): The API response.
@@ -152,48 +136,13 @@ class Models:
             ),
         )
 
-    def list_completed(self, *, owner: str | None = None) -> ModelsListCompletedResponse:
-        """List usable models across projects.
-
-        Returns models with usable weights across the account or workspace for training and deployment.
-
-        Args:
-            owner (str, optional): Workspace username
-
-        Returns:
-            (ModelsListCompletedResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsListCompletedResponse,
-            self._client.request(
-                "GET",
-                "/api/models/completed",
-                auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("owner", owner, style="form", explode=True)],
-            ),
-        )
-
-    def retrieve(
-        self,
-        model_id: str,
-        *,
-        username: str | None = None,
-        project: str | None = None,
-        project_id: str | None = None,
-        analysis: Literal["1"] | None = None,
-    ) -> ModelsRetrieveResponse:
+    def retrieve(self, model_id: str, *, analysis: Literal["1"] | None = None) -> ModelsRetrieveResponse:
         """Get model details.
 
         Returns model details including training status, per-epoch metrics, validation plots, and file info. Pass `analysis=1` to instead return the per-image validation analysis: worst and best cohorts with up to 100 example images each, TP/FP/FN/F1 at IoU 0.50, image traits, and trait-vs-F1 comparisons.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            username (str, optional): Owner username when using a model slug instead of an ID
-            project (str, optional): Project slug or ID used to disambiguate model slugs
-            project_id (str, optional): Alias of `project` accepted by the route
+            model_id (str): Model ID
             analysis (Literal["1"], optional): Return the per-image validation analysis, not model details
 
         Returns:
@@ -208,12 +157,7 @@ class Models:
                 "GET",
                 f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("username", username, style="form", explode=True),
-                    *_query_parameter("project", project, style="form", explode=True),
-                    *_query_parameter("projectId", project_id, style="form", explode=True),
-                    *_query_parameter("analysis", analysis, style="form", explode=True),
-                ],
+                params=[*_query_parameter("analysis", analysis, style="form", explode=True)],
             ),
         )
 
@@ -257,21 +201,21 @@ class Models:
         Update model properties like name, description, metadata, or training status.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            name (str, optional): name request value.
-            color (str | None, optional): color request value.
-            description (str, optional): description request value.
+            model_id (str): Model ID
+            name (str, optional): Resource name
+            color (str | None, optional): Display color
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional): Training/model status
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            dataset_slug (str | None, optional): datasetSlug request value.
+            dataset_slug (str | None, optional): Dataset URL slug
             train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            train_results (list[dict[str, Any]], optional): trainResults request value.
-            epochs (float, optional): epochs request value.
-            best_epoch (float, optional): bestEpoch request value.
-            best_fitness (float, optional): bestFitness request value.
-            version (str, optional): version request value.
-            training_error (dict[str, Any], optional): trainingError request value.
+            train_results (list[dict[str, Any]], optional): Per-epoch training results
+            epochs (float, optional): Epochs
+            best_epoch (float, optional): Best Epoch
+            best_fitness (float, optional): Best Fitness
+            version (str, optional): Version identifier
+            training_error (dict[str, Any], optional): Training failure details
 
         Returns:
             (ModelsUpdateResponse): The API response.
@@ -310,7 +254,7 @@ class Models:
         Moves the model to trash. Can be restored within 30 days.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
 
         Returns:
             (ModelsDeleteResponse): The API response.
@@ -333,7 +277,7 @@ class Models:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
 
         Returns:
             (ModelsRetrieveMetadataResponse): The API response.
@@ -364,11 +308,11 @@ class Models:
         Copies a public, owned, or shared model into an existing project.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            target_project_slug (str): targetProjectSlug request value.
-            model_name (str, optional): modelName request value.
-            description (str, optional): description request value.
-            owner (str, optional): owner request value.
+            model_id (str): Model ID
+            target_project_slug (str): Target project URL slug
+            model_name (str, optional): Model name
+            description (str, optional): Resource description
+            owner (str, optional): Workspace username
 
         Returns:
             (ModelsCloneResponse): The API response.
@@ -397,7 +341,7 @@ class Models:
         Returns signed download URLs for model weights and exported files. URLs are valid for 1 hour.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
 
         Returns:
             (ModelsRetrieveFilesResponse): The API response.
@@ -432,7 +376,7 @@ class Models:
         Send an image to run YOLO inference using shared GPU infrastructure. Supports all YOLO tasks (detect, segment, classify, pose, obb).
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
             conf (float, optional): Confidence threshold (default 0.25)
             iou (float, optional): IoU threshold (default 0.7)
             imgsz (int, optional): Inference image size (default 640)
@@ -461,24 +405,19 @@ class Models:
                     "normalize": normalize,
                     "decimals": decimals,
                     "bits": bits,
-                    "file": file,
                     "source": source,
                 },
+                files={"file": file},
             ),
         )
 
-    def retrieve_training(
-        self, model_id: str, *, username: str | None = None, project: str | None = None, project_id: str | None = None
-    ) -> ModelsRetrieveTrainingResponse:
+    def retrieve_training(self, model_id: str) -> ModelsRetrieveTrainingResponse:
         """Check training progress.
 
         Returns live status, epoch progress, timing, compute, metrics, and error details.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            username (str, optional): Owner username when using a model slug
-            project (str, optional): Project slug or ID used to disambiguate model slugs
-            project_id (str, optional): Alias of project
+            model_id (str): Model ID
 
         Returns:
             (ModelsRetrieveTrainingResponse): The API response.
@@ -492,11 +431,6 @@ class Models:
                 "GET",
                 f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/training",
                 auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("username", username, style="form", explode=True),
-                    *_query_parameter("project", project, style="form", explode=True),
-                    *_query_parameter("projectId", project_id, style="form", explode=True),
-                ],
             ),
         )
 
@@ -506,7 +440,7 @@ class Models:
         Terminates the compute instance and marks the model as cancelled.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
 
         Returns:
             (ModelsDeleteTrainingResponse): The API response.
@@ -523,37 +457,6 @@ class Models:
             ),
         )
 
-    def track_download(
-        self, model_id: str, *, username: str | None = None, project: str | None = None, project_id: str | None = None
-    ) -> ModelsTrackDownloadResponse:
-        """Track a model download.
-
-        Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            username (str, optional): Model owner's username
-            project (str, optional): Project slug or ID
-            project_id (str, optional): Alias of project
-
-        Returns:
-            (ModelsTrackDownloadResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsTrackDownloadResponse,
-            self._client.request(
-                "POST",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/track-download",
-                auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("username", username, style="form", explode=True),
-                    *_query_parameter("project", project, style="form", explode=True),
-                    *_query_parameter("projectId", project_id, style="form", explode=True),
-                ],
-            ),
-        )
-
 
 class AsyncModels:
     """Asynchronous Models API operations."""
@@ -562,25 +465,14 @@ class AsyncModels:
         self._client = client
 
     async def list(
-        self,
-        *,
-        project_id: str | None = None,
-        username: str | None = None,
-        project_slug: str | None = None,
-        slug: str | None = None,
-        limit: float | None = None,
-        fields: str | None = None,
-        ids: str | None = None,
+        self, *, project_id: str, limit: float | None = None, fields: str | None = None, ids: str | None = None
     ) -> ModelsListResponse:
         """List models in a project.
 
-        Returns models for a project. Specify the project by name or ID.
+        Returns models for a project ID.
 
         Args:
-            project_id (str, optional): Project name or ID; required when listing models
-            username (str, optional): Project owner's username (for browsing other users' public models)
-            project_slug (str, optional): Project name, e.g. `my-project` (use with username)
-            slug (str, optional): Model name (use with username and projectSlug for a single-model lookup)
+            project_id (str): Project ID
             limit (float, optional): Number of results to return (default 20, max 100)
             fields (str, optional): Response detail level: 'summary' or 'charts'
             ids (str, optional): Comma-separated model IDs to return
@@ -599,9 +491,6 @@ class AsyncModels:
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("projectId", project_id, style="form", explode=True),
-                    *_query_parameter("username", username, style="form", explode=True),
-                    *_query_parameter("projectSlug", project_slug, style="form", explode=True),
-                    *_query_parameter("slug", slug, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                     *_query_parameter("fields", fields, style="form", explode=True),
                     *_query_parameter("ids", ids, style="form", explode=True),
@@ -632,20 +521,20 @@ class AsyncModels:
         Creates a model inside a project. The model can then be trained or have weights uploaded.
 
         Args:
-            project_id (str): projectId request value.
-            slug (str, optional): slug request value.
-            name (str, optional): name request value.
-            description (str, optional): description request value.
+            project_id (str): Project ID
+            slug (str, optional): URL slug
+            name (str, optional): Resource name
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): YOLO task type
             train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            train_results (list[dict[str, Any]], optional): trainResults request value.
-            epochs (float, optional): epochs request value.
-            metrics (dict[str, Any], optional): metrics request value.
-            version (str, optional): version request value.
+            train_results (list[dict[str, Any]], optional): Per-epoch training results
+            epochs (float, optional): Epochs
+            metrics (dict[str, Any], optional): Metrics
+            version (str, optional): Version identifier
             docs (str, optional): Documentation URL from .pt file
             environment (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            completed_at (str, optional): completedAt request value.
+            completed_at (str, optional): Completed At
 
         Returns:
             (ModelsCreateResponse): The API response.
@@ -678,48 +567,13 @@ class AsyncModels:
             ),
         )
 
-    async def list_completed(self, *, owner: str | None = None) -> ModelsListCompletedResponse:
-        """List usable models across projects.
-
-        Returns models with usable weights across the account or workspace for training and deployment.
-
-        Args:
-            owner (str, optional): Workspace username
-
-        Returns:
-            (ModelsListCompletedResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsListCompletedResponse,
-            await self._client.request(
-                "GET",
-                "/api/models/completed",
-                auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("owner", owner, style="form", explode=True)],
-            ),
-        )
-
-    async def retrieve(
-        self,
-        model_id: str,
-        *,
-        username: str | None = None,
-        project: str | None = None,
-        project_id: str | None = None,
-        analysis: Literal["1"] | None = None,
-    ) -> ModelsRetrieveResponse:
+    async def retrieve(self, model_id: str, *, analysis: Literal["1"] | None = None) -> ModelsRetrieveResponse:
         """Get model details.
 
         Returns model details including training status, per-epoch metrics, validation plots, and file info. Pass `analysis=1` to instead return the per-image validation analysis: worst and best cohorts with up to 100 example images each, TP/FP/FN/F1 at IoU 0.50, image traits, and trait-vs-F1 comparisons.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            username (str, optional): Owner username when using a model slug instead of an ID
-            project (str, optional): Project slug or ID used to disambiguate model slugs
-            project_id (str, optional): Alias of `project` accepted by the route
+            model_id (str): Model ID
             analysis (Literal["1"], optional): Return the per-image validation analysis, not model details
 
         Returns:
@@ -734,12 +588,7 @@ class AsyncModels:
                 "GET",
                 f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("username", username, style="form", explode=True),
-                    *_query_parameter("project", project, style="form", explode=True),
-                    *_query_parameter("projectId", project_id, style="form", explode=True),
-                    *_query_parameter("analysis", analysis, style="form", explode=True),
-                ],
+                params=[*_query_parameter("analysis", analysis, style="form", explode=True)],
             ),
         )
 
@@ -783,21 +632,21 @@ class AsyncModels:
         Update model properties like name, description, metadata, or training status.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            name (str, optional): name request value.
-            color (str | None, optional): color request value.
-            description (str, optional): description request value.
+            model_id (str): Model ID
+            name (str, optional): Resource name
+            color (str | None, optional): Display color
+            description (str, optional): Resource description
             metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
             status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional): Training/model status
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            dataset_slug (str | None, optional): datasetSlug request value.
+            dataset_slug (str | None, optional): Dataset URL slug
             train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            train_results (list[dict[str, Any]], optional): trainResults request value.
-            epochs (float, optional): epochs request value.
-            best_epoch (float, optional): bestEpoch request value.
-            best_fitness (float, optional): bestFitness request value.
-            version (str, optional): version request value.
-            training_error (dict[str, Any], optional): trainingError request value.
+            train_results (list[dict[str, Any]], optional): Per-epoch training results
+            epochs (float, optional): Epochs
+            best_epoch (float, optional): Best Epoch
+            best_fitness (float, optional): Best Fitness
+            version (str, optional): Version identifier
+            training_error (dict[str, Any], optional): Training failure details
 
         Returns:
             (ModelsUpdateResponse): The API response.
@@ -836,7 +685,7 @@ class AsyncModels:
         Moves the model to trash. Can be restored within 30 days.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
 
         Returns:
             (ModelsDeleteResponse): The API response.
@@ -859,7 +708,7 @@ class AsyncModels:
         Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
 
         Returns:
             (ModelsRetrieveMetadataResponse): The API response.
@@ -890,11 +739,11 @@ class AsyncModels:
         Copies a public, owned, or shared model into an existing project.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            target_project_slug (str): targetProjectSlug request value.
-            model_name (str, optional): modelName request value.
-            description (str, optional): description request value.
-            owner (str, optional): owner request value.
+            model_id (str): Model ID
+            target_project_slug (str): Target project URL slug
+            model_name (str, optional): Model name
+            description (str, optional): Resource description
+            owner (str, optional): Workspace username
 
         Returns:
             (ModelsCloneResponse): The API response.
@@ -923,7 +772,7 @@ class AsyncModels:
         Returns signed download URLs for model weights and exported files. URLs are valid for 1 hour.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
 
         Returns:
             (ModelsRetrieveFilesResponse): The API response.
@@ -958,7 +807,7 @@ class AsyncModels:
         Send an image to run YOLO inference using shared GPU infrastructure. Supports all YOLO tasks (detect, segment, classify, pose, obb).
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
             conf (float, optional): Confidence threshold (default 0.25)
             iou (float, optional): IoU threshold (default 0.7)
             imgsz (int, optional): Inference image size (default 640)
@@ -987,24 +836,19 @@ class AsyncModels:
                     "normalize": normalize,
                     "decimals": decimals,
                     "bits": bits,
-                    "file": file,
                     "source": source,
                 },
+                files={"file": file},
             ),
         )
 
-    async def retrieve_training(
-        self, model_id: str, *, username: str | None = None, project: str | None = None, project_id: str | None = None
-    ) -> ModelsRetrieveTrainingResponse:
+    async def retrieve_training(self, model_id: str) -> ModelsRetrieveTrainingResponse:
         """Check training progress.
 
         Returns live status, epoch progress, timing, compute, metrics, and error details.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            username (str, optional): Owner username when using a model slug
-            project (str, optional): Project slug or ID used to disambiguate model slugs
-            project_id (str, optional): Alias of project
+            model_id (str): Model ID
 
         Returns:
             (ModelsRetrieveTrainingResponse): The API response.
@@ -1018,11 +862,6 @@ class AsyncModels:
                 "GET",
                 f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/training",
                 auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("username", username, style="form", explode=True),
-                    *_query_parameter("project", project, style="form", explode=True),
-                    *_query_parameter("projectId", project_id, style="form", explode=True),
-                ],
             ),
         )
 
@@ -1032,7 +871,7 @@ class AsyncModels:
         Terminates the compute instance and marks the model as cancelled.
 
         Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
+            model_id (str): Model ID
 
         Returns:
             (ModelsDeleteTrainingResponse): The API response.
@@ -1046,36 +885,5 @@ class AsyncModels:
                 "DELETE",
                 f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/training",
                 auth=("Authorization", "Bearer "),
-            ),
-        )
-
-    async def track_download(
-        self, model_id: str, *, username: str | None = None, project: str | None = None, project_id: str | None = None
-    ) -> ModelsTrackDownloadResponse:
-        """Track a model download.
-
-        Args:
-            model_id (str): Model URL name or ID. Use `?project=my-project` to disambiguate models across projects
-            username (str, optional): Model owner's username
-            project (str, optional): Project slug or ID
-            project_id (str, optional): Alias of project
-
-        Returns:
-            (ModelsTrackDownloadResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsTrackDownloadResponse,
-            await self._client.request(
-                "POST",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/track-download",
-                auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("username", username, style="form", explode=True),
-                    *_query_parameter("project", project, style="form", explode=True),
-                    *_query_parameter("projectId", project_id, style="form", explode=True),
-                ],
             ),
         )
