@@ -11,11 +11,11 @@
 [![Ultralytics Forums](https://img.shields.io/discourse/users?server=https%3A%2F%2Fcommunity.ultralytics.com&logo=discourse&label=Forums&color=blue)](https://community.ultralytics.com)
 [![Ultralytics Reddit](https://img.shields.io/reddit/subreddit-subscribers/ultralytics?style=flat&logo=reddit&logoColor=white&label=Reddit&color=blue)](https://reddit.com/r/ultralytics)
 
-Ultralytics Platform API 的类型化 SDK 和交互式文档。所有输出均使用 [Ultralytics OpenAPI](https://github.com/ultralytics/openapi)，从同一份固定版本的 OpenAPI 契约生成。
+Ultralytics Platform API 的类型化 SDK，使用 [Ultralytics OpenAPI](https://github.com/ultralytics/openapi) 从固定版本的契约生成。[交互式 API 参考](https://platform.ultralytics.com/api/docs)直接呈现实时契约，并包含 Python SDK 示例。
 
 | 输出 | 状态 |
 | --- | --- |
-| 交互式 API 文档 | 已可用 |
+| [交互式 API 参考](https://platform.ultralytics.com/api/docs) | 已可用 |
 | Python SDK | 已可用 |
 | TypeScript SDK | 即将推出 |
 | Go SDK | 即将推出 |
@@ -66,7 +66,6 @@ Platform 拥有 API 契约。此仓库固定该契约的版本，并仅提交生
 
 ```text
 Platform OpenAPI 契约
-    ├── docs/          # 静态交互式 API 参考
     └── sdk/
         ├── python/     # ultralytics-platform
         ├── typescript/（即将推出）
@@ -78,7 +77,7 @@ Platform OpenAPI 契约
 
 ## 🛠️ 验证
 
-CI 使用固定版本的生成器重新生成文档和 Python SDK，并在契约不匹配或生成内容漂移时失败。它还会格式化和检查 Python、编译软件包、构建 wheel、通过 Git 子目录边界进行安装，并使用模拟传输测试具有代表性的同步和异步请求。目前尚未向 PyPI 发布任何软件包。
+CI 使用固定版本的生成器重新生成 Python SDK，并在契约不匹配或生成内容漂移时失败。它还会格式化和检查 Python、编译软件包、构建 wheel、通过 Git 子目录边界进行安装，并使用模拟传输测试具有代表性的同步和异步请求。目前尚未向 PyPI 发布任何软件包。
 
 ## 💡 贡献
 
@@ -90,7 +89,7 @@ API 结构变更应在 Platform OpenAPI 契约中完成；不应直接编辑此�
 
 ## 📄 许可证
 
-- **AGPL-3.0 许可证**：生成的 SDK 和文档采用 [AGPL-3.0 许可证](LICENSE)。
+- **AGPL-3.0 许可证**：生成的 SDK 采用 [AGPL-3.0 许可证](LICENSE)。
 - **企业许可证**：商业许可证可通过 [Ultralytics Licensing](https://www.ultralytics.com/license) 单独获取。
 
 ## 📫 联系我们
