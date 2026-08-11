@@ -78,7 +78,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          token: ${{ secrets._GITHUB_TOKEN }}
+          persist-credentials: false
 
       - uses: actions/checkout@v7
         with:
@@ -150,6 +150,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          gh auth setup-git
           git switch --create "$branch"
           git add openapi.json openapi.sha256 sdk/python
           git commit -m "Update Platform API contract"

@@ -121,6 +121,9 @@ def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
         if response.status_code in {401, 403} or response.status_code >= 500:
             raise RuntimeError(f"GET {path} returned {response.status_code}")
         if not response.is_success:
+            missing_fixture = "missing-" in request_path or any("missing-" in str(value) for value in query.values())
+            if not missing_fixture:
+                raise RuntimeError(f"GET {path} returned unexpected {response.status_code}")
             continue
         successful += 1
         response_spec = operation["responses"].get(str(response.status_code)) or operation["responses"].get("default")
@@ -133,8 +136,8 @@ def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
                 Draft202012Validator(absolute_references(media["schema"]), registry=registry).validate(response.json())
             except ValidationError as error:
                 failures.append(f"GET {path}: {error.json_path} failed {error.validator}")
-    if exercised == 0:
-        raise RuntimeError("OpenAPI contract has no GET operations")
+    if exercised == 0 or successful == 0:
+        raise RuntimeError("OpenAPI contract has no successful GET operations")
     if failures:
         raise RuntimeError("Response schema failures:\n" + "\n".join(failures))
     print(f"Validated {successful} successful responses across all {exercised} GET operations")
