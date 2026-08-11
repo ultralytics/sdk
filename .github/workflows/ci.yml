@@ -87,6 +87,7 @@ jobs:
           # Always consume the generator from main. Never pin this to a commit SHA or tag.
           ref: main
           path: .generator
+          persist-credentials: false
 
       - uses: oven-sh/setup-bun@v2
         with:
