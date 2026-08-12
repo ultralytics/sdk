@@ -22944,7 +22944,7 @@
           "Training"
         ],
         "operationId": "get_api_training_gpu_availability",
-        "description": "Returns current cloud training capacity for each supported GPU type.",
+        "description": "Returns current cloud training capacity for each supported GPU type. The managed capacity probe requires authentication.",
         "security": [],
         "parameters": [
           {
@@ -22975,6 +22975,16 @@
           },
           "400": {
             "description": "Invalid availability query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required for managed capacity",
             "content": {
               "application/json": {
                 "schema": {
