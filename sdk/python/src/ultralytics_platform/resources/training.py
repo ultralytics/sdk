@@ -28,7 +28,7 @@ class Training:
     ) -> TrainingRetrieveGpuAvailabilityResponse:
         """Get GPU availability.
 
-        Returns current cloud training capacity for each supported GPU type.
+        Returns current cloud training capacity for each supported GPU type. The managed capacity probe requires authentication.
 
         Args:
             managed (Literal["true", "false"], optional): Include managed training capacity
@@ -127,7 +127,7 @@ class AsyncTraining:
     ) -> TrainingRetrieveGpuAvailabilityResponse:
         """Get GPU availability.
 
-        Returns current cloud training capacity for each supported GPU type.
+        Returns current cloud training capacity for each supported GPU type. The managed capacity probe requires authentication.
 
         Args:
             managed (Literal["true", "false"], optional): Include managed training capacity
