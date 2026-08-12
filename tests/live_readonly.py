@@ -58,7 +58,9 @@ def operation_coverage(document: dict[str, Any]) -> set[str]:
     return set(declarations)
 
 
-def response_validator(document: dict[str, Any], observed: set[str]) -> Callable[[httpx.Response], None]:
+def response_validator(
+    document: dict[str, Any], observed: set[str], validation_errors: list[RuntimeError]
+) -> Callable[[httpx.Response], None]:
     """Reject undocumented responses and validate every successful JSON body."""
     registry = Registry().with_resource(
         "urn:openapi", Resource.from_contents(document, default_specification=DRAFT202012)
@@ -88,7 +90,9 @@ def response_validator(document: dict[str, Any], observed: set[str]) -> Callable
                         response.json()
                     )
                 except ValidationError as error:
-                    raise RuntimeError(f"{operation_id}: {error.json_path} failed {error.validator}") from error
+                    validation_errors.append(
+                        RuntimeError(f"{operation_id}: {error.json_path} failed {error.validator}")
+                    )
             return
         raise RuntimeError(f"SDK requested undocumented operation: {request.method} {request.url.path}")
 
@@ -101,6 +105,35 @@ def documented(call: Callable[[], Any]) -> Any:
         return call()
     except APIError:
         return {}
+
+
+def cleanup_resource(
+    retrieve: Callable[[], dict[str, Any]],
+    delete: Callable[[], Any],
+    key: str,
+    permanently_delete: Callable[[str], Any] | None = None,
+) -> None:
+    """Delete a canary resource discovered by its unique public path."""
+    try:
+        result = retrieve()
+    except APIError as error:
+        if error.status_code == 404:
+            return
+        raise
+    resource = result[key]
+    resource_id = str(resource.get("id") or resource.get("_id"))
+    delete()
+    if permanently_delete:
+        permanently_delete(resource_id)
+
+
+def ignore_missing(call: Callable[[], Any]) -> None:
+    """Allow cleanup to be idempotent while surfacing every other API failure."""
+    try:
+        call()
+    except APIError as error:
+        if error.status_code != 404:
+            raise
 
 
 def wait_for_images(client: Platform, owner: str, dataset: str) -> list[dict[str, Any]]:
@@ -145,29 +178,43 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
     client.training.retrieve_gpu_availability()
     client.lifecycle.retrieve_trash(limit=1)
 
-    project_result = client.projects.create(project=slug, name="SDK CI project", visibility="private")
-    project_id, project = str(project_result["id"]), str(project_result["project"])
-    cleanup.append(lambda: client.lifecycle.permanently_delete_trash(body={"id": project_id, "type": "project"}))
-    cleanup.append(lambda: client.projects.delete(owner, project))
+    project = slug
+    cleanup.append(
+        lambda: cleanup_resource(
+            lambda: client.projects.retrieve(owner, project),
+            lambda: client.projects.delete(owner, project),
+            "project",
+            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "project"}),
+        )
+    )
+    client.projects.create(project=project, name="SDK CI project", visibility="private")
     client.projects.retrieve(owner, project)
     client.projects.update(owner, project, description="Full API lifecycle canary", tags=["sdk-ci"])
     if client.projects.retrieve(owner, project)["project"].get("description") != "Full API lifecycle canary":
         raise RuntimeError("Project update did not persist")
     client.projects.list(owner, limit=1)
-    project_clone = documented(
-        lambda: client.projects.clone(owner, project, project_body=f"{slug}-clone", name="SDK CI project clone")
-    )
-    if project_clone:
-        clone_project_id, clone_project = str(project_clone["id"]), str(project_clone["project"])
-        cleanup.append(
-            lambda: client.lifecycle.permanently_delete_trash(body={"id": clone_project_id, "type": "project"})
+    clone_project = f"{slug}-clone"
+    cleanup.append(
+        lambda: cleanup_resource(
+            lambda: client.projects.retrieve(owner, clone_project),
+            lambda: client.projects.delete(owner, clone_project),
+            "project",
+            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "project"}),
         )
-        cleanup.append(lambda: client.projects.delete(owner, clone_project))
+    )
+    documented(lambda: client.projects.clone(owner, project, project_body=f"{slug}-clone", name="SDK CI project clone"))
 
-    dataset_result = client.datasets.create(dataset=slug, name="SDK CI dataset", task="detect", visibility="private")
-    dataset_id, dataset = str(dataset_result["id"]), str(dataset_result["dataset"])
-    cleanup.append(lambda: client.lifecycle.permanently_delete_trash(body={"id": dataset_id, "type": "dataset"}))
-    cleanup.append(lambda: client.datasets.delete(owner, dataset))
+    dataset = slug
+    cleanup.append(
+        lambda: cleanup_resource(
+            lambda: client.datasets.retrieve(owner, dataset),
+            lambda: client.datasets.delete(owner, dataset),
+            "dataset",
+            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "dataset"}),
+        )
+    )
+    dataset_result = client.datasets.create(dataset=dataset, name="SDK CI dataset", task="detect", visibility="private")
+    dataset_id = str(dataset_result["id"])
     archive = download_dataset()
     upload = client.upload.retrieve_file_url(
         asset_id=dataset_id,
@@ -222,22 +269,30 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
     client.datasets.retrieve_embeddings(owner, dataset)
     documented(lambda: client.datasets.delete_embeddings(owner, dataset))
 
-    dataset_clone = documented(
-        lambda: client.datasets.clone(owner, dataset, dataset_body=f"{slug}-clone", name="SDK CI dataset clone")
-    )
-    if dataset_clone:
-        clone_dataset_id, clone_dataset = str(dataset_clone["id"]), str(dataset_clone["dataset"])
-        cleanup.append(
-            lambda: client.lifecycle.permanently_delete_trash(body={"id": clone_dataset_id, "type": "dataset"})
+    clone_dataset = f"{slug}-clone"
+    cleanup.append(
+        lambda: cleanup_resource(
+            lambda: client.datasets.retrieve(owner, clone_dataset),
+            lambda: client.datasets.delete(owner, clone_dataset),
+            "dataset",
+            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "dataset"}),
         )
-        cleanup.append(lambda: client.datasets.delete(owner, clone_dataset))
+    )
+    documented(lambda: client.datasets.clone(owner, dataset, dataset_body=f"{slug}-clone", name="SDK CI dataset clone"))
 
+    model = slug
+    cleanup.append(
+        lambda: cleanup_resource(
+            lambda: client.models.retrieve(owner, project, model),
+            lambda: client.models.delete(owner, project, model),
+            "model",
+            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "model"}),
+        )
+    )
     model_result = client.models.create(
         body={"owner": owner, "project": project, "model": slug, "name": "SDK CI model", "task": "detect"}
     )
-    model_id, model = str(model_result["id"]), str(model_result["model"])
-    cleanup.append(lambda: client.lifecycle.permanently_delete_trash(body={"id": model_id, "type": "model"}))
-    cleanup.append(lambda: client.models.delete(owner, project, model))
+    model_id = str(model_result["id"])
     client.models.retrieve(owner, project, model)
     client.models.update(owner, project, model, description="Full API lifecycle canary", metadata={"source": "sdk-ci"})
     if client.models.retrieve(owner, project, model)["model"].get("description") != "Full API lifecycle canary":
@@ -255,23 +310,25 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
     documented(lambda: client.images.predict(image_ids[0], model_id=model_id))
     documented(lambda: client.training.start(model_id=missing, train_args={"epochs": 1}))
 
-    model_clone = documented(
-        lambda: client.models.clone(owner, project, model, project_body=project, model_body=f"{slug}-clone")
+    clone_model = f"{slug}-clone"
+    cleanup.append(
+        lambda: cleanup_resource(
+            lambda: client.models.retrieve(owner, project, clone_model),
+            lambda: client.models.delete(owner, project, clone_model),
+            "model",
+            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "model"}),
+        )
     )
-    if model_clone:
-        clone_model_id, clone_model = str(model_clone["id"]), str(model_clone["model"])
-        cleanup.append(lambda: client.lifecycle.permanently_delete_trash(body={"id": clone_model_id, "type": "model"}))
-        cleanup.append(lambda: client.models.delete(owner, project, clone_model))
+    documented(lambda: client.models.clone(owner, project, model, project_body=project, model_body=f"{slug}-clone"))
 
     client.deployments.list(owner, limit=1)
+    cleanup.append(lambda: ignore_missing(lambda: client.deployments.delete(owner, slug)))
     deployment_result = documented(
         lambda: client.deployments.create(
             owner, project=project, model=model, deployment=slug, name="SDK CI deployment", region="us-central1"
         )
     )
     deployment = str(deployment_result.get("deployment", missing))
-    if deployment_result:
-        cleanup.append(lambda: client.deployments.delete(owner, deployment))
     documented(lambda: client.deployments.retrieve(owner, deployment))
     documented(lambda: client.deployments.update(owner, deployment, body={"action": "stop"}))
     documented(lambda: client.deployments.retrieve_health(owner, deployment))
@@ -300,17 +357,38 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
 def validate_sdk(document: dict[str, Any]) -> None:
     expected = operation_coverage(document)
     observed: set[str] = set()
+    validation_errors: list[RuntimeError] = []
     cleanup: list[Callable[[], Any]] = []
-    http_client = httpx.Client(timeout=60, event_hooks={"response": [response_validator(document, observed)]})
+    http_client = httpx.Client(
+        timeout=60, event_hooks={"response": [response_validator(document, observed, validation_errors)]}
+    )
+    exercise_error: Exception | None = None
+    cleanup_errors: list[Exception] = []
     with Platform(base_url=BASE_URL, http_client=http_client) as client:
         try:
             exercise_api(client, cleanup)
+        except (APIError, httpx.HTTPError, KeyError, RuntimeError, StopIteration, TypeError, ValueError) as error:
+            exercise_error = error
         finally:
             for action in reversed(cleanup):
                 try:
-                    documented(action)
-                except (RuntimeError, httpx.HTTPError) as error:
-                    print(f"Cleanup warning: {error}")
+                    action()
+                except (
+                    APIError,
+                    httpx.HTTPError,
+                    KeyError,
+                    RuntimeError,
+                    StopIteration,
+                    TypeError,
+                    ValueError,
+                ) as error:
+                    cleanup_errors.append(error)
+    if exercise_error:
+        raise exercise_error
+    if cleanup_errors:
+        raise RuntimeError(f"Canary cleanup failed: {cleanup_errors}")
+    if validation_errors:
+        raise RuntimeError(f"Live response schema validation failed: {validation_errors}")
     if observed != expected:
         raise RuntimeError(
             f"Live SDK operation drift: missing={sorted(expected - observed)}, extra={sorted(observed - expected)}"
