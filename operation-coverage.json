@@ -1,0 +1,100 @@
+{
+  "sdkLive": [
+    "get_api_account_summary",
+    "get_api_api_keys",
+    "get_api_billing_transactions",
+    "get_api_billing_usage_summary",
+    "get_api_datasets_owner",
+    "get_api_datasets_owner_dataset",
+    "get_api_datasets_owner_dataset_class_stats",
+    "get_api_datasets_owner_dataset_embeddings",
+    "get_api_datasets_owner_dataset_export",
+    "get_api_datasets_owner_dataset_images",
+    "get_api_datasets_owner_dataset_images_clustering",
+    "get_api_datasets_owner_dataset_models",
+    "get_api_deployments_owner",
+    "get_api_deployments_owner_deployment",
+    "get_api_deployments_owner_deployment_health",
+    "get_api_deployments_owner_deployment_logs",
+    "get_api_deployments_owner_deployment_metrics",
+    "get_api_explore_search",
+    "get_api_images_imageId",
+    "get_api_integrations_buckets",
+    "get_api_integrations_buckets_id_objects",
+    "get_api_models_owner_project",
+    "get_api_models_owner_project_model",
+    "get_api_models_owner_project_model_exports",
+    "get_api_models_owner_project_model_exports_exportId",
+    "get_api_models_owner_project_model_files",
+    "get_api_models_owner_project_model_training",
+    "get_api_projects_owner",
+    "get_api_projects_owner_project",
+    "get_api_storage",
+    "get_api_training_gpu_availability",
+    "get_api_trash",
+    "get_api_users",
+    "post_api_datasets_owner_dataset_images",
+    "post_api_images_urls"
+  ],
+  "portalCanary": {
+    "owner": "ultralytics/portal:.github/workflows/api-canary.yml",
+    "operations": [
+      "delete_api_datasets_owner_dataset",
+      "delete_api_deployments_owner_deployment",
+      "delete_api_images_imageId",
+      "delete_api_models_owner_project_model",
+      "delete_api_projects_owner_project",
+      "delete_api_trash",
+      "patch_api_images_imageId",
+      "post_api_datasets",
+      "post_api_datasets_owner_dataset_embeddings",
+      "post_api_datasets_owner_dataset_ingest",
+      "post_api_deployments_owner",
+      "post_api_deployments_owner_deployment_predict",
+      "post_api_models",
+      "post_api_models_owner_project_model_exports",
+      "post_api_projects",
+      "post_api_training_start",
+      "post_api_upload_complete",
+      "post_api_upload_signed_url"
+    ]
+  },
+  "excluded": {
+    "requires an isolated reversible mutation fixture": [
+      "delete_api_datasets_owner_dataset_embeddings",
+      "delete_api_images_bulk",
+      "patch_api_datasets_owner_dataset",
+      "patch_api_images_bulk",
+      "patch_api_models_owner_project_model",
+      "patch_api_projects_owner_project",
+      "patch_api_users",
+      "post_api_datasets_owner_dataset_classes_delete",
+      "post_api_datasets_owner_dataset_classes_merge",
+      "post_api_datasets_owner_dataset_restore",
+      "post_api_datasets_owner_dataset_splits_redistribute",
+      "post_api_trash"
+    ],
+    "creates resources outside the current canary cleanup owner": [
+      "post_api_datasets_owner_dataset_clone",
+      "post_api_models_owner_project_model_clone",
+      "post_api_projects_owner_project_clone"
+    ],
+    "requires external provider credentials": [
+      "post_api_integrations_buckets",
+      "post_api_integrations_buckets_discover",
+      "post_api_integrations_roboflow_import",
+      "post_api_integrations_roboflow_preview"
+    ],
+    "starts optional compute or export work outside the current canary matrix": [
+      "patch_api_datasets_owner_dataset_export",
+      "post_api_datasets_owner_dataset_export",
+      "post_api_images_imageId_predict",
+      "post_api_models_owner_project_model_predict"
+    ],
+    "requires a resource in a transient active state": [
+      "delete_api_models_owner_project_model_exports_exportId",
+      "delete_api_models_owner_project_model_training",
+      "patch_api_deployments_owner_deployment"
+    ]
+  }
+}

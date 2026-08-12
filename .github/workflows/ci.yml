@@ -66,7 +66,7 @@ jobs:
           python -m compileall -q sdk/python/src
           uv build --project sdk/python
           unzip -l sdk/python/dist/*.whl | grep --quiet '\.dist-info/licenses/LICENSE$'
-          uv pip install --system pytest "git+file://${GITHUB_WORKSPACE}@$(git rev-parse HEAD)#subdirectory=sdk/python"
+          uv pip install --system pytest jsonschema referencing "git+file://${GITHUB_WORKSPACE}@$(git rev-parse HEAD)#subdirectory=sdk/python"
           pytest tests -v
 
   Live:
@@ -139,14 +139,14 @@ jobs:
           uvx ruff@0.16.2 check sdk/python tests
           python -m compileall -q sdk/python/src
           uv build --project sdk/python
-          uv pip install --system pytest "./sdk/python"
+          uv pip install --system pytest jsonschema referencing "./sdk/python"
           pytest tests -v
 
-      - name: Validate every read-only production endpoint
+      - name: Validate every safe production operation through the SDK
         env:
           ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}
         run: |
-          uv pip install --system ./sdk/python jsonschema
+          uv pip install --system ./sdk/python jsonschema referencing
           python tests/live_readonly.py
 
       - name: Open contract update
