@@ -12,6 +12,7 @@ import httpx
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
+from ultralytics_platform import Platform
 
 ROOT = Path(__file__).parents[1]
 BASE_URL = "https://platform.ultralytics.com"
@@ -58,34 +59,54 @@ def get(client: httpx.Client, path: str, params: dict[str, Any] | None = None) -
     return response.json()
 
 
-def optional_get(client: httpx.Client, path: str, params: dict[str, Any] | None = None) -> Any:
+def optional_get(
+    document: dict[str, Any], client: httpx.Client, template: str, path: str, params: dict[str, Any] | None = None
+) -> Any:
     response = client.get(path, params=params)
-    if response.status_code in {401, 403} or response.status_code >= 500:
-        response.raise_for_status()
-    return response.json() if response.is_success else {}
+    if response.is_success:
+        return response.json()
+    if str(response.status_code) not in document["paths"][template]["get"]["responses"]:
+        raise RuntimeError(f"GET {template} returned unexpected {response.status_code}")
+    return {}
 
 
-def fixtures(client: httpx.Client) -> dict[str, str]:
-    datasets = get(client, "/api/datasets", {"limit": 1})
-    projects = get(client, "/api/projects", {"limit": 1})
+def fixtures(document: dict[str, Any], client: httpx.Client) -> dict[str, str]:
+    account = get(client, "/api/account/summary")
+    owner = str(account["username"])
+    datasets = get(client, f"/api/datasets/{quote(owner, safe='')}", {"limit": 1})
+    projects = get(client, f"/api/projects/{quote(owner, safe='')}", {"limit": 1})
     project = first(projects, "projects")
-    project_id = identifier(project)
-    models = optional_get(client, "/api/models", {"projectId": project_id} if project_id else None)
-    deployments = get(client, "/api/deployments", {"limit": 1})
+    project_name = str(project.get("project")) if project else "missing-live-smoke-project"
+    models = optional_get(
+        document,
+        client,
+        "/api/models/{owner}/{project}",
+        f"/api/models/{quote(owner, safe='')}/{quote(project_name, safe='')}",
+    )
+    deployments = get(client, f"/api/deployments/{quote(owner, safe='')}", {"limit": 1})
     integrations = get(client, "/api/integrations/buckets")
     dataset = first(datasets, "datasets")
     model = first(models, "models") or (models.get("model") if isinstance(models, dict) else None)
     deployment = first(deployments, "deployments")
     integration = first(integrations, "integrations")
     result = {
-        "datasetId": identifier(dataset) or "missing-live-smoke-dataset",
-        "projectId": project_id or "missing-live-smoke-project",
-        "modelId": identifier(model) or "missing-live-smoke-model",
-        "deploymentId": identifier(deployment) or "missing-live-smoke-deployment",
+        "owner": owner,
+        "dataset": str(dataset.get("dataset")) if dataset else "missing-live-smoke-dataset",
+        "project": project_name,
+        "model": str(model.get("model")) if model else "missing-live-smoke-model",
+        "deployment": str(deployment.get("deployment")) if deployment else "missing-live-smoke-deployment",
         "id": identifier(integration) or "missing-live-smoke-integration",
     }
-    images = optional_get(client, f"/api/datasets/{quote(result['datasetId'], safe='')}/images", {"limit": 1})
-    exports = optional_get(client, "/api/exports", {"modelId": result["modelId"], "limit": 1})
+    dataset_path = f"/api/datasets/{quote(owner, safe='')}/{quote(result['dataset'], safe='')}"
+    model_path = "/api/models/{}/{}/{}".format(
+        quote(owner, safe=""), quote(project_name, safe=""), quote(result["model"], safe="")
+    )
+    images = optional_get(
+        document, client, "/api/datasets/{owner}/{dataset}/images", f"{dataset_path}/images", {"limit": 1}
+    )
+    exports = optional_get(
+        document, client, "/api/models/{owner}/{project}/{model}/exports", f"{model_path}/exports", {"limit": 1}
+    )
     result["imageId"] = identifier(first(images, "images")) or "missing-live-smoke-image"
     result["exportId"] = identifier(first(exports, "exports")) or "missing-live-smoke-export"
     targets = integration.get("targets") if integration else None
@@ -93,8 +114,8 @@ def fixtures(client: httpx.Client) -> dict[str, str]:
     return result
 
 
-def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
-    values = fixtures(client)
+def validate_gets(document: dict[str, Any], client: httpx.Client) -> dict[str, str]:
+    values = fixtures(document, client)
     registry = Registry().with_resource(
         "urn:openapi", Resource.from_contents(document, default_specification=DRAFT202012)
     )
@@ -113,16 +134,13 @@ def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
                 request_path = request_path.replace(f"{{{name}}}", quote(values.get(name, f"missing-{name}"), safe=""))
             elif parameter.get("required"):
                 query[name] = values.get(name, f"live-smoke-{name}")
-        if path == "/api/models":
-            query["projectId"] = values["projectId"]
         response = client.get(request_path, params=query)
         exercised += 1
         print(f"GET {path}: {response.status_code}")
         if response.status_code in {401, 403} or response.status_code >= 500:
             raise RuntimeError(f"GET {path} returned {response.status_code}")
         if not response.is_success:
-            missing_fixture = "missing-" in request_path or any("missing-" in str(value) for value in query.values())
-            if not missing_fixture:
+            if str(response.status_code) not in operation.get("responses", {}):
                 raise RuntimeError(f"GET {path} returned unexpected {response.status_code}")
             continue
         successful += 1
@@ -141,6 +159,17 @@ def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
     if failures:
         raise RuntimeError("Response schema failures:\n" + "\n".join(failures))
     print(f"Validated {successful} successful responses across all {exercised} GET operations")
+    return values
+
+
+def validate_sdk(values: dict[str, str]) -> None:
+    with Platform(base_url=BASE_URL) as client:
+        client.account.retrieve_summary()
+        client.datasets.list(values["owner"], limit=1)
+        client.projects.list(values["owner"], limit=1)
+        client.models.list(values["owner"], values["project"], limit=1)
+        client.deployments.list(values["owner"], limit=1)
+    print("Validated generated Python SDK against production")
 
 
 def main() -> None:
@@ -149,7 +178,8 @@ def main() -> None:
     document = json.loads((ROOT / "openapi.json").read_text())
     headers = {"Authorization": f"Bearer {os.environ['ULTRALYTICS_API_KEY']}"}
     with httpx.Client(base_url=BASE_URL, headers=headers, follow_redirects=True, timeout=30) as client:
-        validate_gets(document, client)
+        values = validate_gets(document, client)
+    validate_sdk(values)
 
 
 if __name__ == "__main__":

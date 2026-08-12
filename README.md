@@ -36,11 +36,18 @@ Pass your [Platform API key](https://platform.ultralytics.com/settings?tab=api-k
 from ultralytics_platform import Platform
 
 with Platform(api_key="YOUR_API_KEY") as client:
-    datasets = client.datasets.list()
+    datasets = client.datasets.list("your_username")
     training = client.training.start(model_id="model_id", train_args={"epochs": 10})
-    model = client.models.retrieve("model_id")
-    export = client.exports.create(model_id="model_id", format="onnx")
-    deployment = client.deployments.create(model_id="model_id", name="production", region="us-central1")
+    model = client.models.retrieve("your_username", "project", "model")
+    export = client.exports.export_model("your_username", "project", "model", format="onnx")
+    deployment = client.deployments.create(
+        "your_username",
+        project="project",
+        model="model",
+        deployment="production",
+        name="Production",
+        region="us-central1",
+    )
 ```
 
 The asynchronous client exposes the same resource tree:
@@ -53,7 +60,7 @@ from ultralytics_platform import AsyncPlatform
 
 async def main():
     async with AsyncPlatform(api_key="YOUR_API_KEY") as client:
-        datasets = await client.datasets.list()
+        datasets = await client.datasets.list("your_username")
 
 
 asyncio.run(main())
@@ -80,7 +87,7 @@ Platform OpenAPI contract
 
 ## 🛠️ Validation
 
-[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) regenerates the Python SDK from the versioned contract with the `main` branch of [Ultralytics OpenAPI](https://github.com/ultralytics/openapi), then fails on contract mismatch or generated drift. Scheduled and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. Version bumps on `main` publish [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) to PyPI through trusted publishing.
+[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) regenerates the Python SDK from the versioned contract with the `main` branch of [Ultralytics OpenAPI](https://github.com/ultralytics/openapi), then fails on contract mismatch or generated drift. Pushes to `main`, scheduled runs, and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. Version bumps on `main` publish [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) to PyPI through trusted publishing.
 
 ## 💡 Contribute
 

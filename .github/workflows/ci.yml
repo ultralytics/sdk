@@ -70,7 +70,7 @@ jobs:
           pytest tests -v
 
   Live:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
@@ -146,7 +146,7 @@ jobs:
         env:
           ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}
         run: |
-          uv pip install --system httpx jsonschema
+          uv pip install --system ./sdk/python jsonschema
           python tests/live_readonly.py
 
       - name: Open contract update

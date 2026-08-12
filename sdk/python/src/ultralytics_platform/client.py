@@ -8,8 +8,11 @@ import httpx
 
 from ._client import SyncAPIClient
 from .resources import (
+    Account,
+    Billing,
     Datasets,
     Deployments,
+    Explore,
     Exports,
     Images,
     Lifecycle,
@@ -50,16 +53,19 @@ class Platform:
             max_retries=max_retries,
             http_client=http_client,
         )
+        self.account = Account(self._client)
+        self.billing = Billing(self._client)
         self.datasets = Datasets(self._client)
-        self.images = Images(self._client)
-        self.projects = Projects(self._client)
-        self.models = Models(self._client)
-        self.training = Training(self._client)
-        self.exports = Exports(self._client)
         self.deployments = Deployments(self._client)
-        self.upload = Upload(self._client)
+        self.explore = Explore(self._client)
+        self.images = Images(self._client)
         self.storage_integrations = StorageIntegrations(self._client)
+        self.models = Models(self._client)
+        self.exports = Exports(self._client)
+        self.projects = Projects(self._client)
+        self.training = Training(self._client)
         self.lifecycle = Lifecycle(self._client)
+        self.upload = Upload(self._client)
 
     def close(self) -> None:
         """Close the underlying HTTP client."""

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal, cast
+from typing import Any, Literal, cast
 
 from .._client import (
     AsyncAPIClient,
@@ -10,7 +10,7 @@ from .._client import (
     _query_parameter,
 )
 from ..types import (
-    LifecyclePermanentlyDeleteTrashedItemResponse,
+    LifecyclePermanentlyDeleteTrashResponse,
     LifecycleRestoreTrashedItemResponse,
     LifecycleRetrieveTrashResponse,
 )
@@ -28,17 +28,15 @@ class Lifecycle:
         type: Literal["all", "project", "dataset", "model"] | None = None,
         page: int | None = None,
         limit: int | None = None,
-        owner: str | None = None,
     ) -> LifecycleRetrieveTrashResponse:
         """View trash.
 
         Returns deleted items that can still be restored. Items are permanently deleted after 30 days.
 
         Args:
-            type (Literal["all", "project", "dataset", "model"], optional): Resource type filter
-            page (int, optional): Page number (default 1)
-            limit (int, optional): Items per page (default 50)
-            owner (str, optional): Workspace username
+            type (Literal["all", "project", "dataset", "model"], optional): type query parameter.
+            page (int, optional): page query parameter.
+            limit (int, optional): limit query parameter.
 
         Returns:
             (LifecycleRetrieveTrashResponse): The API response.
@@ -56,7 +54,6 @@ class Lifecycle:
                     *_query_parameter("type", type, style="form", explode=True),
                     *_query_parameter("page", page, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("owner", owner, style="form", explode=True),
                 ],
             ),
         )
@@ -69,8 +66,8 @@ class Lifecycle:
         Restores a trashed project, dataset, or model before its retention period expires.
 
         Args:
-            id (str): ID
-            type (Literal["project", "dataset", "model"]): Resource type
+            id (str): id request value.
+            type (Literal["project", "dataset", "model"]): type request value.
 
         Returns:
             (LifecycleRestoreTrashedItemResponse): The API response.
@@ -85,28 +82,23 @@ class Lifecycle:
             ),
         )
 
-    def permanently_delete_trashed_item(
-        self, *, id: str, type: Literal["project", "dataset", "model"]
-    ) -> LifecyclePermanentlyDeleteTrashedItemResponse:
-        """Permanently delete a trashed item.
+    def permanently_delete_trash(self, *, body: dict[str, Any]) -> LifecyclePermanentlyDeleteTrashResponse:
+        """Permanently delete trash.
 
-        Permanently deletes one trashed resource. This cannot be undone.
+        Permanently deletes one trashed resource or all workspace trash. This cannot be undone.
 
         Args:
-            id (str): ID
-            type (Literal["project", "dataset", "model"]): Resource type
+            body (dict[str, Any]): Permanently delete one trashable resource or all workspace trash
 
         Returns:
-            (LifecyclePermanentlyDeleteTrashedItemResponse): The API response.
+            (LifecyclePermanentlyDeleteTrashResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            LifecyclePermanentlyDeleteTrashedItemResponse,
-            self._client.request(
-                "DELETE", "/api/trash", auth=("Authorization", "Bearer "), json={"id": id, "type": type}
-            ),
+            LifecyclePermanentlyDeleteTrashResponse,
+            self._client.request("DELETE", "/api/trash", auth=("Authorization", "Bearer "), json=body),
         )
 
 
@@ -122,17 +114,15 @@ class AsyncLifecycle:
         type: Literal["all", "project", "dataset", "model"] | None = None,
         page: int | None = None,
         limit: int | None = None,
-        owner: str | None = None,
     ) -> LifecycleRetrieveTrashResponse:
         """View trash.
 
         Returns deleted items that can still be restored. Items are permanently deleted after 30 days.
 
         Args:
-            type (Literal["all", "project", "dataset", "model"], optional): Resource type filter
-            page (int, optional): Page number (default 1)
-            limit (int, optional): Items per page (default 50)
-            owner (str, optional): Workspace username
+            type (Literal["all", "project", "dataset", "model"], optional): type query parameter.
+            page (int, optional): page query parameter.
+            limit (int, optional): limit query parameter.
 
         Returns:
             (LifecycleRetrieveTrashResponse): The API response.
@@ -150,7 +140,6 @@ class AsyncLifecycle:
                     *_query_parameter("type", type, style="form", explode=True),
                     *_query_parameter("page", page, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("owner", owner, style="form", explode=True),
                 ],
             ),
         )
@@ -163,8 +152,8 @@ class AsyncLifecycle:
         Restores a trashed project, dataset, or model before its retention period expires.
 
         Args:
-            id (str): ID
-            type (Literal["project", "dataset", "model"]): Resource type
+            id (str): id request value.
+            type (Literal["project", "dataset", "model"]): type request value.
 
         Returns:
             (LifecycleRestoreTrashedItemResponse): The API response.
@@ -179,26 +168,21 @@ class AsyncLifecycle:
             ),
         )
 
-    async def permanently_delete_trashed_item(
-        self, *, id: str, type: Literal["project", "dataset", "model"]
-    ) -> LifecyclePermanentlyDeleteTrashedItemResponse:
-        """Permanently delete a trashed item.
+    async def permanently_delete_trash(self, *, body: dict[str, Any]) -> LifecyclePermanentlyDeleteTrashResponse:
+        """Permanently delete trash.
 
-        Permanently deletes one trashed resource. This cannot be undone.
+        Permanently deletes one trashed resource or all workspace trash. This cannot be undone.
 
         Args:
-            id (str): ID
-            type (Literal["project", "dataset", "model"]): Resource type
+            body (dict[str, Any]): Permanently delete one trashable resource or all workspace trash
 
         Returns:
-            (LifecyclePermanentlyDeleteTrashedItemResponse): The API response.
+            (LifecyclePermanentlyDeleteTrashResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            LifecyclePermanentlyDeleteTrashedItemResponse,
-            await self._client.request(
-                "DELETE", "/api/trash", auth=("Authorization", "Bearer "), json={"id": id, "type": type}
-            ),
+            LifecyclePermanentlyDeleteTrashResponse,
+            await self._client.request("DELETE", "/api/trash", auth=("Authorization", "Bearer "), json=body),
         )

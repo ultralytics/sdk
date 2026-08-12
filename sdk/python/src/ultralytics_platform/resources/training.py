@@ -9,6 +9,7 @@ from .._client import (
     AsyncAPIClient,
     NotGiven,
     SyncAPIClient,
+    _query_parameter,
 )
 from ..types import (
     TrainingRetrieveGpuAvailabilityResponse,
@@ -21,6 +22,31 @@ class Training:
 
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
+
+    def retrieve_gpu_availability(
+        self, *, managed: Literal["true", "false"] | None = None
+    ) -> TrainingRetrieveGpuAvailabilityResponse:
+        """Get GPU availability.
+
+        Returns current cloud training capacity for each supported GPU type.
+
+        Args:
+            managed (Literal["true", "false"], optional): Include managed training capacity
+
+        Returns:
+            (TrainingRetrieveGpuAvailabilityResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            TrainingRetrieveGpuAvailabilityResponse,
+            self._client.request(
+                "GET",
+                "/api/training/gpu-availability",
+                params=[*_query_parameter("managed", managed, style="form", explode=True)],
+            ),
+        )
 
     def start(
         self,
@@ -89,10 +115,22 @@ class Training:
             ),
         )
 
-    def retrieve_gpu_availability(self) -> TrainingRetrieveGpuAvailabilityResponse:
+
+class AsyncTraining:
+    """Asynchronous Training API operations."""
+
+    def __init__(self, client: AsyncAPIClient) -> None:
+        self._client = client
+
+    async def retrieve_gpu_availability(
+        self, *, managed: Literal["true", "false"] | None = None
+    ) -> TrainingRetrieveGpuAvailabilityResponse:
         """Get GPU availability.
 
         Returns current cloud training capacity for each supported GPU type.
+
+        Args:
+            managed (Literal["true", "false"], optional): Include managed training capacity
 
         Returns:
             (TrainingRetrieveGpuAvailabilityResponse): The API response.
@@ -101,15 +139,13 @@ class Training:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            TrainingRetrieveGpuAvailabilityResponse, self._client.request("GET", "/api/training/gpu-availability")
+            TrainingRetrieveGpuAvailabilityResponse,
+            await self._client.request(
+                "GET",
+                "/api/training/gpu-availability",
+                params=[*_query_parameter("managed", managed, style="form", explode=True)],
+            ),
         )
-
-
-class AsyncTraining:
-    """Asynchronous Training API operations."""
-
-    def __init__(self, client: AsyncAPIClient) -> None:
-        self._client = client
 
     async def start(
         self,
@@ -176,19 +212,4 @@ class AsyncTraining:
                     "trainArgs": train_args,
                 },
             ),
-        )
-
-    async def retrieve_gpu_availability(self) -> TrainingRetrieveGpuAvailabilityResponse:
-        """Get GPU availability.
-
-        Returns current cloud training capacity for each supported GPU type.
-
-        Returns:
-            (TrainingRetrieveGpuAvailabilityResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            TrainingRetrieveGpuAvailabilityResponse, await self._client.request("GET", "/api/training/gpu-availability")
         )

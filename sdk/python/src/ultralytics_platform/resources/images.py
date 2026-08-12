@@ -15,12 +15,10 @@ from ..types import (
     ImagesDeleteBulkResponse,
     ImagesDeleteResponse,
     ImagesPredictResponse,
-    ImagesRetrieveLabelsResponse,
-    ImagesRetrieveMetadataResponse,
+    ImagesRetrieveResponse,
     ImagesRetrieveSignedUrlsResponse,
     ImagesUpdateBulkResponse,
-    ImagesUpdateLabelsResponse,
-    ImagesUpdateMetadataResponse,
+    ImagesUpdateResponse,
 )
 
 
@@ -30,99 +28,108 @@ class Images:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def retrieve_labels(self, image_id: str) -> ImagesRetrieveLabelsResponse:
-        """Get image labels.
+    def retrieve(self, image_id: str) -> ImagesRetrieveResponse:
+        """Get an image.
 
-        Returns fullscreen annotations and class names for a specific image in the dataset.
+        Returns the image fields, custom metadata, annotations, and dataset class names.
 
         Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
+            image_id (str): Image ID
 
         Returns:
-            (ImagesRetrieveLabelsResponse): The API response.
+            (ImagesRetrieveResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ImagesRetrieveLabelsResponse,
+            ImagesRetrieveResponse,
             self._client.request(
                 "GET",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/labels",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def update_labels(self, image_id: str, *, labels: list[dict[str, Any]]) -> ImagesUpdateLabelsResponse:
-        """Update image labels.
+    def update(self, image_id: str, *, body: dict[str, Any]) -> ImagesUpdateResponse:
+        """Update an image.
 
-        Replaces all annotations for a specific image. Updates dataset-level statistics (annotation count, labeled count) incrementally.
+        Replaces the image annotations or custom metadata.
 
         Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
-            labels (list[dict[str, Any]]): Image annotations
+            image_id (str): Image ID
+            body (dict[str, Any]): Request body.
 
         Returns:
-            (ImagesUpdateLabelsResponse): The API response.
+            (ImagesUpdateResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ImagesUpdateLabelsResponse,
+            ImagesUpdateResponse,
             self._client.request(
-                "PUT",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/labels",
+                "PATCH",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
-                json={"labels": labels},
+                json=body,
             ),
         )
 
-    def retrieve_metadata(self, image_id: str) -> ImagesRetrieveMetadataResponse:
-        """Get image metadata.
+    def delete(self, image_id: str) -> ImagesDeleteResponse:
+        """Delete an image.
 
-        Returns custom metadata and Ultralytics-managed properties for one image.
+        Permanently deletes one image and its associated labels from a dataset.
 
         Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
+            image_id (str): Image ID
 
         Returns:
-            (ImagesRetrieveMetadataResponse): The API response.
+            (ImagesDeleteResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ImagesRetrieveMetadataResponse,
+            ImagesDeleteResponse,
             self._client.request(
-                "GET",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/metadata",
+                "DELETE",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def update_metadata(self, image_id: str, *, metadata: dict[str, Any]) -> ImagesUpdateMetadataResponse:
-        """Update image metadata.
+    def predict(
+        self,
+        image_id: str,
+        *,
+        model_id: str,
+        confidence: float | NotGiven = NOT_GIVEN,
+        iou: float | NotGiven = NOT_GIVEN,
+    ) -> ImagesPredictResponse:
+        """Auto-annotate an image.
 
-        Replaces the complete custom metadata object for one image. Send an empty object to clear it.
+        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI.
 
         Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
-            metadata (dict[str, Any]): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            image_id (str): Image ID
+            model_id (str): Fully qualified model URI
+            confidence (float, optional): Confidence threshold
+            iou (float, optional): IoU threshold for non-maximum suppression
 
         Returns:
-            (ImagesUpdateMetadataResponse): The API response.
+            (ImagesPredictResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ImagesUpdateMetadataResponse,
+            ImagesPredictResponse,
             self._client.request(
-                "PUT",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/metadata",
+                "POST",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/predict",
                 auth=("Authorization", "Bearer "),
-                json={"metadata": metadata},
+                json={"modelId": model_id, "confidence": confidence, "iou": iou},
             ),
         )
 
@@ -138,7 +145,7 @@ class Images:
         Moves images to a target split (train, val, or test). Filename and content conflicts require one basket-wide skip, keep-both, or replace policy. Maximum 1000 per batch.
 
         Args:
-            image_ids (list[str]): Image IDs
+            image_ids (list[str]): imageIds request value.
             split (Literal["train", "val", "test"]): Dataset split type
             conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
 
@@ -164,7 +171,7 @@ class Images:
         Deletes multiple images and their annotations from the dataset. Removes files from storage in the background. Maximum 1000 images per batch.
 
         Args:
-            image_ids (list[str]): Image IDs
+            image_ids (list[str]): imageIds request value.
 
         Returns:
             (ImagesDeleteBulkResponse): The API response.
@@ -179,47 +186,13 @@ class Images:
             ),
         )
 
-    def predict(
-        self,
-        image_id: str,
-        *,
-        model_id: str | NotGiven = NOT_GIVEN,
-        confidence: float | NotGiven = NOT_GIVEN,
-        iou: float | NotGiven = NOT_GIVEN,
-    ) -> ImagesPredictResponse:
-        """Auto-annotate an image.
-
-        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI.
-
-        Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
-            model_id (str, optional): Model ul:// URI
-            confidence (float, optional): Confidence threshold
-            iou (float, optional): IoU threshold for non-maximum suppression
-
-        Returns:
-            (ImagesPredictResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ImagesPredictResponse,
-            self._client.request(
-                "POST",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/predict",
-                auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou},
-            ),
-        )
-
     def retrieve_signed_urls(self, *, image_ids: list[str]) -> ImagesRetrieveSignedUrlsResponse:
         """Get signed image URLs.
 
         Returns temporary signed URLs for the requested image IDs.
 
         Args:
-            image_ids (list[str]): Image IDs
+            image_ids (list[str]): imageIds request value.
 
         Returns:
             (ImagesRetrieveSignedUrlsResponse): The API response.
@@ -234,13 +207,68 @@ class Images:
             ),
         )
 
-    def delete(self, image_id: str) -> ImagesDeleteResponse:
+
+class AsyncImages:
+    """Asynchronous Images API operations."""
+
+    def __init__(self, client: AsyncAPIClient) -> None:
+        self._client = client
+
+    async def retrieve(self, image_id: str) -> ImagesRetrieveResponse:
+        """Get an image.
+
+        Returns the image fields, custom metadata, annotations, and dataset class names.
+
+        Args:
+            image_id (str): Image ID
+
+        Returns:
+            (ImagesRetrieveResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ImagesRetrieveResponse,
+            await self._client.request(
+                "GET",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}",
+                auth=("Authorization", "Bearer "),
+            ),
+        )
+
+    async def update(self, image_id: str, *, body: dict[str, Any]) -> ImagesUpdateResponse:
+        """Update an image.
+
+        Replaces the image annotations or custom metadata.
+
+        Args:
+            image_id (str): Image ID
+            body (dict[str, Any]): Request body.
+
+        Returns:
+            (ImagesUpdateResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ImagesUpdateResponse,
+            await self._client.request(
+                "PATCH",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}",
+                auth=("Authorization", "Bearer "),
+                json=body,
+            ),
+        )
+
+    async def delete(self, image_id: str) -> ImagesDeleteResponse:
         """Delete an image.
 
         Permanently deletes one image and its associated labels from a dataset.
 
         Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
+            image_id (str): Image ID
 
         Returns:
             (ImagesDeleteResponse): The API response.
@@ -250,113 +278,44 @@ class Images:
         """
         return cast(
             ImagesDeleteResponse,
-            self._client.request(
+            await self._client.request(
                 "DELETE",
                 f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
+    async def predict(
+        self,
+        image_id: str,
+        *,
+        model_id: str,
+        confidence: float | NotGiven = NOT_GIVEN,
+        iou: float | NotGiven = NOT_GIVEN,
+    ) -> ImagesPredictResponse:
+        """Auto-annotate an image.
 
-class AsyncImages:
-    """Asynchronous Images API operations."""
-
-    def __init__(self, client: AsyncAPIClient) -> None:
-        self._client = client
-
-    async def retrieve_labels(self, image_id: str) -> ImagesRetrieveLabelsResponse:
-        """Get image labels.
-
-        Returns fullscreen annotations and class names for a specific image in the dataset.
+        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI.
 
         Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
+            image_id (str): Image ID
+            model_id (str): Fully qualified model URI
+            confidence (float, optional): Confidence threshold
+            iou (float, optional): IoU threshold for non-maximum suppression
 
         Returns:
-            (ImagesRetrieveLabelsResponse): The API response.
+            (ImagesPredictResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ImagesRetrieveLabelsResponse,
+            ImagesPredictResponse,
             await self._client.request(
-                "GET",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/labels",
+                "POST",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/predict",
                 auth=("Authorization", "Bearer "),
-            ),
-        )
-
-    async def update_labels(self, image_id: str, *, labels: list[dict[str, Any]]) -> ImagesUpdateLabelsResponse:
-        """Update image labels.
-
-        Replaces all annotations for a specific image. Updates dataset-level statistics (annotation count, labeled count) incrementally.
-
-        Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
-            labels (list[dict[str, Any]]): Image annotations
-
-        Returns:
-            (ImagesUpdateLabelsResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ImagesUpdateLabelsResponse,
-            await self._client.request(
-                "PUT",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/labels",
-                auth=("Authorization", "Bearer "),
-                json={"labels": labels},
-            ),
-        )
-
-    async def retrieve_metadata(self, image_id: str) -> ImagesRetrieveMetadataResponse:
-        """Get image metadata.
-
-        Returns custom metadata and Ultralytics-managed properties for one image.
-
-        Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
-
-        Returns:
-            (ImagesRetrieveMetadataResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ImagesRetrieveMetadataResponse,
-            await self._client.request(
-                "GET",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/metadata",
-                auth=("Authorization", "Bearer "),
-            ),
-        )
-
-    async def update_metadata(self, image_id: str, *, metadata: dict[str, Any]) -> ImagesUpdateMetadataResponse:
-        """Update image metadata.
-
-        Replaces the complete custom metadata object for one image. Send an empty object to clear it.
-
-        Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
-            metadata (dict[str, Any]): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-
-        Returns:
-            (ImagesUpdateMetadataResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ImagesUpdateMetadataResponse,
-            await self._client.request(
-                "PUT",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/metadata",
-                auth=("Authorization", "Bearer "),
-                json={"metadata": metadata},
+                json={"modelId": model_id, "confidence": confidence, "iou": iou},
             ),
         )
 
@@ -372,7 +331,7 @@ class AsyncImages:
         Moves images to a target split (train, val, or test). Filename and content conflicts require one basket-wide skip, keep-both, or replace policy. Maximum 1000 per batch.
 
         Args:
-            image_ids (list[str]): Image IDs
+            image_ids (list[str]): imageIds request value.
             split (Literal["train", "val", "test"]): Dataset split type
             conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
 
@@ -398,7 +357,7 @@ class AsyncImages:
         Deletes multiple images and their annotations from the dataset. Removes files from storage in the background. Maximum 1000 images per batch.
 
         Args:
-            image_ids (list[str]): Image IDs
+            image_ids (list[str]): imageIds request value.
 
         Returns:
             (ImagesDeleteBulkResponse): The API response.
@@ -413,47 +372,13 @@ class AsyncImages:
             ),
         )
 
-    async def predict(
-        self,
-        image_id: str,
-        *,
-        model_id: str | NotGiven = NOT_GIVEN,
-        confidence: float | NotGiven = NOT_GIVEN,
-        iou: float | NotGiven = NOT_GIVEN,
-    ) -> ImagesPredictResponse:
-        """Auto-annotate an image.
-
-        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI.
-
-        Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
-            model_id (str, optional): Model ul:// URI
-            confidence (float, optional): Confidence threshold
-            iou (float, optional): IoU threshold for non-maximum suppression
-
-        Returns:
-            (ImagesPredictResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ImagesPredictResponse,
-            await self._client.request(
-                "POST",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/predict",
-                auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou},
-            ),
-        )
-
     async def retrieve_signed_urls(self, *, image_ids: list[str]) -> ImagesRetrieveSignedUrlsResponse:
         """Get signed image URLs.
 
         Returns temporary signed URLs for the requested image IDs.
 
         Args:
-            image_ids (list[str]): Image IDs
+            image_ids (list[str]): imageIds request value.
 
         Returns:
             (ImagesRetrieveSignedUrlsResponse): The API response.
@@ -465,28 +390,5 @@ class AsyncImages:
             ImagesRetrieveSignedUrlsResponse,
             await self._client.request(
                 "POST", "/api/images/urls", auth=("Authorization", "Bearer "), json={"imageIds": image_ids}
-            ),
-        )
-
-    async def delete(self, image_id: str) -> ImagesDeleteResponse:
-        """Delete an image.
-
-        Permanently deletes one image and its associated labels from a dataset.
-
-        Args:
-            image_id (str): Unique image ID returned by dataset image endpoints
-
-        Returns:
-            (ImagesDeleteResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ImagesDeleteResponse,
-            await self._client.request(
-                "DELETE",
-                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}",
-                auth=("Authorization", "Bearer "),
             ),
         )
