@@ -10,7 +10,7 @@ Typed synchronous and asynchronous Python clients generated from the [Ultralytic
 
 [![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-platform?logo=pypi&logoColor=white)](https://pypi.org/project/ultralytics-platform/) [![Ultralytics Downloads](https://static.pepy.tech/badge/ultralytics-platform)](https://clickpy.clickhouse.com/dashboard/ultralytics-platform) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-platform?logo=python&logoColor=gold)](https://pypi.org/project/ultralytics-platform/)
 
-Install [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) from PyPI in a [**Python >=3.11**](https://www.python.org/) environment:
+Install the standalone [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) package from PyPI in a [**Python >=3.11**](https://www.python.org/) environment. It has one lightweight runtime dependency (`httpx`) and does not install the larger `ultralytics` package:
 
 ```bash
 uv pip install ultralytics-platform

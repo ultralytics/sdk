@@ -24,7 +24,7 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-platform?logo=pypi&logoColor=white)](https://pypi.org/project/ultralytics-platform/) [![Ultralytics Downloads](https://static.pepy.tech/badge/ultralytics-platform)](https://clickpy.clickhouse.com/dashboard/ultralytics-platform) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-platform?logo=python&logoColor=gold)](https://pypi.org/project/ultralytics-platform/)
 
-在 [**Python >=3.11**](https://www.python.org/) 环境中从 PyPI 安装 [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/)：
+在 [**Python >=3.11**](https://www.python.org/) 环境中从 PyPI 安装独立的 [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) 软件包。它只有一个轻量级运行时依赖项 (`httpx`)，且不会安装更大的 `ultralytics` 软件包：
 
 ```bash
 uv pip install ultralytics-platform
