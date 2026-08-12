@@ -22,7 +22,7 @@ Pass your [API key](https://platform.ultralytics.com/settings?tab=api-keys) dire
 from ultralytics_platform import Platform
 
 with Platform(api_key="YOUR_API_KEY") as client:
-    response = client.datasets.list()
+    response = client.datasets.list("your_username")
 ```
 
 The asynchronous client exposes the same resource tree:
@@ -35,7 +35,7 @@ from ultralytics_platform import AsyncPlatform
 
 async def main():
     async with AsyncPlatform(api_key="YOUR_API_KEY") as client:
-        response = await client.datasets.list()
+        response = await client.datasets.list("your_username")
 
 
 asyncio.run(main())
