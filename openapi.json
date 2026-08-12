@@ -3631,12 +3631,15 @@
                 "severity": {
                   "type": "string",
                   "enum": [
+                    "DEFAULT",
                     "DEBUG",
                     "INFO",
+                    "NOTICE",
                     "WARNING",
                     "ERROR",
                     "CRITICAL",
-                    "DEFAULT"
+                    "ALERT",
+                    "EMERGENCY"
                   ]
                 },
                 "message": {
@@ -12292,7 +12295,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.delete_classes(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    class_ids=[0],\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.delete_classes(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    class_ids=[1],\n)\nprint(response)"
           }
         ]
       }
@@ -12430,7 +12433,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.merge_classes(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    source_class_ids=[0],\n    target_class_id=0,\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.merge_classes(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    source_class_ids=[1],\n    target_class_id=1,\n)\nprint(response)"
           }
         ]
       }
@@ -13838,7 +13841,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.update_export(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    version=1,\n    description=\"...\",\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/datasets/{owner}/{dataset}/images/clustering": {
@@ -15330,7 +15340,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.redistribute_splits(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    train=0,\n    val=0,\n    test=0,\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.redistribute_splits(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    train=1,\n    val=1,\n    test=1,\n)\nprint(response)"
           }
         ]
       }
@@ -15669,7 +15679,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.create(\n    dataset=\"...\",\n    name=\"...\",\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/deployments/{owner}/{deployment}": {
@@ -16265,7 +16282,7 @@
             "schema": {
               "type": "string",
               "maxLength": 100,
-              "pattern": "^(DEBUG|INFO|WARNING|ERROR|CRITICAL)(,(DEBUG|INFO|WARNING|ERROR|CRITICAL))*$"
+              "pattern": "^(DEBUG|INFO|NOTICE|WARNING|ERROR|CRITICAL|ALERT|EMERGENCY)(,(DEBUG|INFO|NOTICE|WARNING|ERROR|CRITICAL|ALERT|EMERGENCY))*$"
             }
           },
           {
@@ -16792,7 +16809,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.predict(\n    owner=\"ultralytics\",\n    deployment=\"yolo26-api\",\n    body={\"conf\": 0.25, \"iou\": 0.7, \"imgsz\": 640, \"normalize\": False, \"decimals\": 5, \"bits\": 8, \"file\": \"...\", \"source\": \"...\"},\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/deployments/{owner}": {
@@ -17125,7 +17149,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.create(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    deployment=\"yolo26-api\",\n    name=\"...\",\n    region=\"asia-east1\",\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/explore/search": {
@@ -17611,7 +17642,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.images.update(\n    image_id=\"507f1f77bcf86cd799439011\",\n    body={\"labels\": [{\"classId\": 1, \"bbox\": [\"...\"], \"segments\": [1], \"keypoints\": [1], \"obb\": [\"...\"], \"skeletonId\": \"...\"}]},\n)\nprint(response)"
+          }
+        ]
       },
       "delete": {
         "summary": "Delete an image",
@@ -18360,7 +18398,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.browse_cloud_storage_objects(\n    id=\"507f1f77bcf86cd799439011\",\n    target=\"...\",\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/integrations/buckets": {
@@ -18624,7 +18669,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.connect_cloud_storage(\n    provider=\"gcs\",\n    credentials={\"client_email\": \"...\", \"private_key\": \"...\", \"project_id\": \"...\"},\n    targets=[\"...\"],\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/integrations/buckets/discover": {
@@ -18799,7 +18851,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.discover_cloud_storage_locations(\n    provider=\"gcs\",\n    credentials={\"client_email\": \"...\", \"private_key\": \"...\", \"project_id\": \"...\"},\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/integrations/roboflow/import": {
@@ -18941,7 +19000,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.import_from_roboflow(\n    api_key=\"...\",\n    items=[{\"workspace\": \"...\", \"projectId\": \"...\", \"projectName\": \"...\", \"projectType\": \"...\", \"latestVersion\": 1, \"latestVersionName\": \"...\"}],\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/integrations/roboflow/preview": {
@@ -19044,7 +19110,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.preview_roboflow_import(\n    api_key=\"...\",\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/models/{owner}/{project}/{model}/clone": {
@@ -20976,7 +21049,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.predict(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    body={\"conf\": 0.25, \"iou\": 0.7, \"imgsz\": 640, \"normalize\": False, \"decimals\": 5, \"bits\": 8, \"file\": \"...\", \"source\": \"...\"},\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/models/{owner}/{project}/{model}/training": {
@@ -21843,7 +21923,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.create(\n    body={\"owner\": \"ultralytics\", \"project\": \"yolo26\", \"description\": \"...\", \"metadata\": {\"key\": \"...\"}, \"task\": \"detect\", \"trainArgs\": {\"key\": \"...\"}, \"trainResults\": [{\"epoch\": 1, \"fitness\": 1, \"metrics\": {\"key\": 1}, \"system\": {\"key\": \"...\"}, \"timestamp\": \"2026-01-01T00:00:00Z\"}], \"epochs\": 1, \"metrics\": {\"mAP50\": 1, \"mAP50-95\": 1, \"precision\": 1, \"recall\": 1, \"accuracy_top1\": 1, \"accuracy_top5\": 1, \"miou\": 1, \"pixel_acc\": 1, \"delta1\": 1, \"abs_rel\": 1, \"rmse\": 1, \"silog\": 1}, \"version\": \"...\", \"docs\": \"...\", \"environment\": {\"key\": \"...\"}, \"completedAt\": \"2026-01-01T00:00:00Z\", \"model\": \"...\", \"name\": \"...\"},\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/projects/{owner}/{project}/clone": {
@@ -22745,7 +22832,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.projects.create(\n    project=\"...\",\n    name=\"...\",\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/storage": {
@@ -23533,7 +23627,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"...\",\n    train_args={\"model\": \"...\", \"data\": \"...\", \"task\": \"detect\", \"classes\": [1], \"project\": \"...\", \"name\": \"...\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"label_smoothing\": 0, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": 1, \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/trash": {
@@ -23759,7 +23860,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.restore_trashed_item(\n    id=\"...\",\n    type=\"project\",\n)\nprint(response)"
+          }
+        ]
       },
       "delete": {
         "summary": "Permanently delete trash",
@@ -23888,7 +23996,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.permanently_delete_trash(\n    body={\"id\": \"...\", \"type\": \"project\"},\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/upload/complete": {
@@ -23995,7 +24110,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.complete(\n    session_id=\"...\",\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/upload/signed-url": {
@@ -24165,7 +24287,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.retrieve_file_url(\n    asset_id=\"...\",\n    content_type=\"...\",\n    total_bytes=1,\n    asset_type=\"datasets\",\n    filename=\"dataset.zip\",\n)\nprint(response)"
+          }
+        ]
       }
     },
     "/api/users": {
@@ -24245,7 +24374,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.account.retrieve_public_user_profile(\n    username=\"...\",\n)\nprint(response)"
+          }
+        ]
       },
       "patch": {
         "summary": "Follow a user",
@@ -24330,7 +24466,14 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.account.follow_user(\n    username=\"...\",\n    followed=False,\n)\nprint(response)"
+          }
+        ]
       }
     }
   }

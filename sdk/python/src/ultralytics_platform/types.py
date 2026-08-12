@@ -1150,7 +1150,7 @@ DeploymentsRetrieveLogsResponseEntriesItem = TypedDict(
     "DeploymentsRetrieveLogsResponseEntriesItem",
     {
         "timestamp": str,
-        "severity": Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "DEFAULT"],
+        "severity": Literal["DEFAULT", "DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "CRITICAL", "ALERT", "EMERGENCY"],
         "message": str,
         "httpRequest": NotRequired[DeploymentsRetrieveLogsResponseEntriesItemHttpRequest],
     },
