@@ -20,7 +20,6 @@ from ..types import (
     ModelsListResponse,
     ModelsPredictResponse,
     ModelsRetrieveFilesResponse,
-    ModelsRetrieveMetadataResponse,
     ModelsRetrieveResponse,
     ModelsRetrieveTrainingResponse,
     ModelsUpdateResponse,
@@ -33,117 +32,66 @@ class Models:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def list(
-        self, *, project_id: str, limit: float | None = None, fields: str | None = None, ids: str | None = None
-    ) -> ModelsListResponse:
-        """List models in a project.
-
-        Returns models for a project ID.
-
-        Args:
-            project_id (str): Project ID
-            limit (float, optional): Number of results to return (default 20, max 100)
-            fields (str, optional): Response detail level: 'summary' or 'charts'
-            ids (str, optional): Comma-separated model IDs to return
-
-        Returns:
-            (ModelsListResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsListResponse,
-            self._client.request(
-                "GET",
-                "/api/models",
-                auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("projectId", project_id, style="form", explode=True),
-                    *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("fields", fields, style="form", explode=True),
-                    *_query_parameter("ids", ids, style="form", explode=True),
-                ],
-            ),
-        )
-
-    def create(
+    def clone(
         self,
+        owner: str,
+        project: str,
+        model: str,
         *,
-        project_id: str,
-        slug: str | NotGiven = NOT_GIVEN,
+        project_body: str,
+        owner_body: str | NotGiven = NOT_GIVEN,
+        model_body: str | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
-        metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
-        task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
-        train_args: dict[str, Any] | NotGiven = NOT_GIVEN,
-        train_results: list[dict[str, Any]] | NotGiven = NOT_GIVEN,
-        epochs: float | NotGiven = NOT_GIVEN,
-        metrics: dict[str, Any] | NotGiven = NOT_GIVEN,
-        version: str | NotGiven = NOT_GIVEN,
-        docs: str | NotGiven = NOT_GIVEN,
-        environment: dict[str, Any] | NotGiven = NOT_GIVEN,
-        completed_at: str | NotGiven = NOT_GIVEN,
-    ) -> ModelsCreateResponse:
-        """Create a new model.
+    ) -> ModelsCloneResponse:
+        """Clone a model.
 
-        Creates a model inside a project. The model can then be trained or have weights uploaded.
+        Copies an accessible model into an existing project.
 
         Args:
-            project_id (str): Project ID
-            slug (str, optional): URL slug
-            name (str, optional): Resource name
-            description (str, optional): Resource description
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): YOLO task type
-            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            train_results (list[dict[str, Any]], optional): Per-epoch training results
-            epochs (float, optional): Epochs
-            metrics (dict[str, Any], optional): Metrics
-            version (str, optional): Version identifier
-            docs (str, optional): Documentation URL from .pt file
-            environment (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            completed_at (str, optional): Completed At
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            owner_body (str, optional): Destination owner
+            project_body (str): Destination project
+            model_body (str, optional): Destination model name
+            name (str, optional): Destination display name
+            description (str, optional): description request value.
 
         Returns:
-            (ModelsCreateResponse): The API response.
+            (ModelsCloneResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ModelsCreateResponse,
+            ModelsCloneResponse,
             self._client.request(
                 "POST",
-                "/api/models",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/clone",
                 auth=("Authorization", "Bearer "),
                 json={
-                    "projectId": project_id,
-                    "slug": slug,
+                    "owner": owner_body,
+                    "project": project_body,
+                    "model": model_body,
                     "name": name,
                     "description": description,
-                    "metadata": metadata,
-                    "task": task,
-                    "trainArgs": train_args,
-                    "trainResults": train_results,
-                    "epochs": epochs,
-                    "metrics": metrics,
-                    "version": version,
-                    "docs": docs,
-                    "environment": environment,
-                    "completedAt": completed_at,
                 },
             ),
         )
 
-    def retrieve(self, model_id: str, *, analysis: Literal["1"] | None = None) -> ModelsRetrieveResponse:
+    def retrieve(
+        self, owner: str, project: str, model: str, *, analysis: Literal["1"] | None = None
+    ) -> ModelsRetrieveResponse:
         """Get model details.
 
-        Returns model details including training status, per-epoch metrics, validation plots, and file info. Pass `analysis=1` to instead return the per-image validation analysis: worst and best cohorts with up to 100 example images each, TP/FP/FN/F1 at IoU 0.50, image traits, and trait-vs-F1 comparisons.
+        Returns model details. Pass analysis=1 to return per-image validation analysis instead.
 
         Args:
-            model_id (str): Model ID
-            analysis (Literal["1"], optional): Return the per-image validation analysis, not model details
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            analysis (Literal["1"], optional): Return per-image validation analysis instead of model details
 
         Returns:
             (ModelsRetrieveResponse): The API response.
@@ -155,7 +103,7 @@ class Models:
             ModelsRetrieveResponse,
             self._client.request(
                 "GET",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("analysis", analysis, style="form", explode=True)],
             ),
@@ -163,8 +111,11 @@ class Models:
 
     def update(
         self,
-        model_id: str,
+        owner: str,
+        project: str,
+        model: str,
         *,
+        starred: bool | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         color: str | None | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
@@ -198,24 +149,27 @@ class Models:
     ) -> ModelsUpdateResponse:
         """Update a model.
 
-        Update model properties like name, description, metadata, or training status.
+        Updates model properties such as name, description, metadata, or training status.
 
         Args:
-            model_id (str): Model ID
-            name (str, optional): Resource name
-            color (str | None, optional): Display color
-            description (str, optional): Resource description
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            starred (bool, optional): starred request value.
+            name (str, optional): name request value.
+            color (str | None, optional): color request value.
+            description (str, optional): description request value.
+            metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional): Training/model status
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            dataset_slug (str | None, optional): Dataset URL slug
-            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            train_results (list[dict[str, Any]], optional): Per-epoch training results
-            epochs (float, optional): Epochs
-            best_epoch (float, optional): Best Epoch
-            best_fitness (float, optional): Best Fitness
-            version (str, optional): Version identifier
-            training_error (dict[str, Any], optional): Training failure details
+            dataset_slug (str | None, optional): datasetSlug request value.
+            train_args (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
+            train_results (list[dict[str, Any]], optional): trainResults request value.
+            epochs (float, optional): epochs request value.
+            best_epoch (float, optional): bestEpoch request value.
+            best_fitness (float, optional): bestFitness request value.
+            version (str, optional): version request value.
+            training_error (dict[str, Any], optional): trainingError request value.
 
         Returns:
             (ModelsUpdateResponse): The API response.
@@ -227,9 +181,10 @@ class Models:
             ModelsUpdateResponse,
             self._client.request(
                 "PATCH",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
                 json={
+                    "starred": starred,
                     "name": name,
                     "color": color,
                     "description": description,
@@ -248,13 +203,15 @@ class Models:
             ),
         )
 
-    def delete(self, model_id: str) -> ModelsDeleteResponse:
+    def delete(self, owner: str, project: str, model: str) -> ModelsDeleteResponse:
         """Delete a model.
 
-        Moves the model to trash. Can be restored within 30 days.
+        Moves the model to trash for 30 days.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
 
         Returns:
             (ModelsDeleteResponse): The API response.
@@ -266,82 +223,20 @@ class Models:
             ModelsDeleteResponse,
             self._client.request(
                 "DELETE",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def retrieve_metadata(self, model_id: str) -> ModelsRetrieveMetadataResponse:
-        """Get model metadata.
-
-        Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
-
-        Args:
-            model_id (str): Model ID
-
-        Returns:
-            (ModelsRetrieveMetadataResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsRetrieveMetadataResponse,
-            self._client.request(
-                "GET",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/metadata",
-                auth=("Authorization", "Bearer "),
-            ),
-        )
-
-    def clone(
-        self,
-        model_id: str,
-        *,
-        target_project_slug: str,
-        model_name: str | NotGiven = NOT_GIVEN,
-        description: str | NotGiven = NOT_GIVEN,
-        owner: str | NotGiven = NOT_GIVEN,
-    ) -> ModelsCloneResponse:
-        """Clone an accessible model.
-
-        Copies a public, owned, or shared model into an existing project.
-
-        Args:
-            model_id (str): Model ID
-            target_project_slug (str): Target project URL slug
-            model_name (str, optional): Model name
-            description (str, optional): Resource description
-            owner (str, optional): Workspace username
-
-        Returns:
-            (ModelsCloneResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsCloneResponse,
-            self._client.request(
-                "POST",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/clone",
-                auth=("Authorization", "Bearer "),
-                json={
-                    "targetProjectSlug": target_project_slug,
-                    "modelName": model_name,
-                    "description": description,
-                    "owner": owner,
-                },
-            ),
-        )
-
-    def retrieve_files(self, model_id: str) -> ModelsRetrieveFilesResponse:
+    def retrieve_files(self, owner: str, project: str, model: str) -> ModelsRetrieveFilesResponse:
         """Download model files.
 
-        Returns signed download URLs for model weights and exported files. URLs are valid for 1 hour.
+        Returns a short-lived download URL for model weights.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
 
         Returns:
             (ModelsRetrieveFilesResponse): The API response.
@@ -353,18 +248,20 @@ class Models:
             ModelsRetrieveFilesResponse,
             self._client.request(
                 "GET",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/files",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/files",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def predict(self, model_id: str, *, body: dict[str, Any]) -> ModelsPredictResponse:
-        """Run inference on a model.
+    def predict(self, owner: str, project: str, model: str, *, body: dict[str, Any]) -> ModelsPredictResponse:
+        """Run model inference.
 
-        Send an image to run YOLO inference using shared GPU infrastructure. Supports all YOLO tasks (detect, segment, classify, pose, obb).
+        Runs inference on an image or video using a trained model.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
             body (dict[str, Any]): Request body.
 
         Returns:
@@ -377,20 +274,22 @@ class Models:
             ModelsPredictResponse,
             self._client.request(
                 "POST",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/predict",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/predict",
                 auth=("Authorization", "Bearer "),
                 data={key: value for key, value in body.items() if key not in ["file"]},
                 files={key: body[key] for key in ["file"] if key in body},
             ),
         )
 
-    def retrieve_training(self, model_id: str) -> ModelsRetrieveTrainingResponse:
+    def retrieve_training(self, owner: str, project: str, model: str) -> ModelsRetrieveTrainingResponse:
         """Check training progress.
 
-        Returns live status, epoch progress, timing, compute, metrics, and error details.
+        Returns live status, epoch progress, timing, compute, metrics, and safe error details.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
 
         Returns:
             (ModelsRetrieveTrainingResponse): The API response.
@@ -402,18 +301,20 @@ class Models:
             ModelsRetrieveTrainingResponse,
             self._client.request(
                 "GET",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/training",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/training",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def delete_training(self, model_id: str) -> ModelsDeleteTrainingResponse:
+    def delete_training(self, owner: str, project: str, model: str) -> ModelsDeleteTrainingResponse:
         """Cancel training.
 
-        Terminates the compute instance and marks the model as cancelled.
+        Terminates active compute and marks the model as cancelled.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
 
         Returns:
             (ModelsDeleteTrainingResponse): The API response.
@@ -425,9 +326,54 @@ class Models:
             ModelsDeleteTrainingResponse,
             self._client.request(
                 "DELETE",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/training",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/training",
                 auth=("Authorization", "Bearer "),
             ),
+        )
+
+    def list(self, owner: str, project: str, *, limit: int | None = None) -> ModelsListResponse:
+        """List models in a project.
+
+        Returns models by owner and project name.
+
+        Args:
+            owner (str): Project owner
+            project (str): Project name
+            limit (int, optional): Maximum models to return
+
+        Returns:
+            (ModelsListResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ModelsListResponse,
+            self._client.request(
+                "GET",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("limit", limit, style="form", explode=True)],
+            ),
+        )
+
+    def create(self, *, body: dict[str, Any]) -> ModelsCreateResponse:
+        """Create a model.
+
+        Creates a model in an existing project.
+
+        Args:
+            body (dict[str, Any]): API request for creating a new model
+
+        Returns:
+            (ModelsCreateResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ModelsCreateResponse,
+            self._client.request("POST", "/api/models", auth=("Authorization", "Bearer "), json=body),
         )
 
 
@@ -437,117 +383,66 @@ class AsyncModels:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def list(
-        self, *, project_id: str, limit: float | None = None, fields: str | None = None, ids: str | None = None
-    ) -> ModelsListResponse:
-        """List models in a project.
-
-        Returns models for a project ID.
-
-        Args:
-            project_id (str): Project ID
-            limit (float, optional): Number of results to return (default 20, max 100)
-            fields (str, optional): Response detail level: 'summary' or 'charts'
-            ids (str, optional): Comma-separated model IDs to return
-
-        Returns:
-            (ModelsListResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsListResponse,
-            await self._client.request(
-                "GET",
-                "/api/models",
-                auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("projectId", project_id, style="form", explode=True),
-                    *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("fields", fields, style="form", explode=True),
-                    *_query_parameter("ids", ids, style="form", explode=True),
-                ],
-            ),
-        )
-
-    async def create(
+    async def clone(
         self,
+        owner: str,
+        project: str,
+        model: str,
         *,
-        project_id: str,
-        slug: str | NotGiven = NOT_GIVEN,
+        project_body: str,
+        owner_body: str | NotGiven = NOT_GIVEN,
+        model_body: str | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
-        metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
-        task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
-        train_args: dict[str, Any] | NotGiven = NOT_GIVEN,
-        train_results: list[dict[str, Any]] | NotGiven = NOT_GIVEN,
-        epochs: float | NotGiven = NOT_GIVEN,
-        metrics: dict[str, Any] | NotGiven = NOT_GIVEN,
-        version: str | NotGiven = NOT_GIVEN,
-        docs: str | NotGiven = NOT_GIVEN,
-        environment: dict[str, Any] | NotGiven = NOT_GIVEN,
-        completed_at: str | NotGiven = NOT_GIVEN,
-    ) -> ModelsCreateResponse:
-        """Create a new model.
+    ) -> ModelsCloneResponse:
+        """Clone a model.
 
-        Creates a model inside a project. The model can then be trained or have weights uploaded.
+        Copies an accessible model into an existing project.
 
         Args:
-            project_id (str): Project ID
-            slug (str, optional): URL slug
-            name (str, optional): Resource name
-            description (str, optional): Resource description
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): YOLO task type
-            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            train_results (list[dict[str, Any]], optional): Per-epoch training results
-            epochs (float, optional): Epochs
-            metrics (dict[str, Any], optional): Metrics
-            version (str, optional): Version identifier
-            docs (str, optional): Documentation URL from .pt file
-            environment (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            completed_at (str, optional): Completed At
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            owner_body (str, optional): Destination owner
+            project_body (str): Destination project
+            model_body (str, optional): Destination model name
+            name (str, optional): Destination display name
+            description (str, optional): description request value.
 
         Returns:
-            (ModelsCreateResponse): The API response.
+            (ModelsCloneResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ModelsCreateResponse,
+            ModelsCloneResponse,
             await self._client.request(
                 "POST",
-                "/api/models",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/clone",
                 auth=("Authorization", "Bearer "),
                 json={
-                    "projectId": project_id,
-                    "slug": slug,
+                    "owner": owner_body,
+                    "project": project_body,
+                    "model": model_body,
                     "name": name,
                     "description": description,
-                    "metadata": metadata,
-                    "task": task,
-                    "trainArgs": train_args,
-                    "trainResults": train_results,
-                    "epochs": epochs,
-                    "metrics": metrics,
-                    "version": version,
-                    "docs": docs,
-                    "environment": environment,
-                    "completedAt": completed_at,
                 },
             ),
         )
 
-    async def retrieve(self, model_id: str, *, analysis: Literal["1"] | None = None) -> ModelsRetrieveResponse:
+    async def retrieve(
+        self, owner: str, project: str, model: str, *, analysis: Literal["1"] | None = None
+    ) -> ModelsRetrieveResponse:
         """Get model details.
 
-        Returns model details including training status, per-epoch metrics, validation plots, and file info. Pass `analysis=1` to instead return the per-image validation analysis: worst and best cohorts with up to 100 example images each, TP/FP/FN/F1 at IoU 0.50, image traits, and trait-vs-F1 comparisons.
+        Returns model details. Pass analysis=1 to return per-image validation analysis instead.
 
         Args:
-            model_id (str): Model ID
-            analysis (Literal["1"], optional): Return the per-image validation analysis, not model details
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            analysis (Literal["1"], optional): Return per-image validation analysis instead of model details
 
         Returns:
             (ModelsRetrieveResponse): The API response.
@@ -559,7 +454,7 @@ class AsyncModels:
             ModelsRetrieveResponse,
             await self._client.request(
                 "GET",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("analysis", analysis, style="form", explode=True)],
             ),
@@ -567,8 +462,11 @@ class AsyncModels:
 
     async def update(
         self,
-        model_id: str,
+        owner: str,
+        project: str,
+        model: str,
         *,
+        starred: bool | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         color: str | None | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
@@ -602,24 +500,27 @@ class AsyncModels:
     ) -> ModelsUpdateResponse:
         """Update a model.
 
-        Update model properties like name, description, metadata, or training status.
+        Updates model properties such as name, description, metadata, or training status.
 
         Args:
-            model_id (str): Model ID
-            name (str, optional): Resource name
-            color (str | None, optional): Display color
-            description (str, optional): Resource description
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            starred (bool, optional): starred request value.
+            name (str, optional): name request value.
+            color (str | None, optional): color request value.
+            description (str, optional): description request value.
+            metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional): Training/model status
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            dataset_slug (str | None, optional): Dataset URL slug
-            train_args (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
-            train_results (list[dict[str, Any]], optional): Per-epoch training results
-            epochs (float, optional): Epochs
-            best_epoch (float, optional): Best Epoch
-            best_fitness (float, optional): Best Fitness
-            version (str, optional): Version identifier
-            training_error (dict[str, Any], optional): Training failure details
+            dataset_slug (str | None, optional): datasetSlug request value.
+            train_args (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
+            train_results (list[dict[str, Any]], optional): trainResults request value.
+            epochs (float, optional): epochs request value.
+            best_epoch (float, optional): bestEpoch request value.
+            best_fitness (float, optional): bestFitness request value.
+            version (str, optional): version request value.
+            training_error (dict[str, Any], optional): trainingError request value.
 
         Returns:
             (ModelsUpdateResponse): The API response.
@@ -631,9 +532,10 @@ class AsyncModels:
             ModelsUpdateResponse,
             await self._client.request(
                 "PATCH",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
                 json={
+                    "starred": starred,
                     "name": name,
                     "color": color,
                     "description": description,
@@ -652,13 +554,15 @@ class AsyncModels:
             ),
         )
 
-    async def delete(self, model_id: str) -> ModelsDeleteResponse:
+    async def delete(self, owner: str, project: str, model: str) -> ModelsDeleteResponse:
         """Delete a model.
 
-        Moves the model to trash. Can be restored within 30 days.
+        Moves the model to trash for 30 days.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
 
         Returns:
             (ModelsDeleteResponse): The API response.
@@ -670,82 +574,20 @@ class AsyncModels:
             ModelsDeleteResponse,
             await self._client.request(
                 "DELETE",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def retrieve_metadata(self, model_id: str) -> ModelsRetrieveMetadataResponse:
-        """Get model metadata.
-
-        Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
-
-        Args:
-            model_id (str): Model ID
-
-        Returns:
-            (ModelsRetrieveMetadataResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsRetrieveMetadataResponse,
-            await self._client.request(
-                "GET",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/metadata",
-                auth=("Authorization", "Bearer "),
-            ),
-        )
-
-    async def clone(
-        self,
-        model_id: str,
-        *,
-        target_project_slug: str,
-        model_name: str | NotGiven = NOT_GIVEN,
-        description: str | NotGiven = NOT_GIVEN,
-        owner: str | NotGiven = NOT_GIVEN,
-    ) -> ModelsCloneResponse:
-        """Clone an accessible model.
-
-        Copies a public, owned, or shared model into an existing project.
-
-        Args:
-            model_id (str): Model ID
-            target_project_slug (str): Target project URL slug
-            model_name (str, optional): Model name
-            description (str, optional): Resource description
-            owner (str, optional): Workspace username
-
-        Returns:
-            (ModelsCloneResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ModelsCloneResponse,
-            await self._client.request(
-                "POST",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/clone",
-                auth=("Authorization", "Bearer "),
-                json={
-                    "targetProjectSlug": target_project_slug,
-                    "modelName": model_name,
-                    "description": description,
-                    "owner": owner,
-                },
-            ),
-        )
-
-    async def retrieve_files(self, model_id: str) -> ModelsRetrieveFilesResponse:
+    async def retrieve_files(self, owner: str, project: str, model: str) -> ModelsRetrieveFilesResponse:
         """Download model files.
 
-        Returns signed download URLs for model weights and exported files. URLs are valid for 1 hour.
+        Returns a short-lived download URL for model weights.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
 
         Returns:
             (ModelsRetrieveFilesResponse): The API response.
@@ -757,18 +599,20 @@ class AsyncModels:
             ModelsRetrieveFilesResponse,
             await self._client.request(
                 "GET",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/files",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/files",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def predict(self, model_id: str, *, body: dict[str, Any]) -> ModelsPredictResponse:
-        """Run inference on a model.
+    async def predict(self, owner: str, project: str, model: str, *, body: dict[str, Any]) -> ModelsPredictResponse:
+        """Run model inference.
 
-        Send an image to run YOLO inference using shared GPU infrastructure. Supports all YOLO tasks (detect, segment, classify, pose, obb).
+        Runs inference on an image or video using a trained model.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
             body (dict[str, Any]): Request body.
 
         Returns:
@@ -781,20 +625,22 @@ class AsyncModels:
             ModelsPredictResponse,
             await self._client.request(
                 "POST",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/predict",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/predict",
                 auth=("Authorization", "Bearer "),
                 data={key: value for key, value in body.items() if key not in ["file"]},
                 files={key: body[key] for key in ["file"] if key in body},
             ),
         )
 
-    async def retrieve_training(self, model_id: str) -> ModelsRetrieveTrainingResponse:
+    async def retrieve_training(self, owner: str, project: str, model: str) -> ModelsRetrieveTrainingResponse:
         """Check training progress.
 
-        Returns live status, epoch progress, timing, compute, metrics, and error details.
+        Returns live status, epoch progress, timing, compute, metrics, and safe error details.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
 
         Returns:
             (ModelsRetrieveTrainingResponse): The API response.
@@ -806,18 +652,20 @@ class AsyncModels:
             ModelsRetrieveTrainingResponse,
             await self._client.request(
                 "GET",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/training",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/training",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def delete_training(self, model_id: str) -> ModelsDeleteTrainingResponse:
+    async def delete_training(self, owner: str, project: str, model: str) -> ModelsDeleteTrainingResponse:
         """Cancel training.
 
-        Terminates the compute instance and marks the model as cancelled.
+        Terminates active compute and marks the model as cancelled.
 
         Args:
-            model_id (str): Model ID
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
 
         Returns:
             (ModelsDeleteTrainingResponse): The API response.
@@ -829,7 +677,52 @@ class AsyncModels:
             ModelsDeleteTrainingResponse,
             await self._client.request(
                 "DELETE",
-                f"/api/models/{_path_parameter(model_id, explode=False, allow_reserved=False)}/training",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/training",
                 auth=("Authorization", "Bearer "),
             ),
+        )
+
+    async def list(self, owner: str, project: str, *, limit: int | None = None) -> ModelsListResponse:
+        """List models in a project.
+
+        Returns models by owner and project name.
+
+        Args:
+            owner (str): Project owner
+            project (str): Project name
+            limit (int, optional): Maximum models to return
+
+        Returns:
+            (ModelsListResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ModelsListResponse,
+            await self._client.request(
+                "GET",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("limit", limit, style="form", explode=True)],
+            ),
+        )
+
+    async def create(self, *, body: dict[str, Any]) -> ModelsCreateResponse:
+        """Create a model.
+
+        Creates a model in an existing project.
+
+        Args:
+            body (dict[str, Any]): API request for creating a new model
+
+        Returns:
+            (ModelsCreateResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ModelsCreateResponse,
+            await self._client.request("POST", "/api/models", auth=("Authorization", "Bearer "), json=body),
         )

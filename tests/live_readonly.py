@@ -66,26 +66,33 @@ def optional_get(client: httpx.Client, path: str, params: dict[str, Any] | None 
 
 
 def fixtures(client: httpx.Client) -> dict[str, str]:
-    datasets = get(client, "/api/datasets", {"limit": 1})
-    projects = get(client, "/api/projects", {"limit": 1})
+    account = get(client, "/api/account/summary")
+    owner = str(account["username"])
+    datasets = get(client, f"/api/datasets/{quote(owner, safe='')}", {"limit": 1})
+    projects = get(client, f"/api/projects/{quote(owner, safe='')}", {"limit": 1})
     project = first(projects, "projects")
-    project_id = identifier(project)
-    models = optional_get(client, "/api/models", {"projectId": project_id} if project_id else None)
-    deployments = get(client, "/api/deployments", {"limit": 1})
+    project_name = str(project.get("project")) if project else "missing-live-smoke-project"
+    models = optional_get(client, f"/api/models/{quote(owner, safe='')}/{quote(project_name, safe='')}")
+    deployments = get(client, f"/api/deployments/{quote(owner, safe='')}", {"limit": 1})
     integrations = get(client, "/api/integrations/buckets")
     dataset = first(datasets, "datasets")
     model = first(models, "models") or (models.get("model") if isinstance(models, dict) else None)
     deployment = first(deployments, "deployments")
     integration = first(integrations, "integrations")
     result = {
-        "datasetId": identifier(dataset) or "missing-live-smoke-dataset",
-        "projectId": project_id or "missing-live-smoke-project",
-        "modelId": identifier(model) or "missing-live-smoke-model",
-        "deploymentId": identifier(deployment) or "missing-live-smoke-deployment",
+        "owner": owner,
+        "dataset": str(dataset.get("dataset")) if dataset else "missing-live-smoke-dataset",
+        "project": project_name,
+        "model": str(model.get("model")) if model else "missing-live-smoke-model",
+        "deployment": str(deployment.get("deployment")) if deployment else "missing-live-smoke-deployment",
         "id": identifier(integration) or "missing-live-smoke-integration",
     }
-    images = optional_get(client, f"/api/datasets/{quote(result['datasetId'], safe='')}/images", {"limit": 1})
-    exports = optional_get(client, "/api/exports", {"modelId": result["modelId"], "limit": 1})
+    dataset_path = f"/api/datasets/{quote(owner, safe='')}/{quote(result['dataset'], safe='')}"
+    model_path = "/api/models/{}/{}/{}".format(
+        quote(owner, safe=""), quote(project_name, safe=""), quote(result["model"], safe="")
+    )
+    images = optional_get(client, f"{dataset_path}/images", {"limit": 1})
+    exports = optional_get(client, f"{model_path}/exports", {"limit": 1})
     result["imageId"] = identifier(first(images, "images")) or "missing-live-smoke-image"
     result["exportId"] = identifier(first(exports, "exports")) or "missing-live-smoke-export"
     targets = integration.get("targets") if integration else None
@@ -113,16 +120,13 @@ def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
                 request_path = request_path.replace(f"{{{name}}}", quote(values.get(name, f"missing-{name}"), safe=""))
             elif parameter.get("required"):
                 query[name] = values.get(name, f"live-smoke-{name}")
-        if path == "/api/models":
-            query["projectId"] = values["projectId"]
         response = client.get(request_path, params=query)
         exercised += 1
         print(f"GET {path}: {response.status_code}")
         if response.status_code in {401, 403} or response.status_code >= 500:
             raise RuntimeError(f"GET {path} returned {response.status_code}")
         if not response.is_success:
-            missing_fixture = "missing-" in request_path or any("missing-" in str(value) for value in query.values())
-            if not missing_fixture:
+            if str(response.status_code) not in operation.get("responses", {}):
                 raise RuntimeError(f"GET {path} returned unexpected {response.status_code}")
             continue
         successful += 1

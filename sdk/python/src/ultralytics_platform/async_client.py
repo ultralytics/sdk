@@ -8,8 +8,11 @@ import httpx
 
 from ._client import AsyncAPIClient
 from .resources import (
+    AsyncAccount,
+    AsyncBilling,
     AsyncDatasets,
     AsyncDeployments,
+    AsyncExplore,
     AsyncExports,
     AsyncImages,
     AsyncLifecycle,
@@ -50,16 +53,19 @@ class AsyncPlatform:
             max_retries=max_retries,
             http_client=http_client,
         )
+        self.account = AsyncAccount(self._client)
+        self.billing = AsyncBilling(self._client)
         self.datasets = AsyncDatasets(self._client)
-        self.images = AsyncImages(self._client)
-        self.projects = AsyncProjects(self._client)
-        self.models = AsyncModels(self._client)
-        self.training = AsyncTraining(self._client)
-        self.exports = AsyncExports(self._client)
         self.deployments = AsyncDeployments(self._client)
-        self.upload = AsyncUpload(self._client)
+        self.explore = AsyncExplore(self._client)
+        self.images = AsyncImages(self._client)
         self.storage_integrations = AsyncStorageIntegrations(self._client)
+        self.models = AsyncModels(self._client)
+        self.exports = AsyncExports(self._client)
+        self.projects = AsyncProjects(self._client)
+        self.training = AsyncTraining(self._client)
         self.lifecycle = AsyncLifecycle(self._client)
+        self.upload = AsyncUpload(self._client)
 
     async def close(self) -> None:
         """Close the underlying HTTP client."""

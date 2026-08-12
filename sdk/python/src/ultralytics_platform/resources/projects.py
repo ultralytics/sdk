@@ -17,7 +17,6 @@ from ..types import (
     ProjectsCreateResponse,
     ProjectsDeleteResponse,
     ProjectsListResponse,
-    ProjectsRetrieveMetadataResponse,
     ProjectsRetrieveResponse,
     ProjectsUpdateResponse,
 )
@@ -29,47 +28,16 @@ class Projects:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def list(
-        self, *, limit: float | None = None, owner: str | None = None, region: Literal["us", "eu", "ap"] | None = None
-    ) -> ProjectsListResponse:
-        """List your projects.
-
-        Returns your projects with pagination.
-
-        Args:
-            limit (float, optional): Number of results to return (default 20, max 500)
-            owner (str, optional): Team workspace to browse
-            region (Literal["us", "eu", "ap"], optional): Data region: us, eu, or ap
-
-        Returns:
-            (ProjectsListResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ProjectsListResponse,
-            self._client.request(
-                "GET",
-                "/api/projects",
-                auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("owner", owner, style="form", explode=True),
-                    *_query_parameter("region", region, style="form", explode=True),
-                ],
-            ),
-        )
-
-    def create(
+    def clone(
         self,
+        owner: str,
+        project: str,
         *,
-        slug: str,
-        name: str,
+        name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
-        metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
+        owner_body: str | NotGiven = NOT_GIVEN,
+        project_body: str | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "Apache-2.0",
@@ -86,54 +54,52 @@ class Projects:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
-        owner: str | NotGiven = NOT_GIVEN,
-    ) -> ProjectsCreateResponse:
-        """Create a new project.
+    ) -> ProjectsCloneResponse:
+        """Clone a project.
 
-        Projects organize your models. Each model belongs to exactly one project.
+        Copies an accessible project and its completed models into an account or editable workspace.
 
         Args:
-            slug (str): URL slug
-            name (str): Resource name
-            description (str, optional): Resource description
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            owner (str): Project owner
+            project (str): Project name
+            name (str, optional): name request value.
+            description (str, optional): description request value.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): Resource tags
+            owner_body (str, optional): Destination owner
+            project_body (str, optional): Name for the cloned project
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            owner (str, optional): Team owner username (creates resource in their workspace)
 
         Returns:
-            (ProjectsCreateResponse): The API response.
+            (ProjectsCloneResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ProjectsCreateResponse,
+            ProjectsCloneResponse,
             self._client.request(
                 "POST",
-                "/api/projects",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/clone",
                 auth=("Authorization", "Bearer "),
                 json={
-                    "slug": slug,
                     "name": name,
                     "description": description,
-                    "metadata": metadata,
                     "visibility": visibility,
-                    "tags": tags,
+                    "owner": owner_body,
+                    "project": project_body,
                     "license": license,
-                    "owner": owner,
                 },
             ),
         )
 
-    def retrieve(self, project_id: str) -> ProjectsRetrieveResponse:
-        """Get project details.
+    def retrieve(self, owner: str, project: str) -> ProjectsRetrieveResponse:
+        """Get a project.
 
-        Returns one project and its model summary by project ID.
+        Returns a project and its model summaries by owner and project name.
 
         Args:
-            project_id (str): Project ID
+            owner (str): Project owner
+            project (str): Project name
 
         Returns:
             (ProjectsRetrieveResponse): The API response.
@@ -145,15 +111,17 @@ class Projects:
             ProjectsRetrieveResponse,
             self._client.request(
                 "GET",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
     def update(
         self,
-        project_id: str,
+        owner: str,
+        project: str,
         *,
+        starred: bool | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
@@ -182,19 +150,21 @@ class Projects:
     ) -> ProjectsUpdateResponse:
         """Update a project.
 
-        Update project properties like name, description, metadata, visibility, or tags.
+        Updates project properties. Changing the display name also changes the project name used in URLs.
 
         Args:
-            project_id (str): Project ID
-            name (str, optional): Resource name
-            description (str, optional): Resource description
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            owner (str): Project owner
+            project (str): Project name
+            starred (bool, optional): starred request value.
+            name (str, optional): name request value.
+            description (str, optional): description request value.
+            metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): Resource tags
+            tags (list[str], optional): tags request value.
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            archived (bool, optional): Whether the resource is archived
-            icon_color (str, optional): Icon color
-            icon_letter (str | Literal[""] | None, optional): Icon letter
+            archived (bool, optional): archived request value.
+            icon_color (str, optional): iconColor request value.
+            icon_letter (str | Literal[""] | None, optional): iconLetter request value.
             view_preferences (dict[str, Any], optional): Shared project-level model view defaults
 
         Returns:
@@ -207,9 +177,10 @@ class Projects:
             ProjectsUpdateResponse,
             self._client.request(
                 "PATCH",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
                 json={
+                    "starred": starred,
                     "name": name,
                     "description": description,
                     "metadata": metadata,
@@ -224,13 +195,14 @@ class Projects:
             ),
         )
 
-    def delete(self, project_id: str) -> ProjectsDeleteResponse:
+    def delete(self, owner: str, project: str) -> ProjectsDeleteResponse:
         """Delete a project.
 
-        Moves the project and all its models to trash. Can be restored within 30 days.
+        Moves a project and its models to trash for 30 days.
 
         Args:
-            project_id (str): Project ID
+            owner (str): Project owner
+            project (str): Project name
 
         Returns:
             (ProjectsDeleteResponse): The API response.
@@ -242,75 +214,96 @@ class Projects:
             ProjectsDeleteResponse,
             self._client.request(
                 "DELETE",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def retrieve_metadata(self, project_id: str) -> ProjectsRetrieveMetadataResponse:
-        """Get project metadata.
+    def list(self, owner: str, *, limit: int | None = None) -> ProjectsListResponse:
+        """List an owner's projects.
 
-        Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
+        Returns public projects, plus private projects when the caller can view the owner's workspace.
 
         Args:
-            project_id (str): Project ID
+            owner (str): Project owner
+            limit (int, optional): Maximum projects to return
 
         Returns:
-            (ProjectsRetrieveMetadataResponse): The API response.
+            (ProjectsListResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ProjectsRetrieveMetadataResponse,
+            ProjectsListResponse,
             self._client.request(
                 "GET",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}/metadata",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("limit", limit, style="form", explode=True)],
             ),
         )
 
-    def clone(
+    def create(
         self,
-        project_id: str,
         *,
-        name: str | NotGiven = NOT_GIVEN,
-        slug: str | NotGiven = NOT_GIVEN,
+        project: str,
+        name: str,
         description: str | NotGiven = NOT_GIVEN,
+        metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        license: str | NotGiven = NOT_GIVEN,
+        tags: list[str] | NotGiven = NOT_GIVEN,
+        license: Literal[
+            "None",
+            "Apache-2.0",
+            "MIT",
+            "BSD-3-Clause",
+            "AGPL-3.0",
+            "GPL-3.0",
+            "LGPL-3.0",
+            "MPL-2.0",
+            "EUPL-1.1",
+            "Unlicense",
+            "CC0-1.0",
+            "Ultralytics-Enterprise",
+            "Other",
+        ]
+        | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
-    ) -> ProjectsCloneResponse:
-        """Clone an accessible project.
+    ) -> ProjectsCreateResponse:
+        """Create a project.
 
-        Copies a public, owned, or shared project and its models into your account or a workspace.
+        Creates a project for organizing models in an account or editable workspace.
 
         Args:
-            project_id (str): Project ID
-            name (str, optional): Resource name
-            slug (str, optional): URL slug
-            description (str, optional): Resource description
+            project (str): Project name used in Platform URLs
+            name (str): name request value.
+            description (str, optional): description request value.
+            metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            license (str, optional): License identifier
-            owner (str, optional): Workspace username
+            tags (list[str], optional): tags request value.
+            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            owner (str, optional): Workspace owner
 
         Returns:
-            (ProjectsCloneResponse): The API response.
+            (ProjectsCreateResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ProjectsCloneResponse,
+            ProjectsCreateResponse,
             self._client.request(
                 "POST",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}/clone",
+                "/api/projects",
                 auth=("Authorization", "Bearer "),
                 json={
+                    "project": project,
                     "name": name,
-                    "slug": slug,
                     "description": description,
+                    "metadata": metadata,
                     "visibility": visibility,
+                    "tags": tags,
                     "license": license,
                     "owner": owner,
                 },
@@ -324,47 +317,16 @@ class AsyncProjects:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def list(
-        self, *, limit: float | None = None, owner: str | None = None, region: Literal["us", "eu", "ap"] | None = None
-    ) -> ProjectsListResponse:
-        """List your projects.
-
-        Returns your projects with pagination.
-
-        Args:
-            limit (float, optional): Number of results to return (default 20, max 500)
-            owner (str, optional): Team workspace to browse
-            region (Literal["us", "eu", "ap"], optional): Data region: us, eu, or ap
-
-        Returns:
-            (ProjectsListResponse): The API response.
-
-        Raises:
-            (APIError): If the API returns an unsuccessful response.
-        """
-        return cast(
-            ProjectsListResponse,
-            await self._client.request(
-                "GET",
-                "/api/projects",
-                auth=("Authorization", "Bearer "),
-                params=[
-                    *_query_parameter("limit", limit, style="form", explode=True),
-                    *_query_parameter("owner", owner, style="form", explode=True),
-                    *_query_parameter("region", region, style="form", explode=True),
-                ],
-            ),
-        )
-
-    async def create(
+    async def clone(
         self,
+        owner: str,
+        project: str,
         *,
-        slug: str,
-        name: str,
+        name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
-        metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
+        owner_body: str | NotGiven = NOT_GIVEN,
+        project_body: str | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "Apache-2.0",
@@ -381,54 +343,52 @@ class AsyncProjects:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
-        owner: str | NotGiven = NOT_GIVEN,
-    ) -> ProjectsCreateResponse:
-        """Create a new project.
+    ) -> ProjectsCloneResponse:
+        """Clone a project.
 
-        Projects organize your models. Each model belongs to exactly one project.
+        Copies an accessible project and its completed models into an account or editable workspace.
 
         Args:
-            slug (str): URL slug
-            name (str): Resource name
-            description (str, optional): Resource description
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            owner (str): Project owner
+            project (str): Project name
+            name (str, optional): name request value.
+            description (str, optional): description request value.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): Resource tags
+            owner_body (str, optional): Destination owner
+            project_body (str, optional): Name for the cloned project
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            owner (str, optional): Team owner username (creates resource in their workspace)
 
         Returns:
-            (ProjectsCreateResponse): The API response.
+            (ProjectsCloneResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ProjectsCreateResponse,
+            ProjectsCloneResponse,
             await self._client.request(
                 "POST",
-                "/api/projects",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/clone",
                 auth=("Authorization", "Bearer "),
                 json={
-                    "slug": slug,
                     "name": name,
                     "description": description,
-                    "metadata": metadata,
                     "visibility": visibility,
-                    "tags": tags,
+                    "owner": owner_body,
+                    "project": project_body,
                     "license": license,
-                    "owner": owner,
                 },
             ),
         )
 
-    async def retrieve(self, project_id: str) -> ProjectsRetrieveResponse:
-        """Get project details.
+    async def retrieve(self, owner: str, project: str) -> ProjectsRetrieveResponse:
+        """Get a project.
 
-        Returns one project and its model summary by project ID.
+        Returns a project and its model summaries by owner and project name.
 
         Args:
-            project_id (str): Project ID
+            owner (str): Project owner
+            project (str): Project name
 
         Returns:
             (ProjectsRetrieveResponse): The API response.
@@ -440,15 +400,17 @@ class AsyncProjects:
             ProjectsRetrieveResponse,
             await self._client.request(
                 "GET",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
     async def update(
         self,
-        project_id: str,
+        owner: str,
+        project: str,
         *,
+        starred: bool | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
@@ -477,19 +439,21 @@ class AsyncProjects:
     ) -> ProjectsUpdateResponse:
         """Update a project.
 
-        Update project properties like name, description, metadata, visibility, or tags.
+        Updates project properties. Changing the display name also changes the project name used in URLs.
 
         Args:
-            project_id (str): Project ID
-            name (str, optional): Resource name
-            description (str, optional): Resource description
-            metadata (dict[str, Any], optional): Custom metadata object. Top-level keys are limited to 128 characters and the serialized object is limited to 500,000 characters.
+            owner (str): Project owner
+            project (str): Project name
+            starred (bool, optional): starred request value.
+            name (str, optional): name request value.
+            description (str, optional): description request value.
+            metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): Resource tags
+            tags (list[str], optional): tags request value.
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
-            archived (bool, optional): Whether the resource is archived
-            icon_color (str, optional): Icon color
-            icon_letter (str | Literal[""] | None, optional): Icon letter
+            archived (bool, optional): archived request value.
+            icon_color (str, optional): iconColor request value.
+            icon_letter (str | Literal[""] | None, optional): iconLetter request value.
             view_preferences (dict[str, Any], optional): Shared project-level model view defaults
 
         Returns:
@@ -502,9 +466,10 @@ class AsyncProjects:
             ProjectsUpdateResponse,
             await self._client.request(
                 "PATCH",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
                 json={
+                    "starred": starred,
                     "name": name,
                     "description": description,
                     "metadata": metadata,
@@ -519,13 +484,14 @@ class AsyncProjects:
             ),
         )
 
-    async def delete(self, project_id: str) -> ProjectsDeleteResponse:
+    async def delete(self, owner: str, project: str) -> ProjectsDeleteResponse:
         """Delete a project.
 
-        Moves the project and all its models to trash. Can be restored within 30 days.
+        Moves a project and its models to trash for 30 days.
 
         Args:
-            project_id (str): Project ID
+            owner (str): Project owner
+            project (str): Project name
 
         Returns:
             (ProjectsDeleteResponse): The API response.
@@ -537,75 +503,96 @@ class AsyncProjects:
             ProjectsDeleteResponse,
             await self._client.request(
                 "DELETE",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def retrieve_metadata(self, project_id: str) -> ProjectsRetrieveMetadataResponse:
-        """Get project metadata.
+    async def list(self, owner: str, *, limit: int | None = None) -> ProjectsListResponse:
+        """List an owner's projects.
 
-        Returns custom metadata and Ultralytics-managed properties without adding them to normal payloads.
+        Returns public projects, plus private projects when the caller can view the owner's workspace.
 
         Args:
-            project_id (str): Project ID
+            owner (str): Project owner
+            limit (int, optional): Maximum projects to return
 
         Returns:
-            (ProjectsRetrieveMetadataResponse): The API response.
+            (ProjectsListResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ProjectsRetrieveMetadataResponse,
+            ProjectsListResponse,
             await self._client.request(
                 "GET",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}/metadata",
+                f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}",
                 auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("limit", limit, style="form", explode=True)],
             ),
         )
 
-    async def clone(
+    async def create(
         self,
-        project_id: str,
         *,
-        name: str | NotGiven = NOT_GIVEN,
-        slug: str | NotGiven = NOT_GIVEN,
+        project: str,
+        name: str,
         description: str | NotGiven = NOT_GIVEN,
+        metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        license: str | NotGiven = NOT_GIVEN,
+        tags: list[str] | NotGiven = NOT_GIVEN,
+        license: Literal[
+            "None",
+            "Apache-2.0",
+            "MIT",
+            "BSD-3-Clause",
+            "AGPL-3.0",
+            "GPL-3.0",
+            "LGPL-3.0",
+            "MPL-2.0",
+            "EUPL-1.1",
+            "Unlicense",
+            "CC0-1.0",
+            "Ultralytics-Enterprise",
+            "Other",
+        ]
+        | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
-    ) -> ProjectsCloneResponse:
-        """Clone an accessible project.
+    ) -> ProjectsCreateResponse:
+        """Create a project.
 
-        Copies a public, owned, or shared project and its models into your account or a workspace.
+        Creates a project for organizing models in an account or editable workspace.
 
         Args:
-            project_id (str): Project ID
-            name (str, optional): Resource name
-            slug (str, optional): URL slug
-            description (str, optional): Resource description
+            project (str): Project name used in Platform URLs
+            name (str): name request value.
+            description (str, optional): description request value.
+            metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            license (str, optional): License identifier
-            owner (str, optional): Workspace username
+            tags (list[str], optional): tags request value.
+            license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            owner (str, optional): Workspace owner
 
         Returns:
-            (ProjectsCloneResponse): The API response.
+            (ProjectsCreateResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ProjectsCloneResponse,
+            ProjectsCreateResponse,
             await self._client.request(
                 "POST",
-                f"/api/projects/{_path_parameter(project_id, explode=False, allow_reserved=False)}/clone",
+                "/api/projects",
                 auth=("Authorization", "Bearer "),
                 json={
+                    "project": project,
                     "name": name,
-                    "slug": slug,
                     "description": description,
+                    "metadata": metadata,
                     "visibility": visibility,
+                    "tags": tags,
                     "license": license,
                     "owner": owner,
                 },
