@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
-from collections import Counter
+import time
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -18,19 +18,8 @@ from ultralytics_platform import APIError, Platform
 
 ROOT = Path(__file__).parents[1]
 BASE_URL = "https://platform.ultralytics.com"
+DATASET_URL = "https://github.com/ultralytics/assets/releases/download/v0.0.0/coco32.zip"
 HTTP_METHODS = {"delete", "get", "patch", "post", "put"}
-
-
-def first(data: Any, key: str) -> dict[str, Any] | None:
-    values = data.get(key) if isinstance(data, dict) else None
-    return values[0] if isinstance(values, list) and values and isinstance(values[0], dict) else None
-
-
-def identifier(value: dict[str, Any] | None) -> str | None:
-    if not value:
-        return None
-    result = value.get("_id") or value.get("id")
-    return str(result) if result else None
 
 
 def resolve(document: dict[str, Any], value: dict[str, Any]) -> dict[str, Any]:
@@ -56,79 +45,21 @@ def absolute_references(value: Any) -> Any:
     return value
 
 
-def operation_coverage(document: dict[str, Any]) -> dict[str, set[str]]:
-    """Load the coverage ledger and require one classification per contract operation."""
-    ledger = json.loads((ROOT / "operation-coverage.json").read_text())
-    groups = {
-        "sdkLive": ledger["sdkLive"],
-        "portalCanary": ledger["portalCanary"]["operations"],
-        **{f"excluded: {reason}": values for reason, values in ledger["excluded"].items()},
-    }
-    declarations = [operation for values in groups.values() for operation in values]
-    duplicates = {operation for operation, count in Counter(declarations).items() if count > 1}
-    coverage = {
-        "sdkLive": set(ledger["sdkLive"]),
-        "portalCanary": set(ledger["portalCanary"]["operations"]),
-        "excluded": {operation for operations in ledger["excluded"].values() for operation in operations},
-    }
-    classified = set().union(*coverage.values())
-    operations = {
+def operation_coverage(document: dict[str, Any]) -> set[str]:
+    """Return every unique contract operation required by the live SDK suite."""
+    declarations = [
         operation["operationId"]
         for path_item in document["paths"].values()
         for method, operation in path_item.items()
         if method in HTTP_METHODS
-    }
-    if duplicates:
-        raise RuntimeError(f"Operations have multiple coverage owners: {sorted(duplicates)}")
-    if classified != operations:
-        raise RuntimeError(
-            f"Operation coverage drift: missing={sorted(operations - classified)}, stale={sorted(classified - operations)}"
-        )
-    if any(not reason.strip() or not values for reason, values in ledger["excluded"].items()):
-        raise RuntimeError("Every exclusion requires a reason and at least one operation")
-    return coverage
-
-
-def optional(call: Callable[[], Any]) -> Any:
-    try:
-        return call()
-    except APIError:
-        return {}
-
-
-def fixtures(client: Platform) -> dict[str, str]:
-    account = client.account.retrieve_summary()
-    owner = str(account["username"])
-    datasets = client.datasets.list(owner, limit=1)
-    projects = client.projects.list(owner, limit=1)
-    project = first(projects, "projects")
-    project_name = str(project.get("project")) if project else "missing-live-smoke-project"
-    models = optional(lambda: client.models.list(owner, project_name, limit=1))
-    deployments = client.deployments.list(owner, limit=1)
-    integrations = client.storage_integrations.list_cloud_storage_integrations()
-    dataset = first(datasets, "datasets")
-    model = first(models, "models") or (models.get("model") if isinstance(models, dict) else None)
-    deployment = first(deployments, "deployments")
-    integration = first(integrations, "integrations")
-    result = {
-        "owner": owner,
-        "dataset": str(dataset.get("dataset")) if dataset else "missing-live-smoke-dataset",
-        "project": project_name,
-        "model": str(model.get("model")) if model else "missing-live-smoke-model",
-        "deployment": str(deployment.get("deployment")) if deployment else "missing-live-smoke-deployment",
-        "id": identifier(integration) or "missing-live-smoke-integration",
-    }
-    images = optional(lambda: client.datasets.list_images(owner, result["dataset"], limit=1))
-    exports = optional(lambda: client.exports.list_model(owner, project_name, result["model"], limit=1))
-    result["imageId"] = identifier(first(images, "images")) or "missing-live-smoke-image"
-    result["exportId"] = identifier(first(exports, "exports")) or "missing-live-smoke-export"
-    targets = integration.get("targets") if integration else None
-    result["target"] = str(targets[0]) if isinstance(targets, list) and targets else "missing-live-smoke-target"
-    return result
+    ]
+    if len(declarations) != len(set(declarations)):
+        raise RuntimeError("The OpenAPI contract contains duplicate operation IDs")
+    return set(declarations)
 
 
 def response_validator(document: dict[str, Any], observed: set[str]) -> Callable[[httpx.Response], None]:
-    """Validate every live SDK response against its documented status and success schema."""
+    """Reject undocumented responses and validate every successful JSON body."""
     registry = Registry().with_resource(
         "urn:openapi", Resource.from_contents(document, default_specification=DRAFT202012)
     )
@@ -136,7 +67,7 @@ def response_validator(document: dict[str, Any], observed: set[str]) -> Callable
     def validate(response: httpx.Response) -> None:
         response.read()
         request = response.request
-        for template, path_item in document["paths"].items():
+        for template, path_item in sorted(document["paths"].items(), key=lambda item: item[0].count("{")):
             if not re.fullmatch(re.sub(r"\{[^/]+\}", "[^/]+", template), request.url.path):
                 continue
             operation = path_item.get(request.method.lower())
@@ -147,7 +78,7 @@ def response_validator(document: dict[str, Any], observed: set[str]) -> Callable
             print(f"{operation_id}: {response.status_code}")
             responses = operation.get("responses", {})
             response_spec = responses.get(str(response.status_code)) or responses.get("default")
-            if response.status_code in {401, 403} or response.status_code >= 500 or not response_spec:
+            if response.status_code == 429 or response.status_code >= 500 or not response_spec:
                 raise RuntimeError(f"{operation_id} returned unexpected {response.status_code}")
             response_spec = resolve(document, response_spec)
             media = response_spec.get("content", {}).get("application/json")
@@ -164,87 +95,233 @@ def response_validator(document: dict[str, Any], observed: set[str]) -> Callable
     return validate
 
 
-def live_sdk_calls(client: Platform, values: dict[str, str]) -> dict[str, Callable[[], Any]]:
-    owner, dataset, project, model = (values[key] for key in ("owner", "dataset", "project", "model"))
-    deployment, image_id, export_id = (values[key] for key in ("deployment", "imageId", "exportId"))
-    return {
-        "get_api_account_summary": client.account.retrieve_summary,
-        "get_api_api_keys": client.account.list_api_keys,
-        "get_api_billing_transactions": client.billing.list_transactions,
-        "get_api_billing_usage_summary": client.billing.list_usage_summary,
-        "get_api_datasets_owner": lambda: client.datasets.list(owner, limit=1),
-        "get_api_datasets_owner_dataset": lambda: client.datasets.retrieve(owner, dataset),
-        "get_api_datasets_owner_dataset_class_stats": lambda: client.datasets.retrieve_class_stats(owner, dataset),
-        "get_api_datasets_owner_dataset_embeddings": lambda: client.datasets.retrieve_embeddings(owner, dataset),
-        "get_api_datasets_owner_dataset_export": lambda: client.datasets.retrieve_export(owner, dataset),
-        "get_api_datasets_owner_dataset_images": lambda: client.datasets.list_images(owner, dataset, limit=1),
-        "get_api_datasets_owner_dataset_images_clustering": lambda: client.datasets.retrieve_images_clustering(
-            owner, dataset, limit=1
-        ),
-        "get_api_datasets_owner_dataset_models": lambda: client.datasets.list_models(owner, dataset),
-        "get_api_deployments_owner": lambda: client.deployments.list(owner, limit=1),
-        "get_api_deployments_owner_deployment": lambda: client.deployments.retrieve(owner, deployment),
-        "get_api_deployments_owner_deployment_health": lambda: client.deployments.retrieve_health(owner, deployment),
-        "get_api_deployments_owner_deployment_logs": lambda: client.deployments.retrieve_logs(
-            owner, deployment, limit=1
-        ),
-        "get_api_deployments_owner_deployment_metrics": lambda: client.deployments.retrieve_metrics(owner, deployment),
-        "get_api_explore_search": lambda: client.explore.retrieve_search(limit=1),
-        "get_api_images_imageId": lambda: client.images.retrieve(image_id),
-        "get_api_integrations_buckets": client.storage_integrations.list_cloud_storage_integrations,
-        "get_api_integrations_buckets_id_objects": lambda: client.storage_integrations.browse_cloud_storage_objects(
-            values["id"], target=values["target"]
-        ),
-        "get_api_models_owner_project": lambda: client.models.list(owner, project, limit=1),
-        "get_api_models_owner_project_model": lambda: client.models.retrieve(owner, project, model),
-        "get_api_models_owner_project_model_exports": lambda: client.exports.list_model(owner, project, model, limit=1),
-        "get_api_models_owner_project_model_exports_exportId": lambda: client.exports.retrieve_status(
-            owner, project, model, export_id
-        ),
-        "get_api_models_owner_project_model_files": lambda: client.models.retrieve_files(owner, project, model),
-        "get_api_models_owner_project_model_training": lambda: client.models.retrieve_training(owner, project, model),
-        "get_api_projects_owner": lambda: client.projects.list(owner, limit=1),
-        "get_api_projects_owner_project": lambda: client.projects.retrieve(owner, project),
-        "get_api_storage": client.account.retrieve_storage_usage,
-        "get_api_training_gpu_availability": client.training.retrieve_gpu_availability,
-        "get_api_trash": lambda: client.lifecycle.retrieve_trash(limit=1),
-        "get_api_users": lambda: client.account.retrieve_public_user_profile(username=owner),
-        "post_api_datasets_owner_dataset_images": lambda: client.datasets.retrieve_selected_images(
-            owner, dataset, image_ids=[image_id]
-        ),
-        "post_api_images_urls": lambda: client.images.retrieve_signed_urls(image_ids=[image_id]),
-    }
+def documented(call: Callable[[], Any]) -> Any:
+    """Return an SDK result or accept a documented non-success response."""
+    try:
+        return call()
+    except APIError:
+        return {}
+
+
+def wait_for_images(client: Platform, owner: str, dataset: str) -> list[dict[str, Any]]:
+    """Wait for the owned canary upload to finish ingesting."""
+    for _ in range(12):
+        images = client.datasets.list_images(owner, dataset, limit=10, include_labels="true").get("images", [])
+        if images:
+            return images
+        time.sleep(5)
+    raise RuntimeError("Canary dataset ingest produced no images")
+
+
+def download_dataset() -> bytes:
+    """Download the shared canary fixture with bounded retries for transient asset failures."""
+    for attempt in range(6):
+        try:
+            response = httpx.get(DATASET_URL, follow_redirects=True, timeout=60)
+            response.raise_for_status()
+            return response.content
+        except httpx.HTTPError:
+            if attempt == 5:
+                raise
+            time.sleep(5)
+    raise RuntimeError("Canary dataset download failed")
+
+
+def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
+    """Invoke every generated operation and require successful owned-resource CRUD."""
+    account = client.account.retrieve_summary()
+    owner = str(account["username"])
+    suffix = str(time.time_ns())[-12:]
+    slug = f"sdk-ci-{suffix}"
+    missing = f"missing-{suffix}"
+
+    client.account.list_api_keys()
+    client.account.retrieve_storage_usage(details="true")
+    client.account.retrieve_public_user_profile(username=owner)
+    documented(lambda: client.account.follow_user(username=owner, followed=True))
+    client.billing.list_transactions()
+    client.billing.list_usage_summary()
+    client.explore.retrieve_search(limit=1)
+    client.training.retrieve_gpu_availability()
+    client.lifecycle.retrieve_trash(limit=1)
+
+    project_result = client.projects.create(project=slug, name="SDK CI project", visibility="private")
+    project_id, project = str(project_result["id"]), str(project_result["project"])
+    cleanup.append(lambda: client.lifecycle.permanently_delete_trash(body={"id": project_id, "type": "project"}))
+    cleanup.append(lambda: client.projects.delete(owner, project))
+    client.projects.retrieve(owner, project)
+    client.projects.update(owner, project, description="Full API lifecycle canary", tags=["sdk-ci"])
+    if client.projects.retrieve(owner, project)["project"].get("description") != "Full API lifecycle canary":
+        raise RuntimeError("Project update did not persist")
+    client.projects.list(owner, limit=1)
+    project_clone = documented(
+        lambda: client.projects.clone(owner, project, project_body=f"{slug}-clone", name="SDK CI project clone")
+    )
+    if project_clone:
+        clone_project_id, clone_project = str(project_clone["id"]), str(project_clone["project"])
+        cleanup.append(
+            lambda: client.lifecycle.permanently_delete_trash(body={"id": clone_project_id, "type": "project"})
+        )
+        cleanup.append(lambda: client.projects.delete(owner, clone_project))
+
+    dataset_result = client.datasets.create(dataset=slug, name="SDK CI dataset", task="detect", visibility="private")
+    dataset_id, dataset = str(dataset_result["id"]), str(dataset_result["dataset"])
+    cleanup.append(lambda: client.lifecycle.permanently_delete_trash(body={"id": dataset_id, "type": "dataset"}))
+    cleanup.append(lambda: client.datasets.delete(owner, dataset))
+    archive = download_dataset()
+    upload = client.upload.retrieve_file_url(
+        asset_id=dataset_id,
+        asset_type="datasets",
+        filename="coco32.zip",
+        content_type="application/zip",
+        total_bytes=len(archive),
+    )
+    response = httpx.put(upload["uploadUrl"], content=archive, headers={"Content-Type": "application/zip"}, timeout=60)
+    response.raise_for_status()
+    client.upload.complete(session_id=upload["sessionId"])
+    client.datasets.ingest(owner, dataset, session_id=upload["sessionId"])
+    images = wait_for_images(client, owner, dataset)
+    image_ids = [str(image.get("id") or image.get("_id")) for image in images]
+    if len(image_ids) < 3:
+        raise RuntimeError("Canary dataset needs at least three images for mutation isolation")
+
+    client.datasets.retrieve(owner, dataset)
+    client.datasets.update(owner, dataset, description="Full API lifecycle canary", tags=["sdk-ci"])
+    if client.datasets.retrieve(owner, dataset)["dataset"].get("description") != "Full API lifecycle canary":
+        raise RuntimeError("Dataset update did not persist")
+    client.datasets.list(owner, limit=1)
+    client.datasets.retrieve_class_stats(owner, dataset)
+    client.datasets.list_images(owner, dataset, limit=1)
+    client.datasets.retrieve_selected_images(owner, dataset, image_ids=image_ids[:1])
+    client.datasets.list_models(owner, dataset)
+    documented(lambda: client.datasets.retrieve_images_clustering(owner, dataset, limit=1))
+    documented(lambda: client.datasets.delete_classes(owner, dataset, class_ids=[9999]))
+    documented(lambda: client.datasets.merge_classes(owner, dataset, source_class_ids=[9999], target_class_id=0))
+    client.datasets.redistribute_splits(owner, dataset, train=80, val=10, test=10)
+
+    detail = client.images.retrieve(image_ids[0])
+    labels = detail.get("labels", [])
+    if labels:
+        client.images.update(image_ids[0], body={"labels": labels[:-1]})
+        if len(client.images.retrieve(image_ids[0]).get("labels", [])) != len(labels) - 1:
+            raise RuntimeError("Image label update did not persist")
+        client.images.update(image_ids[0], body={"labels": labels})
+    else:
+        client.images.update(image_ids[0], body={"labels": labels})
+    client.images.update_bulk(image_ids=[image_ids[1]], split="val")
+    client.images.retrieve_signed_urls(image_ids=image_ids[:1])
+    client.images.delete_bulk(image_ids=[image_ids[1]])
+    client.images.delete(image_ids[2])
+
+    version_result = client.datasets.create_export(owner, dataset, description="SDK CI version")
+    version = int(version_result["version"])
+    client.datasets.retrieve_export(owner, dataset, v=version)
+    client.datasets.update_export(owner, dataset, version=version, description="SDK CI version updated")
+    client.datasets.restore(owner, dataset, version=version)
+    client.datasets.create_embeddings(owner, dataset)
+    client.datasets.retrieve_embeddings(owner, dataset)
+    documented(lambda: client.datasets.delete_embeddings(owner, dataset))
+
+    dataset_clone = documented(
+        lambda: client.datasets.clone(owner, dataset, dataset_body=f"{slug}-clone", name="SDK CI dataset clone")
+    )
+    if dataset_clone:
+        clone_dataset_id, clone_dataset = str(dataset_clone["id"]), str(dataset_clone["dataset"])
+        cleanup.append(
+            lambda: client.lifecycle.permanently_delete_trash(body={"id": clone_dataset_id, "type": "dataset"})
+        )
+        cleanup.append(lambda: client.datasets.delete(owner, clone_dataset))
+
+    model_result = client.models.create(
+        body={"owner": owner, "project": project, "model": slug, "name": "SDK CI model", "task": "detect"}
+    )
+    model_id, model = str(model_result["id"]), str(model_result["model"])
+    cleanup.append(lambda: client.lifecycle.permanently_delete_trash(body={"id": model_id, "type": "model"}))
+    cleanup.append(lambda: client.models.delete(owner, project, model))
+    client.models.retrieve(owner, project, model)
+    client.models.update(owner, project, model, description="Full API lifecycle canary", metadata={"source": "sdk-ci"})
+    if client.models.retrieve(owner, project, model)["model"].get("description") != "Full API lifecycle canary":
+        raise RuntimeError("Model update did not persist")
+    client.models.list(owner, project, limit=1)
+    client.models.retrieve_files(owner, project, model)
+    client.models.retrieve_training(owner, project, model)
+    documented(lambda: client.models.delete_training(owner, project, model))
+    client.exports.list_model(owner, project, model, limit=1)
+    export = documented(lambda: client.exports.export_model(owner, project, model, format="onnx"))
+    export_id = str(export.get("id", missing))
+    documented(lambda: client.exports.retrieve_status(owner, project, model, export_id))
+    documented(lambda: client.exports.cancel_or_delete(owner, project, model, export_id))
+    documented(lambda: client.models.predict(owner, project, model, body={}))
+    documented(lambda: client.images.predict(image_ids[0], model_id=model_id))
+    documented(lambda: client.training.start(model_id=missing, train_args={"epochs": 1}))
+
+    model_clone = documented(
+        lambda: client.models.clone(owner, project, model, project_body=project, model_body=f"{slug}-clone")
+    )
+    if model_clone:
+        clone_model_id, clone_model = str(model_clone["id"]), str(model_clone["model"])
+        cleanup.append(lambda: client.lifecycle.permanently_delete_trash(body={"id": clone_model_id, "type": "model"}))
+        cleanup.append(lambda: client.models.delete(owner, project, clone_model))
+
+    client.deployments.list(owner, limit=1)
+    deployment_result = documented(
+        lambda: client.deployments.create(
+            owner, project=project, model=model, deployment=slug, name="SDK CI deployment", region="us-central1"
+        )
+    )
+    deployment = str(deployment_result.get("deployment", missing))
+    if deployment_result:
+        cleanup.append(lambda: client.deployments.delete(owner, deployment))
+    documented(lambda: client.deployments.retrieve(owner, deployment))
+    documented(lambda: client.deployments.update(owner, deployment, body={"action": "stop"}))
+    documented(lambda: client.deployments.retrieve_health(owner, deployment))
+    documented(lambda: client.deployments.retrieve_logs(owner, deployment, limit=1))
+    documented(lambda: client.deployments.retrieve_metrics(owner, deployment))
+    documented(lambda: client.deployments.predict(owner, deployment, body={}))
+    documented(lambda: client.deployments.delete(owner, deployment))
+
+    integrations = client.storage_integrations.list_cloud_storage_integrations()
+    integration = (integrations.get("integrations") or [{}])[0]
+    integration_id = str(integration.get("id") or integration.get("_id") or missing)
+    targets = integration.get("targets") or ["missing"]
+    documented(lambda: client.storage_integrations.browse_cloud_storage_objects(integration_id, target=str(targets[0])))
+    documented(lambda: client.storage_integrations.discover_cloud_storage_locations(provider="gcs", credentials={}))
+    documented(
+        lambda: client.storage_integrations.connect_cloud_storage(provider="gcs", credentials={}, targets=["missing"])
+    )
+    documented(lambda: client.datasets.preview_roboflow_import(api_key="invalid"))
+    documented(lambda: client.datasets.import_from_roboflow(api_key="invalid", items=[]))
+    documented(lambda: client.upload.complete(session_id=missing))
+
+    client.datasets.delete(owner, dataset)
+    client.lifecycle.restore_trashed_item(id=dataset_id, type="dataset")
 
 
 def validate_sdk(document: dict[str, Any]) -> None:
-    coverage = operation_coverage(document)
+    expected = operation_coverage(document)
     observed: set[str] = set()
+    cleanup: list[Callable[[], Any]] = []
     http_client = httpx.Client(timeout=60, event_hooks={"response": [response_validator(document, observed)]})
     with Platform(base_url=BASE_URL, http_client=http_client) as client:
-        values = fixtures(client)
-        calls = live_sdk_calls(client, values)
-        if set(calls) != coverage["sdkLive"]:
-            raise RuntimeError(
-                f"Live SDK call drift: missing={sorted(coverage['sdkLive'] - set(calls))}, "
-                f"stale={sorted(set(calls) - coverage['sdkLive'])}"
-            )
-        for operation_id, call in calls.items():
-            try:
-                call()
-            except APIError:
-                pass
-            if operation_id not in observed:
-                raise RuntimeError(f"SDK method did not request {operation_id}")
-    if observed != coverage["sdkLive"]:
-        raise RuntimeError(f"Unexpected live SDK operations: {sorted(observed - coverage['sdkLive'])}")
-    print(f"Validated {len(observed)} generated Python SDK operations against production")
+        try:
+            exercise_api(client, cleanup)
+        finally:
+            for action in reversed(cleanup):
+                try:
+                    documented(action)
+                except (RuntimeError, httpx.HTTPError) as error:
+                    print(f"Cleanup warning: {error}")
+    if observed != expected:
+        raise RuntimeError(
+            f"Live SDK operation drift: missing={sorted(expected - observed)}, extra={sorted(observed - expected)}"
+        )
+    print(f"Validated all {len(observed)} generated Python SDK operations against production")
 
 
 def main() -> None:
     if not os.environ.get("ULTRALYTICS_API_KEY"):
         raise RuntimeError("ULTRALYTICS_API_KEY is required")
-    document = json.loads((ROOT / "openapi.json").read_text())
-    validate_sdk(document)
+    validate_sdk(json.loads((ROOT / "openapi.json").read_text()))
 
 
 if __name__ == "__main__":

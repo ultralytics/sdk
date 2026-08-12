@@ -12,7 +12,6 @@ from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
 
 import httpx
 import pytest
-from live_readonly import operation_coverage
 from ultralytics_platform import APIError, AsyncPlatform, Platform
 
 ROOT = Path(__file__).parents[1]
@@ -147,10 +146,6 @@ def test_all_operations_serialize() -> None:
     expected = expected_requests()
     assert sorted((request.method, request.url.path) for request in sync_requests) == expected
     assert sorted((request.method, request.url.path) for request in asyncio.run(run())) == expected
-
-
-def test_operation_coverage_is_exhaustive() -> None:
-    operation_coverage(json.loads((ROOT / "openapi.json").read_text()))
 
 
 def test_api_error_details() -> None:
