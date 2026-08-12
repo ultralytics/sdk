@@ -13,11 +13,28 @@
     "url": "https://spdx.org/licenses/AGPL-3.0-only.html"
   },
   "python": {
+    "authors": [{ "name": "Ultralytics", "email": "hello@ultralytics.com" }],
     "client": "Platform",
+    "classifiers": [
+      "Development Status :: 5 - Production/Stable",
+      "Intended Audience :: Developers",
+      "Operating System :: OS Independent",
+      "Programming Language :: Python :: 3 :: Only",
+      "Programming Language :: Python :: 3.11",
+      "Programming Language :: Python :: 3.12",
+      "Programming Language :: Python :: 3.13",
+      "Programming Language :: Python :: 3.14",
+      "Topic :: Software Development :: Libraries :: Python Modules",
+      "Typing :: Typed"
+    ],
+    "description": "Typed Python SDK for the Ultralytics Platform API",
     "install": "uv pip install ultralytics-platform",
+    "keywords": ["api-client", "computer-vision", "machine-learning", "openapi", "sdk", "ultralytics", "yolo"],
+    "maintainers": [{ "name": "Ultralytics", "email": "hello@ultralytics.com" }],
     "package": "ultralytics_platform",
     "project": "ultralytics-platform",
     "readme": "README.python.md",
-    "version": "0.1.0"
+    "requiresPython": ">=3.11",
+    "version": "0.1.1"
   }
 }

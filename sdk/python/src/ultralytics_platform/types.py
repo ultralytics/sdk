@@ -2184,9 +2184,17 @@ DeploymentsRetrieveResponse = TypedDict(
 )
 
 
-DeploymentsUpdateResponse = TypedDict(
-    "DeploymentsUpdateResponse", {"success": Literal[True], "status": Literal["ready"], "message": str}
+DeploymentsUpdateResponseVariant1 = TypedDict(
+    "DeploymentsUpdateResponseVariant1", {"success": Literal[True], "status": Literal["ready"], "message": str}
 )
+
+
+DeploymentsUpdateResponseVariant2 = TypedDict(
+    "DeploymentsUpdateResponseVariant2", {"success": Literal[True], "status": Literal["deploying"], "message": str}
+)
+
+
+DeploymentsUpdateResponse = DeploymentsUpdateResponseVariant1 | DeploymentsUpdateResponseVariant2
 
 
 DeploymentsDeleteResponse = TypedDict("DeploymentsDeleteResponse", {"success": Literal[True]})
@@ -2360,14 +2368,31 @@ DeploymentsRetrieveLogsResponse = TypedDict(
 )
 
 
-DeploymentsStartResponse = TypedDict(
-    "DeploymentsStartResponse", {"success": Literal[True], "status": Literal["ready", "stopped"], "message": str}
+DeploymentsStartResponseVariant1 = TypedDict(
+    "DeploymentsStartResponseVariant1",
+    {"success": Literal[True], "status": Literal["ready", "stopped"], "message": str},
 )
 
 
-DeploymentsStopResponse = TypedDict(
-    "DeploymentsStopResponse", {"success": Literal[True], "status": Literal["ready", "stopped"], "message": str}
+DeploymentsStartResponseVariant2 = TypedDict(
+    "DeploymentsStartResponseVariant2", {"success": Literal[True], "status": Literal["deploying"], "message": str}
 )
+
+
+DeploymentsStartResponse = DeploymentsStartResponseVariant1 | DeploymentsStartResponseVariant2
+
+
+DeploymentsStopResponseVariant1 = TypedDict(
+    "DeploymentsStopResponseVariant1", {"success": Literal[True], "status": Literal["ready", "stopped"], "message": str}
+)
+
+
+DeploymentsStopResponseVariant2 = TypedDict(
+    "DeploymentsStopResponseVariant2", {"success": Literal[True], "status": Literal["stopping"], "message": str}
+)
+
+
+DeploymentsStopResponse = DeploymentsStopResponseVariant1 | DeploymentsStopResponseVariant2
 
 
 UploadRetrieveFileUrlResponse = TypedDict(

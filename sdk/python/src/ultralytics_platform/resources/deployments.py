@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import BinaryIO, Literal, cast
+from typing import Any, Literal, cast
 
 from .._client import (
     NOT_GIVEN,
@@ -218,33 +218,14 @@ class Deployments:
             ),
         )
 
-    def predict(
-        self,
-        deployment_id: str,
-        *,
-        conf: float | NotGiven = NOT_GIVEN,
-        iou: float | NotGiven = NOT_GIVEN,
-        imgsz: int | NotGiven = NOT_GIVEN,
-        normalize: bool | NotGiven = NOT_GIVEN,
-        decimals: int | NotGiven = NOT_GIVEN,
-        bits: Literal[8, 12, 16] | NotGiven = NOT_GIVEN,
-        file: BinaryIO | NotGiven = NOT_GIVEN,
-        source: str | NotGiven = NOT_GIVEN,
-    ) -> DeploymentsPredictResponse:
+    def predict(self, deployment_id: str, *, body: dict[str, Any]) -> DeploymentsPredictResponse:
         """Run inference on your endpoint.
 
         Send multipart/form-data with a file or source plus optional conf, iou, imgsz, normalize, and decimals fields to your dedicated deployment endpoint.
 
         Args:
             deployment_id (str): Deployment ID
-            conf (float, optional): Confidence threshold (default 0.25)
-            iou (float, optional): IoU threshold (default 0.7)
-            imgsz (int, optional): Inference image size (default 640)
-            normalize (bool, optional): Return normalized coordinates (default false)
-            decimals (int, optional): Coordinate precision (default 5)
-            bits (Literal[8, 12, 16], optional): Depth map quantization for depth models (default 8)
-            file (BinaryIO, optional): Image or video file
-            source (str, optional): Image URL or base64-encoded image
+            body (dict[str, Any]): Request body.
 
         Returns:
             (DeploymentsPredictResponse): The API response.
@@ -258,16 +239,8 @@ class Deployments:
                 "POST",
                 f"/api/deployments/{_path_parameter(deployment_id, explode=False, allow_reserved=False)}/predict",
                 auth=("Authorization", "Bearer "),
-                data={
-                    "conf": conf,
-                    "iou": iou,
-                    "imgsz": imgsz,
-                    "normalize": normalize,
-                    "decimals": decimals,
-                    "bits": bits,
-                    "source": source,
-                },
-                files={"file": file},
+                data={key: value for key, value in body.items() if key not in ["file"]},
+                files={key: body[key] for key in ["file"] if key in body},
             ),
         )
 
@@ -605,33 +578,14 @@ class AsyncDeployments:
             ),
         )
 
-    async def predict(
-        self,
-        deployment_id: str,
-        *,
-        conf: float | NotGiven = NOT_GIVEN,
-        iou: float | NotGiven = NOT_GIVEN,
-        imgsz: int | NotGiven = NOT_GIVEN,
-        normalize: bool | NotGiven = NOT_GIVEN,
-        decimals: int | NotGiven = NOT_GIVEN,
-        bits: Literal[8, 12, 16] | NotGiven = NOT_GIVEN,
-        file: BinaryIO | NotGiven = NOT_GIVEN,
-        source: str | NotGiven = NOT_GIVEN,
-    ) -> DeploymentsPredictResponse:
+    async def predict(self, deployment_id: str, *, body: dict[str, Any]) -> DeploymentsPredictResponse:
         """Run inference on your endpoint.
 
         Send multipart/form-data with a file or source plus optional conf, iou, imgsz, normalize, and decimals fields to your dedicated deployment endpoint.
 
         Args:
             deployment_id (str): Deployment ID
-            conf (float, optional): Confidence threshold (default 0.25)
-            iou (float, optional): IoU threshold (default 0.7)
-            imgsz (int, optional): Inference image size (default 640)
-            normalize (bool, optional): Return normalized coordinates (default false)
-            decimals (int, optional): Coordinate precision (default 5)
-            bits (Literal[8, 12, 16], optional): Depth map quantization for depth models (default 8)
-            file (BinaryIO, optional): Image or video file
-            source (str, optional): Image URL or base64-encoded image
+            body (dict[str, Any]): Request body.
 
         Returns:
             (DeploymentsPredictResponse): The API response.
@@ -645,16 +599,8 @@ class AsyncDeployments:
                 "POST",
                 f"/api/deployments/{_path_parameter(deployment_id, explode=False, allow_reserved=False)}/predict",
                 auth=("Authorization", "Bearer "),
-                data={
-                    "conf": conf,
-                    "iou": iou,
-                    "imgsz": imgsz,
-                    "normalize": normalize,
-                    "decimals": decimals,
-                    "bits": bits,
-                    "source": source,
-                },
-                files={"file": file},
+                data={key: value for key, value in body.items() if key not in ["file"]},
+                files={key: body[key] for key in ["file"] if key in body},
             ),
         )
 
