@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from collections import Counter
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -58,19 +59,19 @@ def absolute_references(value: Any) -> Any:
 def operation_coverage(document: dict[str, Any]) -> dict[str, set[str]]:
     """Load the coverage ledger and require one classification per contract operation."""
     ledger = json.loads((ROOT / "operation-coverage.json").read_text())
+    groups = {
+        "sdkLive": ledger["sdkLive"],
+        "portalCanary": ledger["portalCanary"]["operations"],
+        **{f"excluded: {reason}": values for reason, values in ledger["excluded"].items()},
+    }
+    declarations = [operation for values in groups.values() for operation in values]
+    duplicates = {operation for operation, count in Counter(declarations).items() if count > 1}
     coverage = {
         "sdkLive": set(ledger["sdkLive"]),
         "portalCanary": set(ledger["portalCanary"]["operations"]),
         "excluded": {operation for operations in ledger["excluded"].values() for operation in operations},
     }
     classified = set().union(*coverage.values())
-    duplicates = set().union(
-        *(
-            left & right
-            for index, left in enumerate(coverage.values())
-            for right in list(coverage.values())[index + 1 :]
-        )
-    )
     operations = {
         operation["operationId"]
         for path_item in document["paths"].values()
