@@ -12,6 +12,7 @@ import httpx
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
+from ultralytics_platform import Platform
 
 ROOT = Path(__file__).parents[1]
 BASE_URL = "https://platform.ultralytics.com"
@@ -113,7 +114,7 @@ def fixtures(document: dict[str, Any], client: httpx.Client) -> dict[str, str]:
     return result
 
 
-def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
+def validate_gets(document: dict[str, Any], client: httpx.Client) -> dict[str, str]:
     values = fixtures(document, client)
     registry = Registry().with_resource(
         "urn:openapi", Resource.from_contents(document, default_specification=DRAFT202012)
@@ -158,6 +159,17 @@ def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
     if failures:
         raise RuntimeError("Response schema failures:\n" + "\n".join(failures))
     print(f"Validated {successful} successful responses across all {exercised} GET operations")
+    return values
+
+
+def validate_sdk(values: dict[str, str]) -> None:
+    with Platform(base_url=BASE_URL) as client:
+        client.account.retrieve_summary()
+        client.datasets.list(values["owner"], limit=1)
+        client.projects.list(values["owner"], limit=1)
+        client.models.list(values["owner"], values["project"], limit=1)
+        client.deployments.list(values["owner"], limit=1)
+    print("Validated generated Python SDK against production")
 
 
 def main() -> None:
@@ -166,7 +178,8 @@ def main() -> None:
     document = json.loads((ROOT / "openapi.json").read_text())
     headers = {"Authorization": f"Bearer {os.environ['ULTRALYTICS_API_KEY']}"}
     with httpx.Client(base_url=BASE_URL, headers=headers, follow_redirects=True, timeout=30) as client:
-        validate_gets(document, client)
+        values = validate_gets(document, client)
+    validate_sdk(values)
 
 
 if __name__ == "__main__":
