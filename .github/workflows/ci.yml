@@ -142,7 +142,7 @@ jobs:
           uv pip install --system pytest "./sdk/python"
           pytest tests -v
 
-      - name: Validate every read-only production endpoint
+      - name: Validate every safe production operation through the SDK
         env:
           ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}
         run: |
