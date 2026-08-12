@@ -175,7 +175,12 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
     client.account.list_api_keys()
     client.account.retrieve_storage_usage(details="true")
     client.account.retrieve_public_user_profile(username=owner)
-    documented(lambda: client.account.follow_user(username=owner, followed=True))
+    follow_target = "ultralytics"
+    follow_profile = client.account.retrieve_public_user_profile(username=follow_target)
+    was_followed = bool(follow_profile["user"]["isFollowed"])
+    cleanup.append(lambda: client.account.follow_user(username=follow_target, followed=was_followed))
+    client.account.follow_user(username=follow_target, followed=not was_followed)
+    client.account.follow_user(username=follow_target, followed=was_followed)
     client.billing.list_transactions()
     client.billing.list_usage_summary()
     client.explore.retrieve_search(limit=1)
@@ -351,7 +356,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
     cleanup.append(lambda: ignore_missing(lambda: client.deployments.delete(owner, slug)))
     deployment_result = documented(
         lambda: client.deployments.create(
-            owner, project=project, model=model, deployment=slug, name="SDK CI deployment", region="us-central1"
+            owner, project=missing, model=missing, deployment=slug, name="SDK CI deployment", region="us-central1"
         )
     )
     deployment = str(deployment_result.get("deployment", missing))
