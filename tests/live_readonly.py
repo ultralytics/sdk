@@ -58,21 +58,30 @@ def get(client: httpx.Client, path: str, params: dict[str, Any] | None = None) -
     return response.json()
 
 
-def optional_get(client: httpx.Client, path: str, params: dict[str, Any] | None = None) -> Any:
+def optional_get(
+    document: dict[str, Any], client: httpx.Client, template: str, path: str, params: dict[str, Any] | None = None
+) -> Any:
     response = client.get(path, params=params)
-    if response.status_code in {401, 403} or response.status_code >= 500:
-        response.raise_for_status()
-    return response.json() if response.is_success else {}
+    if response.is_success:
+        return response.json()
+    if str(response.status_code) not in document["paths"][template]["get"]["responses"]:
+        raise RuntimeError(f"GET {template} returned unexpected {response.status_code}")
+    return {}
 
 
-def fixtures(client: httpx.Client) -> dict[str, str]:
+def fixtures(document: dict[str, Any], client: httpx.Client) -> dict[str, str]:
     account = get(client, "/api/account/summary")
     owner = str(account["username"])
     datasets = get(client, f"/api/datasets/{quote(owner, safe='')}", {"limit": 1})
     projects = get(client, f"/api/projects/{quote(owner, safe='')}", {"limit": 1})
     project = first(projects, "projects")
     project_name = str(project.get("project")) if project else "missing-live-smoke-project"
-    models = optional_get(client, f"/api/models/{quote(owner, safe='')}/{quote(project_name, safe='')}")
+    models = optional_get(
+        document,
+        client,
+        "/api/models/{owner}/{project}",
+        f"/api/models/{quote(owner, safe='')}/{quote(project_name, safe='')}",
+    )
     deployments = get(client, f"/api/deployments/{quote(owner, safe='')}", {"limit": 1})
     integrations = get(client, "/api/integrations/buckets")
     dataset = first(datasets, "datasets")
@@ -91,8 +100,12 @@ def fixtures(client: httpx.Client) -> dict[str, str]:
     model_path = "/api/models/{}/{}/{}".format(
         quote(owner, safe=""), quote(project_name, safe=""), quote(result["model"], safe="")
     )
-    images = optional_get(client, f"{dataset_path}/images", {"limit": 1})
-    exports = optional_get(client, f"{model_path}/exports", {"limit": 1})
+    images = optional_get(
+        document, client, "/api/datasets/{owner}/{dataset}/images", f"{dataset_path}/images", {"limit": 1}
+    )
+    exports = optional_get(
+        document, client, "/api/models/{owner}/{project}/{model}/exports", f"{model_path}/exports", {"limit": 1}
+    )
     result["imageId"] = identifier(first(images, "images")) or "missing-live-smoke-image"
     result["exportId"] = identifier(first(exports, "exports")) or "missing-live-smoke-export"
     targets = integration.get("targets") if integration else None
@@ -101,7 +114,7 @@ def fixtures(client: httpx.Client) -> dict[str, str]:
 
 
 def validate_gets(document: dict[str, Any], client: httpx.Client) -> None:
-    values = fixtures(client)
+    values = fixtures(document, client)
     registry = Registry().with_resource(
         "urn:openapi", Resource.from_contents(document, default_specification=DRAFT202012)
     )
