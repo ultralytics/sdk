@@ -151,7 +151,7 @@ jobs:
           python tests/live_readonly.py
 
       - name: Open contract update
-        if: steps.sync.outputs.changed == 'true'
+        if: always() && steps.sync.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets._GITHUB_TOKEN }}
           CONTRACT_HASH: ${{ steps.sync.outputs.hash }}

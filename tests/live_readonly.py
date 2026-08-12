@@ -14,7 +14,7 @@ import httpx
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
-from ultralytics_platform import APIError, Platform
+from ultralytics_platform import APIConnectionError, APIError, Platform
 
 ROOT = Path(__file__).parents[1]
 BASE_URL = "https://platform.ultralytics.com"
@@ -111,19 +111,22 @@ def cleanup_resource(
     retrieve: Callable[[], dict[str, Any]],
     delete: Callable[[], Any],
     key: str,
+    known_id: Callable[[], str | None],
     permanently_delete: Callable[[str], Any] | None = None,
 ) -> None:
     """Delete a canary resource discovered by its unique public path."""
     try:
         result = retrieve()
     except APIError as error:
-        if error.status_code == 404:
-            return
-        raise
-    resource = result[key]
-    resource_id = str(resource.get("id") or resource.get("_id"))
-    delete()
-    if permanently_delete:
+        if error.status_code != 404:
+            raise
+        resource_id = known_id()
+    else:
+        resource = result[key]
+        value = resource.get("id") or resource.get("_id")
+        resource_id = str(value) if value else known_id()
+        delete()
+    if permanently_delete and resource_id:
         permanently_delete(resource_id)
 
 
@@ -167,6 +170,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
     suffix = str(time.time_ns())[-12:]
     slug = f"sdk-ci-{suffix}"
     missing = f"missing-{suffix}"
+    created_ids: dict[str, str] = {}
 
     client.account.list_api_keys()
     client.account.retrieve_storage_usage(details="true")
@@ -184,10 +188,13 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
             lambda: client.projects.retrieve(owner, project),
             lambda: client.projects.delete(owner, project),
             "project",
+            lambda: created_ids.get("project"),
             lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "project"}),
         )
     )
-    client.projects.create(project=project, name="SDK CI project", visibility="private")
+    project_result = client.projects.create(project=project, name="SDK CI project", visibility="private")
+    if project_result.get("id"):
+        created_ids["project"] = str(project_result["id"])
     client.projects.retrieve(owner, project)
     client.projects.update(owner, project, description="Full API lifecycle canary", tags=["sdk-ci"])
     if client.projects.retrieve(owner, project)["project"].get("description") != "Full API lifecycle canary":
@@ -199,10 +206,15 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
             lambda: client.projects.retrieve(owner, clone_project),
             lambda: client.projects.delete(owner, clone_project),
             "project",
+            lambda: created_ids.get("project-clone"),
             lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "project"}),
         )
     )
-    documented(lambda: client.projects.clone(owner, project, project_body=f"{slug}-clone", name="SDK CI project clone"))
+    project_clone = documented(
+        lambda: client.projects.clone(owner, project, project_body=f"{slug}-clone", name="SDK CI project clone")
+    )
+    if project_clone.get("id"):
+        created_ids["project-clone"] = str(project_clone["id"])
 
     dataset = slug
     cleanup.append(
@@ -210,11 +222,13 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
             lambda: client.datasets.retrieve(owner, dataset),
             lambda: client.datasets.delete(owner, dataset),
             "dataset",
+            lambda: created_ids.get("dataset"),
             lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "dataset"}),
         )
     )
     dataset_result = client.datasets.create(dataset=dataset, name="SDK CI dataset", task="detect", visibility="private")
     dataset_id = str(dataset_result["id"])
+    created_ids["dataset"] = dataset_id
     archive = download_dataset()
     upload = client.upload.retrieve_file_url(
         asset_id=dataset_id,
@@ -275,10 +289,15 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
             lambda: client.datasets.retrieve(owner, clone_dataset),
             lambda: client.datasets.delete(owner, clone_dataset),
             "dataset",
+            lambda: created_ids.get("dataset-clone"),
             lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "dataset"}),
         )
     )
-    documented(lambda: client.datasets.clone(owner, dataset, dataset_body=f"{slug}-clone", name="SDK CI dataset clone"))
+    dataset_clone = documented(
+        lambda: client.datasets.clone(owner, dataset, dataset_body=f"{slug}-clone", name="SDK CI dataset clone")
+    )
+    if dataset_clone.get("id"):
+        created_ids["dataset-clone"] = str(dataset_clone["id"])
 
     model = slug
     cleanup.append(
@@ -286,6 +305,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
             lambda: client.models.retrieve(owner, project, model),
             lambda: client.models.delete(owner, project, model),
             "model",
+            lambda: created_ids.get("model"),
             lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "model"}),
         )
     )
@@ -293,6 +313,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
         body={"owner": owner, "project": project, "model": slug, "name": "SDK CI model", "task": "detect"}
     )
     model_id = str(model_result["id"])
+    created_ids["model"] = model_id
     client.models.retrieve(owner, project, model)
     client.models.update(owner, project, model, description="Full API lifecycle canary", metadata={"source": "sdk-ci"})
     if client.models.retrieve(owner, project, model)["model"].get("description") != "Full API lifecycle canary":
@@ -316,10 +337,15 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
             lambda: client.models.retrieve(owner, project, clone_model),
             lambda: client.models.delete(owner, project, clone_model),
             "model",
+            lambda: created_ids.get("model-clone"),
             lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "model"}),
         )
     )
-    documented(lambda: client.models.clone(owner, project, model, project_body=project, model_body=f"{slug}-clone"))
+    model_clone = documented(
+        lambda: client.models.clone(owner, project, model, project_body=project, model_body=f"{slug}-clone")
+    )
+    if model_clone.get("id"):
+        created_ids["model-clone"] = str(model_clone["id"])
 
     client.deployments.list(owner, limit=1)
     cleanup.append(lambda: ignore_missing(lambda: client.deployments.delete(owner, slug)))
@@ -352,6 +378,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
 
     client.datasets.delete(owner, dataset)
     client.lifecycle.restore_trashed_item(id=dataset_id, type="dataset")
+    client.datasets.delete(owner, dataset)
 
 
 def validate_sdk(document: dict[str, Any]) -> None:
@@ -367,13 +394,23 @@ def validate_sdk(document: dict[str, Any]) -> None:
     with Platform(base_url=BASE_URL, http_client=http_client) as client:
         try:
             exercise_api(client, cleanup)
-        except (APIError, httpx.HTTPError, KeyError, RuntimeError, StopIteration, TypeError, ValueError) as error:
+        except (
+            APIConnectionError,
+            APIError,
+            httpx.HTTPError,
+            KeyError,
+            RuntimeError,
+            StopIteration,
+            TypeError,
+            ValueError,
+        ) as error:
             exercise_error = error
         finally:
             for action in reversed(cleanup):
                 try:
                     action()
                 except (
+                    APIConnectionError,
                     APIError,
                     httpx.HTTPError,
                     KeyError,
