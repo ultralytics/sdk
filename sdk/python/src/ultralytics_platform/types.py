@@ -41,15 +41,7 @@ AccountRetrieveSummaryResponse = TypedDict(
 
 
 AccountListApiKeysResponseKeysItem = TypedDict(
-    "AccountListApiKeysResponseKeysItem",
-    {
-        "keyId": str,
-        "name": str,
-        "keyPrefix": str,
-        "lastUsedAt": NotRequired[str],
-        "usageCount": float,
-        "createdAt": str,
-    },
+    "AccountListApiKeysResponseKeysItem", {"keyId": str, "name": str, "keyPrefix": str, "createdAt": str}
 )
 
 
@@ -2338,17 +2330,8 @@ ModelsRetrieveTrainingResponseJob = TypedDict(
 )
 
 
-ModelsRetrieveTrainingResponseInstanceStatus = TypedDict(
-    "ModelsRetrieveTrainingResponseInstanceStatus", {"status": str}
-)
-
-
 ModelsRetrieveTrainingResponse = TypedDict(
-    "ModelsRetrieveTrainingResponse",
-    {
-        "job": ModelsRetrieveTrainingResponseJob | None,
-        "instanceStatus": NotRequired[ModelsRetrieveTrainingResponseInstanceStatus | None],
-    },
+    "ModelsRetrieveTrainingResponse", {"job": ModelsRetrieveTrainingResponseJob | None}
 )
 
 
