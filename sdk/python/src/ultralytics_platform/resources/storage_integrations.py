@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal, cast
+from typing import Any, cast
 
 from .._client import (
     AsyncAPIClient,
@@ -13,6 +13,7 @@ from .._client import (
 from ..types import (
     StorageIntegrationsBrowseCloudStorageObjectsResponse,
     StorageIntegrationsConnectCloudStorageResponse,
+    StorageIntegrationsDisconnectCloudStorageResponse,
     StorageIntegrationsDiscoverCloudStorageLocationsResponse,
     StorageIntegrationsListCloudStorageIntegrationsResponse,
 )
@@ -23,6 +24,29 @@ class StorageIntegrations:
 
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
+
+    def disconnect_cloud_storage(self, id: str) -> StorageIntegrationsDisconnectCloudStorageResponse:
+        """Disconnect cloud storage.
+
+        Removes saved credentials without deleting provider data. Connected datasets remain visible but their files are unavailable until the same storage account is reconnected.
+
+        Args:
+            id (str): Cloud integration ID
+
+        Returns:
+            (StorageIntegrationsDisconnectCloudStorageResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            StorageIntegrationsDisconnectCloudStorageResponse,
+            self._client.request(
+                "DELETE",
+                f"/api/integrations/buckets/{_path_parameter(id, explode=False, allow_reserved=False)}",
+                auth=("Authorization", "Bearer "),
+            ),
+        )
 
     def browse_cloud_storage_objects(
         self, id: str, *, target: str, prefix: str | None = None, cursor: str | None = None
@@ -73,17 +97,13 @@ class StorageIntegrations:
             self._client.request("GET", "/api/integrations/buckets", auth=("Authorization", "Bearer ")),
         )
 
-    def connect_cloud_storage(
-        self, *, provider: Literal["gcs", "s3", "azure"], credentials: dict[str, Any], targets: list[str]
-    ) -> StorageIntegrationsConnectCloudStorageResponse:
+    def connect_cloud_storage(self, *, body: Any) -> StorageIntegrationsConnectCloudStorageResponse:
         """Connect cloud storage.
 
         Validates and saves a GCS, Amazon S3, or Azure Blob Storage integration.
 
         Args:
-            provider (Literal["gcs", "s3", "azure"]): provider request value.
-            credentials (dict[str, Any]): credentials request value.
-            targets (list[str]): targets request value.
+            body (Any): Request body.
 
         Returns:
             (StorageIntegrationsConnectCloudStorageResponse): The API response.
@@ -93,24 +113,18 @@ class StorageIntegrations:
         """
         return cast(
             StorageIntegrationsConnectCloudStorageResponse,
-            self._client.request(
-                "POST",
-                "/api/integrations/buckets",
-                auth=("Authorization", "Bearer "),
-                json={"provider": provider, "credentials": credentials, "targets": targets},
-            ),
+            self._client.request("POST", "/api/integrations/buckets", auth=("Authorization", "Bearer "), json=body),
         )
 
     def discover_cloud_storage_locations(
-        self, *, provider: Literal["gcs", "s3", "azure"], credentials: dict[str, Any]
+        self, *, body: dict[str, Any]
     ) -> StorageIntegrationsDiscoverCloudStorageLocationsResponse:
         """Discover cloud storage locations.
 
         Lists accessible buckets or containers using the supplied provider credentials.
 
         Args:
-            provider (Literal["gcs", "s3", "azure"]): provider request value.
-            credentials (dict[str, Any]): credentials request value.
+            body (dict[str, Any]): Request body.
 
         Returns:
             (StorageIntegrationsDiscoverCloudStorageLocationsResponse): The API response.
@@ -121,10 +135,7 @@ class StorageIntegrations:
         return cast(
             StorageIntegrationsDiscoverCloudStorageLocationsResponse,
             self._client.request(
-                "POST",
-                "/api/integrations/buckets/discover",
-                auth=("Authorization", "Bearer "),
-                json={"provider": provider, "credentials": credentials},
+                "POST", "/api/integrations/buckets/discover", auth=("Authorization", "Bearer "), json=body
             ),
         )
 
@@ -134,6 +145,29 @@ class AsyncStorageIntegrations:
 
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
+
+    async def disconnect_cloud_storage(self, id: str) -> StorageIntegrationsDisconnectCloudStorageResponse:
+        """Disconnect cloud storage.
+
+        Removes saved credentials without deleting provider data. Connected datasets remain visible but their files are unavailable until the same storage account is reconnected.
+
+        Args:
+            id (str): Cloud integration ID
+
+        Returns:
+            (StorageIntegrationsDisconnectCloudStorageResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            StorageIntegrationsDisconnectCloudStorageResponse,
+            await self._client.request(
+                "DELETE",
+                f"/api/integrations/buckets/{_path_parameter(id, explode=False, allow_reserved=False)}",
+                auth=("Authorization", "Bearer "),
+            ),
+        )
 
     async def browse_cloud_storage_objects(
         self, id: str, *, target: str, prefix: str | None = None, cursor: str | None = None
@@ -184,17 +218,13 @@ class AsyncStorageIntegrations:
             await self._client.request("GET", "/api/integrations/buckets", auth=("Authorization", "Bearer ")),
         )
 
-    async def connect_cloud_storage(
-        self, *, provider: Literal["gcs", "s3", "azure"], credentials: dict[str, Any], targets: list[str]
-    ) -> StorageIntegrationsConnectCloudStorageResponse:
+    async def connect_cloud_storage(self, *, body: Any) -> StorageIntegrationsConnectCloudStorageResponse:
         """Connect cloud storage.
 
         Validates and saves a GCS, Amazon S3, or Azure Blob Storage integration.
 
         Args:
-            provider (Literal["gcs", "s3", "azure"]): provider request value.
-            credentials (dict[str, Any]): credentials request value.
-            targets (list[str]): targets request value.
+            body (Any): Request body.
 
         Returns:
             (StorageIntegrationsConnectCloudStorageResponse): The API response.
@@ -205,23 +235,19 @@ class AsyncStorageIntegrations:
         return cast(
             StorageIntegrationsConnectCloudStorageResponse,
             await self._client.request(
-                "POST",
-                "/api/integrations/buckets",
-                auth=("Authorization", "Bearer "),
-                json={"provider": provider, "credentials": credentials, "targets": targets},
+                "POST", "/api/integrations/buckets", auth=("Authorization", "Bearer "), json=body
             ),
         )
 
     async def discover_cloud_storage_locations(
-        self, *, provider: Literal["gcs", "s3", "azure"], credentials: dict[str, Any]
+        self, *, body: dict[str, Any]
     ) -> StorageIntegrationsDiscoverCloudStorageLocationsResponse:
         """Discover cloud storage locations.
 
         Lists accessible buckets or containers using the supplied provider credentials.
 
         Args:
-            provider (Literal["gcs", "s3", "azure"]): provider request value.
-            credentials (dict[str, Any]): credentials request value.
+            body (dict[str, Any]): Request body.
 
         Returns:
             (StorageIntegrationsDiscoverCloudStorageLocationsResponse): The API response.
@@ -232,9 +258,6 @@ class AsyncStorageIntegrations:
         return cast(
             StorageIntegrationsDiscoverCloudStorageLocationsResponse,
             await self._client.request(
-                "POST",
-                "/api/integrations/buckets/discover",
-                auth=("Authorization", "Bearer "),
-                json={"provider": provider, "credentials": credentials},
+                "POST", "/api/integrations/buckets/discover", auth=("Authorization", "Bearer "), json=body
             ),
         )

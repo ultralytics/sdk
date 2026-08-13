@@ -126,17 +126,20 @@
         "type": "object",
         "properties": {
           "username": {
-            "type": "string"
+            "type": "string",
+            "description": "Personal account or workspace handle used in API paths"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Account display name"
           },
           "accountType": {
             "type": "string",
             "enum": [
               "personal",
               "team"
-            ]
+            ],
+            "description": "Whether this is a personal or team account"
           },
           "plan": {
             "type": "string",
@@ -149,26 +152,25 @@
           },
           "creditsCents": {
             "type": "integer",
-            "minimum": -9007199254740991,
-            "maximum": 9007199254740991
+            "description": "Available compute credit balance in US cents"
           },
           "counts": {
             "type": "object",
             "properties": {
               "projects": {
                 "type": "integer",
-                "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "minimum": 0,
+                "description": "Active projects"
               },
               "datasets": {
                 "type": "integer",
-                "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "minimum": 0,
+                "description": "Active datasets"
               },
               "models": {
                 "type": "integer",
-                "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "minimum": 0,
+                "description": "Active models"
               }
             },
             "required": [
@@ -176,7 +178,8 @@
               "datasets",
               "models"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "description": "Resource totals for this account"
           },
           "teams": {
             "type": "array",
@@ -184,25 +187,32 @@
               "type": "object",
               "properties": {
                 "userId": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Team workspace ID"
                 },
                 "username": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Team workspace handle used in API paths"
                 },
                 "fullName": {
+                  "description": "Team display name",
                   "type": "string"
                 },
                 "imageUrl": {
+                  "description": "Team avatar URL",
                   "type": "string"
                 },
                 "iconColor": {
+                  "description": "Team icon background color",
                   "type": "string"
                 },
                 "iconLetter": {
+                  "description": "Team icon letter",
                   "type": "string"
                 },
                 "plan": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Team subscription tier"
                 },
                 "region": {
                   "type": "string",
@@ -224,6 +234,7 @@
                   "description": "Team role (owner > admin > editor > viewer)"
                 },
                 "deniedReason": {
+                  "description": "Why this API key cannot access the team, when applicable",
                   "type": "string"
                 }
               },
@@ -235,7 +246,8 @@
                 "role"
               ],
               "additionalProperties": false
-            }
+            },
+            "description": "Team workspaces available to browser sessions; API key responses omit this list"
           }
         },
         "required": [
@@ -248,7 +260,20 @@
           "teams"
         ],
         "additionalProperties": false,
-        "description": "Platform account and workspace summary"
+        "description": "Platform account and workspace summary",
+        "example": {
+          "username": "jane-doe",
+          "name": "Jane Doe",
+          "accountType": "personal",
+          "plan": "pro",
+          "creditsCents": 2500,
+          "counts": {
+            "projects": 12,
+            "datasets": 8,
+            "models": 24
+          },
+          "teams": []
+        }
       },
       "ErrorResponse": {
         "type": "object",
@@ -998,14 +1023,12 @@
             "type": "array",
             "items": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
+              "minimum": 0
             }
           },
           "deletedAnnotations": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -1043,14 +1066,12 @@
             "type": "array",
             "items": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
+              "minimum": 0
             }
           },
           "targetClassId": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -1079,13 +1100,11 @@
           },
           "imageCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "classCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "region": {
             "type": "string",
@@ -1155,13 +1174,11 @@
               },
               "imageCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "classCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "classNames": {
                 "type": "array",
@@ -1214,22 +1231,26 @@
                 "type": "object",
                 "properties": {
                   "train": {
-                    "type": "number",
+                    "type": "integer",
+                    "minimum": 0,
                     "description": "Number of training images"
                   },
                   "val": {
-                    "type": "number",
+                    "type": "integer",
+                    "minimum": 0,
                     "description": "Number of validation images"
                   },
                   "test": {
                     "default": 0,
                     "description": "Number of test images",
-                    "type": "number"
+                    "type": "integer",
+                    "minimum": 0
                   },
                   "labeled": {
                     "default": 0,
                     "description": "Number of images with annotations",
-                    "type": "number"
+                    "type": "integer",
+                    "minimum": 0
                   }
                 },
                 "required": [
@@ -1243,8 +1264,7 @@
               },
               "annotationCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "totalBytes": {
                 "type": "number",
@@ -1252,8 +1272,7 @@
               },
               "starCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "isStarred": {
                 "type": "boolean"
@@ -1279,13 +1298,11 @@
                     },
                     "width": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     },
                     "height": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     },
                     "labels": {
                       "type": "array",
@@ -1295,7 +1312,6 @@
                           "classId": {
                             "type": "integer",
                             "minimum": 0,
-                            "maximum": 9007199254740991,
                             "description": "Class index (0-based)"
                           },
                           "bbox": {
@@ -1328,7 +1344,13 @@
                             }
                           },
                           "keypoints": {
-                            "description": "Keypoints for pose estimation",
+                            "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                            "example": [
+                              0.1,
+                              0.2,
+                              0.3,
+                              0.4
+                            ],
                             "maxItems": 10000,
                             "type": "array",
                             "items": {
@@ -1481,8 +1503,7 @@
                 "type": "array",
                 "items": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 }
               },
               "processingTimeMs": {
@@ -1512,13 +1533,11 @@
                 "properties": {
                   "added": {
                     "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991
+                    "minimum": 0
                   },
                   "errors": {
                     "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991
+                    "minimum": 0
                   },
                   "skippedCounts": {
                     "type": "object",
@@ -1527,8 +1546,7 @@
                     },
                     "additionalProperties": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     }
                   }
                 },
@@ -1541,8 +1559,7 @@
               },
               "errorCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "iconColor": {
                 "type": "string"
@@ -1558,8 +1575,7 @@
               },
               "cloneCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "region": {
                 "type": "string",
@@ -1577,8 +1593,7 @@
                   "properties": {
                     "version": {
                       "type": "integer",
-                      "exclusiveMinimum": 0,
-                      "maximum": 9007199254740991
+                      "exclusiveMinimum": 0
                     },
                     "description": {
                       "type": "string"
@@ -1597,39 +1612,40 @@
                     },
                     "imageCount": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     },
                     "classCount": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     },
                     "annotationCount": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     },
                     "splits": {
                       "type": "object",
                       "properties": {
                         "train": {
-                          "type": "number",
+                          "type": "integer",
+                          "minimum": 0,
                           "description": "Number of training images"
                         },
                         "val": {
-                          "type": "number",
+                          "type": "integer",
+                          "minimum": 0,
                           "description": "Number of validation images"
                         },
                         "test": {
                           "default": 0,
                           "description": "Number of test images",
-                          "type": "number"
+                          "type": "integer",
+                          "minimum": 0
                         },
                         "labeled": {
                           "default": 0,
                           "description": "Number of images with annotations",
-                          "type": "number"
+                          "type": "integer",
+                          "minimum": 0
                         }
                       },
                       "required": [
@@ -1785,8 +1801,7 @@
           },
           "embeddingsCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "latestImageAt": {
             "anyOf": [
@@ -1927,8 +1942,7 @@
               },
               "version": {
                 "type": "integer",
-                "exclusiveMinimum": 0,
-                "maximum": 9007199254740991
+                "exclusiveMinimum": 0
               }
             },
             "required": [
@@ -1961,8 +1975,7 @@
         "properties": {
           "version": {
             "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 9007199254740991
+            "exclusiveMinimum": 0
           },
           "downloadUrl": {
             "type": "string"
@@ -2028,26 +2041,22 @@
                   "type": "array",
                   "items": {
                     "type": "integer",
-                    "minimum": -9007199254740991,
-                    "maximum": 9007199254740991
+                    "minimum": 0
                   }
                 },
                 "width": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "height": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "bytes": {
                   "anyOf": [
                     {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     },
                     {
                       "type": "null"
@@ -2056,8 +2065,7 @@
                 },
                 "labelCount": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "missing": {
                   "type": "boolean"
@@ -2080,18 +2088,15 @@
           },
           "total": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "offset": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "limit": {
             "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 9007199254740991
+            "exclusiveMinimum": 0
           },
           "hasMore": {
             "type": "boolean"
@@ -2100,8 +2105,7 @@
             "anyOf": [
               {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               {
                 "type": "null"
@@ -2150,13 +2154,11 @@
                 },
                 "width": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "height": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "split": {
                   "type": "string",
@@ -2169,16 +2171,14 @@
                 },
                 "labelCount": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "name": {
                   "type": "string"
                 },
                 "bytes": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "error": {
                   "anyOf": [
@@ -2198,7 +2198,6 @@
                       "classId": {
                         "type": "integer",
                         "minimum": 0,
-                        "maximum": 9007199254740991,
                         "description": "Class index (0-based)"
                       },
                       "bbox": {
@@ -2231,7 +2230,13 @@
                         }
                       },
                       "keypoints": {
-                        "description": "Keypoints for pose estimation",
+                        "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                        "example": [
+                          0.1,
+                          0.2,
+                          0.3,
+                          0.4
+                        ],
                         "maxItems": 10000,
                         "type": "array",
                         "items": {
@@ -2304,8 +2309,7 @@
           },
           "total": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "hasMore": {
             "type": "boolean"
@@ -2318,8 +2322,7 @@
           },
           "errorCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "nextCursor": {
             "type": "string"
@@ -2358,13 +2361,11 @@
                 },
                 "width": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "height": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "split": {
                   "type": "string",
@@ -2377,16 +2378,14 @@
                 },
                 "labelCount": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "name": {
                   "type": "string"
                 },
                 "bytes": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "error": {
                   "anyOf": [
@@ -2406,7 +2405,6 @@
                       "classId": {
                         "type": "integer",
                         "minimum": 0,
-                        "maximum": 9007199254740991,
                         "description": "Class index (0-based)"
                       },
                       "bbox": {
@@ -2439,7 +2437,13 @@
                         }
                       },
                       "keypoints": {
-                        "description": "Keypoints for pose estimation",
+                        "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                        "example": [
+                          0.1,
+                          0.2,
+                          0.3,
+                          0.4
+                        ],
                         "maxItems": 10000,
                         "type": "array",
                         "items": {
@@ -2512,8 +2516,7 @@
           },
           "total": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "hasMore": {
             "type": "boolean",
@@ -2527,8 +2530,7 @@
           },
           "errorCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "nextCursor": {
             "not": {}
@@ -2614,8 +2616,7 @@
                   "properties": {
                     "version": {
                       "type": "integer",
-                      "minimum": -9007199254740991,
-                      "maximum": 9007199254740991
+                      "exclusiveMinimum": 0
                     },
                     "contentHash": {
                       "type": "string"
@@ -2629,13 +2630,11 @@
                 },
                 "epochs": {
                   "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "bestEpoch": {
                   "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "bestFitness": {
                   "type": "number"
@@ -2689,8 +2688,7 @@
           },
           "count": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -2704,13 +2702,11 @@
         "properties": {
           "version": {
             "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 9007199254740991
+            "exclusiveMinimum": 0
           },
           "imageCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -2731,18 +2727,19 @@
             "properties": {
               "train": {
                 "type": "integer",
-                "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "minimum": 0,
+                "description": "Number of training images"
               },
               "val": {
                 "type": "integer",
-                "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "minimum": 0,
+                "description": "Number of validation images"
               },
               "test": {
+                "default": 0,
+                "description": "Number of test images",
                 "type": "integer",
-                "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "minimum": 0
               }
             },
             "required": [
@@ -2754,8 +2751,7 @@
           },
           "modified": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -2810,13 +2806,11 @@
           },
           "imageCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "classCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "classNames": {
             "type": "array",
@@ -2869,22 +2863,26 @@
             "type": "object",
             "properties": {
               "train": {
-                "type": "number",
+                "type": "integer",
+                "minimum": 0,
                 "description": "Number of training images"
               },
               "val": {
-                "type": "number",
+                "type": "integer",
+                "minimum": 0,
                 "description": "Number of validation images"
               },
               "test": {
                 "default": 0,
                 "description": "Number of test images",
-                "type": "number"
+                "type": "integer",
+                "minimum": 0
               },
               "labeled": {
                 "default": 0,
                 "description": "Number of images with annotations",
-                "type": "number"
+                "type": "integer",
+                "minimum": 0
               }
             },
             "required": [
@@ -2898,8 +2896,7 @@
           },
           "annotationCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "totalBytes": {
             "type": "number",
@@ -2907,8 +2904,7 @@
           },
           "starCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "isStarred": {
             "type": "boolean"
@@ -2934,13 +2930,11 @@
                 },
                 "width": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "height": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "labels": {
                   "type": "array",
@@ -2950,7 +2944,6 @@
                       "classId": {
                         "type": "integer",
                         "minimum": 0,
-                        "maximum": 9007199254740991,
                         "description": "Class index (0-based)"
                       },
                       "bbox": {
@@ -2983,7 +2976,13 @@
                         }
                       },
                       "keypoints": {
-                        "description": "Keypoints for pose estimation",
+                        "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                        "example": [
+                          0.1,
+                          0.2,
+                          0.3,
+                          0.4
+                        ],
                         "maxItems": 10000,
                         "type": "array",
                         "items": {
@@ -3136,8 +3135,7 @@
             "type": "array",
             "items": {
               "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
+              "minimum": 0
             }
           },
           "processingTimeMs": {
@@ -3167,13 +3165,11 @@
             "properties": {
               "added": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "errors": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "skippedCounts": {
                 "type": "object",
@@ -3182,8 +3178,7 @@
                 },
                 "additionalProperties": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 }
               }
             },
@@ -3196,8 +3191,7 @@
           },
           "errorCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "iconColor": {
             "type": "string"
@@ -3213,8 +3207,7 @@
           },
           "cloneCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "region": {
             "type": "string",
@@ -3232,8 +3225,7 @@
               "properties": {
                 "version": {
                   "type": "integer",
-                  "exclusiveMinimum": 0,
-                  "maximum": 9007199254740991
+                  "exclusiveMinimum": 0
                 },
                 "description": {
                   "type": "string"
@@ -3252,39 +3244,40 @@
                 },
                 "imageCount": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "classCount": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "annotationCount": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "splits": {
                   "type": "object",
                   "properties": {
                     "train": {
-                      "type": "number",
+                      "type": "integer",
+                      "minimum": 0,
                       "description": "Number of training images"
                     },
                     "val": {
-                      "type": "number",
+                      "type": "integer",
+                      "minimum": 0,
                       "description": "Number of validation images"
                     },
                     "test": {
                       "default": 0,
                       "description": "Number of test images",
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "labeled": {
                       "default": 0,
                       "description": "Number of images with annotations",
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0
                     }
                   },
                   "required": [
@@ -3352,8 +3345,7 @@
           },
           "total": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "region": {
             "type": "string",
@@ -4069,8 +4061,7 @@
             "properties": {
               "imageCount": {
                 "type": "integer",
-                "minimum": -9007199254740991,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "functionTimeAlive": {
                 "type": "number"
@@ -4216,8 +4207,7 @@
                 },
                 "modelCount": {
                   "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "modelNames": {
                   "type": "array",
@@ -4230,8 +4220,7 @@
                 },
                 "starCount": {
                   "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "userImageUrl": {
                   "type": "string"
@@ -4287,13 +4276,11 @@
                 },
                 "imageCount": {
                   "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "classCount": {
                   "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "classNames": {
                   "type": "array",
@@ -4336,22 +4323,26 @@
                   "type": "object",
                   "properties": {
                     "train": {
-                      "type": "number",
+                      "type": "integer",
+                      "minimum": 0,
                       "description": "Number of training images"
                     },
                     "val": {
-                      "type": "number",
+                      "type": "integer",
+                      "minimum": 0,
                       "description": "Number of validation images"
                     },
                     "test": {
                       "default": 0,
                       "description": "Number of test images",
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "labeled": {
                       "default": 0,
                       "description": "Number of images with annotations",
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0
                     }
                   },
                   "required": [
@@ -4379,8 +4370,7 @@
                 },
                 "starCount": {
                   "type": "integer",
-                  "minimum": -9007199254740991,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "sampleImages": {
                   "type": "array",
@@ -4407,7 +4397,6 @@
                             "classId": {
                               "type": "integer",
                               "minimum": 0,
-                              "maximum": 9007199254740991,
                               "description": "Class index (0-based)"
                             },
                             "bbox": {
@@ -4440,7 +4429,13 @@
                               }
                             },
                             "keypoints": {
-                              "description": "Keypoints for pose estimation",
+                              "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                              "example": [
+                                0.1,
+                                0.2,
+                                0.3,
+                                0.4
+                              ],
                               "maxItems": 10000,
                               "type": "array",
                               "items": {
@@ -4574,13 +4569,11 @@
               },
               "width": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "height": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "split": {
                 "type": "string",
@@ -4593,21 +4586,18 @@
               },
               "annotationCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "classIds": {
                 "type": "array",
                 "items": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 }
               },
               "bytes": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "region": {
                 "type": "string",
@@ -4671,7 +4661,6 @@
                 "classId": {
                   "type": "integer",
                   "minimum": 0,
-                  "maximum": 9007199254740991,
                   "description": "Class index (0-based)"
                 },
                 "bbox": {
@@ -4704,7 +4693,13 @@
                   }
                 },
                 "keypoints": {
-                  "description": "Keypoints for pose estimation",
+                  "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                  "example": [
+                    0.1,
+                    0.2,
+                    0.3,
+                    0.4
+                  ],
                   "maxItems": 10000,
                   "type": "array",
                   "items": {
@@ -4795,7 +4790,6 @@
                 "classId": {
                   "type": "integer",
                   "minimum": 0,
-                  "maximum": 9007199254740991,
                   "description": "Class index (0-based)"
                 },
                 "bbox": {
@@ -4828,7 +4822,13 @@
                   }
                 },
                 "keypoints": {
-                  "description": "Keypoints for pose estimation",
+                  "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                  "example": [
+                    0.1,
+                    0.2,
+                    0.3,
+                    0.4
+                  ],
                   "maxItems": 10000,
                   "type": "array",
                   "items": {
@@ -4885,7 +4885,6 @@
           "labelCount": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 9007199254740991,
             "description": "Total annotations on this image"
           }
         },
@@ -4945,7 +4944,6 @@
           "deletedCount": {
             "type": "integer",
             "exclusiveMinimum": 0,
-            "maximum": 9007199254740991,
             "description": "Number of images deleted"
           }
         },
@@ -4971,7 +4969,6 @@
                 "classId": {
                   "type": "integer",
                   "minimum": 0,
-                  "maximum": 9007199254740991,
                   "description": "Class index (0-based)"
                 },
                 "bbox": {
@@ -5004,7 +5001,13 @@
                   }
                 },
                 "keypoints": {
-                  "description": "Keypoints for pose estimation",
+                  "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                  "example": [
+                    0.1,
+                    0.2,
+                    0.3,
+                    0.4
+                  ],
                   "maxItems": 10000,
                   "type": "array",
                   "items": {
@@ -5085,13 +5088,11 @@
           "modifiedCount": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 9007199254740991,
             "description": "Number of images moved"
           },
           "skippedCount": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 9007199254740991,
             "description": "Number of conflicting source images left unchanged"
           },
           "targetSplit": {
@@ -5122,7 +5123,6 @@
           "deletedCount": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 9007199254740991,
             "description": "Number of images deleted"
           },
           "deletedImageIds": {
@@ -5179,6 +5179,19 @@
         "required": [
           "urls",
           "thumbnails"
+        ],
+        "additionalProperties": false
+      },
+      "DeleteBucketIntegrationResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "success"
         ],
         "additionalProperties": false
       },
@@ -5318,8 +5331,7 @@
                 },
                 "version": {
                   "type": "integer",
-                  "exclusiveMinimum": 0,
-                  "maximum": 9007199254740991
+                  "exclusiveMinimum": 0
                 },
                 "datasetId": {
                   "type": "string",
@@ -5355,8 +5367,7 @@
                 },
                 "version": {
                   "type": "integer",
-                  "exclusiveMinimum": 0,
-                  "maximum": 9007199254740991
+                  "exclusiveMinimum": 0
                 },
                 "error": {
                   "type": "string",
@@ -5387,8 +5398,7 @@
                 },
                 "version": {
                   "type": "integer",
-                  "exclusiveMinimum": 0,
-                  "maximum": 9007199254740991
+                  "exclusiveMinimum": 0
                 }
               },
               "required": [
@@ -5456,8 +5466,7 @@
                 },
                 "latestVersion": {
                   "type": "integer",
-                  "exclusiveMinimum": 0,
-                  "maximum": 9007199254740991
+                  "exclusiveMinimum": 0
                 },
                 "latestVersionName": {
                   "type": "string",
@@ -5478,28 +5487,23 @@
           },
           "skippedCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "missingVersionCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "unsupportedCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "unresolvedCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "bytesTotal": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "storage": {
             "type": "object",
@@ -5668,7 +5672,8 @@
                 "type": "object",
                 "properties": {
                   "version": {
-                    "type": "number"
+                    "type": "integer",
+                    "exclusiveMinimum": 0
                   },
                   "contentHash": {
                     "type": "string"
@@ -5724,12 +5729,14 @@
                 "type": "string"
               },
               "epochs": {
-                "type": "number"
+                "type": "integer",
+                "minimum": 0
               },
               "bestEpoch": {
                 "anyOf": [
                   {
-                    "type": "number"
+                    "type": "integer",
+                    "minimum": 0
                   },
                   {
                     "type": "null"
@@ -5763,8 +5770,7 @@
                         "type": "array",
                         "items": {
                           "type": "integer",
-                          "minimum": 0,
-                          "maximum": 9007199254740991
+                          "minimum": 0
                         }
                       },
                       {
@@ -6181,7 +6187,8 @@
                   "type": "object",
                   "properties": {
                     "epoch": {
-                      "type": "number"
+                      "type": "integer",
+                      "minimum": 0
                     },
                     "metrics": {
                       "type": "object",
@@ -6269,8 +6276,7 @@
               },
               "starCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "isStarred": {
                 "type": "boolean"
@@ -6280,8 +6286,7 @@
               },
               "cloneCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "environment": {
                 "type": "object",
@@ -6415,26 +6420,22 @@
                 "properties": {
                   "population": {
                     "type": "integer",
-                    "minimum": -9007199254740991,
-                    "maximum": 9007199254740991,
+                    "minimum": 0,
                     "description": "Validation images evaluated during training"
                   },
                   "retained": {
                     "type": "integer",
-                    "minimum": -9007199254740991,
-                    "maximum": 9007199254740991,
+                    "minimum": 0,
                     "description": "Per-image rows stored; min(population, 5000) when F1-rank sampled"
                   },
                   "matched": {
                     "type": "integer",
-                    "minimum": -9007199254740991,
-                    "maximum": 9007199254740991,
+                    "minimum": 0,
                     "description": "Retained rows with traits"
                   },
                   "unmatched": {
                     "type": "integer",
-                    "minimum": -9007199254740991,
-                    "maximum": 9007199254740991,
+                    "minimum": 0,
                     "description": "Retained rows without traits"
                   },
                   "traitsAvailable": {
@@ -6472,14 +6473,12 @@
                       },
                       "omittedMiddle": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
-                        "maximum": 9007199254740991,
+                        "minimum": 0,
                         "description": "Validation images beyond the retained rows"
                       },
                       "unmatchedExtremes": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
-                        "maximum": 9007199254740991,
+                        "minimum": 0,
                         "description": "Cohort images without traits"
                       }
                     },
@@ -6495,8 +6494,7 @@
                     "properties": {
                       "eligible": {
                         "type": "integer",
-                        "minimum": -9007199254740991,
-                        "maximum": 9007199254740991,
+                        "minimum": 0,
                         "description": "Matched rows before the 512-point cap"
                       },
                       "rows": {
@@ -6541,14 +6539,12 @@
                         "properties": {
                           "count": {
                             "type": "integer",
-                            "minimum": -9007199254740991,
-                            "maximum": 9007199254740991,
+                            "minimum": 0,
                             "description": "Images in the cohort; only the first 100 appear in `examples`"
                           },
                           "matched": {
                             "type": "integer",
-                            "minimum": -9007199254740991,
-                            "maximum": 9007199254740991,
+                            "minimum": 0,
                             "description": "Cohort images with traits"
                           },
                           "metrics": {
@@ -6556,20 +6552,17 @@
                             "properties": {
                               "tp": {
                                 "type": "integer",
-                                "minimum": -9007199254740991,
-                                "maximum": 9007199254740991,
+                                "minimum": 0,
                                 "description": "Cohort total true positives"
                               },
                               "fp": {
                                 "type": "integer",
-                                "minimum": -9007199254740991,
-                                "maximum": 9007199254740991,
+                                "minimum": 0,
                                 "description": "Cohort total false positives"
                               },
                               "fn": {
                                 "type": "integer",
-                                "minimum": -9007199254740991,
-                                "maximum": 9007199254740991,
+                                "minimum": 0,
                                 "description": "Cohort total false negatives"
                               },
                               "f1": {
@@ -6579,8 +6572,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -6647,20 +6639,17 @@
                                 },
                                 "tp": {
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991,
+                                  "minimum": 0,
                                   "description": "True positive detections at IoU 0.50"
                                 },
                                 "fp": {
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991,
+                                  "minimum": 0,
                                   "description": "False positive detections at IoU 0.50"
                                 },
                                 "fn": {
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991,
+                                  "minimum": 0,
                                   "description": "False negative (missed) ground-truth instances at IoU 0.50"
                                 },
                                 "f1": {
@@ -6690,8 +6679,7 @@
                                 "instanceCount": {
                                   "description": "Ground-truth instances, which may exceed `labels` length",
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991
+                                  "minimum": 0
                                 },
                                 "labels": {
                                   "description": "Ground-truth annotations, capped at 100 with polygons decimated to 100 points",
@@ -6702,7 +6690,6 @@
                                       "classId": {
                                         "type": "integer",
                                         "minimum": 0,
-                                        "maximum": 9007199254740991,
                                         "description": "Class index (0-based)"
                                       },
                                       "bbox": {
@@ -6735,7 +6722,13 @@
                                         }
                                       },
                                       "keypoints": {
-                                        "description": "Keypoints for pose estimation",
+                                        "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                                        "example": [
+                                          0.1,
+                                          0.2,
+                                          0.3,
+                                          0.4
+                                        ],
                                         "maxItems": 10000,
                                         "type": "array",
                                         "items": {
@@ -6817,14 +6810,12 @@
                         "properties": {
                           "count": {
                             "type": "integer",
-                            "minimum": -9007199254740991,
-                            "maximum": 9007199254740991,
+                            "minimum": 0,
                             "description": "Images in the cohort; only the first 100 appear in `examples`"
                           },
                           "matched": {
                             "type": "integer",
-                            "minimum": -9007199254740991,
-                            "maximum": 9007199254740991,
+                            "minimum": 0,
                             "description": "Cohort images with traits"
                           },
                           "metrics": {
@@ -6832,20 +6823,17 @@
                             "properties": {
                               "tp": {
                                 "type": "integer",
-                                "minimum": -9007199254740991,
-                                "maximum": 9007199254740991,
+                                "minimum": 0,
                                 "description": "Cohort total true positives"
                               },
                               "fp": {
                                 "type": "integer",
-                                "minimum": -9007199254740991,
-                                "maximum": 9007199254740991,
+                                "minimum": 0,
                                 "description": "Cohort total false positives"
                               },
                               "fn": {
                                 "type": "integer",
-                                "minimum": -9007199254740991,
-                                "maximum": 9007199254740991,
+                                "minimum": 0,
                                 "description": "Cohort total false negatives"
                               },
                               "f1": {
@@ -6855,8 +6843,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -6923,20 +6910,17 @@
                                 },
                                 "tp": {
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991,
+                                  "minimum": 0,
                                   "description": "True positive detections at IoU 0.50"
                                 },
                                 "fp": {
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991,
+                                  "minimum": 0,
                                   "description": "False positive detections at IoU 0.50"
                                 },
                                 "fn": {
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991,
+                                  "minimum": 0,
                                   "description": "False negative (missed) ground-truth instances at IoU 0.50"
                                 },
                                 "f1": {
@@ -6966,8 +6950,7 @@
                                 "instanceCount": {
                                   "description": "Ground-truth instances, which may exceed `labels` length",
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991
+                                  "minimum": 0
                                 },
                                 "labels": {
                                   "description": "Ground-truth annotations, capped at 100 with polygons decimated to 100 points",
@@ -6978,7 +6961,6 @@
                                       "classId": {
                                         "type": "integer",
                                         "minimum": 0,
-                                        "maximum": 9007199254740991,
                                         "description": "Class index (0-based)"
                                       },
                                       "bbox": {
@@ -7011,7 +6993,13 @@
                                         }
                                       },
                                       "keypoints": {
-                                        "description": "Keypoints for pose estimation",
+                                        "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                                        "example": [
+                                          0.1,
+                                          0.2,
+                                          0.3,
+                                          0.4
+                                        ],
                                         "maxItems": 10000,
                                         "type": "array",
                                         "items": {
@@ -7110,8 +7098,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -7160,8 +7147,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -7208,8 +7194,7 @@
                                 "properties": {
                                   "count": {
                                     "type": "integer",
-                                    "minimum": -9007199254740991,
-                                    "maximum": 9007199254740991,
+                                    "minimum": 0,
                                     "description": "Matched trait/F1 pairs behind the fit"
                                   },
                                   "fit": {
@@ -7342,8 +7327,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -7392,8 +7376,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -7440,8 +7423,7 @@
                                 "properties": {
                                   "count": {
                                     "type": "integer",
-                                    "minimum": -9007199254740991,
-                                    "maximum": 9007199254740991,
+                                    "minimum": 0,
                                     "description": "Matched trait/F1 pairs behind the fit"
                                   },
                                   "fit": {
@@ -7574,8 +7556,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -7624,8 +7605,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -7672,8 +7652,7 @@
                                 "properties": {
                                   "count": {
                                     "type": "integer",
-                                    "minimum": -9007199254740991,
-                                    "maximum": 9007199254740991,
+                                    "minimum": 0,
                                     "description": "Matched trait/F1 pairs behind the fit"
                                   },
                                   "fit": {
@@ -7806,8 +7785,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -7856,8 +7834,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -7904,8 +7881,7 @@
                                 "properties": {
                                   "count": {
                                     "type": "integer",
-                                    "minimum": -9007199254740991,
-                                    "maximum": 9007199254740991,
+                                    "minimum": 0,
                                     "description": "Matched trait/F1 pairs behind the fit"
                                   },
                                   "fit": {
@@ -8038,8 +8014,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -8088,8 +8063,7 @@
                                     "properties": {
                                       "count": {
                                         "type": "integer",
-                                        "minimum": -9007199254740991,
-                                        "maximum": 9007199254740991,
+                                        "minimum": 0,
                                         "description": "Number of values in the series"
                                       },
                                       "min": {
@@ -8136,8 +8110,7 @@
                                 "properties": {
                                   "count": {
                                     "type": "integer",
-                                    "minimum": -9007199254740991,
-                                    "maximum": 9007199254740991,
+                                    "minimum": 0,
                                     "description": "Matched trait/F1 pairs behind the fit"
                                   },
                                   "fit": {
@@ -8267,8 +8240,7 @@
                               "properties": {
                                 "classId": {
                                   "type": "integer",
-                                  "minimum": -9007199254740991,
-                                  "maximum": 9007199254740991,
+                                  "minimum": 0,
                                   "description": "Class index"
                                 },
                                 "name": {
@@ -8281,8 +8253,7 @@
                                   "properties": {
                                     "count": {
                                       "type": "integer",
-                                      "minimum": -9007199254740991,
-                                      "maximum": 9007199254740991,
+                                      "minimum": 0,
                                       "description": "Matched worst-cohort images containing the class"
                                     },
                                     "prevalence": {
@@ -8301,8 +8272,7 @@
                                   "properties": {
                                     "count": {
                                       "type": "integer",
-                                      "minimum": -9007199254740991,
-                                      "maximum": 9007199254740991,
+                                      "minimum": 0,
                                       "description": "Matched best-cohort images containing the class"
                                     },
                                     "prevalence": {
@@ -8414,8 +8384,7 @@
               },
               "starCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               }
             },
             "required": [
@@ -9069,7 +9038,8 @@
             "type": "object",
             "properties": {
               "version": {
-                "type": "number"
+                "type": "integer",
+                "exclusiveMinimum": 0
               },
               "contentHash": {
                 "type": "string"
@@ -9125,12 +9095,14 @@
             "type": "string"
           },
           "epochs": {
-            "type": "number"
+            "type": "integer",
+            "minimum": 0
           },
           "bestEpoch": {
             "anyOf": [
               {
-                "type": "number"
+                "type": "integer",
+                "minimum": 0
               },
               {
                 "type": "null"
@@ -9164,8 +9136,7 @@
                     "type": "array",
                     "items": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     }
                   },
                   {
@@ -9582,7 +9553,8 @@
               "type": "object",
               "properties": {
                 "epoch": {
-                  "type": "number"
+                  "type": "integer",
+                  "minimum": 0
                 },
                 "metrics": {
                   "type": "object",
@@ -9670,8 +9642,7 @@
           },
           "starCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "isStarred": {
             "type": "boolean"
@@ -9681,8 +9652,7 @@
           },
           "cloneCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "environment": {
             "type": "object",
@@ -9865,8 +9835,7 @@
           },
           "modelCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "region": {
             "type": "string",
@@ -9932,12 +9901,14 @@
             "description": "Training/model status"
           },
           "epochs": {
-            "type": "number"
+            "type": "integer",
+            "minimum": 0
           },
           "bestEpoch": {
             "anyOf": [
               {
-                "type": "number"
+                "type": "integer",
+                "minimum": 0
               },
               {
                 "type": "null"
@@ -9965,8 +9936,7 @@
           },
           "epochCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "startedAt": {
             "type": "string",
@@ -10006,8 +9976,7 @@
                     "type": "array",
                     "items": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     }
                   },
                   {
@@ -10500,8 +10469,7 @@
               },
               "modelCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "modelNames": {
                 "type": "array",
@@ -10515,8 +10483,7 @@
               },
               "starCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "isStarred": {
                 "type": "boolean"
@@ -10551,8 +10518,7 @@
               },
               "cloneCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "viewPreferences": {
                 "type": "object",
@@ -10675,8 +10641,7 @@
               },
               "starCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               }
             },
             "required": [
@@ -10696,8 +10661,7 @@
           },
           "cascadedModels": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -10772,8 +10736,7 @@
           },
           "modelCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "modelNames": {
             "type": "array",
@@ -10787,8 +10750,7 @@
           },
           "starCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "isStarred": {
             "type": "boolean"
@@ -10823,8 +10785,7 @@
           },
           "cloneCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "viewPreferences": {
             "type": "object",
@@ -10899,8 +10860,7 @@
           },
           "total": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "region": {
             "type": "string",
@@ -11378,13 +11338,11 @@
                 },
                 "daysRemaining": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "cascadedCount": {
                   "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                  "minimum": 0
                 },
                 "parentProject": {
                   "type": "object",
@@ -11424,31 +11382,26 @@
           },
           "total": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "page": {
             "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 9007199254740991
+            "exclusiveMinimum": 0
           },
           "limit": {
             "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 9007199254740991
+            "exclusiveMinimum": 0
           },
           "totalPages": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "summary": {
             "type": "object",
             "properties": {
               "totalItems": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "totalSizeBytes": {
                 "type": "number",
@@ -11462,8 +11415,7 @@
                     "properties": {
                       "count": {
                         "type": "integer",
-                        "minimum": 0,
-                        "maximum": 9007199254740991
+                        "minimum": 0
                       }
                     },
                     "required": [
@@ -11476,8 +11428,7 @@
                     "properties": {
                       "count": {
                         "type": "integer",
-                        "minimum": 0,
-                        "maximum": 9007199254740991
+                        "minimum": 0
                       },
                       "sizeBytes": {
                         "type": "number",
@@ -11495,8 +11446,7 @@
                     "properties": {
                       "count": {
                         "type": "integer",
-                        "minimum": 0,
-                        "maximum": 9007199254740991
+                        "minimum": 0
                       },
                       "sizeBytes": {
                         "type": "number",
@@ -11514,8 +11464,7 @@
                     "properties": {
                       "count": {
                         "type": "integer",
-                        "minimum": 0,
-                        "maximum": 9007199254740991
+                        "minimum": 0
                       },
                       "sizeBytes": {
                         "type": "number",
@@ -11576,8 +11525,7 @@
           },
           "restoredModels": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -11594,18 +11542,15 @@
           },
           "deletedCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "cascadedModels": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           },
           "survivingDeployments": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -11741,8 +11686,7 @@
               },
               "followerCount": {
                 "type": "integer",
-                "minimum": 0,
-                "maximum": 9007199254740991
+                "minimum": 0
               },
               "isFollowed": {
                 "type": "boolean"
@@ -11771,8 +11715,7 @@
           },
           "followerCount": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991
+            "minimum": 0
           }
         },
         "required": [
@@ -12217,8 +12160,7 @@
                     "type": "array",
                     "items": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     }
                   }
                 },
@@ -12349,14 +12291,12 @@
                     "type": "array",
                     "items": {
                       "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991
+                      "minimum": 0
                     }
                   },
                   "targetClassId": {
                     "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991
+                    "minimum": 0
                   }
                 },
                 "required": [
@@ -13472,8 +13412,7 @@
             "description": "Saved version number",
             "schema": {
               "type": "integer",
-              "exclusiveMinimum": 0,
-              "maximum": 9007199254740991
+              "exclusiveMinimum": 0
             }
           }
         ],
@@ -13743,8 +13682,7 @@
                 "properties": {
                   "version": {
                     "type": "integer",
-                    "exclusiveMinimum": 0,
-                    "maximum": 9007199254740991
+                    "exclusiveMinimum": 0
                   },
                   "description": {
                     "type": "string",
@@ -13846,7 +13784,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.update_export(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    version=1,\n    description=\"...\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.update_export(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    version=1,\n    description=\"Example description\",\n)\nprint(response)"
           }
         ]
       }
@@ -13899,8 +13837,7 @@
             "schema": {
               "default": 0,
               "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
+              "minimum": 0
             }
           },
           {
@@ -14037,8 +13974,7 @@
             "schema": {
               "default": 0,
               "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
+              "minimum": 0
             }
           },
           {
@@ -14946,7 +14882,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.ingest(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.ingest(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    body={\"sessionId\": \"resource-id\"},\n)\nprint(response)"
           }
         ]
       }
@@ -15099,8 +15035,7 @@
                 "properties": {
                   "version": {
                     "type": "integer",
-                    "exclusiveMinimum": 0,
-                    "maximum": 9007199254740991
+                    "exclusiveMinimum": 0
                   }
                 },
                 "required": [
@@ -15543,8 +15478,7 @@
                   "imageCount": {
                     "default": 0,
                     "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991
+                    "minimum": 0
                   },
                   "classNames": {
                     "maxItems": 25000,
@@ -15684,7 +15618,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.create(\n    dataset=\"...\",\n    name=\"...\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.create(\n    dataset=\"coco8\",\n    name=\"Example name\",\n)\nprint(response)"
           }
         ]
       }
@@ -16814,7 +16748,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.predict(\n    owner=\"ultralytics\",\n    deployment=\"yolo26-api\",\n    body={\"conf\": 0.25, \"iou\": 0.7, \"imgsz\": 640, \"normalize\": False, \"decimals\": 5, \"bits\": 8, \"file\": \"...\", \"source\": \"...\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.predict(\n    owner=\"ultralytics\",\n    deployment=\"yolo26-api\",\n    body={\"file\": \"path/to/file\"},\n)\nprint(response)"
           }
         ]
       }
@@ -17154,7 +17088,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.create(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    deployment=\"yolo26-api\",\n    name=\"...\",\n    region=\"asia-east1\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.create(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    deployment=\"yolo26-api\",\n    name=\"Example name\",\n    region=\"asia-east1\",\n)\nprint(response)"
           }
         ]
       }
@@ -17227,8 +17161,7 @@
             "schema": {
               "default": 0,
               "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
+              "minimum": 0
             }
           },
           {
@@ -17428,7 +17361,7 @@
           "Images"
         ],
         "operationId": "patch_api_images_imageId",
-        "description": "Replaces the image annotations or custom metadata.",
+        "description": "Replaces either custom metadata, for example `{\"metadata\":{\"location\":\"strasbourg\"}}`, or annotations. Use one consistent flat keypoint shape: pairs `[x1, y1, x2, y2]` or triples `[x1, y1, visibility1, x2, y2, visibility2]`.",
         "parameters": [
           {
             "name": "imageId",
@@ -17462,7 +17395,6 @@
                             "classId": {
                               "type": "integer",
                               "minimum": 0,
-                              "maximum": 9007199254740991,
                               "description": "Class index (0-based)"
                             },
                             "bbox": {
@@ -17495,7 +17427,13 @@
                               }
                             },
                             "keypoints": {
-                              "description": "Keypoints for pose estimation",
+                              "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                              "example": [
+                                0.1,
+                                0.2,
+                                0.3,
+                                0.4
+                              ],
                               "maxItems": 10000,
                               "type": "array",
                               "items": {
@@ -17552,7 +17490,26 @@
                       "labels"
                     ],
                     "additionalProperties": false,
-                    "description": "Replace labels for an image"
+                    "description": "Replace labels for an image",
+                    "example": {
+                      "labels": [
+                        {
+                          "classId": 0,
+                          "bbox": [
+                            0.45566,
+                            0.45072,
+                            0.29691,
+                            0.24404
+                          ],
+                          "keypoints": [
+                            0.1,
+                            0.2,
+                            0.3,
+                            0.4
+                          ]
+                        }
+                      ]
+                    }
                   },
                   {
                     "type": "object",
@@ -17647,7 +17604,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.images.update(\n    image_id=\"507f1f77bcf86cd799439011\",\n    body={\"labels\": [{\"classId\": 1, \"bbox\": [\"...\"], \"segments\": [1], \"keypoints\": [1], \"obb\": [\"...\"], \"skeletonId\": \"...\"}]},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.images.update(\n    image_id=\"507f1f77bcf86cd799439011\",\n    body={\"labels\": [{\"classId\": 1, \"bbox\": [\"example-bbox\"], \"segments\": [1], \"keypoints\": [0.1, 0.2, 0.3, 0.4], \"obb\": [\"example-obb\"], \"skeletonId\": \"resource-id\"}]},\n)\nprint(response)"
           }
         ]
       },
@@ -18272,6 +18229,100 @@
         ]
       }
     },
+    "/api/integrations/buckets/{id}": {
+      "delete": {
+        "summary": "Disconnect cloud storage",
+        "tags": [
+          "Storage Integrations"
+        ],
+        "operationId": "delete_api_integrations_buckets_id",
+        "description": "Removes saved credentials without deleting provider data. Connected datasets remain visible but their files are unavailable until the same storage account is reconnected.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 24,
+              "maxLength": 24,
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "507f1f77bcf86cd799439011"
+            },
+            "description": "Cloud integration ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Integration disconnected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteBucketIntegrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid integration ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Integration not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.disconnect_cloud_storage(\n    id=\"507f1f77bcf86cd799439011\",\n)\nprint(response)"
+          }
+        ]
+      }
+    },
     "/api/integrations/buckets/{id}/objects": {
       "get": {
         "summary": "Browse cloud storage objects",
@@ -18403,7 +18454,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.browse_cloud_storage_objects(\n    id=\"507f1f77bcf86cd799439011\",\n    target=\"...\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.browse_cloud_storage_objects(\n    id=\"507f1f77bcf86cd799439011\",\n    target=\"example-target\",\n)\nprint(response)"
           }
         ]
       }
@@ -18674,7 +18725,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.connect_cloud_storage(\n    provider=\"gcs\",\n    credentials={\"client_email\": \"...\", \"private_key\": \"...\", \"project_id\": \"...\"},\n    targets=[\"...\"],\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.connect_cloud_storage(\n    body={\"provider\": \"gcs\", \"credentials\": {\"client_email\": \"jane@example.com\", \"private_key\": \"example-private_key\", \"project_id\": \"resource-id\"}, \"targets\": [\"example-targets\"]},\n)\nprint(response)"
           }
         ]
       }
@@ -18856,7 +18907,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.discover_cloud_storage_locations(\n    provider=\"gcs\",\n    credentials={\"client_email\": \"...\", \"private_key\": \"...\", \"project_id\": \"...\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.discover_cloud_storage_locations(\n    body={\"provider\": \"gcs\", \"credentials\": {\"client_email\": \"jane@example.com\", \"private_key\": \"example-private_key\", \"project_id\": \"resource-id\"}},\n)\nprint(response)"
           }
         ]
       }
@@ -18910,8 +18961,7 @@
                         },
                         "latestVersion": {
                           "type": "integer",
-                          "exclusiveMinimum": 0,
-                          "maximum": 9007199254740991
+                          "exclusiveMinimum": 0
                         },
                         "latestVersionName": {
                           "type": "string",
@@ -19005,7 +19055,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.import_from_roboflow(\n    api_key=\"...\",\n    items=[{\"workspace\": \"...\", \"projectId\": \"...\", \"projectName\": \"...\", \"projectType\": \"...\", \"latestVersion\": 1, \"latestVersionName\": \"...\"}],\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.import_from_roboflow(\n    api_key=\"your-api-key\",\n    items=[{\"workspace\": \"example-workspace\", \"projectId\": \"resource-id\", \"projectName\": \"Example name\", \"projectType\": \"example-project-type\", \"latestVersion\": 1, \"latestVersionName\": \"Example name\"}],\n)\nprint(response)"
           }
         ]
       }
@@ -19051,7 +19101,7 @@
             }
           },
           "400": {
-            "description": "Invalid request",
+            "description": "Invalid request or Roboflow API key",
             "content": {
               "application/json": {
                 "schema": {
@@ -19115,7 +19165,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.preview_roboflow_import(\n    api_key=\"...\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.preview_roboflow_import(\n    api_key=\"your-api-key\",\n)\nprint(response)"
           }
         ]
       }
@@ -21054,7 +21104,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.predict(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    body={\"conf\": 0.25, \"iou\": 0.7, \"imgsz\": 640, \"normalize\": False, \"decimals\": 5, \"bits\": 8, \"file\": \"...\", \"source\": \"...\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.predict(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    body={\"file\": \"path/to/file\"},\n)\nprint(response)"
           }
         ]
       }
@@ -21928,7 +21978,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.create(\n    body={\"owner\": \"ultralytics\", \"project\": \"yolo26\", \"description\": \"...\", \"metadata\": {\"key\": \"...\"}, \"task\": \"detect\", \"trainArgs\": {\"key\": \"...\"}, \"trainResults\": [{\"epoch\": 1, \"fitness\": 1, \"metrics\": {\"key\": 1}, \"system\": {\"key\": \"...\"}, \"timestamp\": \"2026-01-01T00:00:00Z\"}], \"epochs\": 1, \"metrics\": {\"mAP50\": 1, \"mAP50-95\": 1, \"precision\": 1, \"recall\": 1, \"accuracy_top1\": 1, \"accuracy_top5\": 1, \"miou\": 1, \"pixel_acc\": 1, \"delta1\": 1, \"abs_rel\": 1, \"rmse\": 1, \"silog\": 1}, \"version\": \"...\", \"docs\": \"...\", \"environment\": {\"key\": \"...\"}, \"completedAt\": \"2026-01-01T00:00:00Z\", \"model\": \"...\", \"name\": \"...\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.create(\n    body={\"project\": \"yolo26\", \"model\": \"yolo26n\"},\n)\nprint(response)"
           }
         ]
       }
@@ -22837,7 +22887,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.projects.create(\n    project=\"...\",\n    name=\"...\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.projects.create(\n    project=\"example-project\",\n    name=\"Example name\",\n)\nprint(response)"
           }
         ]
       }
@@ -23097,8 +23147,7 @@
                             "type": "array",
                             "items": {
                               "type": "integer",
-                              "minimum": -9007199254740991,
-                              "maximum": 9007199254740991
+                              "minimum": 0
                             }
                           },
                           {
@@ -23642,7 +23691,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"...\",\n    train_args={\"model\": \"...\", \"data\": \"...\", \"task\": \"detect\", \"classes\": [1], \"project\": \"...\", \"name\": \"...\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"label_smoothing\": 0, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": 1, \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"resource-id\",\n    train_args={\"model\": \"yolo26n.pt\", \"data\": \"ul://jane-doe/datasets/coco8\", \"task\": \"detect\", \"classes\": [1], \"project\": \"example-project\", \"name\": \"Example name\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"label_smoothing\": 0, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": 1, \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
           }
         ]
       }
@@ -23685,8 +23734,7 @@
             "schema": {
               "default": 1,
               "type": "integer",
-              "exclusiveMinimum": 0,
-              "maximum": 9007199254740991
+              "exclusiveMinimum": 0
             }
           },
           {
@@ -23875,7 +23923,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.restore_trashed_item(\n    id=\"...\",\n    type=\"project\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.restore_trashed_item(\n    id=\"resource-id\",\n    type=\"project\",\n)\nprint(response)"
           }
         ]
       },
@@ -24011,7 +24059,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.permanently_delete_trash(\n    body={\"id\": \"...\", \"type\": \"project\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.permanently_delete_trash(\n    body={\"id\": \"resource-id\", \"type\": \"project\"},\n)\nprint(response)"
           }
         ]
       }
@@ -24125,7 +24173,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.complete(\n    session_id=\"...\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.complete(\n    session_id=\"resource-id\",\n)\nprint(response)"
           }
         ]
       }
@@ -24302,7 +24350,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.retrieve_file_url(\n    asset_id=\"...\",\n    content_type=\"...\",\n    total_bytes=1,\n    asset_type=\"datasets\",\n    filename=\"dataset.zip\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.retrieve_file_url(\n    body={\"assetId\": \"resource-id\", \"contentType\": \"example-content-type\", \"totalBytes\": 1, \"assetType\": \"datasets\", \"filename\": \"dataset.zip\"},\n)\nprint(response)"
           }
         ]
       }
@@ -24389,7 +24437,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.account.retrieve_public_user_profile(\n    username=\"...\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.account.retrieve_public_user_profile(\n    username=\"jane-doe\",\n)\nprint(response)"
           }
         ]
       },
@@ -24481,7 +24529,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.account.follow_user(\n    username=\"...\",\n    followed=False,\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.account.follow_user(\n    username=\"jane-doe\",\n    followed=False,\n)\nprint(response)"
           }
         ]
       }

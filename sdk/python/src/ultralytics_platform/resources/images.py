@@ -54,11 +54,11 @@ class Images:
     def update(self, image_id: str, *, body: dict[str, Any]) -> ImagesUpdateResponse:
         """Update an image.
 
-        Replaces the image annotations or custom metadata.
+        Replaces either custom metadata, for example `{"metadata":{"location":"strasbourg"}}`, or annotations. Use one consistent flat keypoint shape: pairs `[x1, y1, x2, y2]` or triples `[x1, y1, visibility1, x2, y2, visibility2]`.
 
         Args:
             image_id (str): Image ID
-            body (dict[str, Any]): Request body.
+            body (dict[str, Any]): Replace labels for an image Or Replace custom metadata for an image
 
         Returns:
             (ImagesUpdateResponse): The API response.
@@ -240,11 +240,11 @@ class AsyncImages:
     async def update(self, image_id: str, *, body: dict[str, Any]) -> ImagesUpdateResponse:
         """Update an image.
 
-        Replaces the image annotations or custom metadata.
+        Replaces either custom metadata, for example `{"metadata":{"location":"strasbourg"}}`, or annotations. Use one consistent flat keypoint shape: pairs `[x1, y1, x2, y2]` or triples `[x1, y1, visibility1, x2, y2, visibility2]`.
 
         Args:
             image_id (str): Image ID
-            body (dict[str, Any]): Request body.
+            body (dict[str, Any]): Replace labels for an image Or Replace custom metadata for an image
 
         Returns:
             (ImagesUpdateResponse): The API response.
