@@ -303,16 +303,18 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     created_ids["dataset"] = dataset_id
     archive = download_dataset()
     upload = client.upload.retrieve_file_url(
-        asset_id=dataset_id,
-        asset_type="datasets",
-        filename="coco32.zip",
-        content_type="application/zip",
-        total_bytes=len(archive),
+        body={
+            "assetId": dataset_id,
+            "assetType": "datasets",
+            "filename": "coco32.zip",
+            "contentType": "application/zip",
+            "totalBytes": len(archive),
+        }
     )
     response = httpx.put(upload["uploadUrl"], content=archive, headers={"Content-Type": "application/zip"}, timeout=60)
     response.raise_for_status()
     client.upload.complete(session_id=upload["sessionId"])
-    client.datasets.ingest(owner, dataset, session_id=upload["sessionId"])
+    client.datasets.ingest(owner, dataset, body={"sessionId": upload["sessionId"]})
     images = wait_for_images(client, owner, dataset)
     image_ids = [str(image.get("id") or image.get("_id")) for image in images]
     if len(image_ids) < 3:
@@ -579,7 +581,9 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         expected_errors,
     )
     expected_error(
-        lambda: client.storage_integrations.discover_cloud_storage_locations(provider="invalid", credentials={}),
+        lambda: client.storage_integrations.discover_cloud_storage_locations(
+            body={"provider": "invalid", "credentials": {}}
+        ),
         "post_api_integrations_buckets_discover",
         "An unknown provider is rejected before any external storage request",
         expected_errors,
@@ -603,7 +607,9 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         }
 
     def connect_storage() -> dict[str, Any]:
-        result = client.storage_integrations.connect_cloud_storage(provider="invalid", credentials={}, targets=[])
+        result = client.storage_integrations.connect_cloud_storage(
+            body={"provider": "invalid", "credentials": {}, "targets": []}
+        )
         if isinstance(result, dict) and (result.get("id") or result.get("_id")):
             unexpected_integration_ids.add(str(result.get("id") or result.get("_id")))
         return result

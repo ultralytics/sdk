@@ -678,19 +678,7 @@ class Datasets:
             ),
         )
 
-    def ingest(
-        self,
-        owner: str,
-        dataset: str,
-        *,
-        target_split: Literal["train", "val", "test"] | NotGiven = NOT_GIVEN,
-        conflict_policy: Literal["skip", "keep_both", "replace"] | NotGiven = NOT_GIVEN,
-        session_id: Any | NotGiven = NOT_GIVEN,
-        source_url: Any | NotGiven = NOT_GIVEN,
-        reference: Any | NotGiven = NOT_GIVEN,
-        class_mapping: Any | NotGiven = NOT_GIVEN,
-        image_metadata: Any | NotGiven = NOT_GIVEN,
-    ) -> DatasetsIngestResponse:
+    def ingest(self, owner: str, dataset: str, *, body: dict[str, Any]) -> DatasetsIngestResponse:
         """Ingest dataset data.
 
         Processes a completed upload, remote archive, or connected data source into this dataset.
@@ -698,13 +686,7 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            target_split (Literal["train", "val", "test"], optional): Target split for new images (overrides archive structure)
-            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
-            session_id (Any, optional): Upload session ID from signed-url response
-            source_url (Any, optional): Remote dataset archive or NDJSON URL
-            reference (Any, optional): Connected cloud or On Premise source
-            class_mapping (Any, optional): Mapping from incoming class names to this dataset
-            image_metadata (Any, optional): Custom metadata keyed by each image's archive-relative path or NDJSON file value. Paths are limited to 1,024 characters, top-level metadata keys to 128 characters, and the map to 500,000 serialized characters.
+            body (dict[str, Any]): Input for dataset ingest job
 
         Returns:
             (DatasetsIngestResponse): The API response.
@@ -718,15 +700,7 @@ class Datasets:
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/ingest",
                 auth=("Authorization", "Bearer "),
-                json={
-                    "targetSplit": target_split,
-                    "conflictPolicy": conflict_policy,
-                    "sessionId": session_id,
-                    "sourceUrl": source_url,
-                    "reference": reference,
-                    "classMapping": class_mapping,
-                    "imageMetadata": image_metadata,
-                },
+                json=body,
             ),
         )
 
@@ -1621,19 +1595,7 @@ class AsyncDatasets:
             ),
         )
 
-    async def ingest(
-        self,
-        owner: str,
-        dataset: str,
-        *,
-        target_split: Literal["train", "val", "test"] | NotGiven = NOT_GIVEN,
-        conflict_policy: Literal["skip", "keep_both", "replace"] | NotGiven = NOT_GIVEN,
-        session_id: Any | NotGiven = NOT_GIVEN,
-        source_url: Any | NotGiven = NOT_GIVEN,
-        reference: Any | NotGiven = NOT_GIVEN,
-        class_mapping: Any | NotGiven = NOT_GIVEN,
-        image_metadata: Any | NotGiven = NOT_GIVEN,
-    ) -> DatasetsIngestResponse:
+    async def ingest(self, owner: str, dataset: str, *, body: dict[str, Any]) -> DatasetsIngestResponse:
         """Ingest dataset data.
 
         Processes a completed upload, remote archive, or connected data source into this dataset.
@@ -1641,13 +1603,7 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            target_split (Literal["train", "val", "test"], optional): Target split for new images (overrides archive structure)
-            conflict_policy (Literal["skip", "keep_both", "replace"], optional): How to handle filename or content conflicts
-            session_id (Any, optional): Upload session ID from signed-url response
-            source_url (Any, optional): Remote dataset archive or NDJSON URL
-            reference (Any, optional): Connected cloud or On Premise source
-            class_mapping (Any, optional): Mapping from incoming class names to this dataset
-            image_metadata (Any, optional): Custom metadata keyed by each image's archive-relative path or NDJSON file value. Paths are limited to 1,024 characters, top-level metadata keys to 128 characters, and the map to 500,000 serialized characters.
+            body (dict[str, Any]): Input for dataset ingest job
 
         Returns:
             (DatasetsIngestResponse): The API response.
@@ -1661,15 +1617,7 @@ class AsyncDatasets:
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/ingest",
                 auth=("Authorization", "Bearer "),
-                json={
-                    "targetSplit": target_split,
-                    "conflictPolicy": conflict_policy,
-                    "sessionId": session_id,
-                    "sourceUrl": source_url,
-                    "reference": reference,
-                    "classMapping": class_mapping,
-                    "imageMetadata": image_metadata,
-                },
+                json=body,
             ),
         )
 

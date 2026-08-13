@@ -463,7 +463,7 @@ DatasetsCloneResponse = TypedDict(
 
 
 DatasetsRetrieveResponseDatasetSplits = TypedDict(
-    "DatasetsRetrieveResponseDatasetSplits", {"train": float, "val": float, "test": float, "labeled": float}
+    "DatasetsRetrieveResponseDatasetSplits", {"train": int, "val": int, "test": int, "labeled": int}
 )
 
 
@@ -518,7 +518,7 @@ DatasetsRetrieveResponseDatasetLastIngestSummary = TypedDict(
 
 
 DatasetsRetrieveResponseDatasetVersionsItemSplits = TypedDict(
-    "DatasetsRetrieveResponseDatasetVersionsItemSplits", {"train": float, "val": float, "test": float, "labeled": float}
+    "DatasetsRetrieveResponseDatasetVersionsItemSplits", {"train": int, "val": int, "test": int, "labeled": int}
 )
 
 
@@ -860,7 +860,7 @@ DatasetsRedistributeSplitsResponse = TypedDict(
 
 
 DatasetsListResponseDatasetsItemSplits = TypedDict(
-    "DatasetsListResponseDatasetsItemSplits", {"train": float, "val": float, "test": float, "labeled": float}
+    "DatasetsListResponseDatasetsItemSplits", {"train": int, "val": int, "test": int, "labeled": int}
 )
 
 
@@ -915,8 +915,7 @@ DatasetsListResponseDatasetsItemLastIngestSummary = TypedDict(
 
 
 DatasetsListResponseDatasetsItemVersionsItemSplits = TypedDict(
-    "DatasetsListResponseDatasetsItemVersionsItemSplits",
-    {"train": float, "val": float, "test": float, "labeled": float},
+    "DatasetsListResponseDatasetsItemVersionsItemSplits", {"train": int, "val": int, "test": int, "labeled": int}
 )
 
 
@@ -1337,7 +1336,7 @@ ExploreRetrieveSearchResponseProjectsItem = TypedDict(
 
 
 ExploreRetrieveSearchResponseDatasetsItemSplits = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItemSplits", {"train": float, "val": float, "test": float, "labeled": float}
+    "ExploreRetrieveSearchResponseDatasetsItemSplits", {"train": int, "val": int, "test": int, "labeled": int}
 )
 
 
@@ -1529,6 +1528,11 @@ ImagesRetrieveSignedUrlsResponse = TypedDict(
 )
 
 
+StorageIntegrationsDisconnectCloudStorageResponse = TypedDict(
+    "StorageIntegrationsDisconnectCloudStorageResponse", {"success": Literal[True]}
+)
+
+
 StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem = TypedDict(
     "StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem",
     {
@@ -1589,7 +1593,7 @@ ModelsCloneResponse = TypedDict(
 
 
 ModelsRetrieveResponseVariant1ModelDatasetVersion = TypedDict(
-    "ModelsRetrieveResponseVariant1ModelDatasetVersion", {"version": float, "contentHash": str}
+    "ModelsRetrieveResponseVariant1ModelDatasetVersion", {"version": int, "contentHash": str}
 )
 
 
@@ -1678,7 +1682,7 @@ ModelsRetrieveResponseVariant1ModelTrainArgs = TypedDict(
 ModelsRetrieveResponseVariant1ModelTrainResultsItem = TypedDict(
     "ModelsRetrieveResponseVariant1ModelTrainResultsItem",
     {
-        "epoch": NotRequired[float],
+        "epoch": NotRequired[int],
         "metrics": NotRequired[dict[str, float]],
         "fitness": NotRequired[float],
         "timestamp": NotRequired[str],
@@ -1755,8 +1759,8 @@ ModelsRetrieveResponseVariant1Model = TypedDict(
         "sourceModelId": NotRequired[str],
         "sourceModel": NotRequired[ModelsRetrieveResponseVariant1ModelSourceModel],
         "baseModel": NotRequired[str],
-        "epochs": NotRequired[float],
-        "bestEpoch": NotRequired[float | None],
+        "epochs": NotRequired[int],
+        "bestEpoch": NotRequired[int | None],
         "bestFitness": NotRequired[float | None],
         "trainArgs": NotRequired[ModelsRetrieveResponseVariant1ModelTrainArgs],
         "metrics": NotRequired[dict[str, float]],
@@ -2355,7 +2359,7 @@ ModelsDeleteTrainingResponse = TypedDict(
 
 
 ModelsListResponseModelsItemDatasetVersion = TypedDict(
-    "ModelsListResponseModelsItemDatasetVersion", {"version": float, "contentHash": str}
+    "ModelsListResponseModelsItemDatasetVersion", {"version": int, "contentHash": str}
 )
 
 
@@ -2444,7 +2448,7 @@ ModelsListResponseModelsItemTrainArgs = TypedDict(
 ModelsListResponseModelsItemTrainResultsItem = TypedDict(
     "ModelsListResponseModelsItemTrainResultsItem",
     {
-        "epoch": NotRequired[float],
+        "epoch": NotRequired[int],
         "metrics": NotRequired[dict[str, float]],
         "fitness": NotRequired[float],
         "timestamp": NotRequired[str],
@@ -2519,8 +2523,8 @@ ModelsListResponseModelsItem = TypedDict(
         "sourceModelId": NotRequired[str],
         "sourceModel": NotRequired[ModelsListResponseModelsItemSourceModel],
         "baseModel": NotRequired[str],
-        "epochs": NotRequired[float],
-        "bestEpoch": NotRequired[float | None],
+        "epochs": NotRequired[int],
+        "bestEpoch": NotRequired[int | None],
         "bestFitness": NotRequired[float | None],
         "trainArgs": NotRequired[ModelsListResponseModelsItemTrainArgs],
         "metrics": NotRequired[dict[str, float]],
@@ -2802,8 +2806,8 @@ ProjectsRetrieveResponseModelsItem = TypedDict(
         "status": NotRequired[
             Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"]
         ],
-        "epochs": NotRequired[float],
-        "bestEpoch": NotRequired[float | None],
+        "epochs": NotRequired[int],
+        "bestEpoch": NotRequired[int | None],
         "bestFitness": NotRequired[float | None],
         "metrics": NotRequired[dict[str, float]],
         "epochCount": int,

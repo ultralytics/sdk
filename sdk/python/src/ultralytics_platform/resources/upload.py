@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal, cast
+from typing import Any, cast
 
 from .._client import (
     NOT_GIVEN,
@@ -47,25 +47,13 @@ class Upload:
             ),
         )
 
-    def retrieve_file_url(
-        self,
-        *,
-        asset_id: str,
-        content_type: str,
-        total_bytes: float,
-        asset_type: Literal["datasets", "models", "images", "videos"],
-        filename: str,
-    ) -> UploadRetrieveFileUrlResponse:
+    def retrieve_file_url(self, *, body: dict[str, Any]) -> UploadRetrieveFileUrlResponse:
         """Get a file upload URL.
 
         Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
 
         Args:
-            asset_id (str): assetId request value.
-            content_type (str): contentType request value.
-            total_bytes (float): totalBytes request value.
-            asset_type (Literal["datasets", "models", "images", "videos"]): assetType request value.
-            filename (str): filename request value.
+            body (dict[str, Any]): Request body for generating a signed upload URL
 
         Returns:
             (UploadRetrieveFileUrlResponse): The API response.
@@ -75,18 +63,7 @@ class Upload:
         """
         return cast(
             UploadRetrieveFileUrlResponse,
-            self._client.request(
-                "POST",
-                "/api/upload/signed-url",
-                auth=("Authorization", "Bearer "),
-                json={
-                    "assetId": asset_id,
-                    "contentType": content_type,
-                    "totalBytes": total_bytes,
-                    "assetType": asset_type,
-                    "filename": filename,
-                },
-            ),
+            self._client.request("POST", "/api/upload/signed-url", auth=("Authorization", "Bearer "), json=body),
         )
 
 
@@ -121,25 +98,13 @@ class AsyncUpload:
             ),
         )
 
-    async def retrieve_file_url(
-        self,
-        *,
-        asset_id: str,
-        content_type: str,
-        total_bytes: float,
-        asset_type: Literal["datasets", "models", "images", "videos"],
-        filename: str,
-    ) -> UploadRetrieveFileUrlResponse:
+    async def retrieve_file_url(self, *, body: dict[str, Any]) -> UploadRetrieveFileUrlResponse:
         """Get a file upload URL.
 
         Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
 
         Args:
-            asset_id (str): assetId request value.
-            content_type (str): contentType request value.
-            total_bytes (float): totalBytes request value.
-            asset_type (Literal["datasets", "models", "images", "videos"]): assetType request value.
-            filename (str): filename request value.
+            body (dict[str, Any]): Request body for generating a signed upload URL
 
         Returns:
             (UploadRetrieveFileUrlResponse): The API response.
@@ -149,16 +114,5 @@ class AsyncUpload:
         """
         return cast(
             UploadRetrieveFileUrlResponse,
-            await self._client.request(
-                "POST",
-                "/api/upload/signed-url",
-                auth=("Authorization", "Bearer "),
-                json={
-                    "assetId": asset_id,
-                    "contentType": content_type,
-                    "totalBytes": total_bytes,
-                    "assetType": asset_type,
-                    "filename": filename,
-                },
-            ),
+            await self._client.request("POST", "/api/upload/signed-url", auth=("Authorization", "Bearer "), json=body),
         )
