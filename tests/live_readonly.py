@@ -396,8 +396,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     model_result = client.models.create(
         body={"owner": owner, "project": project, "model": slug, "name": "SDK CI model", "task": "detect"}
     )
-    model_id = str(model_result["id"])
-    created_ids["model"] = model_id
+    created_ids["model"] = str(model_result["id"])
     client.models.retrieve(owner, project, model)
     client.models.update(owner, project, model, description="Full API lifecycle canary", metadata={"source": "sdk-ci"})
     if client.models.retrieve(owner, project, model)["model"].get("description") != "Full API lifecycle canary":
@@ -432,13 +431,13 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         expected_errors,
     )
     expected_error(
-        lambda: client.models.predict(owner, project, model, body={}),
+        lambda: client.models.predict(owner, project, missing, body={}),
         "post_api_models_owner_project_model_predict",
         "The canary model has no inference weights",
         expected_errors,
     )
     expected_error(
-        lambda: client.images.predict(image_ids[0], model_id=model_id),
+        lambda: client.images.predict(image_ids[0], model_id=missing),
         "post_api_images_imageId_predict",
         "The canary model has no inference weights",
         expected_errors,
