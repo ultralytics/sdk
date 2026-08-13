@@ -425,7 +425,11 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         "post_api_models_owner_project_model_exports",
         "The canary does not upload proprietary model weights",
         expected_errors,
-        lambda result: client.exports.cancel_or_delete(owner, project, missing, str(result["id"])),
+        lambda result: cleanup.append(
+            lambda export_id=str(result["id"]): ignore_missing(
+                lambda: client.exports.cancel_or_delete(owner, project, missing, export_id)
+            )
+        ),
     )
     export_id = str(export.get("id", missing))
     expected_error(
@@ -487,7 +491,6 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         "post_api_deployments_owner",
         "A missing model avoids creating paid compute",
         expected_errors,
-        lambda _: ignore_missing(lambda: client.deployments.delete(owner, slug)),
     )
     deployment = str(deployment_result.get("deployment", missing))
     deployment_reason = "No deployment exists after the intentionally rejected create request"
@@ -545,15 +548,15 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         expected_errors,
     )
     expected_error(
-        lambda: client.storage_integrations.discover_cloud_storage_locations(provider="gcs", credentials={}),
+        lambda: client.storage_integrations.discover_cloud_storage_locations(provider="invalid", credentials={}),
         "post_api_integrations_buckets_discover",
-        "Invalid empty credentials avoid connecting external storage",
+        "An unknown provider is rejected before any external storage request",
         expected_errors,
     )
     expected_error(
-        lambda: client.storage_integrations.connect_cloud_storage(provider="gcs", credentials={}, targets=["missing"]),
+        lambda: client.storage_integrations.connect_cloud_storage(provider="invalid", credentials={}, targets=[]),
         "post_api_integrations_buckets",
-        "Invalid empty credentials avoid connecting external storage",
+        "An unknown provider and empty target list are rejected before persistence",
         expected_errors,
     )
     expected_error(
