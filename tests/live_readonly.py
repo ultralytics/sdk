@@ -118,11 +118,10 @@ def expected_error(
     operation_id: str,
     reason: str,
     expected_errors: dict[str, str],
-    on_success: Callable[[Any], None] | None = None,
 ) -> Any:
     """Classify an operation that cannot safely succeed in the production canary."""
     try:
-        result = call()
+        call()
     except APIError as error:
         if error.status_code in {401, 429} or error.status_code >= 500:
             raise
@@ -130,8 +129,6 @@ def expected_error(
             raise
         expected_errors[operation_id] = reason
         return {}
-    if on_success:
-        on_success(result)
     raise RuntimeError(f"{operation_id} unexpectedly succeeded")
 
 
@@ -419,17 +416,23 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         "The canary model has no training session to delete",
         expected_errors,
     )
-    client.exports.list_model(owner, project, model, limit=1)
+    existing_exports = client.exports.list_model(owner, project, model, limit=100).get("exports", [])
+    existing_export_ids = {str(item["id"]) for item in existing_exports}
+
+    def cleanup_new_exports() -> None:
+        for item in client.exports.list_model(owner, project, model, limit=100).get("exports", []):
+            export_id = str(item["id"])
+            if export_id not in existing_export_ids:
+                ignore_missing(
+                    lambda export_id=export_id: client.exports.cancel_or_delete(owner, project, model, export_id)
+                )
+
+    cleanup.append(cleanup_new_exports)
     export = expected_error(
-        lambda: client.exports.export_model(owner, project, missing, format="onnx"),
+        lambda: client.exports.export_model(owner, project, model, format="onnx"),
         "post_api_models_owner_project_model_exports",
-        "The canary does not upload proprietary model weights",
+        "The canary model has no exportable weights",
         expected_errors,
-        lambda result: cleanup.append(
-            lambda export_id=str(result["id"]): ignore_missing(
-                lambda: client.exports.cancel_or_delete(owner, project, missing, export_id)
-            )
-        ),
     )
     export_id = str(export.get("id", missing))
     expected_error(
