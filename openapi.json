@@ -17604,7 +17604,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.images.update(\n    image_id=\"507f1f77bcf86cd799439011\",\n    body={\"labels\": [{\"classId\": 1, \"bbox\": [\"example-bbox\"], \"segments\": [1], \"keypoints\": [0.1, 0.2, 0.3, 0.4], \"obb\": [\"example-obb\"], \"skeletonId\": \"resource-id\"}]},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.images.update(\n    image_id=\"507f1f77bcf86cd799439011\",\n    body={\"labels\": [{\"classId\": 0, \"bbox\": [0.45566, 0.45072, 0.29691, 0.24404], \"keypoints\": [0.1, 0.2, 0.3, 0.4]}]},\n)\nprint(response)"
           }
         ]
       },
