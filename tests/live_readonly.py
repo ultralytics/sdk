@@ -20,6 +20,7 @@ ROOT = Path(__file__).parents[1]
 BASE_URL = "https://platform.ultralytics.com"
 DATASET_URL = "https://github.com/ultralytics/assets/releases/download/v0.0.0/coco32.zip"
 HTTP_METHODS = {"delete", "get", "patch", "post", "put"}
+DATASET_IMAGE_COUNT = 32
 
 
 def resolve(document: dict[str, Any], value: dict[str, Any]) -> dict[str, Any]:
@@ -115,19 +116,37 @@ def cleanup_resource(
     permanently_delete: Callable[[str], Any] | None = None,
 ) -> None:
     """Delete a canary resource discovered by its unique public path."""
+    errors: list[Exception] = []
+    resource_id = known_id()
     try:
         result = retrieve()
     except APIError as error:
         if error.status_code != 404:
-            raise
-        resource_id = known_id()
+            errors.append(error)
+    except APIConnectionError as error:
+        errors.append(error)
     else:
-        resource = result[key]
-        value = resource.get("id") or resource.get("_id")
-        resource_id = str(value) if value else known_id()
+        resource = result.get(key) if isinstance(result, dict) else None
+        if isinstance(resource, dict):
+            value = resource.get("id") or resource.get("_id")
+            resource_id = str(value) if value else resource_id
+    try:
         delete()
+    except APIError as error:
+        if error.status_code != 404:
+            errors.append(error)
+    except APIConnectionError as error:
+        errors.append(error)
     if permanently_delete and resource_id:
-        permanently_delete(resource_id)
+        try:
+            permanently_delete(resource_id)
+        except APIError as error:
+            if error.status_code != 404:
+                errors.append(error)
+        except APIConnectionError as error:
+            errors.append(error)
+    if errors:
+        raise RuntimeError(errors)
 
 
 def ignore_missing(call: Callable[[], Any]) -> None:
@@ -142,11 +161,15 @@ def ignore_missing(call: Callable[[], Any]) -> None:
 def wait_for_images(client: Platform, owner: str, dataset: str) -> list[dict[str, Any]]:
     """Wait for the owned canary upload to finish ingesting."""
     for _ in range(12):
-        images = client.datasets.list_images(owner, dataset, limit=10, include_labels="true").get("images", [])
-        if images:
-            return images
+        result = client.datasets.retrieve(owner, dataset)
+        if result["dataset"].get("imageCount") == DATASET_IMAGE_COUNT:
+            images = client.datasets.list_images(owner, dataset, limit=DATASET_IMAGE_COUNT, include_labels="true").get(
+                "images", []
+            )
+            if len(images) == DATASET_IMAGE_COUNT:
+                return images
         time.sleep(5)
-    raise RuntimeError("Canary dataset ingest produced no images")
+    raise RuntimeError(f"Canary dataset ingest did not produce all {DATASET_IMAGE_COUNT} images")
 
 
 def download_dataset() -> bytes:
@@ -328,7 +351,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
     client.models.retrieve_training(owner, project, model)
     documented(lambda: client.models.delete_training(owner, project, model))
     client.exports.list_model(owner, project, model, limit=1)
-    export = documented(lambda: client.exports.export_model(owner, project, model, format="onnx"))
+    export = documented(lambda: client.exports.export_model(owner, project, missing, format="onnx"))
     export_id = str(export.get("id", missing))
     documented(lambda: client.exports.retrieve_status(owner, project, model, export_id))
     documented(lambda: client.exports.cancel_or_delete(owner, project, model, export_id))
