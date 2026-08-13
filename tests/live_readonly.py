@@ -182,6 +182,23 @@ def ignore_missing(call: Callable[[], Any]) -> None:
             raise
 
 
+def cleanup_created(retained_ids: set[str], discover: Callable[[], set[str]], delete: Callable[[str], Any]) -> None:
+    """Attempt every known cleanup even when discovery or another deletion fails."""
+    errors: list[Exception] = []
+    discovered_ids: set[str] = set()
+    try:
+        discovered_ids = discover()
+    except (APIConnectionError, APIError, httpx.HTTPError, RuntimeError) as error:
+        errors.append(error)
+    for resource_id in retained_ids | discovered_ids:
+        try:
+            ignore_missing(lambda resource_id=resource_id: delete(resource_id))
+        except (APIConnectionError, APIError, httpx.HTTPError, RuntimeError) as error:
+            errors.append(error)
+    if errors:
+        raise RuntimeError(errors)
+
+
 def wait_for_images(client: Platform, owner: str, dataset: str) -> list[dict[str, Any]]:
     """Wait for the owned canary upload to finish ingesting."""
     for _ in range(12):
@@ -418,17 +435,14 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     )
     unexpected_export_ids: set[str] = set()
 
-    def cleanup_new_exports() -> None:
+    def discover_new_exports() -> set[str]:
         result = client.exports.list_model(owner, project, model, limit=100)
         exports = result.get("exports") if isinstance(result, dict) else None
-        if isinstance(exports, list):
-            unexpected_export_ids.update(
-                str(item["id"]) for item in exports if isinstance(item, dict) and item.get("id")
-            )
-        for export_id in unexpected_export_ids:
-            ignore_missing(
-                lambda export_id=export_id: client.exports.cancel_or_delete(owner, project, model, export_id)
-            )
+        return {
+            str(item["id"])
+            for item in (exports if isinstance(exports, list) else [])
+            if isinstance(item, dict) and item.get("id")
+        }
 
     def create_export() -> dict[str, Any]:
         result = client.exports.export_model(owner, project, model, format="onnx")
@@ -436,7 +450,13 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             unexpected_export_ids.add(str(result["id"]))
         return result
 
-    cleanup.append(cleanup_new_exports)
+    cleanup.append(
+        lambda: cleanup_created(
+            unexpected_export_ids,
+            discover_new_exports,
+            lambda export_id: client.exports.cancel_or_delete(owner, project, model, export_id),
+        )
+    )
     export = expected_error(
         create_export,
         "post_api_models_owner_project_model_exports",
@@ -552,11 +572,8 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     integrations = client.storage_integrations.list_cloud_storage_integrations()
     listed_integrations = integrations.get("integrations") if isinstance(integrations, dict) else None
     listed_integrations = listed_integrations if isinstance(listed_integrations, list) else []
-    integration = next((item for item in listed_integrations if isinstance(item, dict)), {})
-    integration_id = str(integration.get("id") or integration.get("_id") or missing)
-    targets = integration.get("targets") or ["missing"]
     expected_error(
-        lambda: client.storage_integrations.browse_cloud_storage_objects(integration_id, target=str(targets[0])),
+        lambda: client.storage_integrations.browse_cloud_storage_objects("0" * 24, target="missing"),
         "get_api_integrations_buckets_id_objects",
         "The canary has no configured cloud storage integration",
         expected_errors,
@@ -574,19 +591,16 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     }
     unexpected_integration_ids: set[str] = set()
 
-    def cleanup_new_integrations() -> None:
+    def discover_new_integrations() -> set[str]:
         result = client.storage_integrations.list_cloud_storage_integrations()
         items = result.get("integrations") if isinstance(result, dict) else None
-        if isinstance(items, list):
-            unexpected_integration_ids.update(
-                str(item.get("id") or item.get("_id"))
-                for item in items
-                if isinstance(item, dict)
-                and (item.get("id") or item.get("_id"))
-                and str(item.get("id") or item.get("_id")) not in existing_integration_ids
-            )
-        for item_id in unexpected_integration_ids:
-            ignore_missing(lambda item_id=item_id: client.storage_integrations.disconnect_cloud_storage(item_id))
+        return {
+            str(item.get("id") or item.get("_id"))
+            for item in (items if isinstance(items, list) else [])
+            if isinstance(item, dict)
+            and (item.get("id") or item.get("_id"))
+            and str(item.get("id") or item.get("_id")) not in existing_integration_ids
+        }
 
     def connect_storage() -> dict[str, Any]:
         result = client.storage_integrations.connect_cloud_storage(provider="invalid", credentials={}, targets=[])
@@ -594,7 +608,13 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             unexpected_integration_ids.add(str(result.get("id") or result.get("_id")))
         return result
 
-    cleanup.append(cleanup_new_integrations)
+    cleanup.append(
+        lambda: cleanup_created(
+            unexpected_integration_ids,
+            discover_new_integrations,
+            client.storage_integrations.disconnect_cloud_storage,
+        )
+    )
     expected_error(
         connect_storage,
         "post_api_integrations_buckets",
