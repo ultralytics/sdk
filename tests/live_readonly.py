@@ -217,9 +217,9 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     client.account.retrieve_storage_usage(details="true")
     client.account.retrieve_public_user_profile(username=owner)
     expected_error(
-        lambda: client.account.follow_user(username=owner, followed=True),
+        lambda: client.account.follow_user(username=missing, followed=True),
         "patch_api_users",
-        "The canary cannot follow its own account and has no second test account",
+        "A nonexistent account safely validates follow input without mutating account state",
         expected_errors,
     )
     client.billing.list_transactions()
