@@ -22,6 +22,8 @@ DATASET_URL = "https://github.com/ultralytics/assets/releases/download/v0.0.0/co
 HTTP_METHODS = {"delete", "get", "patch", "post", "put"}
 DATASET_IMAGE_COUNT = 32
 EXPECTED_FORBIDDEN = {
+    "post_api_integrations_buckets": "Google Cloud Storage, Amazon S3, and Azure Blob Storage datasets require a Pro or Enterprise plan. Upgrade at Settings > Plans.",
+    "post_api_integrations_buckets_discover": "Google Cloud Storage, Amazon S3, and Azure Blob Storage datasets require a Pro or Enterprise plan. Upgrade at Settings > Plans.",
     "post_api_datasets_owner_dataset_clone": "You cannot clone a dataset to the same workspace.",
     "post_api_models_owner_project_model_clone": "You cannot clone a model to the same workspace.",
     "post_api_projects_owner_project_clone": "You cannot clone a project to the same workspace.",
