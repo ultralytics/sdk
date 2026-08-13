@@ -289,8 +289,27 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]]) -> None:
     client.datasets.redistribute_splits(owner, dataset, train=80, val=10, test=10)
 
     detail = client.images.retrieve(image_ids[0])
+    metadata = detail.get("metadata", {})
+    metadata_response = client.images.update(image_ids[0], body={"metadata": {**metadata, "location": "strasbourg"}})
+    if metadata_response.get("metadata", {}).get("location") != "strasbourg":
+        raise RuntimeError("Image metadata update was missing from the response")
+    if client.images.retrieve(image_ids[0]).get("metadata", {}).get("location") != "strasbourg":
+        raise RuntimeError("Image metadata update did not persist")
+    client.images.update(image_ids[0], body={"metadata": metadata})
+
     labels = detail.get("labels", [])
     if labels:
+        keypoint_labels = [{**labels[0], "keypoints": [0.1, 0.2, 0.3, 0.4]}, *labels[1:]]
+        keypoint_response = client.images.update(image_ids[0], body={"labels": keypoint_labels})
+        if keypoint_response["labels"][0].get("keypoints") != [0.1, 0.2, 0.3, 0.4]:
+            raise RuntimeError("Multiple image keypoints were missing from the response")
+        saved_keypoints = client.images.retrieve(image_ids[0])["labels"][0].get("keypoints", [])
+        if len(saved_keypoints) != 4 or any(
+            abs(actual - expected) > 0.00005
+            for actual, expected in zip(saved_keypoints, [0.1, 0.2, 0.3, 0.4], strict=True)
+        ):
+            raise RuntimeError("Multiple image keypoints did not persist")
+        client.images.update(image_ids[0], body={"labels": labels})
         client.images.update(image_ids[0], body={"labels": labels[:-1]})
         if len(client.images.retrieve(image_ids[0]).get("labels", [])) != len(labels) - 1:
             raise RuntimeError("Image label update did not persist")
