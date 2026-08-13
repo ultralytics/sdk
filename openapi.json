@@ -5447,28 +5447,34 @@
                 "workspace": {
                   "type": "string",
                   "maxLength": 128,
-                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                  "example": "my-workspace"
                 },
                 "projectId": {
                   "type": "string",
                   "maxLength": 128,
-                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                  "example": "vehicle-detection"
                 },
                 "projectName": {
                   "type": "string",
                   "maxLength": 100,
-                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                  "example": "Vehicle Detection"
                 },
                 "projectType": {
                   "type": "string",
                   "maxLength": 100,
-                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                  "example": "object-detection"
                 },
                 "latestVersion": {
                   "type": "integer",
-                  "exclusiveMinimum": 0
+                  "exclusiveMinimum": 0,
+                  "example": 1
                 },
                 "latestVersionName": {
+                  "example": "v1",
                   "type": "string",
                   "maxLength": 100,
                   "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
@@ -18353,7 +18359,8 @@
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 222
+              "maxLength": 222,
+              "example": "my-dataset-bucket"
             }
           },
           {
@@ -18454,7 +18461,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.browse_cloud_storage_objects(\n    id=\"507f1f77bcf86cd799439011\",\n    target=\"example-target\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.browse_cloud_storage_objects(\n    id=\"507f1f77bcf86cd799439011\",\n    target=\"my-dataset-bucket\",\n)\nprint(response)"
           }
         ]
       }
@@ -18545,17 +18552,20 @@
                               "client_email": {
                                 "type": "string",
                                 "maxLength": 254,
-                                "pattern": "^(?:\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*|\\s*\"\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*\"\\s*|\\s*'\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*'\\s*)$"
+                                "pattern": "^(?:\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*|\\s*\"\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*\"\\s*|\\s*'\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*'\\s*)$",
+                                "example": "service-account@my-gcp-project.iam.gserviceaccount.com"
                               },
                               "private_key": {
                                 "type": "string",
                                 "maxLength": 4096,
-                                "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                                "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                                "example": "-----BEGIN PRIVATE KEY-----\nYOUR_GCP_PRIVATE_KEY\n-----END PRIVATE KEY-----"
                               },
                               "project_id": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                                "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                                "example": "my-gcp-project"
                               }
                             },
                             "required": [
@@ -18583,17 +18593,20 @@
                               "access_key_id": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "pattern": "^(?:\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                                "pattern": "^(?:\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                                "example": "YOUR_AWS_ACCESS_KEY_ID"
                               },
                               "secret_access_key": {
                                 "type": "string",
                                 "maxLength": 4096,
-                                "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                                "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                                "example": "YOUR_AWS_SECRET_ACCESS_KEY"
                               },
                               "region": {
                                 "type": "string",
                                 "maxLength": 100,
-                                "pattern": "^(?:\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*|\\s*\"\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*\"\\s*|\\s*'\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*'\\s*)$"
+                                "pattern": "^(?:\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*|\\s*\"\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*\"\\s*|\\s*'\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*'\\s*)$",
+                                "example": "us-east-1"
                               }
                             },
                             "required": [
@@ -18621,7 +18634,8 @@
                               "connection_string": {
                                 "type": "string",
                                 "maxLength": 4096,
-                                "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                                "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                                "example": "DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=YOUR_AZURE_ACCOUNT_KEY;EndpointSuffix=core.windows.net"
                               }
                             },
                             "required": [
@@ -18646,7 +18660,8 @@
                         "items": {
                           "type": "string",
                           "maxLength": 222,
-                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                          "example": "my-dataset-bucket"
                         }
                       }
                     },
@@ -18725,7 +18740,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.connect_cloud_storage(\n    body={\"provider\": \"gcs\", \"credentials\": {\"client_email\": \"jane@example.com\", \"private_key\": \"example-private_key\", \"project_id\": \"resource-id\"}, \"targets\": [\"example-targets\"]},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.connect_cloud_storage(\n    body={\"provider\": \"gcs\", \"credentials\": {\"client_email\": \"service-account@my-gcp-project.iam.gserviceaccount.com\", \"private_key\": \"-----BEGIN PRIVATE KEY-----\\nYOUR_GCP_PRIVATE_KEY\\n-----END PRIVATE KEY-----\", \"project_id\": \"my-gcp-project\"}, \"targets\": [\"my-dataset-bucket\"]},\n)\nprint(response)"
           }
         ]
       }
@@ -18757,17 +18772,20 @@
                           "client_email": {
                             "type": "string",
                             "maxLength": 254,
-                            "pattern": "^(?:\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*|\\s*\"\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*\"\\s*|\\s*'\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*'\\s*)$"
+                            "pattern": "^(?:\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*|\\s*\"\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*\"\\s*|\\s*'\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*'\\s*)$",
+                            "example": "service-account@my-gcp-project.iam.gserviceaccount.com"
                           },
                           "private_key": {
                             "type": "string",
                             "maxLength": 4096,
-                            "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                            "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                            "example": "-----BEGIN PRIVATE KEY-----\nYOUR_GCP_PRIVATE_KEY\n-----END PRIVATE KEY-----"
                           },
                           "project_id": {
                             "type": "string",
                             "maxLength": 100,
-                            "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                            "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                            "example": "my-gcp-project"
                           }
                         },
                         "required": [
@@ -18795,17 +18813,20 @@
                           "access_key_id": {
                             "type": "string",
                             "maxLength": 100,
-                            "pattern": "^(?:\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                            "pattern": "^(?:\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:(?!ASIA)[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                            "example": "YOUR_AWS_ACCESS_KEY_ID"
                           },
                           "secret_access_key": {
                             "type": "string",
                             "maxLength": 4096,
-                            "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                            "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                            "example": "YOUR_AWS_SECRET_ACCESS_KEY"
                           },
                           "region": {
                             "type": "string",
                             "maxLength": 100,
-                            "pattern": "^(?:\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*|\\s*\"\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*\"\\s*|\\s*'\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*'\\s*)$"
+                            "pattern": "^(?:\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*|\\s*\"\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*\"\\s*|\\s*'\\s*(?:[a-z]{2,4}(?:-[a-z0-9]+)+-\\d+)\\s*'\\s*)$",
+                            "example": "us-east-1"
                           }
                         },
                         "required": [
@@ -18833,7 +18854,8 @@
                           "connection_string": {
                             "type": "string",
                             "maxLength": 4096,
-                            "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                            "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                            "example": "DefaultEndpointsProtocol=https;AccountName=myaccount;AccountKey=YOUR_AZURE_ACCOUNT_KEY;EndpointSuffix=core.windows.net"
                           }
                         },
                         "required": [
@@ -18907,7 +18929,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.discover_cloud_storage_locations(\n    body={\"provider\": \"gcs\", \"credentials\": {\"client_email\": \"jane@example.com\", \"private_key\": \"example-private_key\", \"project_id\": \"resource-id\"}},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.discover_cloud_storage_locations(\n    body={\"provider\": \"gcs\", \"credentials\": {\"client_email\": \"service-account@my-gcp-project.iam.gserviceaccount.com\", \"private_key\": \"-----BEGIN PRIVATE KEY-----\\nYOUR_GCP_PRIVATE_KEY\\n-----END PRIVATE KEY-----\", \"project_id\": \"my-gcp-project\"}},\n)\nprint(response)"
           }
         ]
       }
@@ -18942,28 +18964,34 @@
                         "workspace": {
                           "type": "string",
                           "maxLength": 128,
-                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                          "example": "my-workspace"
                         },
                         "projectId": {
                           "type": "string",
                           "maxLength": 128,
-                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                          "example": "vehicle-detection"
                         },
                         "projectName": {
                           "type": "string",
                           "maxLength": 100,
-                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                          "example": "Vehicle Detection"
                         },
                         "projectType": {
                           "type": "string",
                           "maxLength": 100,
-                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                          "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                          "example": "object-detection"
                         },
                         "latestVersion": {
                           "type": "integer",
-                          "exclusiveMinimum": 0
+                          "exclusiveMinimum": 0,
+                          "example": 1
                         },
                         "latestVersionName": {
+                          "example": "v1",
                           "type": "string",
                           "maxLength": 100,
                           "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
@@ -19055,7 +19083,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.import_from_roboflow(\n    api_key=\"your-api-key\",\n    items=[{\"workspace\": \"example-workspace\", \"projectId\": \"resource-id\", \"projectName\": \"Example name\", \"projectType\": \"example-project-type\", \"latestVersion\": 1, \"latestVersionName\": \"Example name\"}],\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.import_from_roboflow(\n    api_key=\"your-api-key\",\n    items=[{\"workspace\": \"my-workspace\", \"projectId\": \"vehicle-detection\", \"projectName\": \"Vehicle Detection\", \"projectType\": \"object-detection\", \"latestVersion\": 1, \"latestVersionName\": \"v1\"}],\n)\nprint(response)"
           }
         ]
       }
@@ -24198,16 +24226,21 @@
                       "assetId": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 128
+                        "maxLength": 128,
+                        "example": "507f1f77bcf86cd799439011"
                       },
                       "contentType": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 50
+                        "maxLength": 50,
+                        "description": "File MIME type",
+                        "example": "application/zip"
                       },
                       "totalBytes": {
                         "type": "number",
-                        "exclusiveMinimum": 0
+                        "exclusiveMinimum": 0,
+                        "description": "File size in bytes",
+                        "example": 1048576
                       },
                       "assetType": {
                         "type": "string",
@@ -24235,16 +24268,21 @@
                       "assetId": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 128
+                        "maxLength": 128,
+                        "example": "507f1f77bcf86cd799439011"
                       },
                       "contentType": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 50
+                        "maxLength": 50,
+                        "description": "File MIME type",
+                        "example": "application/zip"
                       },
                       "totalBytes": {
                         "type": "number",
-                        "exclusiveMinimum": 0
+                        "exclusiveMinimum": 0,
+                        "description": "File size in bytes",
+                        "example": 1048576
                       },
                       "assetType": {
                         "type": "string",
@@ -24350,7 +24388,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.retrieve_file_url(\n    body={\"assetId\": \"resource-id\", \"contentType\": \"example-content-type\", \"totalBytes\": 1, \"assetType\": \"datasets\", \"filename\": \"dataset.zip\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.retrieve_file_url(\n    body={\"assetId\": \"507f1f77bcf86cd799439011\", \"contentType\": \"application/zip\", \"totalBytes\": 1048576, \"assetType\": \"datasets\", \"filename\": \"dataset.zip\"},\n)\nprint(response)"
           }
         ]
       }
