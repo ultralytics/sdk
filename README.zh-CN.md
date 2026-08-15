@@ -36,11 +36,18 @@ uv pip install ultralytics-platform
 from ultralytics_platform import Platform
 
 with Platform(api_key="YOUR_API_KEY") as client:
-    datasets = client.datasets.list()
+    datasets = client.datasets.list("your_username")
     training = client.training.start(model_id="model_id", train_args={"epochs": 10})
-    model = client.models.retrieve("model_id")
-    export = client.exports.create(model_id="model_id", format="onnx")
-    deployment = client.deployments.create(model_id="model_id", name="production", region="us-central1")
+    model = client.models.retrieve("your_username", "project", "model")
+    export = client.exports.create("your_username", "project", "model", format="onnx")
+    deployment = client.deployments.create(
+        "your_username",
+        project="project",
+        model="model",
+        deployment="production",
+        name="Production",
+        region="us-central1",
+    )
 ```
 
 异步客户端提供相同的资源树：
@@ -53,7 +60,7 @@ from ultralytics_platform import AsyncPlatform
 
 async def main():
     async with AsyncPlatform(api_key="YOUR_API_KEY") as client:
-        datasets = await client.datasets.list()
+        datasets = await client.datasets.list("your_username")
 
 
 asyncio.run(main())
