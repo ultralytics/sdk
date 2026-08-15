@@ -87,7 +87,7 @@ Platform OpenAPI 契约
 
 ## 🛠️ 验证
 
-[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) 使用版本化的契约和 [Ultralytics OpenAPI](https://github.com/ultralytics/openapi) 的 `main` 分支重新生成 Python SDK，并在契约不匹配或生成内容漂移时失败。计划任务和手动运行会检测上游契约变更，而不会中断无关的拉取请求。CI 还会格式化和检查 Python、编译软件包、构建 wheel、通过 Git 子目录边界进行安装，并使用模拟传输测试具有代表性的同步和异步请求。`main` 上的版本更新会通过可信发布将 [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) 发布到 PyPI。
+[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) 使用版本化的契约和 [Ultralytics OpenAPI](https://github.com/ultralytics/openapi) 的 `main` 分支重新生成 Python SDK，并在契约不匹配或生成内容漂移时失败。计划任务和手动运行会检测上游契约变更，而不会中断无关的拉取请求。CI 还会格式化和检查 Python、编译软件包、构建 wheel、通过 Git 子目录边界进行安装，并使用模拟传输测试具有代表性的同步和异步请求。软件包版本即契约的 `info.version`，因此契约版本更新到达 `main` 后会通过可信发布将 [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) 发布到 PyPI。
 
 ## 💡 贡献
 
