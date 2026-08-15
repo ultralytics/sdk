@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.3",
+    "version": "0.1.5",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart/) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -14497,7 +14497,8 @@
                       "sessionId": {
                         "type": "string",
                         "maxLength": 128,
-                        "description": "Upload session ID from signed-url response"
+                        "description": "Upload session ID from signed-url response",
+                        "example": "507f1f77bcf86cd799439011"
                       },
                       "sourceUrl": {
                         "not": {}
@@ -14863,7 +14864,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.ingest(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    body={\"sessionId\": \"example-session-id\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.ingest(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    body={\"sessionId\": \"507f1f77bcf86cd799439011\"},\n)\nprint(response)"
           }
         ]
       }
@@ -15419,7 +15420,9 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 100,
-                    "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$"
+                    "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$",
+                    "description": "Display name",
+                    "example": "COCO8"
                   },
                   "description": {
                     "type": "string",
@@ -15600,7 +15603,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.create(\n    dataset=\"coco8\",\n    name=\"example-name\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.create(\n    dataset=\"coco8\",\n    name=\"COCO8\",\n)\nprint(response)"
           }
         ]
       }
@@ -16932,7 +16935,9 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 100,
-                    "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$"
+                    "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$",
+                    "description": "Display name",
+                    "example": "Production"
                   },
                   "region": {
                     "type": "string",
@@ -17070,7 +17075,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.create(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    deployment=\"yolo26-api\",\n    name=\"example-name\",\n    region=\"asia-east1\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.create(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    deployment=\"yolo26-api\",\n    name=\"Production\",\n    region=\"asia-east1\",\n)\nprint(response)"
           }
         ]
       }
@@ -18931,7 +18936,9 @@
                   "apiKey": {
                     "type": "string",
                     "maxLength": 128,
-                    "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                    "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                    "description": "Roboflow API key",
+                    "example": "rf_your_api_key"
                   },
                   "items": {
                     "minItems": 1,
@@ -19062,7 +19069,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.import_roboflow(\n    api_key=\"example-api-key\",\n    items=[{\"workspace\": \"my-workspace\", \"projectId\": \"vehicle-detection\", \"projectName\": \"Vehicle Detection\", \"projectType\": \"object-detection\", \"latestVersion\": 1, \"latestVersionName\": \"v1\"}],\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.import_roboflow(\n    api_key=\"rf_your_api_key\",\n    items=[{\"workspace\": \"my-workspace\", \"projectId\": \"vehicle-detection\", \"projectName\": \"Vehicle Detection\", \"projectType\": \"object-detection\", \"latestVersion\": 1, \"latestVersionName\": \"v1\"}],\n)\nprint(response)"
           }
         ]
       }
@@ -19086,7 +19093,9 @@
                   "apiKey": {
                     "type": "string",
                     "maxLength": 128,
-                    "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                    "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                    "description": "Roboflow API key",
+                    "example": "rf_your_api_key"
                   }
                 },
                 "required": [
@@ -19173,7 +19182,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.preview_roboflow(\n    api_key=\"example-api-key\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.preview_roboflow(\n    api_key=\"rf_your_api_key\",\n)\nprint(response)"
           }
         ]
       }
@@ -22760,7 +22769,9 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 100,
-                    "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$"
+                    "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$",
+                    "description": "Display name",
+                    "example": "Inspection"
                   },
                   "description": {
                     "type": "string",
@@ -22897,7 +22908,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.projects.create(\n    project=\"example-project\",\n    name=\"example-name\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.projects.create(\n    project=\"example-project\",\n    name=\"Inspection\",\n)\nprint(response)"
           }
         ]
       }
@@ -23097,7 +23108,8 @@
                     "type": "string",
                     "minLength": 1,
                     "maxLength": 128,
-                    "description": "Model ID to train"
+                    "description": "Model ID to train",
+                    "example": "507f1f77bcf86cd799439011"
                   },
                   "gpuType": {
                     "default": "rtx-4090",
@@ -23718,7 +23730,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"example-model-id\",\n    train_args={\"model\": \"yolo26n.pt\", \"data\": \"ul://jane-doe/datasets/coco8\", \"task\": \"detect\", \"classes\": [1], \"project\": \"example-project\", \"name\": \"example-name\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"label_smoothing\": 0, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": 1, \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"507f1f77bcf86cd799439011\",\n    train_args={\"model\": \"yolo26n.pt\", \"data\": \"ul://jane-doe/datasets/coco8\", \"task\": \"detect\", \"classes\": [1], \"project\": \"example-project\", \"name\": \"example-name\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"label_smoothing\": 0, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": 1, \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
           }
         ]
       }
@@ -23854,7 +23866,9 @@
                   "id": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 128
+                    "maxLength": 128,
+                    "description": "Trashed resource ID",
+                    "example": "507f1f77bcf86cd799439011"
                   },
                   "type": {
                     "type": "string",
@@ -23951,7 +23965,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.restore(\n    id=\"example-id\",\n    type=\"project\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.restore(\n    id=\"507f1f77bcf86cd799439011\",\n    type=\"project\",\n)\nprint(response)"
           }
         ]
       },
@@ -23974,7 +23988,9 @@
                       "id": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 128
+                        "maxLength": 128,
+                        "description": "Trashed resource ID",
+                        "example": "507f1f77bcf86cd799439011"
                       },
                       "type": {
                         "type": "string",
@@ -24087,7 +24103,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.delete_trash(\n    body={\"id\": \"example-id\", \"type\": \"project\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.lifecycle.delete_trash(\n    body={\"id\": \"507f1f77bcf86cd799439011\", \"type\": \"project\"},\n)\nprint(response)"
           }
         ]
       }
@@ -24110,7 +24126,9 @@
                   "sessionId": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 128
+                    "maxLength": 128,
+                    "description": "Upload session ID from signed-url response",
+                    "example": "507f1f77bcf86cd799439011"
                   },
                   "checksum": {
                     "type": "string",
@@ -24201,7 +24219,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.complete(\n    session_id=\"example-session-id\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.upload.complete(\n    session_id=\"507f1f77bcf86cd799439011\",\n)\nprint(response)"
           }
         ]
       }

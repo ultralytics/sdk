@@ -81,7 +81,7 @@ class Lifecycle:
         Restores a trashed project, dataset, or model before its retention period expires.
 
         Args:
-            id (str): id request value.
+            id (str): Trashed resource ID
             type (Literal["project", "dataset", "model"]): type request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -200,7 +200,7 @@ class AsyncLifecycle:
         Restores a trashed project, dataset, or model before its retention period expires.
 
         Args:
-            id (str): id request value.
+            id (str): Trashed resource ID
             type (Literal["project", "dataset", "model"]): type request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.

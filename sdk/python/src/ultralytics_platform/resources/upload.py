@@ -37,7 +37,7 @@ class Upload:
         Call this after uploading a file to the signed URL. Dataset uploads are verified here, then processed by the dataset ingest endpoint.
 
         Args:
-            session_id (str): sessionId request value.
+            session_id (str): Upload session ID from signed-url response
             checksum (str, optional): checksum request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -114,7 +114,7 @@ class AsyncUpload:
         Call this after uploading a file to the signed URL. Dataset uploads are verified here, then processed by the dataset ingest endpoint.
 
         Args:
-            session_id (str): sessionId request value.
+            session_id (str): Upload session ID from signed-url response
             checksum (str, optional): checksum request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
