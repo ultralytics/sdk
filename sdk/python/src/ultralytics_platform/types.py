@@ -544,7 +544,7 @@ DatasetsRetrieveResponseDataset = TypedDict(
         "imageCount": int,
         "classCount": NotRequired[int],
         "classNames": NotRequired[list[str]],
-        "format": NotRequired[Literal["yolo", "coco", "voc", "raw", "ndjson"]],
+        "format": NotRequired[Literal["yolo", "coco", "raw", "ndjson"]],
         "tags": NotRequired[list[str]],
         "license": NotRequired[
             Literal[
@@ -941,7 +941,7 @@ DatasetsListResponseDatasetsItem = TypedDict(
         "imageCount": int,
         "classCount": NotRequired[int],
         "classNames": NotRequired[list[str]],
-        "format": NotRequired[Literal["yolo", "coco", "voc", "raw", "ndjson"]],
+        "format": NotRequired[Literal["yolo", "coco", "raw", "ndjson"]],
         "tags": NotRequired[list[str]],
         "license": NotRequired[
             Literal[
@@ -1095,6 +1095,7 @@ DeploymentsRetrieveResponseDeployment = TypedDict(
         "serviceUrl": NotRequired[str],
         "resources": DeploymentsRetrieveResponseDeploymentResources,
         "deployedAt": NotRequired[str],
+        "apiKeyId": NotRequired[str],
         "createdAt": str,
         "updatedAt": str,
     },
