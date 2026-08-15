@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any, Literal, cast
+
+import httpx
 
 from .._client import (
     NOT_GIVEN,
@@ -54,6 +57,8 @@ class Projects:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ProjectsCloneResponse:
         """Clone a project.
 
@@ -68,6 +73,8 @@ class Projects:
             owner_body (str, optional): Destination owner
             project_body (str, optional): Name for the cloned project
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsCloneResponse): The API response.
@@ -80,6 +87,8 @@ class Projects:
             self._client.request(
                 "POST",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/clone",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "name": name,
@@ -92,7 +101,13 @@ class Projects:
             ),
         )
 
-    def retrieve(self, owner: str, project: str) -> ProjectsRetrieveResponse:
+    def retrieve(
+        self,
+        owner: str,
+        project: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ProjectsRetrieveResponse:
         """Get a project.
 
         Returns a project and its model summaries by owner and project name.
@@ -100,6 +115,8 @@ class Projects:
         Args:
             owner (str): Project owner
             project (str): Project name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsRetrieveResponse): The API response.
@@ -112,6 +129,8 @@ class Projects:
             self._client.request(
                 "GET",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
@@ -126,7 +145,7 @@ class Projects:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
+        tags: Sequence[str] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "Apache-2.0",
@@ -147,6 +166,8 @@ class Projects:
         icon_color: str | NotGiven = NOT_GIVEN,
         icon_letter: str | Literal[""] | None | NotGiven = NOT_GIVEN,
         view_preferences: dict[str, Any] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ProjectsUpdateResponse:
         """Update a project.
 
@@ -160,12 +181,14 @@ class Projects:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
+            tags (Sequence[str], optional): tags request value.
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             archived (bool, optional): archived request value.
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""] | None, optional): iconLetter request value.
             view_preferences (dict[str, Any], optional): Shared project-level model view defaults
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsUpdateResponse): The API response.
@@ -178,6 +201,8 @@ class Projects:
             self._client.request(
                 "PATCH",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "starred": starred,
@@ -195,7 +220,13 @@ class Projects:
             ),
         )
 
-    def delete(self, owner: str, project: str) -> ProjectsDeleteResponse:
+    def delete(
+        self,
+        owner: str,
+        project: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ProjectsDeleteResponse:
         """Delete a project.
 
         Moves a project and its models to trash for 30 days.
@@ -203,6 +234,8 @@ class Projects:
         Args:
             owner (str): Project owner
             project (str): Project name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsDeleteResponse): The API response.
@@ -215,11 +248,20 @@ class Projects:
             self._client.request(
                 "DELETE",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def list(self, owner: str, *, limit: int | None = None) -> ProjectsListResponse:
+    def list(
+        self,
+        owner: str,
+        *,
+        limit: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ProjectsListResponse:
         """List an owner's projects.
 
         Returns public projects, plus private projects when the caller can view the owner's workspace.
@@ -227,6 +269,8 @@ class Projects:
         Args:
             owner (str): Project owner
             limit (int, optional): Maximum projects to return
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsListResponse): The API response.
@@ -239,6 +283,8 @@ class Projects:
             self._client.request(
                 "GET",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("limit", limit, style="form", explode=True)],
             ),
@@ -252,7 +298,7 @@ class Projects:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
+        tags: Sequence[str] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "Apache-2.0",
@@ -270,6 +316,8 @@ class Projects:
         ]
         | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ProjectsCreateResponse:
         """Create a project.
 
@@ -281,9 +329,11 @@ class Projects:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
+            tags (Sequence[str], optional): tags request value.
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             owner (str, optional): Workspace owner
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsCreateResponse): The API response.
@@ -296,6 +346,8 @@ class Projects:
             self._client.request(
                 "POST",
                 "/api/projects",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "project": project,
@@ -343,6 +395,8 @@ class AsyncProjects:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ProjectsCloneResponse:
         """Clone a project.
 
@@ -357,6 +411,8 @@ class AsyncProjects:
             owner_body (str, optional): Destination owner
             project_body (str, optional): Name for the cloned project
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsCloneResponse): The API response.
@@ -369,6 +425,8 @@ class AsyncProjects:
             await self._client.request(
                 "POST",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/clone",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "name": name,
@@ -381,7 +439,13 @@ class AsyncProjects:
             ),
         )
 
-    async def retrieve(self, owner: str, project: str) -> ProjectsRetrieveResponse:
+    async def retrieve(
+        self,
+        owner: str,
+        project: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ProjectsRetrieveResponse:
         """Get a project.
 
         Returns a project and its model summaries by owner and project name.
@@ -389,6 +453,8 @@ class AsyncProjects:
         Args:
             owner (str): Project owner
             project (str): Project name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsRetrieveResponse): The API response.
@@ -401,6 +467,8 @@ class AsyncProjects:
             await self._client.request(
                 "GET",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
@@ -415,7 +483,7 @@ class AsyncProjects:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
+        tags: Sequence[str] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "Apache-2.0",
@@ -436,6 +504,8 @@ class AsyncProjects:
         icon_color: str | NotGiven = NOT_GIVEN,
         icon_letter: str | Literal[""] | None | NotGiven = NOT_GIVEN,
         view_preferences: dict[str, Any] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ProjectsUpdateResponse:
         """Update a project.
 
@@ -449,12 +519,14 @@ class AsyncProjects:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
+            tags (Sequence[str], optional): tags request value.
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             archived (bool, optional): archived request value.
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""] | None, optional): iconLetter request value.
             view_preferences (dict[str, Any], optional): Shared project-level model view defaults
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsUpdateResponse): The API response.
@@ -467,6 +539,8 @@ class AsyncProjects:
             await self._client.request(
                 "PATCH",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "starred": starred,
@@ -484,7 +558,13 @@ class AsyncProjects:
             ),
         )
 
-    async def delete(self, owner: str, project: str) -> ProjectsDeleteResponse:
+    async def delete(
+        self,
+        owner: str,
+        project: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ProjectsDeleteResponse:
         """Delete a project.
 
         Moves a project and its models to trash for 30 days.
@@ -492,6 +572,8 @@ class AsyncProjects:
         Args:
             owner (str): Project owner
             project (str): Project name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsDeleteResponse): The API response.
@@ -504,11 +586,20 @@ class AsyncProjects:
             await self._client.request(
                 "DELETE",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def list(self, owner: str, *, limit: int | None = None) -> ProjectsListResponse:
+    async def list(
+        self,
+        owner: str,
+        *,
+        limit: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ProjectsListResponse:
         """List an owner's projects.
 
         Returns public projects, plus private projects when the caller can view the owner's workspace.
@@ -516,6 +607,8 @@ class AsyncProjects:
         Args:
             owner (str): Project owner
             limit (int, optional): Maximum projects to return
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsListResponse): The API response.
@@ -528,6 +621,8 @@ class AsyncProjects:
             await self._client.request(
                 "GET",
                 f"/api/projects/{_path_parameter(owner, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("limit", limit, style="form", explode=True)],
             ),
@@ -541,7 +636,7 @@ class AsyncProjects:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
+        tags: Sequence[str] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "Apache-2.0",
@@ -559,6 +654,8 @@ class AsyncProjects:
         ]
         | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ProjectsCreateResponse:
         """Create a project.
 
@@ -570,9 +667,11 @@ class AsyncProjects:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
+            tags (Sequence[str], optional): tags request value.
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             owner (str, optional): Workspace owner
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ProjectsCreateResponse): The API response.
@@ -585,6 +684,8 @@ class AsyncProjects:
             await self._client.request(
                 "POST",
                 "/api/projects",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "project": project,

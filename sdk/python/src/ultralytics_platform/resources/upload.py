@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+import httpx
+
 from .._client import (
     NOT_GIVEN,
     AsyncAPIClient,
@@ -12,7 +14,7 @@ from .._client import (
 )
 from ..types import (
     UploadCompleteResponse,
-    UploadRetrieveFileUrlResponse,
+    UploadSignedUrlResponse,
 )
 
 
@@ -22,7 +24,14 @@ class Upload:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def complete(self, *, session_id: str, checksum: str | NotGiven = NOT_GIVEN) -> UploadCompleteResponse:
+    def complete(
+        self,
+        *,
+        session_id: str,
+        checksum: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> UploadCompleteResponse:
         """Confirm file upload.
 
         Call this after uploading a file to the signed URL. Dataset uploads are verified here, then processed by the dataset ingest endpoint.
@@ -30,6 +39,8 @@ class Upload:
         Args:
             session_id (str): sessionId request value.
             checksum (str, optional): checksum request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (UploadCompleteResponse): The API response.
@@ -42,28 +53,45 @@ class Upload:
             self._client.request(
                 "POST",
                 "/api/upload/complete",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"sessionId": session_id, "checksum": checksum},
             ),
         )
 
-    def retrieve_file_url(self, *, body: dict[str, Any]) -> UploadRetrieveFileUrlResponse:
+    def signed_url(
+        self,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> UploadSignedUrlResponse:
         """Get a file upload URL.
 
         Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
 
         Args:
             body (dict[str, Any]): Request body for generating a signed upload URL
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (UploadRetrieveFileUrlResponse): The API response.
+            (UploadSignedUrlResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            UploadRetrieveFileUrlResponse,
-            self._client.request("POST", "/api/upload/signed-url", auth=("Authorization", "Bearer "), json=body),
+            UploadSignedUrlResponse,
+            self._client.request(
+                "POST",
+                "/api/upload/signed-url",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json=body,
+            ),
         )
 
 
@@ -73,7 +101,14 @@ class AsyncUpload:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def complete(self, *, session_id: str, checksum: str | NotGiven = NOT_GIVEN) -> UploadCompleteResponse:
+    async def complete(
+        self,
+        *,
+        session_id: str,
+        checksum: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> UploadCompleteResponse:
         """Confirm file upload.
 
         Call this after uploading a file to the signed URL. Dataset uploads are verified here, then processed by the dataset ingest endpoint.
@@ -81,6 +116,8 @@ class AsyncUpload:
         Args:
             session_id (str): sessionId request value.
             checksum (str, optional): checksum request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (UploadCompleteResponse): The API response.
@@ -93,26 +130,43 @@ class AsyncUpload:
             await self._client.request(
                 "POST",
                 "/api/upload/complete",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"sessionId": session_id, "checksum": checksum},
             ),
         )
 
-    async def retrieve_file_url(self, *, body: dict[str, Any]) -> UploadRetrieveFileUrlResponse:
+    async def signed_url(
+        self,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> UploadSignedUrlResponse:
         """Get a file upload URL.
 
         Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
 
         Args:
             body (dict[str, Any]): Request body for generating a signed upload URL
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (UploadRetrieveFileUrlResponse): The API response.
+            (UploadSignedUrlResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            UploadRetrieveFileUrlResponse,
-            await self._client.request("POST", "/api/upload/signed-url", auth=("Authorization", "Bearer "), json=body),
+            UploadSignedUrlResponse,
+            await self._client.request(
+                "POST",
+                "/api/upload/signed-url",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json=body,
+            ),
         )

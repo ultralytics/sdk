@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any, Literal, cast
+
+import httpx
 
 from .._client import (
     NOT_GIVEN,
@@ -13,28 +16,28 @@ from .._client import (
     _query_parameter,
 )
 from ..types import (
+    DatasetsClassStatsResponse,
     DatasetsCloneResponse,
+    DatasetsClusteringResponse,
     DatasetsCreateEmbeddingsResponse,
     DatasetsCreateExportResponse,
     DatasetsCreateResponse,
     DatasetsDeleteClassesResponse,
     DatasetsDeleteEmbeddingsResponse,
     DatasetsDeleteResponse,
-    DatasetsImportFromRoboflowResponse,
+    DatasetsEmbeddingsResponse,
+    DatasetsExportResponse,
+    DatasetsImagesResponse,
+    DatasetsImportRoboflowResponse,
     DatasetsIngestResponse,
-    DatasetsListImagesResponse,
-    DatasetsListModelsResponse,
     DatasetsListResponse,
     DatasetsMergeClassesResponse,
-    DatasetsPreviewRoboflowImportResponse,
+    DatasetsModelsResponse,
+    DatasetsPreviewRoboflowResponse,
     DatasetsRedistributeSplitsResponse,
     DatasetsRestoreResponse,
-    DatasetsRetrieveClassStatsResponse,
-    DatasetsRetrieveEmbeddingsResponse,
-    DatasetsRetrieveExportResponse,
-    DatasetsRetrieveImagesClusteringResponse,
     DatasetsRetrieveResponse,
-    DatasetsRetrieveSelectedImagesResponse,
+    DatasetsSelectedImagesResponse,
     DatasetsUpdateExportResponse,
     DatasetsUpdateResponse,
 )
@@ -46,7 +49,13 @@ class Datasets:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def retrieve_class_stats(self, owner: str, dataset: str) -> DatasetsRetrieveClassStatsResponse:
+    def class_stats(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsClassStatsResponse:
         """Get dataset statistics.
 
         Returns class counts, image distributions, and annotation heatmaps.
@@ -54,23 +63,35 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveClassStatsResponse): The API response.
+            (DatasetsClassStatsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveClassStatsResponse,
+            DatasetsClassStatsResponse,
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/class-stats",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def delete_classes(self, owner: str, dataset: str, *, class_ids: list[int]) -> DatasetsDeleteClassesResponse:
+    def delete_classes(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        class_ids: Sequence[int],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsDeleteClassesResponse:
         """Delete dataset classes.
 
         Deletes annotations in the selected classes, removes the classes, and shifts remaining class IDs.
@@ -78,7 +99,9 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            class_ids (list[int]): classIds request value.
+            class_ids (Sequence[int]): classIds request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsDeleteClassesResponse): The API response.
@@ -91,13 +114,22 @@ class Datasets:
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/classes/delete",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"classIds": class_ids},
             ),
         )
 
     def merge_classes(
-        self, owner: str, dataset: str, *, source_class_ids: list[int], target_class_id: int
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        source_class_ids: Sequence[int],
+        target_class_id: int,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsMergeClassesResponse:
         """Merge dataset classes.
 
@@ -106,8 +138,10 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            source_class_ids (list[int]): sourceClassIds request value.
+            source_class_ids (Sequence[int]): sourceClassIds request value.
             target_class_id (int): targetClassId request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsMergeClassesResponse): The API response.
@@ -120,6 +154,8 @@ class Datasets:
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/classes/merge",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"sourceClassIds": source_class_ids, "targetClassId": target_class_id},
             ),
@@ -156,6 +192,8 @@ class Datasets:
         ]
         | NotGiven = NOT_GIVEN,
         owner_body: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCloneResponse:
         """Clone a dataset.
 
@@ -170,6 +208,8 @@ class Datasets:
             visibility (Literal["public", "private"], optional): Resource visibility
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner_body (str, optional): Destination owner
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsCloneResponse): The API response.
@@ -182,6 +222,8 @@ class Datasets:
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/clone",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "name": name,
@@ -194,7 +236,13 @@ class Datasets:
             ),
         )
 
-    def retrieve(self, owner: str, dataset: str) -> DatasetsRetrieveResponse:
+    def retrieve(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsRetrieveResponse:
         """Get a dataset.
 
         Returns a dataset by owner and dataset name.
@@ -202,6 +250,8 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsRetrieveResponse): The API response.
@@ -214,6 +264,8 @@ class Datasets:
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
@@ -228,8 +280,8 @@ class Datasets:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
-        class_names: list[str] | NotGiven = NOT_GIVEN,
+        tags: Sequence[str] | NotGiven = NOT_GIVEN,
+        class_names: Sequence[str] | NotGiven = NOT_GIVEN,
         class_colors: dict[str, Any] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
@@ -256,6 +308,8 @@ class Datasets:
         | NotGiven = NOT_GIVEN,
         icon_color: str | NotGiven = NOT_GIVEN,
         icon_letter: str | Literal[""] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsUpdateResponse:
         """Update a dataset.
 
@@ -269,14 +323,16 @@ class Datasets:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
-            class_names (list[str], optional): classNames request value.
+            tags (Sequence[str], optional): tags request value.
+            class_names (Sequence[str], optional): classNames request value.
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""], optional): iconLetter request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsUpdateResponse): The API response.
@@ -289,6 +345,8 @@ class Datasets:
             self._client.request(
                 "PATCH",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "starred": starred,
@@ -308,7 +366,13 @@ class Datasets:
             ),
         )
 
-    def delete(self, owner: str, dataset: str) -> DatasetsDeleteResponse:
+    def delete(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsDeleteResponse:
         """Delete a dataset.
 
         Moves a dataset to trash for 30 days.
@@ -316,6 +380,8 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsDeleteResponse): The API response.
@@ -328,11 +394,19 @@ class Datasets:
             self._client.request(
                 "DELETE",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def retrieve_embeddings(self, owner: str, dataset: str) -> DatasetsRetrieveEmbeddingsResponse:
+    def embeddings(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsEmbeddingsResponse:
         """Get dataset analysis status.
 
         Returns embedding analysis status, progress, and freshness.
@@ -340,23 +414,33 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveEmbeddingsResponse): The API response.
+            (DatasetsEmbeddingsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveEmbeddingsResponse,
+            DatasetsEmbeddingsResponse,
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/embeddings",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def create_embeddings(self, owner: str, dataset: str) -> DatasetsCreateEmbeddingsResponse:
+    def create_embeddings(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsCreateEmbeddingsResponse:
         """Analyze dataset embeddings.
 
         Starts embedding extraction and clustering.
@@ -364,6 +448,8 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsCreateEmbeddingsResponse): The API response.
@@ -376,11 +462,19 @@ class Datasets:
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/embeddings",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def delete_embeddings(self, owner: str, dataset: str) -> DatasetsDeleteEmbeddingsResponse:
+    def delete_embeddings(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsDeleteEmbeddingsResponse:
         """Cancel dataset analysis.
 
         Cancels the active embedding analysis job, if present.
@@ -388,6 +482,8 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsDeleteEmbeddingsResponse): The API response.
@@ -400,11 +496,21 @@ class Datasets:
             self._client.request(
                 "DELETE",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/embeddings",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def retrieve_export(self, owner: str, dataset: str, *, v: int | None = None) -> DatasetsRetrieveExportResponse:
+    def export(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        v: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsExportResponse:
         """Download a dataset export.
 
         Returns a signed URL for the current dataset or a saved version snapshot.
@@ -413,25 +519,35 @@ class Datasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             v (int, optional): Saved version number
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveExportResponse): The API response.
+            (DatasetsExportResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveExportResponse,
+            DatasetsExportResponse,
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/export",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("v", v, style="form", explode=True)],
             ),
         )
 
     def create_export(
-        self, owner: str, dataset: str, *, description: str | NotGiven = NOT_GIVEN
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        description: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateExportResponse:
         """Create a dataset version.
 
@@ -441,6 +557,8 @@ class Datasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             description (str, optional): description request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsCreateExportResponse): The API response.
@@ -453,13 +571,22 @@ class Datasets:
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/export",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"description": description},
             ),
         )
 
     def update_export(
-        self, owner: str, dataset: str, *, version: int, description: str
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        version: int,
+        description: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsUpdateExportResponse:
         """Update a dataset version description.
 
@@ -470,6 +597,8 @@ class Datasets:
             dataset (str): Dataset name
             version (int): version request value.
             description (str): description request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsUpdateExportResponse): The API response.
@@ -482,14 +611,23 @@ class Datasets:
             self._client.request(
                 "PATCH",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/export",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"version": version, "description": description},
             ),
         )
 
-    def retrieve_images_clustering(
-        self, owner: str, dataset: str, *, offset: int | None = None, limit: int | None = None
-    ) -> DatasetsRetrieveImagesClusteringResponse:
+    def clustering(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        offset: int | NotGiven = NOT_GIVEN,
+        limit: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsClusteringResponse:
         """Get dataset clustering layout.
 
         Returns paginated image coordinates from a completed dataset analysis.
@@ -499,18 +637,22 @@ class Datasets:
             dataset (str): Dataset name
             offset (int, optional): offset query parameter.
             limit (int, optional): limit query parameter.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveImagesClusteringResponse): The API response.
+            (DatasetsClusteringResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveImagesClusteringResponse,
+            DatasetsClusteringResponse,
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/images/clustering",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("offset", offset, style="form", explode=True),
@@ -519,20 +661,20 @@ class Datasets:
             ),
         )
 
-    def list_images(
+    def images(
         self,
         owner: str,
         dataset: str,
         *,
-        limit: int | None = None,
-        offset: int | None = None,
-        cursor: str | None = None,
-        include_total: Literal["true", "false"] | None = None,
-        split: Literal["train", "val", "test"] | None = None,
-        has_error: Literal["true", "false"] | None = None,
-        has_label: Literal["true", "false"] | None = None,
-        class_ids: str | None = None,
-        search: str | None = None,
+        limit: int | NotGiven = NOT_GIVEN,
+        offset: int | NotGiven = NOT_GIVEN,
+        cursor: str | NotGiven = NOT_GIVEN,
+        include_total: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        split: Literal["train", "val", "test"] | NotGiven = NOT_GIVEN,
+        has_error: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        has_label: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        class_ids: str | NotGiven = NOT_GIVEN,
+        search: str | NotGiven = NOT_GIVEN,
         sort: Literal[
             "newest",
             "oldest",
@@ -547,11 +689,13 @@ class Datasets:
             "labels-desc",
             "labels-asc",
         ]
-        | None = None,
-        include_thumbnails: Literal["true", "false"] | None = None,
-        include_image_urls: Literal["true", "false"] | None = None,
-        include_labels: Literal["true", "false"] | None = None,
-    ) -> DatasetsListImagesResponse:
+        | NotGiven = NOT_GIVEN,
+        include_thumbnails: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_image_urls: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_labels: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsImagesResponse:
         """List dataset images.
 
         Returns paginated images. Capped preview annotations are included only when requested.
@@ -572,18 +716,22 @@ class Datasets:
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
             include_labels (Literal["true", "false"], optional): Include capped preview annotations
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsListImagesResponse): The API response.
+            (DatasetsImagesResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsListImagesResponse,
+            DatasetsImagesResponse,
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/images",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("limit", limit, style="form", explode=True),
@@ -603,17 +751,17 @@ class Datasets:
             ),
         )
 
-    def retrieve_selected_images(
+    def selected_images(
         self,
         owner: str,
         dataset: str,
         *,
-        image_ids: list[str],
-        split: Literal["train", "val", "test"] | None = None,
-        has_error: Literal["true", "false"] | None = None,
-        has_label: Literal["true", "false"] | None = None,
-        class_ids: str | None = None,
-        search: str | None = None,
+        image_ids: Sequence[str],
+        split: Literal["train", "val", "test"] | NotGiven = NOT_GIVEN,
+        has_error: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        has_label: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        class_ids: str | NotGiven = NOT_GIVEN,
+        search: str | NotGiven = NOT_GIVEN,
         sort: Literal[
             "newest",
             "oldest",
@@ -628,11 +776,13 @@ class Datasets:
             "labels-desc",
             "labels-asc",
         ]
-        | None = None,
-        include_thumbnails: Literal["true", "false"] | None = None,
-        include_image_urls: Literal["true", "false"] | None = None,
-        include_labels: Literal["true", "false"] | None = None,
-    ) -> DatasetsRetrieveSelectedImagesResponse:
+        | NotGiven = NOT_GIVEN,
+        include_thumbnails: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_image_urls: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_labels: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsSelectedImagesResponse:
         """Get selected dataset images.
 
         Returns the requested images with optional signed URLs and capped preview annotations.
@@ -649,19 +799,23 @@ class Datasets:
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
             include_labels (Literal["true", "false"], optional): Include capped preview annotations
-            image_ids (list[str]): imageIds request value.
+            image_ids (Sequence[str]): imageIds request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveSelectedImagesResponse): The API response.
+            (DatasetsSelectedImagesResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveSelectedImagesResponse,
+            DatasetsSelectedImagesResponse,
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/images",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("split", split, style="form", explode=True),
@@ -678,7 +832,15 @@ class Datasets:
             ),
         )
 
-    def ingest(self, owner: str, dataset: str, *, body: dict[str, Any]) -> DatasetsIngestResponse:
+    def ingest(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsIngestResponse:
         """Ingest dataset data.
 
         Processes a completed upload, remote archive, or connected data source into this dataset.
@@ -687,6 +849,8 @@ class Datasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             body (dict[str, Any]): Input for dataset ingest job
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsIngestResponse): The API response.
@@ -699,12 +863,20 @@ class Datasets:
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/ingest",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json=body,
             ),
         )
 
-    def list_models(self, owner: str, dataset: str) -> DatasetsListModelsResponse:
+    def models(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsModelsResponse:
         """List models trained on a dataset.
 
         Returns accessible models whose training data references this dataset.
@@ -712,23 +884,35 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsListModelsResponse): The API response.
+            (DatasetsModelsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsListModelsResponse,
+            DatasetsModelsResponse,
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/models",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def restore(self, owner: str, dataset: str, *, version: int) -> DatasetsRestoreResponse:
+    def restore(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        version: int,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsRestoreResponse:
         """Restore a saved dataset version.
 
         Restores dataset files, labels, and metadata from a previously saved version.
@@ -737,6 +921,8 @@ class Datasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             version (int): version request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsRestoreResponse): The API response.
@@ -749,13 +935,23 @@ class Datasets:
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/restore",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"version": version},
             ),
         )
 
     def redistribute_splits(
-        self, owner: str, dataset: str, *, train: int, val: int, test: int
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        train: int,
+        val: int,
+        test: int,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsRedistributeSplitsResponse:
         """Redistribute dataset splits.
 
@@ -767,6 +963,8 @@ class Datasets:
             train (int): Train split percentage
             val (int): Validation split percentage
             test (int): Test split percentage
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsRedistributeSplitsResponse): The API response.
@@ -779,6 +977,8 @@ class Datasets:
             self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/splits/redistribute",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"train": train, "val": val, "test": test},
             ),
@@ -788,9 +988,11 @@ class Datasets:
         self,
         owner: str,
         *,
-        limit: int | None = None,
-        include_samples: Literal["true", "false"] | None = None,
-        include_image_urls: Literal["true", "false"] | None = None,
+        limit: int | NotGiven = NOT_GIVEN,
+        include_samples: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_image_urls: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsListResponse:
         """List datasets.
 
@@ -801,6 +1003,8 @@ class Datasets:
             limit (int, optional): Maximum datasets to return
             include_samples (Literal["true", "false"], optional): Include sample image previews
             include_image_urls (Literal["true", "false"], optional): Include full-size sample image fallback URLs
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsListResponse): The API response.
@@ -813,6 +1017,8 @@ class Datasets:
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("limit", limit, style="form", explode=True),
@@ -832,9 +1038,9 @@ class Datasets:
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         image_count: int | NotGiven = NOT_GIVEN,
-        class_names: list[str] | NotGiven = NOT_GIVEN,
+        class_names: Sequence[str] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
+        tags: Sequence[str] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "CC0-1.0",
@@ -857,6 +1063,8 @@ class Datasets:
         ]
         | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateResponse:
         """Create a dataset.
 
@@ -870,11 +1078,13 @@ class Datasets:
             visibility (Literal["public", "private"], optional): Resource visibility
             task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
             image_count (int, optional): imageCount request value.
-            class_names (list[str], optional): classNames request value.
+            class_names (Sequence[str], optional): classNames request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
-            tags (list[str], optional): tags request value.
+            tags (Sequence[str], optional): tags request value.
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner (str, optional): Workspace owner
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsCreateResponse): The API response.
@@ -887,6 +1097,8 @@ class Datasets:
             self._client.request(
                 "POST",
                 "/api/datasets",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "dataset": dataset,
@@ -905,50 +1117,67 @@ class Datasets:
             ),
         )
 
-    def import_from_roboflow(self, *, api_key: str, items: list[dict[str, Any]]) -> DatasetsImportFromRoboflowResponse:
+    def import_roboflow(
+        self,
+        *,
+        api_key: str,
+        items: Sequence[dict[str, Any]],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsImportRoboflowResponse:
         """Import datasets from Roboflow.
 
         Imports selected Roboflow dataset versions into the API key's workspace.
 
         Args:
             api_key (str): apiKey request value.
-            items (list[dict[str, Any]]): items request value.
+            items (Sequence[dict[str, Any]]): items request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsImportFromRoboflowResponse): The API response.
+            (DatasetsImportRoboflowResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsImportFromRoboflowResponse,
+            DatasetsImportRoboflowResponse,
             self._client.request(
                 "POST",
                 "/api/integrations/roboflow/import",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"apiKey": api_key, "items": items},
             ),
         )
 
-    def preview_roboflow_import(self, *, api_key: str) -> DatasetsPreviewRoboflowImportResponse:
+    def preview_roboflow(
+        self, *, api_key: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> DatasetsPreviewRoboflowResponse:
         """Preview a Roboflow import.
 
         Validates a Roboflow API key and lists datasets available for import.
 
         Args:
             api_key (str): apiKey request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsPreviewRoboflowImportResponse): The API response.
+            (DatasetsPreviewRoboflowResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsPreviewRoboflowImportResponse,
+            DatasetsPreviewRoboflowResponse,
             self._client.request(
                 "POST",
                 "/api/integrations/roboflow/preview",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"apiKey": api_key},
             ),
@@ -961,7 +1190,13 @@ class AsyncDatasets:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def retrieve_class_stats(self, owner: str, dataset: str) -> DatasetsRetrieveClassStatsResponse:
+    async def class_stats(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsClassStatsResponse:
         """Get dataset statistics.
 
         Returns class counts, image distributions, and annotation heatmaps.
@@ -969,23 +1204,35 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveClassStatsResponse): The API response.
+            (DatasetsClassStatsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveClassStatsResponse,
+            DatasetsClassStatsResponse,
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/class-stats",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def delete_classes(self, owner: str, dataset: str, *, class_ids: list[int]) -> DatasetsDeleteClassesResponse:
+    async def delete_classes(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        class_ids: Sequence[int],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsDeleteClassesResponse:
         """Delete dataset classes.
 
         Deletes annotations in the selected classes, removes the classes, and shifts remaining class IDs.
@@ -993,7 +1240,9 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            class_ids (list[int]): classIds request value.
+            class_ids (Sequence[int]): classIds request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsDeleteClassesResponse): The API response.
@@ -1006,13 +1255,22 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/classes/delete",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"classIds": class_ids},
             ),
         )
 
     async def merge_classes(
-        self, owner: str, dataset: str, *, source_class_ids: list[int], target_class_id: int
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        source_class_ids: Sequence[int],
+        target_class_id: int,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsMergeClassesResponse:
         """Merge dataset classes.
 
@@ -1021,8 +1279,10 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            source_class_ids (list[int]): sourceClassIds request value.
+            source_class_ids (Sequence[int]): sourceClassIds request value.
             target_class_id (int): targetClassId request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsMergeClassesResponse): The API response.
@@ -1035,6 +1295,8 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/classes/merge",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"sourceClassIds": source_class_ids, "targetClassId": target_class_id},
             ),
@@ -1071,6 +1333,8 @@ class AsyncDatasets:
         ]
         | NotGiven = NOT_GIVEN,
         owner_body: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCloneResponse:
         """Clone a dataset.
 
@@ -1085,6 +1349,8 @@ class AsyncDatasets:
             visibility (Literal["public", "private"], optional): Resource visibility
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner_body (str, optional): Destination owner
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsCloneResponse): The API response.
@@ -1097,6 +1363,8 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/clone",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "name": name,
@@ -1109,7 +1377,13 @@ class AsyncDatasets:
             ),
         )
 
-    async def retrieve(self, owner: str, dataset: str) -> DatasetsRetrieveResponse:
+    async def retrieve(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsRetrieveResponse:
         """Get a dataset.
 
         Returns a dataset by owner and dataset name.
@@ -1117,6 +1391,8 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsRetrieveResponse): The API response.
@@ -1129,6 +1405,8 @@ class AsyncDatasets:
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
@@ -1143,8 +1421,8 @@ class AsyncDatasets:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
-        class_names: list[str] | NotGiven = NOT_GIVEN,
+        tags: Sequence[str] | NotGiven = NOT_GIVEN,
+        class_names: Sequence[str] | NotGiven = NOT_GIVEN,
         class_colors: dict[str, Any] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
@@ -1171,6 +1449,8 @@ class AsyncDatasets:
         | NotGiven = NOT_GIVEN,
         icon_color: str | NotGiven = NOT_GIVEN,
         icon_letter: str | Literal[""] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsUpdateResponse:
         """Update a dataset.
 
@@ -1184,14 +1464,16 @@ class AsyncDatasets:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            tags (list[str], optional): tags request value.
-            class_names (list[str], optional): classNames request value.
+            tags (Sequence[str], optional): tags request value.
+            class_names (Sequence[str], optional): classNames request value.
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""], optional): iconLetter request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsUpdateResponse): The API response.
@@ -1204,6 +1486,8 @@ class AsyncDatasets:
             await self._client.request(
                 "PATCH",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "starred": starred,
@@ -1223,7 +1507,13 @@ class AsyncDatasets:
             ),
         )
 
-    async def delete(self, owner: str, dataset: str) -> DatasetsDeleteResponse:
+    async def delete(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsDeleteResponse:
         """Delete a dataset.
 
         Moves a dataset to trash for 30 days.
@@ -1231,6 +1521,8 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsDeleteResponse): The API response.
@@ -1243,11 +1535,19 @@ class AsyncDatasets:
             await self._client.request(
                 "DELETE",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def retrieve_embeddings(self, owner: str, dataset: str) -> DatasetsRetrieveEmbeddingsResponse:
+    async def embeddings(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsEmbeddingsResponse:
         """Get dataset analysis status.
 
         Returns embedding analysis status, progress, and freshness.
@@ -1255,23 +1555,33 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveEmbeddingsResponse): The API response.
+            (DatasetsEmbeddingsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveEmbeddingsResponse,
+            DatasetsEmbeddingsResponse,
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/embeddings",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def create_embeddings(self, owner: str, dataset: str) -> DatasetsCreateEmbeddingsResponse:
+    async def create_embeddings(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsCreateEmbeddingsResponse:
         """Analyze dataset embeddings.
 
         Starts embedding extraction and clustering.
@@ -1279,6 +1589,8 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsCreateEmbeddingsResponse): The API response.
@@ -1291,11 +1603,19 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/embeddings",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def delete_embeddings(self, owner: str, dataset: str) -> DatasetsDeleteEmbeddingsResponse:
+    async def delete_embeddings(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsDeleteEmbeddingsResponse:
         """Cancel dataset analysis.
 
         Cancels the active embedding analysis job, if present.
@@ -1303,6 +1623,8 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsDeleteEmbeddingsResponse): The API response.
@@ -1315,13 +1637,21 @@ class AsyncDatasets:
             await self._client.request(
                 "DELETE",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/embeddings",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def retrieve_export(
-        self, owner: str, dataset: str, *, v: int | None = None
-    ) -> DatasetsRetrieveExportResponse:
+    async def export(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        v: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsExportResponse:
         """Download a dataset export.
 
         Returns a signed URL for the current dataset or a saved version snapshot.
@@ -1330,25 +1660,35 @@ class AsyncDatasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             v (int, optional): Saved version number
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveExportResponse): The API response.
+            (DatasetsExportResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveExportResponse,
+            DatasetsExportResponse,
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/export",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("v", v, style="form", explode=True)],
             ),
         )
 
     async def create_export(
-        self, owner: str, dataset: str, *, description: str | NotGiven = NOT_GIVEN
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        description: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateExportResponse:
         """Create a dataset version.
 
@@ -1358,6 +1698,8 @@ class AsyncDatasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             description (str, optional): description request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsCreateExportResponse): The API response.
@@ -1370,13 +1712,22 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/export",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"description": description},
             ),
         )
 
     async def update_export(
-        self, owner: str, dataset: str, *, version: int, description: str
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        version: int,
+        description: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsUpdateExportResponse:
         """Update a dataset version description.
 
@@ -1387,6 +1738,8 @@ class AsyncDatasets:
             dataset (str): Dataset name
             version (int): version request value.
             description (str): description request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsUpdateExportResponse): The API response.
@@ -1399,14 +1752,23 @@ class AsyncDatasets:
             await self._client.request(
                 "PATCH",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/export",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"version": version, "description": description},
             ),
         )
 
-    async def retrieve_images_clustering(
-        self, owner: str, dataset: str, *, offset: int | None = None, limit: int | None = None
-    ) -> DatasetsRetrieveImagesClusteringResponse:
+    async def clustering(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        offset: int | NotGiven = NOT_GIVEN,
+        limit: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsClusteringResponse:
         """Get dataset clustering layout.
 
         Returns paginated image coordinates from a completed dataset analysis.
@@ -1416,18 +1778,22 @@ class AsyncDatasets:
             dataset (str): Dataset name
             offset (int, optional): offset query parameter.
             limit (int, optional): limit query parameter.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveImagesClusteringResponse): The API response.
+            (DatasetsClusteringResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveImagesClusteringResponse,
+            DatasetsClusteringResponse,
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/images/clustering",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("offset", offset, style="form", explode=True),
@@ -1436,20 +1802,20 @@ class AsyncDatasets:
             ),
         )
 
-    async def list_images(
+    async def images(
         self,
         owner: str,
         dataset: str,
         *,
-        limit: int | None = None,
-        offset: int | None = None,
-        cursor: str | None = None,
-        include_total: Literal["true", "false"] | None = None,
-        split: Literal["train", "val", "test"] | None = None,
-        has_error: Literal["true", "false"] | None = None,
-        has_label: Literal["true", "false"] | None = None,
-        class_ids: str | None = None,
-        search: str | None = None,
+        limit: int | NotGiven = NOT_GIVEN,
+        offset: int | NotGiven = NOT_GIVEN,
+        cursor: str | NotGiven = NOT_GIVEN,
+        include_total: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        split: Literal["train", "val", "test"] | NotGiven = NOT_GIVEN,
+        has_error: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        has_label: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        class_ids: str | NotGiven = NOT_GIVEN,
+        search: str | NotGiven = NOT_GIVEN,
         sort: Literal[
             "newest",
             "oldest",
@@ -1464,11 +1830,13 @@ class AsyncDatasets:
             "labels-desc",
             "labels-asc",
         ]
-        | None = None,
-        include_thumbnails: Literal["true", "false"] | None = None,
-        include_image_urls: Literal["true", "false"] | None = None,
-        include_labels: Literal["true", "false"] | None = None,
-    ) -> DatasetsListImagesResponse:
+        | NotGiven = NOT_GIVEN,
+        include_thumbnails: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_image_urls: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_labels: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsImagesResponse:
         """List dataset images.
 
         Returns paginated images. Capped preview annotations are included only when requested.
@@ -1489,18 +1857,22 @@ class AsyncDatasets:
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
             include_labels (Literal["true", "false"], optional): Include capped preview annotations
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsListImagesResponse): The API response.
+            (DatasetsImagesResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsListImagesResponse,
+            DatasetsImagesResponse,
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/images",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("limit", limit, style="form", explode=True),
@@ -1520,17 +1892,17 @@ class AsyncDatasets:
             ),
         )
 
-    async def retrieve_selected_images(
+    async def selected_images(
         self,
         owner: str,
         dataset: str,
         *,
-        image_ids: list[str],
-        split: Literal["train", "val", "test"] | None = None,
-        has_error: Literal["true", "false"] | None = None,
-        has_label: Literal["true", "false"] | None = None,
-        class_ids: str | None = None,
-        search: str | None = None,
+        image_ids: Sequence[str],
+        split: Literal["train", "val", "test"] | NotGiven = NOT_GIVEN,
+        has_error: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        has_label: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        class_ids: str | NotGiven = NOT_GIVEN,
+        search: str | NotGiven = NOT_GIVEN,
         sort: Literal[
             "newest",
             "oldest",
@@ -1545,11 +1917,13 @@ class AsyncDatasets:
             "labels-desc",
             "labels-asc",
         ]
-        | None = None,
-        include_thumbnails: Literal["true", "false"] | None = None,
-        include_image_urls: Literal["true", "false"] | None = None,
-        include_labels: Literal["true", "false"] | None = None,
-    ) -> DatasetsRetrieveSelectedImagesResponse:
+        | NotGiven = NOT_GIVEN,
+        include_thumbnails: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_image_urls: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_labels: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsSelectedImagesResponse:
         """Get selected dataset images.
 
         Returns the requested images with optional signed URLs and capped preview annotations.
@@ -1566,19 +1940,23 @@ class AsyncDatasets:
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
             include_labels (Literal["true", "false"], optional): Include capped preview annotations
-            image_ids (list[str]): imageIds request value.
+            image_ids (Sequence[str]): imageIds request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsRetrieveSelectedImagesResponse): The API response.
+            (DatasetsSelectedImagesResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsRetrieveSelectedImagesResponse,
+            DatasetsSelectedImagesResponse,
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/images",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("split", split, style="form", explode=True),
@@ -1595,7 +1973,15 @@ class AsyncDatasets:
             ),
         )
 
-    async def ingest(self, owner: str, dataset: str, *, body: dict[str, Any]) -> DatasetsIngestResponse:
+    async def ingest(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsIngestResponse:
         """Ingest dataset data.
 
         Processes a completed upload, remote archive, or connected data source into this dataset.
@@ -1604,6 +1990,8 @@ class AsyncDatasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             body (dict[str, Any]): Input for dataset ingest job
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsIngestResponse): The API response.
@@ -1616,12 +2004,20 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/ingest",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json=body,
             ),
         )
 
-    async def list_models(self, owner: str, dataset: str) -> DatasetsListModelsResponse:
+    async def models(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsModelsResponse:
         """List models trained on a dataset.
 
         Returns accessible models whose training data references this dataset.
@@ -1629,23 +2025,35 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsListModelsResponse): The API response.
+            (DatasetsModelsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsListModelsResponse,
+            DatasetsModelsResponse,
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/models",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def restore(self, owner: str, dataset: str, *, version: int) -> DatasetsRestoreResponse:
+    async def restore(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        version: int,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsRestoreResponse:
         """Restore a saved dataset version.
 
         Restores dataset files, labels, and metadata from a previously saved version.
@@ -1654,6 +2062,8 @@ class AsyncDatasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             version (int): version request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsRestoreResponse): The API response.
@@ -1666,13 +2076,23 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/restore",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"version": version},
             ),
         )
 
     async def redistribute_splits(
-        self, owner: str, dataset: str, *, train: int, val: int, test: int
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        train: int,
+        val: int,
+        test: int,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsRedistributeSplitsResponse:
         """Redistribute dataset splits.
 
@@ -1684,6 +2104,8 @@ class AsyncDatasets:
             train (int): Train split percentage
             val (int): Validation split percentage
             test (int): Test split percentage
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsRedistributeSplitsResponse): The API response.
@@ -1696,6 +2118,8 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/splits/redistribute",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"train": train, "val": val, "test": test},
             ),
@@ -1705,9 +2129,11 @@ class AsyncDatasets:
         self,
         owner: str,
         *,
-        limit: int | None = None,
-        include_samples: Literal["true", "false"] | None = None,
-        include_image_urls: Literal["true", "false"] | None = None,
+        limit: int | NotGiven = NOT_GIVEN,
+        include_samples: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        include_image_urls: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsListResponse:
         """List datasets.
 
@@ -1718,6 +2144,8 @@ class AsyncDatasets:
             limit (int, optional): Maximum datasets to return
             include_samples (Literal["true", "false"], optional): Include sample image previews
             include_image_urls (Literal["true", "false"], optional): Include full-size sample image fallback URLs
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsListResponse): The API response.
@@ -1730,6 +2158,8 @@ class AsyncDatasets:
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("limit", limit, style="form", explode=True),
@@ -1749,9 +2179,9 @@ class AsyncDatasets:
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         image_count: int | NotGiven = NOT_GIVEN,
-        class_names: list[str] | NotGiven = NOT_GIVEN,
+        class_names: Sequence[str] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
-        tags: list[str] | NotGiven = NOT_GIVEN,
+        tags: Sequence[str] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "CC0-1.0",
@@ -1774,6 +2204,8 @@ class AsyncDatasets:
         ]
         | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateResponse:
         """Create a dataset.
 
@@ -1787,11 +2219,13 @@ class AsyncDatasets:
             visibility (Literal["public", "private"], optional): Resource visibility
             task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
             image_count (int, optional): imageCount request value.
-            class_names (list[str], optional): classNames request value.
+            class_names (Sequence[str], optional): classNames request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
-            tags (list[str], optional): tags request value.
+            tags (Sequence[str], optional): tags request value.
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner (str, optional): Workspace owner
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DatasetsCreateResponse): The API response.
@@ -1804,6 +2238,8 @@ class AsyncDatasets:
             await self._client.request(
                 "POST",
                 "/api/datasets",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "dataset": dataset,
@@ -1822,52 +2258,67 @@ class AsyncDatasets:
             ),
         )
 
-    async def import_from_roboflow(
-        self, *, api_key: str, items: list[dict[str, Any]]
-    ) -> DatasetsImportFromRoboflowResponse:
+    async def import_roboflow(
+        self,
+        *,
+        api_key: str,
+        items: Sequence[dict[str, Any]],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsImportRoboflowResponse:
         """Import datasets from Roboflow.
 
         Imports selected Roboflow dataset versions into the API key's workspace.
 
         Args:
             api_key (str): apiKey request value.
-            items (list[dict[str, Any]]): items request value.
+            items (Sequence[dict[str, Any]]): items request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsImportFromRoboflowResponse): The API response.
+            (DatasetsImportRoboflowResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsImportFromRoboflowResponse,
+            DatasetsImportRoboflowResponse,
             await self._client.request(
                 "POST",
                 "/api/integrations/roboflow/import",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"apiKey": api_key, "items": items},
             ),
         )
 
-    async def preview_roboflow_import(self, *, api_key: str) -> DatasetsPreviewRoboflowImportResponse:
+    async def preview_roboflow(
+        self, *, api_key: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> DatasetsPreviewRoboflowResponse:
         """Preview a Roboflow import.
 
         Validates a Roboflow API key and lists datasets available for import.
 
         Args:
             api_key (str): apiKey request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DatasetsPreviewRoboflowImportResponse): The API response.
+            (DatasetsPreviewRoboflowResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DatasetsPreviewRoboflowImportResponse,
+            DatasetsPreviewRoboflowResponse,
             await self._client.request(
                 "POST",
                 "/api/integrations/roboflow/preview",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"apiKey": api_key},
             ),

@@ -4,13 +4,17 @@ from __future__ import annotations
 
 from typing import Literal, cast
 
+import httpx
+
 from .._client import (
+    NOT_GIVEN,
     AsyncAPIClient,
+    NotGiven,
     SyncAPIClient,
     _query_parameter,
 )
 from ..types import (
-    ExploreRetrieveSearchResponse,
+    ExploreSearchResponse,
 )
 
 
@@ -20,18 +24,21 @@ class Explore:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def retrieve_search(
+    def search(
         self,
         *,
-        q: str | None = None,
-        type: Literal["all", "projects", "datasets"] | None = None,
-        sort: Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"] | None = None,
-        offset: int | None = None,
-        limit: int | None = None,
-        task: str | None = None,
-        author: str | None = None,
-        starred: Literal["true", "false"] | None = None,
-    ) -> ExploreRetrieveSearchResponse:
+        q: str | NotGiven = NOT_GIVEN,
+        type: Literal["all", "projects", "datasets"] | NotGiven = NOT_GIVEN,
+        sort: Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
+        | NotGiven = NOT_GIVEN,
+        offset: int | NotGiven = NOT_GIVEN,
+        limit: int | NotGiven = NOT_GIVEN,
+        task: str | NotGiven = NOT_GIVEN,
+        author: str | NotGiven = NOT_GIVEN,
+        starred: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ExploreSearchResponse:
         """Search public projects and datasets.
 
         Browse public content. Authentication is only used for the caller's starred filter.
@@ -45,18 +52,22 @@ class Explore:
             task (str, optional): Comma-separated YOLO task filters
             author (str, optional): Owner username filter
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (ExploreRetrieveSearchResponse): The API response.
+            (ExploreSearchResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ExploreRetrieveSearchResponse,
+            ExploreSearchResponse,
             self._client.request(
                 "GET",
                 "/api/explore/search",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("q", q, style="form", explode=True),
@@ -78,18 +89,21 @@ class AsyncExplore:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def retrieve_search(
+    async def search(
         self,
         *,
-        q: str | None = None,
-        type: Literal["all", "projects", "datasets"] | None = None,
-        sort: Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"] | None = None,
-        offset: int | None = None,
-        limit: int | None = None,
-        task: str | None = None,
-        author: str | None = None,
-        starred: Literal["true", "false"] | None = None,
-    ) -> ExploreRetrieveSearchResponse:
+        q: str | NotGiven = NOT_GIVEN,
+        type: Literal["all", "projects", "datasets"] | NotGiven = NOT_GIVEN,
+        sort: Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
+        | NotGiven = NOT_GIVEN,
+        offset: int | NotGiven = NOT_GIVEN,
+        limit: int | NotGiven = NOT_GIVEN,
+        task: str | NotGiven = NOT_GIVEN,
+        author: str | NotGiven = NOT_GIVEN,
+        starred: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ExploreSearchResponse:
         """Search public projects and datasets.
 
         Browse public content. Authentication is only used for the caller's starred filter.
@@ -103,18 +117,22 @@ class AsyncExplore:
             task (str, optional): Comma-separated YOLO task filters
             author (str, optional): Owner username filter
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (ExploreRetrieveSearchResponse): The API response.
+            (ExploreSearchResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ExploreRetrieveSearchResponse,
+            ExploreSearchResponse,
             await self._client.request(
                 "GET",
                 "/api/explore/search",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("q", q, style="form", explode=True),

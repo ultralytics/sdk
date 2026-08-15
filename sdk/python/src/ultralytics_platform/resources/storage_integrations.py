@@ -4,18 +4,22 @@ from __future__ import annotations
 
 from typing import Any, cast
 
+import httpx
+
 from .._client import (
+    NOT_GIVEN,
     AsyncAPIClient,
+    NotGiven,
     SyncAPIClient,
     _path_parameter,
     _query_parameter,
 )
 from ..types import (
-    StorageIntegrationsBrowseCloudStorageObjectsResponse,
-    StorageIntegrationsConnectCloudStorageResponse,
-    StorageIntegrationsDisconnectCloudStorageResponse,
-    StorageIntegrationsDiscoverCloudStorageLocationsResponse,
-    StorageIntegrationsListCloudStorageIntegrationsResponse,
+    StorageIntegrationsCreateResponse,
+    StorageIntegrationsDeleteResponse,
+    StorageIntegrationsDiscoverResponse,
+    StorageIntegrationsListResponse,
+    StorageIntegrationsObjectsResponse,
 )
 
 
@@ -25,32 +29,45 @@ class StorageIntegrations:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def disconnect_cloud_storage(self, id: str) -> StorageIntegrationsDisconnectCloudStorageResponse:
+    def delete(
+        self, id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> StorageIntegrationsDeleteResponse:
         """Disconnect cloud storage.
 
         Removes saved credentials without deleting provider data. Connected datasets remain visible but their files are unavailable until the same storage account is reconnected.
 
         Args:
             id (str): Cloud integration ID
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (StorageIntegrationsDisconnectCloudStorageResponse): The API response.
+            (StorageIntegrationsDeleteResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsDisconnectCloudStorageResponse,
+            StorageIntegrationsDeleteResponse,
             self._client.request(
                 "DELETE",
                 f"/api/integrations/buckets/{_path_parameter(id, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def browse_cloud_storage_objects(
-        self, id: str, *, target: str, prefix: str | None = None, cursor: str | None = None
-    ) -> StorageIntegrationsBrowseCloudStorageObjectsResponse:
+    def objects(
+        self,
+        id: str,
+        *,
+        target: str,
+        prefix: str | NotGiven = NOT_GIVEN,
+        cursor: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> StorageIntegrationsObjectsResponse:
         """Browse cloud storage objects.
 
         Lists folders and objects beneath a prefix in a connected bucket or container.
@@ -60,18 +77,22 @@ class StorageIntegrations:
             target (str): Bucket or container name
             prefix (str, optional): Folder prefix
             cursor (str, optional): Provider pagination cursor
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (StorageIntegrationsBrowseCloudStorageObjectsResponse): The API response.
+            (StorageIntegrationsObjectsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsBrowseCloudStorageObjectsResponse,
+            StorageIntegrationsObjectsResponse,
             self._client.request(
                 "GET",
                 f"/api/integrations/buckets/{_path_parameter(id, explode=False, allow_reserved=False)}/objects",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("target", target, style="form", explode=True),
@@ -81,61 +102,95 @@ class StorageIntegrations:
             ),
         )
 
-    def list_cloud_storage_integrations(self) -> StorageIntegrationsListCloudStorageIntegrationsResponse:
+    def list(
+        self, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> StorageIntegrationsListResponse:
         """List cloud storage integrations.
 
         Returns the cloud storage integrations configured for the API key's workspace.
 
+        Args:
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
         Returns:
-            (StorageIntegrationsListCloudStorageIntegrationsResponse): The API response.
+            (StorageIntegrationsListResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsListCloudStorageIntegrationsResponse,
-            self._client.request("GET", "/api/integrations/buckets", auth=("Authorization", "Bearer ")),
+            StorageIntegrationsListResponse,
+            self._client.request(
+                "GET",
+                "/api/integrations/buckets",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
         )
 
-    def connect_cloud_storage(self, *, body: Any) -> StorageIntegrationsConnectCloudStorageResponse:
+    def create(
+        self, *, body: Any, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> StorageIntegrationsCreateResponse:
         """Connect cloud storage.
 
         Validates and saves a GCS, Amazon S3, or Azure Blob Storage integration.
 
         Args:
             body (Any): Request body.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (StorageIntegrationsConnectCloudStorageResponse): The API response.
+            (StorageIntegrationsCreateResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsConnectCloudStorageResponse,
-            self._client.request("POST", "/api/integrations/buckets", auth=("Authorization", "Bearer "), json=body),
+            StorageIntegrationsCreateResponse,
+            self._client.request(
+                "POST",
+                "/api/integrations/buckets",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json=body,
+            ),
         )
 
-    def discover_cloud_storage_locations(
-        self, *, body: dict[str, Any]
-    ) -> StorageIntegrationsDiscoverCloudStorageLocationsResponse:
+    def discover(
+        self,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> StorageIntegrationsDiscoverResponse:
         """Discover cloud storage locations.
 
         Lists accessible buckets or containers using the supplied provider credentials.
 
         Args:
             body (dict[str, Any]): Request body.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (StorageIntegrationsDiscoverCloudStorageLocationsResponse): The API response.
+            (StorageIntegrationsDiscoverResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsDiscoverCloudStorageLocationsResponse,
+            StorageIntegrationsDiscoverResponse,
             self._client.request(
-                "POST", "/api/integrations/buckets/discover", auth=("Authorization", "Bearer "), json=body
+                "POST",
+                "/api/integrations/buckets/discover",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json=body,
             ),
         )
 
@@ -146,32 +201,45 @@ class AsyncStorageIntegrations:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def disconnect_cloud_storage(self, id: str) -> StorageIntegrationsDisconnectCloudStorageResponse:
+    async def delete(
+        self, id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> StorageIntegrationsDeleteResponse:
         """Disconnect cloud storage.
 
         Removes saved credentials without deleting provider data. Connected datasets remain visible but their files are unavailable until the same storage account is reconnected.
 
         Args:
             id (str): Cloud integration ID
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (StorageIntegrationsDisconnectCloudStorageResponse): The API response.
+            (StorageIntegrationsDeleteResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsDisconnectCloudStorageResponse,
+            StorageIntegrationsDeleteResponse,
             await self._client.request(
                 "DELETE",
                 f"/api/integrations/buckets/{_path_parameter(id, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def browse_cloud_storage_objects(
-        self, id: str, *, target: str, prefix: str | None = None, cursor: str | None = None
-    ) -> StorageIntegrationsBrowseCloudStorageObjectsResponse:
+    async def objects(
+        self,
+        id: str,
+        *,
+        target: str,
+        prefix: str | NotGiven = NOT_GIVEN,
+        cursor: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> StorageIntegrationsObjectsResponse:
         """Browse cloud storage objects.
 
         Lists folders and objects beneath a prefix in a connected bucket or container.
@@ -181,18 +249,22 @@ class AsyncStorageIntegrations:
             target (str): Bucket or container name
             prefix (str, optional): Folder prefix
             cursor (str, optional): Provider pagination cursor
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (StorageIntegrationsBrowseCloudStorageObjectsResponse): The API response.
+            (StorageIntegrationsObjectsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsBrowseCloudStorageObjectsResponse,
+            StorageIntegrationsObjectsResponse,
             await self._client.request(
                 "GET",
                 f"/api/integrations/buckets/{_path_parameter(id, explode=False, allow_reserved=False)}/objects",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("target", target, style="form", explode=True),
@@ -202,62 +274,94 @@ class AsyncStorageIntegrations:
             ),
         )
 
-    async def list_cloud_storage_integrations(self) -> StorageIntegrationsListCloudStorageIntegrationsResponse:
+    async def list(
+        self, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> StorageIntegrationsListResponse:
         """List cloud storage integrations.
 
         Returns the cloud storage integrations configured for the API key's workspace.
 
+        Args:
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
         Returns:
-            (StorageIntegrationsListCloudStorageIntegrationsResponse): The API response.
+            (StorageIntegrationsListResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsListCloudStorageIntegrationsResponse,
-            await self._client.request("GET", "/api/integrations/buckets", auth=("Authorization", "Bearer ")),
+            StorageIntegrationsListResponse,
+            await self._client.request(
+                "GET",
+                "/api/integrations/buckets",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
         )
 
-    async def connect_cloud_storage(self, *, body: Any) -> StorageIntegrationsConnectCloudStorageResponse:
+    async def create(
+        self, *, body: Any, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> StorageIntegrationsCreateResponse:
         """Connect cloud storage.
 
         Validates and saves a GCS, Amazon S3, or Azure Blob Storage integration.
 
         Args:
             body (Any): Request body.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (StorageIntegrationsConnectCloudStorageResponse): The API response.
+            (StorageIntegrationsCreateResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsConnectCloudStorageResponse,
+            StorageIntegrationsCreateResponse,
             await self._client.request(
-                "POST", "/api/integrations/buckets", auth=("Authorization", "Bearer "), json=body
+                "POST",
+                "/api/integrations/buckets",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json=body,
             ),
         )
 
-    async def discover_cloud_storage_locations(
-        self, *, body: dict[str, Any]
-    ) -> StorageIntegrationsDiscoverCloudStorageLocationsResponse:
+    async def discover(
+        self,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> StorageIntegrationsDiscoverResponse:
         """Discover cloud storage locations.
 
         Lists accessible buckets or containers using the supplied provider credentials.
 
         Args:
             body (dict[str, Any]): Request body.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (StorageIntegrationsDiscoverCloudStorageLocationsResponse): The API response.
+            (StorageIntegrationsDiscoverResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            StorageIntegrationsDiscoverCloudStorageLocationsResponse,
+            StorageIntegrationsDiscoverResponse,
             await self._client.request(
-                "POST", "/api/integrations/buckets/discover", auth=("Authorization", "Bearer "), json=body
+                "POST",
+                "/api/integrations/buckets/discover",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json=body,
             ),
         )

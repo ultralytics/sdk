@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Literal, cast
 
+import httpx
+
 from .._client import (
     NOT_GIVEN,
     AsyncAPIClient,
@@ -12,7 +14,7 @@ from .._client import (
     _query_parameter,
 )
 from ..types import (
-    TrainingRetrieveGpuAvailabilityResponse,
+    TrainingGpuAvailabilityResponse,
     TrainingStartResponse,
 )
 
@@ -23,27 +25,35 @@ class Training:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def retrieve_gpu_availability(
-        self, *, managed: Literal["true", "false"] | None = None
-    ) -> TrainingRetrieveGpuAvailabilityResponse:
+    def gpu_availability(
+        self,
+        *,
+        managed: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> TrainingGpuAvailabilityResponse:
         """Get GPU availability.
 
         Returns current cloud training capacity for each supported GPU type. Basic queries are public; `managed=true` additionally probes Ultralytics managed capacity and requires authentication.
 
         Args:
             managed (Literal["true", "false"], optional): Include managed training capacity
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (TrainingRetrieveGpuAvailabilityResponse): The API response.
+            (TrainingGpuAvailabilityResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            TrainingRetrieveGpuAvailabilityResponse,
+            TrainingGpuAvailabilityResponse,
             self._client.request(
                 "GET",
                 "/api/training/gpu-availability",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("managed", managed, style="form", explode=True)],
             ),
@@ -84,6 +94,8 @@ class Training:
         ]
         | NotGiven = NOT_GIVEN,
         capture_dataset_version: bool | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> TrainingStartResponse:
         """Start cloud training.
 
@@ -94,6 +106,8 @@ class Training:
             gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300"], optional): Cloud GPU to use
             capture_dataset_version (bool, optional): Save an immutable dataset version for this run
             train_args (dict[str, Any]): YOLO training arguments
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (TrainingStartResponse): The API response.
@@ -106,6 +120,8 @@ class Training:
             self._client.request(
                 "POST",
                 "/api/training/start",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "modelId": model_id,
@@ -123,27 +139,35 @@ class AsyncTraining:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def retrieve_gpu_availability(
-        self, *, managed: Literal["true", "false"] | None = None
-    ) -> TrainingRetrieveGpuAvailabilityResponse:
+    async def gpu_availability(
+        self,
+        *,
+        managed: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> TrainingGpuAvailabilityResponse:
         """Get GPU availability.
 
         Returns current cloud training capacity for each supported GPU type. Basic queries are public; `managed=true` additionally probes Ultralytics managed capacity and requires authentication.
 
         Args:
             managed (Literal["true", "false"], optional): Include managed training capacity
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (TrainingRetrieveGpuAvailabilityResponse): The API response.
+            (TrainingGpuAvailabilityResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            TrainingRetrieveGpuAvailabilityResponse,
+            TrainingGpuAvailabilityResponse,
             await self._client.request(
                 "GET",
                 "/api/training/gpu-availability",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("managed", managed, style="form", explode=True)],
             ),
@@ -184,6 +208,8 @@ class AsyncTraining:
         ]
         | NotGiven = NOT_GIVEN,
         capture_dataset_version: bool | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> TrainingStartResponse:
         """Start cloud training.
 
@@ -194,6 +220,8 @@ class AsyncTraining:
             gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300"], optional): Cloud GPU to use
             capture_dataset_version (bool, optional): Save an immutable dataset version for this run
             train_args (dict[str, Any]): YOLO training arguments
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (TrainingStartResponse): The API response.
@@ -206,6 +234,8 @@ class AsyncTraining:
             await self._client.request(
                 "POST",
                 "/api/training/start",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "modelId": model_id,

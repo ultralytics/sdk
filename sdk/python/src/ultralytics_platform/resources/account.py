@@ -4,17 +4,21 @@ from __future__ import annotations
 
 from typing import Literal, cast
 
+import httpx
+
 from .._client import (
+    NOT_GIVEN,
     AsyncAPIClient,
+    NotGiven,
     SyncAPIClient,
     _query_parameter,
 )
 from ..types import (
-    AccountFollowUserResponse,
-    AccountListApiKeysResponse,
-    AccountRetrievePublicUserProfileResponse,
-    AccountRetrieveStorageUsageResponse,
-    AccountRetrieveSummaryResponse,
+    AccountApiKeysResponse,
+    AccountFollowResponse,
+    AccountProfileResponse,
+    AccountStorageResponse,
+    AccountSummaryResponse,
 )
 
 
@@ -24,88 +28,134 @@ class Account:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def retrieve_summary(self) -> AccountRetrieveSummaryResponse:
+    def summary(
+        self, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> AccountSummaryResponse:
         """Summarize your Platform account.
 
         Returns your plan, credit balance, and resource counts. Browser sessions also include team workspaces.
 
+        Args:
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
         Returns:
-            (AccountRetrieveSummaryResponse): The API response.
+            (AccountSummaryResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountRetrieveSummaryResponse,
-            self._client.request("GET", "/api/account/summary", auth=("Authorization", "Bearer ")),
+            AccountSummaryResponse,
+            self._client.request(
+                "GET",
+                "/api/account/summary",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
         )
 
-    def list_api_keys(self) -> AccountListApiKeysResponse:
+    def api_keys(
+        self, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> AccountApiKeysResponse:
         """List API keys.
 
         Returns active API key metadata for the API key's workspace.
 
+        Args:
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
         Returns:
-            (AccountListApiKeysResponse): The API response.
+            (AccountApiKeysResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountListApiKeysResponse, self._client.request("GET", "/api/api-keys", auth=("Authorization", "Bearer "))
+            AccountApiKeysResponse,
+            self._client.request(
+                "GET", "/api/api-keys", timeout=timeout, extra_headers=extra_headers, auth=("Authorization", "Bearer ")
+            ),
         )
 
-    def retrieve_storage_usage(
-        self, *, details: Literal["true", "false"] | None = None
-    ) -> AccountRetrieveStorageUsageResponse:
+    def storage(
+        self,
+        *,
+        details: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> AccountStorageResponse:
         """Check storage usage.
 
         Returns storage breakdown by category and, when requested, the workspace's largest items.
 
         Args:
             details (Literal["true", "false"], optional): Include the ten largest storage consumers
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (AccountRetrieveStorageUsageResponse): The API response.
+            (AccountStorageResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountRetrieveStorageUsageResponse,
+            AccountStorageResponse,
             self._client.request(
                 "GET",
                 "/api/storage",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("details", details, style="form", explode=True)],
             ),
         )
 
-    def retrieve_public_user_profile(self, *, username: str) -> AccountRetrievePublicUserProfileResponse:
+    def profile(
+        self,
+        *,
+        username: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> AccountProfileResponse:
         """Get a public user profile.
 
         Returns a public user profile and its follow state for the authenticated caller.
 
         Args:
             username (str): username query parameter.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (AccountRetrievePublicUserProfileResponse): The API response.
+            (AccountProfileResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountRetrievePublicUserProfileResponse,
+            AccountProfileResponse,
             self._client.request(
                 "GET",
                 "/api/users",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
-    def follow_user(self, *, username: str, followed: bool) -> AccountFollowUserResponse:
+    def follow(
+        self,
+        *,
+        username: str,
+        followed: bool,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> AccountFollowResponse:
         """Follow a user.
 
         Follows or unfollows a Platform user.
@@ -113,18 +163,22 @@ class Account:
         Args:
             username (str): username request value.
             followed (bool): followed request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (AccountFollowUserResponse): The API response.
+            (AccountFollowResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountFollowUserResponse,
+            AccountFollowResponse,
             self._client.request(
                 "PATCH",
                 "/api/users",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"username": username, "followed": followed},
             ),
@@ -137,89 +191,134 @@ class AsyncAccount:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def retrieve_summary(self) -> AccountRetrieveSummaryResponse:
+    async def summary(
+        self, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> AccountSummaryResponse:
         """Summarize your Platform account.
 
         Returns your plan, credit balance, and resource counts. Browser sessions also include team workspaces.
 
+        Args:
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
         Returns:
-            (AccountRetrieveSummaryResponse): The API response.
+            (AccountSummaryResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountRetrieveSummaryResponse,
-            await self._client.request("GET", "/api/account/summary", auth=("Authorization", "Bearer ")),
+            AccountSummaryResponse,
+            await self._client.request(
+                "GET",
+                "/api/account/summary",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
         )
 
-    async def list_api_keys(self) -> AccountListApiKeysResponse:
+    async def api_keys(
+        self, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> AccountApiKeysResponse:
         """List API keys.
 
         Returns active API key metadata for the API key's workspace.
 
+        Args:
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
         Returns:
-            (AccountListApiKeysResponse): The API response.
+            (AccountApiKeysResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountListApiKeysResponse,
-            await self._client.request("GET", "/api/api-keys", auth=("Authorization", "Bearer ")),
+            AccountApiKeysResponse,
+            await self._client.request(
+                "GET", "/api/api-keys", timeout=timeout, extra_headers=extra_headers, auth=("Authorization", "Bearer ")
+            ),
         )
 
-    async def retrieve_storage_usage(
-        self, *, details: Literal["true", "false"] | None = None
-    ) -> AccountRetrieveStorageUsageResponse:
+    async def storage(
+        self,
+        *,
+        details: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> AccountStorageResponse:
         """Check storage usage.
 
         Returns storage breakdown by category and, when requested, the workspace's largest items.
 
         Args:
             details (Literal["true", "false"], optional): Include the ten largest storage consumers
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (AccountRetrieveStorageUsageResponse): The API response.
+            (AccountStorageResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountRetrieveStorageUsageResponse,
+            AccountStorageResponse,
             await self._client.request(
                 "GET",
                 "/api/storage",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("details", details, style="form", explode=True)],
             ),
         )
 
-    async def retrieve_public_user_profile(self, *, username: str) -> AccountRetrievePublicUserProfileResponse:
+    async def profile(
+        self,
+        *,
+        username: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> AccountProfileResponse:
         """Get a public user profile.
 
         Returns a public user profile and its follow state for the authenticated caller.
 
         Args:
             username (str): username query parameter.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (AccountRetrievePublicUserProfileResponse): The API response.
+            (AccountProfileResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountRetrievePublicUserProfileResponse,
+            AccountProfileResponse,
             await self._client.request(
                 "GET",
                 "/api/users",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("username", username, style="form", explode=True)],
             ),
         )
 
-    async def follow_user(self, *, username: str, followed: bool) -> AccountFollowUserResponse:
+    async def follow(
+        self,
+        *,
+        username: str,
+        followed: bool,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> AccountFollowResponse:
         """Follow a user.
 
         Follows or unfollows a Platform user.
@@ -227,18 +326,22 @@ class AsyncAccount:
         Args:
             username (str): username request value.
             followed (bool): followed request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (AccountFollowUserResponse): The API response.
+            (AccountFollowResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            AccountFollowUserResponse,
+            AccountFollowResponse,
             await self._client.request(
                 "PATCH",
                 "/api/users",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"username": username, "followed": followed},
             ),

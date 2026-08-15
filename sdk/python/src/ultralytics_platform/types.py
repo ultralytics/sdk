@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import Any, Literal, NotRequired, TypedDict
 
-AccountRetrieveSummaryResponseCounts = TypedDict(
-    "AccountRetrieveSummaryResponseCounts", {"projects": int, "datasets": int, "models": int}
+AccountSummaryResponseCounts = TypedDict(
+    "AccountSummaryResponseCounts", {"projects": int, "datasets": int, "models": int}
 )
 
 
-AccountRetrieveSummaryResponseTeamsItem = TypedDict(
-    "AccountRetrieveSummaryResponseTeamsItem",
+AccountSummaryResponseTeamsItem = TypedDict(
+    "AccountSummaryResponseTeamsItem",
     {
         "userId": str,
         "username": str,
@@ -26,104 +26,102 @@ AccountRetrieveSummaryResponseTeamsItem = TypedDict(
 )
 
 
-AccountRetrieveSummaryResponse = TypedDict(
-    "AccountRetrieveSummaryResponse",
+AccountSummaryResponse = TypedDict(
+    "AccountSummaryResponse",
     {
         "username": str,
         "name": str,
         "accountType": Literal["personal", "team"],
         "plan": Literal["free", "pro", "enterprise"],
         "creditsCents": int,
-        "counts": AccountRetrieveSummaryResponseCounts,
-        "teams": list[AccountRetrieveSummaryResponseTeamsItem],
+        "counts": AccountSummaryResponseCounts,
+        "teams": list[AccountSummaryResponseTeamsItem],
     },
 )
 
 
-AccountListApiKeysResponseKeysItem = TypedDict(
-    "AccountListApiKeysResponseKeysItem", {"keyId": str, "name": str, "keyPrefix": str, "createdAt": str}
+AccountApiKeysResponseKeysItem = TypedDict(
+    "AccountApiKeysResponseKeysItem", {"keyId": str, "name": str, "keyPrefix": str, "createdAt": str}
 )
 
 
-AccountListApiKeysResponse = TypedDict("AccountListApiKeysResponse", {"keys": list[AccountListApiKeysResponseKeysItem]})
+AccountApiKeysResponse = TypedDict("AccountApiKeysResponse", {"keys": list[AccountApiKeysResponseKeysItem]})
 
 
-AccountRetrieveStorageUsageResponseUsageProjects = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageProjects", {"current": float, "limit": float, "percent": float}
+AccountStorageResponseUsageProjects = TypedDict(
+    "AccountStorageResponseUsageProjects", {"current": float, "limit": float, "percent": float}
 )
 
 
-AccountRetrieveStorageUsageResponseUsageDatasets = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageDatasets", {"current": float, "limit": float, "percent": float}
+AccountStorageResponseUsageDatasets = TypedDict(
+    "AccountStorageResponseUsageDatasets", {"current": float, "limit": float, "percent": float}
 )
 
 
-AccountRetrieveStorageUsageResponseUsageModels = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageModels", {"current": float, "limit": float, "percent": float}
+AccountStorageResponseUsageModels = TypedDict(
+    "AccountStorageResponseUsageModels", {"current": float, "limit": float, "percent": float}
 )
 
 
-AccountRetrieveStorageUsageResponseUsageImages = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageImages", {"current": float, "limit": float, "percent": float}
+AccountStorageResponseUsageImages = TypedDict(
+    "AccountStorageResponseUsageImages", {"current": float, "limit": float, "percent": float}
 )
 
 
-AccountRetrieveStorageUsageResponseUsageAnnotations = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageAnnotations", {"current": float}
+AccountStorageResponseUsageAnnotations = TypedDict("AccountStorageResponseUsageAnnotations", {"current": float})
+
+
+AccountStorageResponseUsageDeployments = TypedDict(
+    "AccountStorageResponseUsageDeployments", {"current": float, "limit": float, "percent": float}
 )
 
 
-AccountRetrieveStorageUsageResponseUsageDeployments = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageDeployments", {"current": float, "limit": float, "percent": float}
+AccountStorageResponseUsageStorage = TypedDict(
+    "AccountStorageResponseUsageStorage", {"current": float, "limit": float, "percent": float}
 )
 
 
-AccountRetrieveStorageUsageResponseUsageStorage = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsageStorage", {"current": float, "limit": float, "percent": float}
-)
-
-
-AccountRetrieveStorageUsageResponseUsage = TypedDict(
-    "AccountRetrieveStorageUsageResponseUsage",
+AccountStorageResponseUsage = TypedDict(
+    "AccountStorageResponseUsage",
     {
-        "projects": NotRequired[AccountRetrieveStorageUsageResponseUsageProjects],
-        "datasets": NotRequired[AccountRetrieveStorageUsageResponseUsageDatasets],
-        "models": NotRequired[AccountRetrieveStorageUsageResponseUsageModels],
-        "images": NotRequired[AccountRetrieveStorageUsageResponseUsageImages],
-        "annotations": NotRequired[AccountRetrieveStorageUsageResponseUsageAnnotations],
-        "deployments": NotRequired[AccountRetrieveStorageUsageResponseUsageDeployments],
-        "storage": AccountRetrieveStorageUsageResponseUsageStorage,
+        "projects": NotRequired[AccountStorageResponseUsageProjects],
+        "datasets": NotRequired[AccountStorageResponseUsageDatasets],
+        "models": NotRequired[AccountStorageResponseUsageModels],
+        "images": NotRequired[AccountStorageResponseUsageImages],
+        "annotations": NotRequired[AccountStorageResponseUsageAnnotations],
+        "deployments": NotRequired[AccountStorageResponseUsageDeployments],
+        "storage": AccountStorageResponseUsageStorage,
     },
 )
 
 
-AccountRetrieveStorageUsageResponseBreakdownByCategoryDatasets = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownByCategoryDatasets", {"bytes": float, "count": float}
+AccountStorageResponseBreakdownByCategoryDatasets = TypedDict(
+    "AccountStorageResponseBreakdownByCategoryDatasets", {"bytes": float, "count": float}
 )
 
 
-AccountRetrieveStorageUsageResponseBreakdownByCategoryModels = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownByCategoryModels", {"bytes": float, "count": float}
+AccountStorageResponseBreakdownByCategoryModels = TypedDict(
+    "AccountStorageResponseBreakdownByCategoryModels", {"bytes": float, "count": float}
 )
 
 
-AccountRetrieveStorageUsageResponseBreakdownByCategoryExports = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownByCategoryExports", {"bytes": float, "count": float}
+AccountStorageResponseBreakdownByCategoryExports = TypedDict(
+    "AccountStorageResponseBreakdownByCategoryExports", {"bytes": float, "count": float}
 )
 
 
-AccountRetrieveStorageUsageResponseBreakdownByCategory = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownByCategory",
+AccountStorageResponseBreakdownByCategory = TypedDict(
+    "AccountStorageResponseBreakdownByCategory",
     {
-        "datasets": AccountRetrieveStorageUsageResponseBreakdownByCategoryDatasets,
-        "models": AccountRetrieveStorageUsageResponseBreakdownByCategoryModels,
-        "exports": AccountRetrieveStorageUsageResponseBreakdownByCategoryExports,
+        "datasets": AccountStorageResponseBreakdownByCategoryDatasets,
+        "models": AccountStorageResponseBreakdownByCategoryModels,
+        "exports": AccountStorageResponseBreakdownByCategoryExports,
     },
 )
 
 
-AccountRetrieveStorageUsageResponseBreakdownTopItemsItem = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdownTopItemsItem",
+AccountStorageResponseBreakdownTopItemsItem = TypedDict(
+    "AccountStorageResponseBreakdownTopItemsItem",
     {
         "_id": str,
         "name": str,
@@ -136,30 +134,30 @@ AccountRetrieveStorageUsageResponseBreakdownTopItemsItem = TypedDict(
 )
 
 
-AccountRetrieveStorageUsageResponseBreakdown = TypedDict(
-    "AccountRetrieveStorageUsageResponseBreakdown",
+AccountStorageResponseBreakdown = TypedDict(
+    "AccountStorageResponseBreakdown",
     {
-        "byCategory": AccountRetrieveStorageUsageResponseBreakdownByCategory,
-        "topItems": list[AccountRetrieveStorageUsageResponseBreakdownTopItemsItem],
+        "byCategory": AccountStorageResponseBreakdownByCategory,
+        "topItems": list[AccountStorageResponseBreakdownTopItemsItem],
     },
 )
 
 
-AccountRetrieveStorageUsageResponse = TypedDict(
-    "AccountRetrieveStorageUsageResponse",
+AccountStorageResponse = TypedDict(
+    "AccountStorageResponse",
     {
         "tier": Literal["free", "pro", "enterprise"],
-        "usage": AccountRetrieveStorageUsageResponseUsage,
+        "usage": AccountStorageResponseUsage,
         "updatedAt": str | None,
-        "breakdown": AccountRetrieveStorageUsageResponseBreakdown,
+        "breakdown": AccountStorageResponseBreakdown,
         "region": Literal["us", "eu", "ap"],
         "username": str,
     },
 )
 
 
-AccountRetrievePublicUserProfileResponseUserSocials = TypedDict(
-    "AccountRetrievePublicUserProfileResponseUserSocials",
+AccountProfileResponseUserSocials = TypedDict(
+    "AccountProfileResponseUserSocials",
     {
         "github": NotRequired[str],
         "linkedin": NotRequired[str],
@@ -172,8 +170,8 @@ AccountRetrievePublicUserProfileResponseUserSocials = TypedDict(
 )
 
 
-AccountRetrievePublicUserProfileResponseUser = TypedDict(
-    "AccountRetrievePublicUserProfileResponseUser",
+AccountProfileResponseUser = TypedDict(
+    "AccountProfileResponseUser",
     {
         "username": str,
         "fullName": NotRequired[str],
@@ -184,23 +182,21 @@ AccountRetrievePublicUserProfileResponseUser = TypedDict(
         "bio": NotRequired[str],
         "company": NotRequired[str],
         "useCase": NotRequired[str],
-        "socials": NotRequired[AccountRetrievePublicUserProfileResponseUserSocials],
+        "socials": NotRequired[AccountProfileResponseUserSocials],
         "followerCount": int,
         "isFollowed": bool,
     },
 )
 
 
-AccountRetrievePublicUserProfileResponse = TypedDict(
-    "AccountRetrievePublicUserProfileResponse", {"user": AccountRetrievePublicUserProfileResponseUser}
-)
+AccountProfileResponse = TypedDict("AccountProfileResponse", {"user": AccountProfileResponseUser})
 
 
-AccountFollowUserResponse = TypedDict("AccountFollowUserResponse", {"followed": bool, "followerCount": int})
+AccountFollowResponse = TypedDict("AccountFollowResponse", {"followed": bool, "followerCount": int})
 
 
-BillingListTransactionsResponseTransactionsItemModel = TypedDict(
-    "BillingListTransactionsResponseTransactionsItemModel",
+BillingTransactionsResponseTransactionsItemModel = TypedDict(
+    "BillingTransactionsResponseTransactionsItemModel",
     {
         "name": str,
         "slug": str,
@@ -214,8 +210,8 @@ BillingListTransactionsResponseTransactionsItemModel = TypedDict(
 )
 
 
-BillingListTransactionsResponseTransactionsItem = TypedDict(
-    "BillingListTransactionsResponseTransactionsItem",
+BillingTransactionsResponseTransactionsItem = TypedDict(
+    "BillingTransactionsResponseTransactionsItem",
     {
         "id": str,
         "type": Literal[
@@ -242,18 +238,18 @@ BillingListTransactionsResponseTransactionsItem = TypedDict(
         "period": NotRequired[str],
         "createdAt": str,
         "receiptUrl": NotRequired[str | None],
-        "model": NotRequired[BillingListTransactionsResponseTransactionsItemModel | None],
+        "model": NotRequired[BillingTransactionsResponseTransactionsItemModel | None],
     },
 )
 
 
-BillingListTransactionsResponse = TypedDict(
-    "BillingListTransactionsResponse", {"transactions": list[BillingListTransactionsResponseTransactionsItem]}
+BillingTransactionsResponse = TypedDict(
+    "BillingTransactionsResponse", {"transactions": list[BillingTransactionsResponseTransactionsItem]}
 )
 
 
-BillingListUsageSummaryResponsePlan = TypedDict(
-    "BillingListUsageSummaryResponsePlan",
+BillingUsageSummaryResponsePlan = TypedDict(
+    "BillingUsageSummaryResponsePlan",
     {
         "planId": Literal["free", "pro", "enterprise"],
         "name": str,
@@ -268,8 +264,8 @@ BillingListUsageSummaryResponsePlan = TypedDict(
 )
 
 
-BillingListUsageSummaryResponseMetricsItem = TypedDict(
-    "BillingListUsageSummaryResponseMetricsItem",
+BillingUsageSummaryResponseMetricsItem = TypedDict(
+    "BillingUsageSummaryResponseMetricsItem",
     {
         "metricId": Literal["storage_bytes"],
         "kind": Literal["GAUGE"],
@@ -282,23 +278,23 @@ BillingListUsageSummaryResponseMetricsItem = TypedDict(
 )
 
 
-BillingListUsageSummaryResponseTrainingCredit = TypedDict(
-    "BillingListUsageSummaryResponseTrainingCredit", {"monthlyGrant": float, "balanceAvailable": float}
+BillingUsageSummaryResponseTrainingCredit = TypedDict(
+    "BillingUsageSummaryResponseTrainingCredit", {"monthlyGrant": float, "balanceAvailable": float}
 )
 
 
-BillingListUsageSummaryResponseFeatures = TypedDict(
-    "BillingListUsageSummaryResponseFeatures", {"privateProjects": bool, "teams": bool, "enterpriseLicense": bool}
+BillingUsageSummaryResponseFeatures = TypedDict(
+    "BillingUsageSummaryResponseFeatures", {"privateProjects": bool, "teams": bool, "enterpriseLicense": bool}
 )
 
 
-BillingListUsageSummaryResponse = TypedDict(
-    "BillingListUsageSummaryResponse",
+BillingUsageSummaryResponse = TypedDict(
+    "BillingUsageSummaryResponse",
     {
-        "plan": BillingListUsageSummaryResponsePlan,
-        "metrics": list[BillingListUsageSummaryResponseMetricsItem],
-        "trainingCredit": BillingListUsageSummaryResponseTrainingCredit,
-        "features": BillingListUsageSummaryResponseFeatures,
+        "plan": BillingUsageSummaryResponsePlan,
+        "metrics": list[BillingUsageSummaryResponseMetricsItem],
+        "trainingCredit": BillingUsageSummaryResponseTrainingCredit,
+        "features": BillingUsageSummaryResponseFeatures,
         "creditsCents": float,
         "paidSeats": NotRequired[float],
         "currentSeats": NotRequired[float],
@@ -308,89 +304,88 @@ BillingListUsageSummaryResponse = TypedDict(
 )
 
 
-DatasetsRetrieveClassStatsResponseClassesItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseClassesItem", {"classId": float, "count": float, "imageCount": float}
+DatasetsClassStatsResponseClassesItem = TypedDict(
+    "DatasetsClassStatsResponseClassesItem", {"classId": float, "count": float, "imageCount": float}
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsWidthHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsWidthHistogramItem",
+DatasetsClassStatsResponseImageStatsWidthHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsWidthHistogramItem", {"bin": float, "count": float, "size": NotRequired[float]}
+)
+
+
+DatasetsClassStatsResponseImageStatsHeightHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsHeightHistogramItem",
     {"bin": float, "count": float, "size": NotRequired[float]},
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsHeightHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsHeightHistogramItem",
+DatasetsClassStatsResponseImageStatsPointsHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsPointsHistogramItem",
     {"bin": float, "count": float, "size": NotRequired[float]},
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsPointsHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsPointsHistogramItem",
+DatasetsClassStatsResponseImageStatsFileSizeHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsFileSizeHistogramItem",
     {"bin": float, "count": float, "size": NotRequired[float]},
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsFileSizeHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsFileSizeHistogramItem",
+DatasetsClassStatsResponseImageStatsObjectsPerImageHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsObjectsPerImageHistogramItem",
     {"bin": float, "count": float, "size": NotRequired[float]},
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsObjectsPerImageHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsObjectsPerImageHistogramItem",
+DatasetsClassStatsResponseImageStatsBboxWidthHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsBboxWidthHistogramItem",
     {"bin": float, "count": float, "size": NotRequired[float]},
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsBboxWidthHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsBboxWidthHistogramItem",
+DatasetsClassStatsResponseImageStatsBboxHeightHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsBboxHeightHistogramItem",
     {"bin": float, "count": float, "size": NotRequired[float]},
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsBboxHeightHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsBboxHeightHistogramItem",
+DatasetsClassStatsResponseImageStatsBboxWidthNormHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsBboxWidthNormHistogramItem",
     {"bin": float, "count": float, "size": NotRequired[float]},
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsBboxWidthNormHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsBboxWidthNormHistogramItem",
+DatasetsClassStatsResponseImageStatsBboxHeightNormHistogramItem = TypedDict(
+    "DatasetsClassStatsResponseImageStatsBboxHeightNormHistogramItem",
     {"bin": float, "count": float, "size": NotRequired[float]},
 )
 
 
-DatasetsRetrieveClassStatsResponseImageStatsBboxHeightNormHistogramItem = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStatsBboxHeightNormHistogramItem",
-    {"bin": float, "count": float, "size": NotRequired[float]},
-)
-
-
-DatasetsRetrieveClassStatsResponseImageStats = TypedDict(
-    "DatasetsRetrieveClassStatsResponseImageStats",
+DatasetsClassStatsResponseImageStats = TypedDict(
+    "DatasetsClassStatsResponseImageStats",
     {
-        "widthHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsWidthHistogramItem],
-        "heightHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsHeightHistogramItem],
-        "pointsHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsPointsHistogramItem],
+        "widthHistogram": list[DatasetsClassStatsResponseImageStatsWidthHistogramItem],
+        "heightHistogram": list[DatasetsClassStatsResponseImageStatsHeightHistogramItem],
+        "pointsHistogram": list[DatasetsClassStatsResponseImageStatsPointsHistogramItem],
         "formatDistribution": dict[str, float],
-        "fileSizeHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsFileSizeHistogramItem],
-        "objectsPerImageHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsObjectsPerImageHistogramItem],
-        "bboxWidthHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsBboxWidthHistogramItem],
-        "bboxHeightHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsBboxHeightHistogramItem],
-        "bboxWidthNormHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsBboxWidthNormHistogramItem],
-        "bboxHeightNormHistogram": list[DatasetsRetrieveClassStatsResponseImageStatsBboxHeightNormHistogramItem],
+        "fileSizeHistogram": list[DatasetsClassStatsResponseImageStatsFileSizeHistogramItem],
+        "objectsPerImageHistogram": list[DatasetsClassStatsResponseImageStatsObjectsPerImageHistogramItem],
+        "bboxWidthHistogram": list[DatasetsClassStatsResponseImageStatsBboxWidthHistogramItem],
+        "bboxHeightHistogram": list[DatasetsClassStatsResponseImageStatsBboxHeightHistogramItem],
+        "bboxWidthNormHistogram": list[DatasetsClassStatsResponseImageStatsBboxWidthNormHistogramItem],
+        "bboxHeightNormHistogram": list[DatasetsClassStatsResponseImageStatsBboxHeightNormHistogramItem],
     },
 )
 
 
-DatasetsRetrieveClassStatsResponseLocationHeatmap = TypedDict(
-    "DatasetsRetrieveClassStatsResponseLocationHeatmap", {"bins": list[list[float]], "maxCount": float}
+DatasetsClassStatsResponseLocationHeatmap = TypedDict(
+    "DatasetsClassStatsResponseLocationHeatmap", {"bins": list[list[float]], "maxCount": float}
 )
 
 
-DatasetsRetrieveClassStatsResponseDimensionHeatmap = TypedDict(
-    "DatasetsRetrieveClassStatsResponseDimensionHeatmap",
+DatasetsClassStatsResponseDimensionHeatmap = TypedDict(
+    "DatasetsClassStatsResponseDimensionHeatmap",
     {
         "bins": list[list[float]],
         "maxCount": float,
@@ -402,13 +397,13 @@ DatasetsRetrieveClassStatsResponseDimensionHeatmap = TypedDict(
 )
 
 
-DatasetsRetrieveClassStatsResponse = TypedDict(
-    "DatasetsRetrieveClassStatsResponse",
+DatasetsClassStatsResponse = TypedDict(
+    "DatasetsClassStatsResponse",
     {
-        "classes": list[DatasetsRetrieveClassStatsResponseClassesItem],
-        "imageStats": DatasetsRetrieveClassStatsResponseImageStats,
-        "locationHeatmap": DatasetsRetrieveClassStatsResponseLocationHeatmap,
-        "dimensionHeatmap": DatasetsRetrieveClassStatsResponseDimensionHeatmap,
+        "classes": list[DatasetsClassStatsResponseClassesItem],
+        "imageStats": DatasetsClassStatsResponseImageStats,
+        "locationHeatmap": DatasetsClassStatsResponseLocationHeatmap,
+        "dimensionHeatmap": DatasetsClassStatsResponseDimensionHeatmap,
         "classNames": list[str],
         "cached": bool,
         "sampleSize": NotRequired[float | None],
@@ -612,8 +607,8 @@ DatasetsUpdateResponse = TypedDict("DatasetsUpdateResponse", {"success": Literal
 DatasetsDeleteResponse = TypedDict("DatasetsDeleteResponse", {"success": Literal[True]})
 
 
-DatasetsRetrieveEmbeddingsResponseActiveJobProgress = TypedDict(
-    "DatasetsRetrieveEmbeddingsResponseActiveJobProgress",
+DatasetsEmbeddingsResponseActiveJobProgress = TypedDict(
+    "DatasetsEmbeddingsResponseActiveJobProgress",
     {
         "stage": Literal["embedding", "umap"],
         "percent": float,
@@ -625,24 +620,24 @@ DatasetsRetrieveEmbeddingsResponseActiveJobProgress = TypedDict(
 )
 
 
-DatasetsRetrieveEmbeddingsResponseActiveJob = TypedDict(
-    "DatasetsRetrieveEmbeddingsResponseActiveJob",
+DatasetsEmbeddingsResponseActiveJob = TypedDict(
+    "DatasetsEmbeddingsResponseActiveJob",
     {
         "id": str,
         "status": Literal["queued", "starting", "running"],
-        "progress": DatasetsRetrieveEmbeddingsResponseActiveJobProgress | None,
+        "progress": DatasetsEmbeddingsResponseActiveJobProgress | None,
         "createdAt": str,
     },
 )
 
 
-DatasetsRetrieveEmbeddingsResponse = TypedDict(
-    "DatasetsRetrieveEmbeddingsResponse",
+DatasetsEmbeddingsResponse = TypedDict(
+    "DatasetsEmbeddingsResponse",
     {
         "analyzedAt": str | None,
         "embeddingsCount": int,
         "latestImageAt": str | None,
-        "activeJob": DatasetsRetrieveEmbeddingsResponseActiveJob | None,
+        "activeJob": DatasetsEmbeddingsResponseActiveJob | None,
     },
 )
 
@@ -653,17 +648,13 @@ DatasetsCreateEmbeddingsResponse = TypedDict("DatasetsCreateEmbeddingsResponse",
 DatasetsDeleteEmbeddingsResponse = TypedDict("DatasetsDeleteEmbeddingsResponse", {"cancelled": str | None})
 
 
-DatasetsRetrieveExportResponseVariant1 = TypedDict(
-    "DatasetsRetrieveExportResponseVariant1", {"downloadUrl": str, "version": int}
-)
+DatasetsExportResponseVariant1 = TypedDict("DatasetsExportResponseVariant1", {"downloadUrl": str, "version": int})
 
 
-DatasetsRetrieveExportResponseVariant2 = TypedDict(
-    "DatasetsRetrieveExportResponseVariant2", {"downloadUrl": str, "cached": bool}
-)
+DatasetsExportResponseVariant2 = TypedDict("DatasetsExportResponseVariant2", {"downloadUrl": str, "cached": bool})
 
 
-DatasetsRetrieveExportResponse = DatasetsRetrieveExportResponseVariant1 | DatasetsRetrieveExportResponseVariant2
+DatasetsExportResponse = DatasetsExportResponseVariant1 | DatasetsExportResponseVariant2
 
 
 DatasetsCreateExportResponse = TypedDict(
@@ -674,8 +665,8 @@ DatasetsCreateExportResponse = TypedDict(
 DatasetsUpdateExportResponse = TypedDict("DatasetsUpdateExportResponse", {"ok": Literal[True]})
 
 
-DatasetsRetrieveImagesClusteringResponseImagesItem = TypedDict(
-    "DatasetsRetrieveImagesClusteringResponseImagesItem",
+DatasetsClusteringResponseImagesItem = TypedDict(
+    "DatasetsClusteringResponseImagesItem",
     {
         "id": str,
         "umapX": float,
@@ -691,10 +682,10 @@ DatasetsRetrieveImagesClusteringResponseImagesItem = TypedDict(
 )
 
 
-DatasetsRetrieveImagesClusteringResponse = TypedDict(
-    "DatasetsRetrieveImagesClusteringResponse",
+DatasetsClusteringResponse = TypedDict(
+    "DatasetsClusteringResponse",
     {
-        "images": list[DatasetsRetrieveImagesClusteringResponseImagesItem],
+        "images": list[DatasetsClusteringResponseImagesItem],
         "total": int,
         "offset": int,
         "limit": int,
@@ -705,8 +696,8 @@ DatasetsRetrieveImagesClusteringResponse = TypedDict(
 )
 
 
-DatasetsListImagesResponseImagesItemLabelsItem = TypedDict(
-    "DatasetsListImagesResponseImagesItemLabelsItem",
+DatasetsImagesResponseImagesItemLabelsItem = TypedDict(
+    "DatasetsImagesResponseImagesItemLabelsItem",
     {
         "classId": int,
         "bbox": NotRequired[list[Any]],
@@ -718,8 +709,8 @@ DatasetsListImagesResponseImagesItemLabelsItem = TypedDict(
 )
 
 
-DatasetsListImagesResponseImagesItem = TypedDict(
-    "DatasetsListImagesResponseImagesItem",
+DatasetsImagesResponseImagesItem = TypedDict(
+    "DatasetsImagesResponseImagesItem",
     {
         "id": str,
         "hash": str,
@@ -733,16 +724,16 @@ DatasetsListImagesResponseImagesItem = TypedDict(
         "name": str,
         "bytes": NotRequired[int],
         "error": NotRequired[str | None],
-        "labels": NotRequired[list[DatasetsListImagesResponseImagesItemLabelsItem]],
+        "labels": NotRequired[list[DatasetsImagesResponseImagesItemLabelsItem]],
         "labelsTruncated": NotRequired[Literal[True]],
     },
 )
 
 
-DatasetsListImagesResponse = TypedDict(
-    "DatasetsListImagesResponse",
+DatasetsImagesResponse = TypedDict(
+    "DatasetsImagesResponse",
     {
-        "images": list[DatasetsListImagesResponseImagesItem],
+        "images": list[DatasetsImagesResponseImagesItem],
         "total": NotRequired[int],
         "hasMore": bool,
         "classes": list[str],
@@ -752,8 +743,8 @@ DatasetsListImagesResponse = TypedDict(
 )
 
 
-DatasetsRetrieveSelectedImagesResponseImagesItemLabelsItem = TypedDict(
-    "DatasetsRetrieveSelectedImagesResponseImagesItemLabelsItem",
+DatasetsSelectedImagesResponseImagesItemLabelsItem = TypedDict(
+    "DatasetsSelectedImagesResponseImagesItemLabelsItem",
     {
         "classId": int,
         "bbox": NotRequired[list[Any]],
@@ -765,8 +756,8 @@ DatasetsRetrieveSelectedImagesResponseImagesItemLabelsItem = TypedDict(
 )
 
 
-DatasetsRetrieveSelectedImagesResponseImagesItem = TypedDict(
-    "DatasetsRetrieveSelectedImagesResponseImagesItem",
+DatasetsSelectedImagesResponseImagesItem = TypedDict(
+    "DatasetsSelectedImagesResponseImagesItem",
     {
         "id": str,
         "hash": str,
@@ -780,16 +771,16 @@ DatasetsRetrieveSelectedImagesResponseImagesItem = TypedDict(
         "name": str,
         "bytes": NotRequired[int],
         "error": NotRequired[str | None],
-        "labels": NotRequired[list[DatasetsRetrieveSelectedImagesResponseImagesItemLabelsItem]],
+        "labels": NotRequired[list[DatasetsSelectedImagesResponseImagesItemLabelsItem]],
         "labelsTruncated": NotRequired[Literal[True]],
     },
 )
 
 
-DatasetsRetrieveSelectedImagesResponse = TypedDict(
-    "DatasetsRetrieveSelectedImagesResponse",
+DatasetsSelectedImagesResponse = TypedDict(
+    "DatasetsSelectedImagesResponse",
     {
-        "images": list[DatasetsRetrieveSelectedImagesResponseImagesItem],
+        "images": list[DatasetsSelectedImagesResponseImagesItem],
         "total": int,
         "hasMore": Literal[False],
         "classes": list[str],
@@ -802,13 +793,13 @@ DatasetsRetrieveSelectedImagesResponse = TypedDict(
 DatasetsIngestResponse = TypedDict("DatasetsIngestResponse", {"jobId": str, "status": Literal["queued"]})
 
 
-DatasetsListModelsResponseModelsItemDatasetVersion = TypedDict(
-    "DatasetsListModelsResponseModelsItemDatasetVersion", {"version": int, "contentHash": str}
+DatasetsModelsResponseModelsItemDatasetVersion = TypedDict(
+    "DatasetsModelsResponseModelsItemDatasetVersion", {"version": int, "contentHash": str}
 )
 
 
-DatasetsListModelsResponseModelsItem = TypedDict(
-    "DatasetsListModelsResponseModelsItem",
+DatasetsModelsResponseModelsItem = TypedDict(
+    "DatasetsModelsResponseModelsItem",
     {
         "id": str,
         "owner": str,
@@ -817,7 +808,7 @@ DatasetsListModelsResponseModelsItem = TypedDict(
         "name": str,
         "status": Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"],
         "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"]],
-        "datasetVersion": NotRequired[DatasetsListModelsResponseModelsItemDatasetVersion],
+        "datasetVersion": NotRequired[DatasetsModelsResponseModelsItemDatasetVersion],
         "epochs": NotRequired[int],
         "bestEpoch": NotRequired[int],
         "bestFitness": NotRequired[float],
@@ -832,8 +823,8 @@ DatasetsListModelsResponseModelsItem = TypedDict(
 )
 
 
-DatasetsListModelsResponse = TypedDict(
-    "DatasetsListModelsResponse", {"models": list[DatasetsListModelsResponseModelsItem], "count": int}
+DatasetsModelsResponse = TypedDict(
+    "DatasetsModelsResponse", {"models": list[DatasetsModelsResponseModelsItem], "count": int}
 )
 
 
@@ -1010,39 +1001,39 @@ DatasetsCreateResponse = TypedDict(
 )
 
 
-DatasetsImportFromRoboflowResponseImportedItem = TypedDict(
-    "DatasetsImportFromRoboflowResponseImportedItem",
+DatasetsImportRoboflowResponseImportedItem = TypedDict(
+    "DatasetsImportRoboflowResponseImportedItem",
     {"projectId": str, "projectName": str, "version": int, "datasetId": str, "slug": str},
 )
 
 
-DatasetsImportFromRoboflowResponseFailedItem = TypedDict(
-    "DatasetsImportFromRoboflowResponseFailedItem", {"projectId": str, "projectName": str, "version": int, "error": str}
+DatasetsImportRoboflowResponseFailedItem = TypedDict(
+    "DatasetsImportRoboflowResponseFailedItem", {"projectId": str, "projectName": str, "version": int, "error": str}
 )
 
 
-DatasetsImportFromRoboflowResponseSkippedItem = TypedDict(
-    "DatasetsImportFromRoboflowResponseSkippedItem", {"projectId": str, "projectName": str, "version": int}
+DatasetsImportRoboflowResponseSkippedItem = TypedDict(
+    "DatasetsImportRoboflowResponseSkippedItem", {"projectId": str, "projectName": str, "version": int}
 )
 
 
-DatasetsImportFromRoboflowResponse = TypedDict(
-    "DatasetsImportFromRoboflowResponse",
+DatasetsImportRoboflowResponse = TypedDict(
+    "DatasetsImportRoboflowResponse",
     {
-        "imported": list[DatasetsImportFromRoboflowResponseImportedItem],
-        "failed": list[DatasetsImportFromRoboflowResponseFailedItem],
-        "skipped": list[DatasetsImportFromRoboflowResponseSkippedItem],
+        "imported": list[DatasetsImportRoboflowResponseImportedItem],
+        "failed": list[DatasetsImportRoboflowResponseFailedItem],
+        "skipped": list[DatasetsImportRoboflowResponseSkippedItem],
     },
 )
 
 
-DatasetsPreviewRoboflowImportResponseWorkspace = TypedDict(
-    "DatasetsPreviewRoboflowImportResponseWorkspace", {"url": str, "name": str}
+DatasetsPreviewRoboflowResponseWorkspace = TypedDict(
+    "DatasetsPreviewRoboflowResponseWorkspace", {"url": str, "name": str}
 )
 
 
-DatasetsPreviewRoboflowImportResponseNewDatasetsItem = TypedDict(
-    "DatasetsPreviewRoboflowImportResponseNewDatasetsItem",
+DatasetsPreviewRoboflowResponseNewDatasetsItem = TypedDict(
+    "DatasetsPreviewRoboflowResponseNewDatasetsItem",
     {
         "workspace": str,
         "projectId": str,
@@ -1054,22 +1045,22 @@ DatasetsPreviewRoboflowImportResponseNewDatasetsItem = TypedDict(
 )
 
 
-DatasetsPreviewRoboflowImportResponseStorage = TypedDict(
-    "DatasetsPreviewRoboflowImportResponseStorage", {"usedBytes": float, "limitBytes": float, "hasEnoughStorage": bool}
+DatasetsPreviewRoboflowResponseStorage = TypedDict(
+    "DatasetsPreviewRoboflowResponseStorage", {"usedBytes": float, "limitBytes": float, "hasEnoughStorage": bool}
 )
 
 
-DatasetsPreviewRoboflowImportResponse = TypedDict(
-    "DatasetsPreviewRoboflowImportResponse",
+DatasetsPreviewRoboflowResponse = TypedDict(
+    "DatasetsPreviewRoboflowResponse",
     {
-        "workspace": DatasetsPreviewRoboflowImportResponseWorkspace,
-        "newDatasets": list[DatasetsPreviewRoboflowImportResponseNewDatasetsItem],
+        "workspace": DatasetsPreviewRoboflowResponseWorkspace,
+        "newDatasets": list[DatasetsPreviewRoboflowResponseNewDatasetsItem],
         "skippedCount": int,
         "missingVersionCount": int,
         "unsupportedCount": int,
         "unresolvedCount": int,
         "bytesTotal": int,
-        "storage": DatasetsPreviewRoboflowImportResponseStorage,
+        "storage": DatasetsPreviewRoboflowResponseStorage,
     },
 )
 
@@ -1126,42 +1117,41 @@ DeploymentsUpdateResponse = DeploymentsUpdateResponseVariant1 | DeploymentsUpdat
 DeploymentsDeleteResponse = TypedDict("DeploymentsDeleteResponse", {"success": Literal[True]})
 
 
-DeploymentsRetrieveHealthResponse = TypedDict(
-    "DeploymentsRetrieveHealthResponse",
+DeploymentsHealthResponse = TypedDict(
+    "DeploymentsHealthResponse",
     {"healthy": bool, "status": NotRequired[float], "latencyMs": float, "error": NotRequired[str]},
 )
 
 
-DeploymentsRetrieveLogsResponseEntriesItemHttpRequest = TypedDict(
-    "DeploymentsRetrieveLogsResponseEntriesItemHttpRequest",
+DeploymentsLogsResponseEntriesItemHttpRequest = TypedDict(
+    "DeploymentsLogsResponseEntriesItemHttpRequest",
     {"method": str, "url": str, "status": float, "latencyMs": float, "userAgent": NotRequired[str]},
 )
 
 
-DeploymentsRetrieveLogsResponseEntriesItem = TypedDict(
-    "DeploymentsRetrieveLogsResponseEntriesItem",
+DeploymentsLogsResponseEntriesItem = TypedDict(
+    "DeploymentsLogsResponseEntriesItem",
     {
         "timestamp": str,
         "severity": Literal["DEFAULT", "DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "CRITICAL", "ALERT", "EMERGENCY"],
         "message": str,
-        "httpRequest": NotRequired[DeploymentsRetrieveLogsResponseEntriesItemHttpRequest],
+        "httpRequest": NotRequired[DeploymentsLogsResponseEntriesItemHttpRequest],
     },
 )
 
 
-DeploymentsRetrieveLogsResponse = TypedDict(
-    "DeploymentsRetrieveLogsResponse",
-    {"entries": list[DeploymentsRetrieveLogsResponseEntriesItem], "nextPageToken": NotRequired[str]},
+DeploymentsLogsResponse = TypedDict(
+    "DeploymentsLogsResponse", {"entries": list[DeploymentsLogsResponseEntriesItem], "nextPageToken": NotRequired[str]}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeRange = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeRange", {"start": str, "end": str}
+DeploymentsMetricsResponseVariant1TimeRange = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeRange", {"start": str, "end": str}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1Summary = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1Summary",
+DeploymentsMetricsResponseVariant1Summary = TypedDict(
+    "DeploymentsMetricsResponseVariant1Summary",
     {
         "totalRequests": float,
         "errorCount": float,
@@ -1174,76 +1164,74 @@ DeploymentsRetrieveMetricsResponseVariant1Summary = TypedDict(
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeSeriesRequestsItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesRequestsItem", {"timestamp": str, "value": float}
+DeploymentsMetricsResponseVariant1TimeSeriesRequestsItem = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeSeriesRequestsItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeSeriesErrorsItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesErrorsItem", {"timestamp": str, "value": float}
+DeploymentsMetricsResponseVariant1TimeSeriesErrorsItem = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeSeriesErrorsItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP50Item = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP50Item", {"timestamp": str, "value": float}
+DeploymentsMetricsResponseVariant1TimeSeriesLatencyP50Item = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeSeriesLatencyP50Item", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP95Item = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP95Item", {"timestamp": str, "value": float}
+DeploymentsMetricsResponseVariant1TimeSeriesLatencyP95Item = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeSeriesLatencyP95Item", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeSeriesCpuUtilizationItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesCpuUtilizationItem", {"timestamp": str, "value": float}
+DeploymentsMetricsResponseVariant1TimeSeriesCpuUtilizationItem = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeSeriesCpuUtilizationItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeSeriesMemoryUtilizationItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesMemoryUtilizationItem", {"timestamp": str, "value": float}
+DeploymentsMetricsResponseVariant1TimeSeriesMemoryUtilizationItem = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeSeriesMemoryUtilizationItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeSeriesInstanceCountItem = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeSeriesInstanceCountItem", {"timestamp": str, "value": float}
+DeploymentsMetricsResponseVariant1TimeSeriesInstanceCountItem = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeSeriesInstanceCountItem", {"timestamp": str, "value": float}
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1TimeSeries = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1TimeSeries",
+DeploymentsMetricsResponseVariant1TimeSeries = TypedDict(
+    "DeploymentsMetricsResponseVariant1TimeSeries",
     {
-        "requests": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesRequestsItem],
-        "errors": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesErrorsItem],
-        "latencyP50": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP50Item],
-        "latencyP95": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesLatencyP95Item],
-        "cpuUtilization": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesCpuUtilizationItem],
-        "memoryUtilization": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesMemoryUtilizationItem],
-        "instanceCount": list[DeploymentsRetrieveMetricsResponseVariant1TimeSeriesInstanceCountItem],
+        "requests": list[DeploymentsMetricsResponseVariant1TimeSeriesRequestsItem],
+        "errors": list[DeploymentsMetricsResponseVariant1TimeSeriesErrorsItem],
+        "latencyP50": list[DeploymentsMetricsResponseVariant1TimeSeriesLatencyP50Item],
+        "latencyP95": list[DeploymentsMetricsResponseVariant1TimeSeriesLatencyP95Item],
+        "cpuUtilization": list[DeploymentsMetricsResponseVariant1TimeSeriesCpuUtilizationItem],
+        "memoryUtilization": list[DeploymentsMetricsResponseVariant1TimeSeriesMemoryUtilizationItem],
+        "instanceCount": list[DeploymentsMetricsResponseVariant1TimeSeriesInstanceCountItem],
     },
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant1 = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant1",
+DeploymentsMetricsResponseVariant1 = TypedDict(
+    "DeploymentsMetricsResponseVariant1",
     {
         "deploymentId": str,
         "region": str,
-        "timeRange": DeploymentsRetrieveMetricsResponseVariant1TimeRange,
-        "summary": DeploymentsRetrieveMetricsResponseVariant1Summary,
-        "timeSeries": DeploymentsRetrieveMetricsResponseVariant1TimeSeries,
+        "timeRange": DeploymentsMetricsResponseVariant1TimeRange,
+        "summary": DeploymentsMetricsResponseVariant1Summary,
+        "timeSeries": DeploymentsMetricsResponseVariant1TimeSeries,
     },
 )
 
 
-DeploymentsRetrieveMetricsResponseVariant2 = TypedDict(
-    "DeploymentsRetrieveMetricsResponseVariant2",
+DeploymentsMetricsResponseVariant2 = TypedDict(
+    "DeploymentsMetricsResponseVariant2",
     {"requests24h": list[float], "totalRequests": float, "errorRate": float, "avgLatencyMs": float},
 )
 
 
-DeploymentsRetrieveMetricsResponse = (
-    DeploymentsRetrieveMetricsResponseVariant1 | DeploymentsRetrieveMetricsResponseVariant2
-)
+DeploymentsMetricsResponse = DeploymentsMetricsResponseVariant1 | DeploymentsMetricsResponseVariant2
 
 
 DeploymentsPredictResponseImagesItemSemanticMask = TypedDict(
@@ -1306,8 +1294,8 @@ DeploymentsCreateResponse = TypedDict(
 )
 
 
-ExploreRetrieveSearchResponseProjectsItem = TypedDict(
-    "ExploreRetrieveSearchResponseProjectsItem",
+ExploreSearchResponseProjectsItem = TypedDict(
+    "ExploreSearchResponseProjectsItem",
     {
         "id": str,
         "project": str,
@@ -1328,13 +1316,13 @@ ExploreRetrieveSearchResponseProjectsItem = TypedDict(
 )
 
 
-ExploreRetrieveSearchResponseDatasetsItemSplits = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItemSplits", {"train": int, "val": int, "test": int, "labeled": int}
+ExploreSearchResponseDatasetsItemSplits = TypedDict(
+    "ExploreSearchResponseDatasetsItemSplits", {"train": int, "val": int, "test": int, "labeled": int}
 )
 
 
-ExploreRetrieveSearchResponseDatasetsItemSampleImagesItemLabelsItem = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItemSampleImagesItemLabelsItem",
+ExploreSearchResponseDatasetsItemSampleImagesItemLabelsItem = TypedDict(
+    "ExploreSearchResponseDatasetsItemSampleImagesItemLabelsItem",
     {
         "classId": int,
         "bbox": NotRequired[list[Any]],
@@ -1346,20 +1334,20 @@ ExploreRetrieveSearchResponseDatasetsItemSampleImagesItemLabelsItem = TypedDict(
 )
 
 
-ExploreRetrieveSearchResponseDatasetsItemSampleImagesItem = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItemSampleImagesItem",
+ExploreSearchResponseDatasetsItemSampleImagesItem = TypedDict(
+    "ExploreSearchResponseDatasetsItemSampleImagesItem",
     {
         "url": str,
         "imageUrl": NotRequired[str],
         "width": float,
         "height": float,
-        "labels": NotRequired[list[ExploreRetrieveSearchResponseDatasetsItemSampleImagesItemLabelsItem]],
+        "labels": NotRequired[list[ExploreSearchResponseDatasetsItemSampleImagesItemLabelsItem]],
     },
 )
 
 
-ExploreRetrieveSearchResponseDatasetsItem = TypedDict(
-    "ExploreRetrieveSearchResponseDatasetsItem",
+ExploreSearchResponseDatasetsItem = TypedDict(
+    "ExploreSearchResponseDatasetsItem",
     {
         "id": str,
         "dataset": str,
@@ -1374,21 +1362,21 @@ ExploreRetrieveSearchResponseDatasetsItem = TypedDict(
         "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
         "totalBytes": NotRequired[float],
         "tags": NotRequired[list[str]],
-        "splits": NotRequired[ExploreRetrieveSearchResponseDatasetsItemSplits],
+        "splits": NotRequired[ExploreSearchResponseDatasetsItemSplits],
         "kptShape": NotRequired[list[Any]],
         "starCount": int,
-        "sampleImages": list[ExploreRetrieveSearchResponseDatasetsItemSampleImagesItem],
+        "sampleImages": list[ExploreSearchResponseDatasetsItemSampleImagesItem],
         "userImageUrl": NotRequired[str],
         "updatedAt": str,
     },
 )
 
 
-ExploreRetrieveSearchResponse = TypedDict(
-    "ExploreRetrieveSearchResponse",
+ExploreSearchResponse = TypedDict(
+    "ExploreSearchResponse",
     {
-        "projects": list[ExploreRetrieveSearchResponseProjectsItem],
-        "datasets": list[ExploreRetrieveSearchResponseDatasetsItem],
+        "projects": list[ExploreSearchResponseProjectsItem],
+        "datasets": list[ExploreSearchResponseDatasetsItem],
         "hasMore": bool,
     },
 )
@@ -1516,18 +1504,14 @@ ImagesDeleteBulkResponse = TypedDict(
 )
 
 
-ImagesRetrieveSignedUrlsResponse = TypedDict(
-    "ImagesRetrieveSignedUrlsResponse", {"urls": dict[str, str], "thumbnails": dict[str, str]}
-)
+ImagesUrlsResponse = TypedDict("ImagesUrlsResponse", {"urls": dict[str, str], "thumbnails": dict[str, str]})
 
 
-StorageIntegrationsDisconnectCloudStorageResponse = TypedDict(
-    "StorageIntegrationsDisconnectCloudStorageResponse", {"success": Literal[True]}
-)
+StorageIntegrationsDeleteResponse = TypedDict("StorageIntegrationsDeleteResponse", {"success": Literal[True]})
 
 
-StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem = TypedDict(
-    "StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem",
+StorageIntegrationsObjectsResponseEntriesItem = TypedDict(
+    "StorageIntegrationsObjectsResponseEntriesItem",
     {
         "kind": Literal["folder", "file"],
         "name": str,
@@ -1538,14 +1522,14 @@ StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem = TypedDict(
 )
 
 
-StorageIntegrationsBrowseCloudStorageObjectsResponse = TypedDict(
-    "StorageIntegrationsBrowseCloudStorageObjectsResponse",
-    {"entries": list[StorageIntegrationsBrowseCloudStorageObjectsResponseEntriesItem], "cursor": NotRequired[str]},
+StorageIntegrationsObjectsResponse = TypedDict(
+    "StorageIntegrationsObjectsResponse",
+    {"entries": list[StorageIntegrationsObjectsResponseEntriesItem], "cursor": NotRequired[str]},
 )
 
 
-StorageIntegrationsListCloudStorageIntegrationsResponseIntegrationsItem = TypedDict(
-    "StorageIntegrationsListCloudStorageIntegrationsResponseIntegrationsItem",
+StorageIntegrationsListResponseIntegrationsItem = TypedDict(
+    "StorageIntegrationsListResponseIntegrationsItem",
     {
         "id": str,
         "provider": Literal["gcs", "s3", "azure"],
@@ -1556,14 +1540,13 @@ StorageIntegrationsListCloudStorageIntegrationsResponseIntegrationsItem = TypedD
 )
 
 
-StorageIntegrationsListCloudStorageIntegrationsResponse = TypedDict(
-    "StorageIntegrationsListCloudStorageIntegrationsResponse",
-    {"integrations": list[StorageIntegrationsListCloudStorageIntegrationsResponseIntegrationsItem]},
+StorageIntegrationsListResponse = TypedDict(
+    "StorageIntegrationsListResponse", {"integrations": list[StorageIntegrationsListResponseIntegrationsItem]}
 )
 
 
-StorageIntegrationsConnectCloudStorageResponse = TypedDict(
-    "StorageIntegrationsConnectCloudStorageResponse",
+StorageIntegrationsCreateResponse = TypedDict(
+    "StorageIntegrationsCreateResponse",
     {
         "id": str,
         "provider": Literal["gcs", "s3", "azure"],
@@ -1574,9 +1557,7 @@ StorageIntegrationsConnectCloudStorageResponse = TypedDict(
 )
 
 
-StorageIntegrationsDiscoverCloudStorageLocationsResponse = TypedDict(
-    "StorageIntegrationsDiscoverCloudStorageLocationsResponse", {"targets": list[str]}
-)
+StorageIntegrationsDiscoverResponse = TypedDict("StorageIntegrationsDiscoverResponse", {"targets": list[str]})
 
 
 ModelsCloneResponse = TypedDict(
@@ -2218,14 +2199,12 @@ ModelsUpdateResponse = ModelsUpdateResponseVariant1 | ModelsUpdateResponseVarian
 ModelsDeleteResponse = TypedDict("ModelsDeleteResponse", {"success": Literal[True]})
 
 
-ModelsRetrieveFilesResponseFilesItem = TypedDict(
-    "ModelsRetrieveFilesResponseFilesItem", {"name": str, "size": float, "downloadUrl": str}
+ModelsFilesResponseFilesItem = TypedDict(
+    "ModelsFilesResponseFilesItem", {"name": str, "size": float, "downloadUrl": str}
 )
 
 
-ModelsRetrieveFilesResponse = TypedDict(
-    "ModelsRetrieveFilesResponse", {"files": list[ModelsRetrieveFilesResponseFilesItem]}
-)
+ModelsFilesResponse = TypedDict("ModelsFilesResponse", {"files": list[ModelsFilesResponseFilesItem]})
 
 
 ModelsPredictResponseImagesItemSemanticMask = TypedDict(
@@ -2276,8 +2255,8 @@ ModelsPredictResponse = TypedDict(
 )
 
 
-ModelsRetrieveTrainingResponseJobProgress = TypedDict(
-    "ModelsRetrieveTrainingResponseJobProgress",
+ModelsTrainingResponseJobProgress = TypedDict(
+    "ModelsTrainingResponseJobProgress",
     {
         "currentEpoch": float,
         "totalEpochs": float,
@@ -2288,18 +2267,18 @@ ModelsRetrieveTrainingResponseJobProgress = TypedDict(
 )
 
 
-ModelsRetrieveTrainingResponseJobTiming = TypedDict(
-    "ModelsRetrieveTrainingResponseJobTiming", {"elapsedMs": float, "timePerEpochMs": float, "etaMs": float}
+ModelsTrainingResponseJobTiming = TypedDict(
+    "ModelsTrainingResponseJobTiming", {"elapsedMs": float, "timePerEpochMs": float, "etaMs": float}
 )
 
 
-ModelsRetrieveTrainingResponseJobCompute = TypedDict(
-    "ModelsRetrieveTrainingResponseJobCompute", {"gpuType": str, "gpuDisplayName": str, "gpuMemoryGb": float}
+ModelsTrainingResponseJobCompute = TypedDict(
+    "ModelsTrainingResponseJobCompute", {"gpuType": str, "gpuDisplayName": str, "gpuMemoryGb": float}
 )
 
 
-ModelsRetrieveTrainingResponseJobTrainArgs = TypedDict(
-    "ModelsRetrieveTrainingResponseJobTrainArgs",
+ModelsTrainingResponseJobTrainArgs = TypedDict(
+    "ModelsTrainingResponseJobTrainArgs",
     {
         "model": NotRequired[str],
         "epochs": NotRequired[float | str],
@@ -2309,31 +2288,29 @@ ModelsRetrieveTrainingResponseJobTrainArgs = TypedDict(
 )
 
 
-ModelsRetrieveTrainingResponseJobError = TypedDict(
-    "ModelsRetrieveTrainingResponseJobError", {"message": str, "code": NotRequired[str], "timestamp": str}
+ModelsTrainingResponseJobError = TypedDict(
+    "ModelsTrainingResponseJobError", {"message": str, "code": NotRequired[str], "timestamp": str}
 )
 
 
-ModelsRetrieveTrainingResponseJob = TypedDict(
-    "ModelsRetrieveTrainingResponseJob",
+ModelsTrainingResponseJob = TypedDict(
+    "ModelsTrainingResponseJob",
     {
         "id": str,
         "status": Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"],
-        "progress": ModelsRetrieveTrainingResponseJobProgress,
-        "timing": ModelsRetrieveTrainingResponseJobTiming,
-        "compute": ModelsRetrieveTrainingResponseJobCompute | None,
-        "trainArgs": ModelsRetrieveTrainingResponseJobTrainArgs | None,
+        "progress": ModelsTrainingResponseJobProgress,
+        "timing": ModelsTrainingResponseJobTiming,
+        "compute": ModelsTrainingResponseJobCompute | None,
+        "trainArgs": ModelsTrainingResponseJobTrainArgs | None,
         "epochMetrics": dict[str, Any] | None,
-        "error": ModelsRetrieveTrainingResponseJobError | None,
+        "error": ModelsTrainingResponseJobError | None,
         "createdAt": str,
         "updatedAt": str,
     },
 )
 
 
-ModelsRetrieveTrainingResponse = TypedDict(
-    "ModelsRetrieveTrainingResponse", {"job": ModelsRetrieveTrainingResponseJob | None}
-)
+ModelsTrainingResponse = TypedDict("ModelsTrainingResponse", {"job": ModelsTrainingResponseJob | None})
 
 
 ModelsDeleteTrainingResponse = TypedDict(
@@ -2546,19 +2523,17 @@ ModelsCreateResponse = TypedDict(
 )
 
 
-ExportsRetrieveStatusResponseExportFile = TypedDict(
-    "ExportsRetrieveStatusResponseExportFile",
+ExportsRetrieveResponseExportFile = TypedDict(
+    "ExportsRetrieveResponseExportFile",
     {"size": NotRequired[float], "downloadUrl": NotRequired[str], "downloadFilename": NotRequired[str]},
 )
 
 
-ExportsRetrieveStatusResponseExportError = TypedDict(
-    "ExportsRetrieveStatusResponseExportError", {"message": str, "timestamp": str}
-)
+ExportsRetrieveResponseExportError = TypedDict("ExportsRetrieveResponseExportError", {"message": str, "timestamp": str})
 
 
-ExportsRetrieveStatusResponseExport = TypedDict(
-    "ExportsRetrieveStatusResponseExport",
+ExportsRetrieveResponseExport = TypedDict(
+    "ExportsRetrieveResponseExport",
     {
         "id": str,
         "status": Literal["queued", "starting", "running", "completed", "failed", "cancelled"],
@@ -2586,8 +2561,8 @@ ExportsRetrieveStatusResponseExport = TypedDict(
         ],
         "args": NotRequired[dict[str, Any]],
         "gpuType": NotRequired[str],
-        "file": NotRequired[ExportsRetrieveStatusResponseExportFile],
-        "error": NotRequired[ExportsRetrieveStatusResponseExportError],
+        "file": NotRequired[ExportsRetrieveResponseExportFile],
+        "error": NotRequired[ExportsRetrieveResponseExportError],
         "startedAt": NotRequired[str],
         "completedAt": NotRequired[str],
         "createdAt": str,
@@ -2596,24 +2571,21 @@ ExportsRetrieveStatusResponseExport = TypedDict(
 )
 
 
-ExportsRetrieveStatusResponse = TypedDict(
-    "ExportsRetrieveStatusResponse", {"export": ExportsRetrieveStatusResponseExport}
+ExportsRetrieveResponse = TypedDict("ExportsRetrieveResponse", {"export": ExportsRetrieveResponseExport})
+
+
+ExportsDeleteResponse = TypedDict(
+    "ExportsDeleteResponse", {"success": Literal[True], "action": Literal["cancelled", "deleted"]}
 )
 
 
-ExportsCancelOrDeleteResponse = TypedDict(
-    "ExportsCancelOrDeleteResponse", {"success": Literal[True], "action": Literal["cancelled", "deleted"]}
+ExportsListResponse = TypedDict(
+    "ExportsListResponse", {"exports": list[ExportsRetrieveResponseExport], "region": Literal["us", "eu", "ap"]}
 )
 
 
-ExportsListModelResponse = TypedDict(
-    "ExportsListModelResponse",
-    {"exports": list[ExportsRetrieveStatusResponseExport], "region": Literal["us", "eu", "ap"]},
-)
-
-
-ExportsExportModelResponse = TypedDict(
-    "ExportsExportModelResponse",
+ExportsCreateResponse = TypedDict(
+    "ExportsCreateResponse",
     {
         "id": str,
         "format": Literal[
@@ -2891,7 +2863,7 @@ ProjectsCreateResponse = TypedDict(
 )
 
 
-TrainingRetrieveGpuAvailabilityResponse = "TrainingRetrieveGpuAvailabilityResponse"
+TrainingGpuAvailabilityResponse = dict[str, Literal["High", "Medium", "Low"] | None]
 
 
 TrainingStartResponseEstimatedCost = TypedDict(
@@ -2916,13 +2888,13 @@ TrainingStartResponse = TypedDict(
 )
 
 
-LifecycleRetrieveTrashResponseItemsItemParentProject = TypedDict(
-    "LifecycleRetrieveTrashResponseItemsItemParentProject", {"_id": str, "name": str, "slug": str}
+LifecycleTrashResponseItemsItemParentProject = TypedDict(
+    "LifecycleTrashResponseItemsItemParentProject", {"_id": str, "name": str, "slug": str}
 )
 
 
-LifecycleRetrieveTrashResponseItemsItem = TypedDict(
-    "LifecycleRetrieveTrashResponseItemsItem",
+LifecycleTrashResponseItemsItem = TypedDict(
+    "LifecycleTrashResponseItemsItem",
     {
         "_id": str,
         "type": Literal["project", "dataset", "model"],
@@ -2931,70 +2903,68 @@ LifecycleRetrieveTrashResponseItemsItem = TypedDict(
         "trashedAt": str,
         "daysRemaining": int,
         "cascadedCount": NotRequired[int],
-        "parentProject": NotRequired[LifecycleRetrieveTrashResponseItemsItemParentProject],
+        "parentProject": NotRequired[LifecycleTrashResponseItemsItemParentProject],
         "sizeBytes": NotRequired[float],
     },
 )
 
 
-LifecycleRetrieveTrashResponseSummaryByTypeProjects = TypedDict(
-    "LifecycleRetrieveTrashResponseSummaryByTypeProjects", {"count": int}
+LifecycleTrashResponseSummaryByTypeProjects = TypedDict("LifecycleTrashResponseSummaryByTypeProjects", {"count": int})
+
+
+LifecycleTrashResponseSummaryByTypeDatasets = TypedDict(
+    "LifecycleTrashResponseSummaryByTypeDatasets", {"count": int, "sizeBytes": float}
 )
 
 
-LifecycleRetrieveTrashResponseSummaryByTypeDatasets = TypedDict(
-    "LifecycleRetrieveTrashResponseSummaryByTypeDatasets", {"count": int, "sizeBytes": float}
+LifecycleTrashResponseSummaryByTypeModels = TypedDict(
+    "LifecycleTrashResponseSummaryByTypeModels", {"count": int, "sizeBytes": float}
 )
 
 
-LifecycleRetrieveTrashResponseSummaryByTypeModels = TypedDict(
-    "LifecycleRetrieveTrashResponseSummaryByTypeModels", {"count": int, "sizeBytes": float}
+LifecycleTrashResponseSummaryByTypeExports = TypedDict(
+    "LifecycleTrashResponseSummaryByTypeExports", {"count": int, "sizeBytes": float}
 )
 
 
-LifecycleRetrieveTrashResponseSummaryByTypeExports = TypedDict(
-    "LifecycleRetrieveTrashResponseSummaryByTypeExports", {"count": int, "sizeBytes": float}
-)
-
-
-LifecycleRetrieveTrashResponseSummaryByType = TypedDict(
-    "LifecycleRetrieveTrashResponseSummaryByType",
+LifecycleTrashResponseSummaryByType = TypedDict(
+    "LifecycleTrashResponseSummaryByType",
     {
-        "projects": LifecycleRetrieveTrashResponseSummaryByTypeProjects,
-        "datasets": LifecycleRetrieveTrashResponseSummaryByTypeDatasets,
-        "models": LifecycleRetrieveTrashResponseSummaryByTypeModels,
-        "exports": LifecycleRetrieveTrashResponseSummaryByTypeExports,
+        "projects": LifecycleTrashResponseSummaryByTypeProjects,
+        "datasets": LifecycleTrashResponseSummaryByTypeDatasets,
+        "models": LifecycleTrashResponseSummaryByTypeModels,
+        "exports": LifecycleTrashResponseSummaryByTypeExports,
     },
 )
 
 
-LifecycleRetrieveTrashResponseSummary = TypedDict(
-    "LifecycleRetrieveTrashResponseSummary",
-    {"totalItems": int, "totalSizeBytes": float, "byType": LifecycleRetrieveTrashResponseSummaryByType},
+LifecycleTrashResponseSummary = TypedDict(
+    "LifecycleTrashResponseSummary",
+    {"totalItems": int, "totalSizeBytes": float, "byType": LifecycleTrashResponseSummaryByType},
 )
 
 
-LifecycleRetrieveTrashResponse = TypedDict(
-    "LifecycleRetrieveTrashResponse",
+LifecycleTrashResponse = TypedDict(
+    "LifecycleTrashResponse",
     {
-        "items": list[LifecycleRetrieveTrashResponseItemsItem],
+        "items": list[LifecycleTrashResponseItemsItem],
         "total": int,
         "page": int,
         "limit": int,
         "totalPages": int,
-        "summary": LifecycleRetrieveTrashResponseSummary,
+        "summary": LifecycleTrashResponseSummary,
         "region": Literal["us", "eu", "ap"],
     },
 )
 
 
-LifecycleRestoreTrashedItemResponse = TypedDict(
-    "LifecycleRestoreTrashedItemResponse", {"success": Literal[True], "restoredModels": NotRequired[int]}
+LifecycleRestoreResponse = TypedDict(
+    "LifecycleRestoreResponse", {"success": Literal[True], "restoredModels": NotRequired[int]}
 )
 
 
-LifecyclePermanentlyDeleteTrashResponse = TypedDict(
-    "LifecyclePermanentlyDeleteTrashResponse",
+LifecycleDeleteTrashResponse = TypedDict(
+    "LifecycleDeleteTrashResponse",
     {
         "success": Literal[True],
         "deletedCount": int,
@@ -3012,6 +2982,4 @@ UploadCompleteResponse = TypedDict(
 )
 
 
-UploadRetrieveFileUrlResponse = TypedDict(
-    "UploadRetrieveFileUrlResponse", {"sessionId": str, "uploadUrl": str, "expiresAt": str}
-)
+UploadSignedUrlResponse = TypedDict("UploadSignedUrlResponse", {"sessionId": str, "uploadUrl": str, "expiresAt": str})
