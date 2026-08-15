@@ -325,7 +325,7 @@ class Projects:
 
         Args:
             project (str): Project name used in Platform URLs
-            name (str): name request value.
+            name (str): Display name
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
@@ -663,7 +663,7 @@ class AsyncProjects:
 
         Args:
             project (str): Project name used in Platform URLs
-            name (str): name request value.
+            name (str): Display name
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility

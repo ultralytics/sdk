@@ -162,7 +162,7 @@ jobs:
             git commit -m "Update Platform API contract"
             git push --set-upstream origin "$branch"
           fi
-          gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. Review this diff for semantic versioning impact (added, removed, or changed operations and schemas), then bump openapi.config.json python.version and regenerate before merge."
+          gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. Review this diff for semantic versioning impact (added, removed, or changed operations and schemas). The package version follows the contract info.version, so confirm the contract was bumped upstream before merge; merging a bumped version publishes to PyPI."
 
       - name: Create, edit, and delete resources through every SDK operation
         env:

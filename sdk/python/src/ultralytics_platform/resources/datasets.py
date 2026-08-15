@@ -1072,7 +1072,7 @@ class Datasets:
 
         Args:
             dataset (str): Dataset name used in Platform URLs
-            name (str): name request value.
+            name (str): Display name
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
@@ -1130,7 +1130,7 @@ class Datasets:
         Imports selected Roboflow dataset versions into the API key's workspace.
 
         Args:
-            api_key (str): apiKey request value.
+            api_key (str): Roboflow API key
             items (Sequence[dict[str, Any]]): items request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -1161,7 +1161,7 @@ class Datasets:
         Validates a Roboflow API key and lists datasets available for import.
 
         Args:
-            api_key (str): apiKey request value.
+            api_key (str): Roboflow API key
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2213,7 +2213,7 @@ class AsyncDatasets:
 
         Args:
             dataset (str): Dataset name used in Platform URLs
-            name (str): name request value.
+            name (str): Display name
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
@@ -2271,7 +2271,7 @@ class AsyncDatasets:
         Imports selected Roboflow dataset versions into the API key's workspace.
 
         Args:
-            api_key (str): apiKey request value.
+            api_key (str): Roboflow API key
             items (Sequence[dict[str, Any]]): items request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -2302,7 +2302,7 @@ class AsyncDatasets:
         Validates a Roboflow API key and lists datasets available for import.
 
         Args:
-            api_key (str): apiKey request value.
+            api_key (str): Roboflow API key
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
