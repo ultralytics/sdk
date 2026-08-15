@@ -206,7 +206,7 @@ def wait_for_images(client: Platform, owner: str, dataset: str) -> list[dict[str
     for _ in range(12):
         result = client.datasets.retrieve(owner, dataset)
         if result["dataset"].get("imageCount") == DATASET_IMAGE_COUNT:
-            images = client.datasets.list_images(owner, dataset, limit=DATASET_IMAGE_COUNT, include_labels="true").get(
+            images = client.datasets.images(owner, dataset, limit=DATASET_IMAGE_COUNT, include_labels="true").get(
                 "images", []
             )
             if len(images) == DATASET_IMAGE_COUNT:
@@ -231,27 +231,27 @@ def download_dataset() -> bytes:
 
 def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_errors: dict[str, str]) -> None:
     """Invoke every generated operation and require successful owned-resource CRUD."""
-    account = client.account.retrieve_summary()
+    account = client.account.summary()
     owner = str(account["username"])
     suffix = str(time.time_ns())[-12:]
     slug = f"sdk-ci-{suffix}"
     missing = f"missing-{suffix}"
     created_ids: dict[str, str] = {}
 
-    client.account.list_api_keys()
-    client.account.retrieve_storage_usage(details="true")
-    client.account.retrieve_public_user_profile(username=owner)
+    client.account.api_keys()
+    client.account.storage(details="true")
+    client.account.profile(username=owner)
     expected_error(
-        lambda: client.account.follow_user(username=missing, followed=True),
+        lambda: client.account.follow(username=missing, followed=True),
         "patch_api_users",
         "A nonexistent account safely validates follow input without mutating account state",
         expected_errors,
     )
-    client.billing.list_transactions()
-    client.billing.list_usage_summary()
-    client.explore.retrieve_search(limit=1)
-    client.training.retrieve_gpu_availability()
-    client.lifecycle.retrieve_trash(limit=1)
+    client.billing.transactions()
+    client.billing.usage_summary()
+    client.explore.search(limit=1)
+    client.training.gpu_availability()
+    client.lifecycle.trash(limit=1)
 
     project = slug
     cleanup.append(
@@ -260,7 +260,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             lambda: client.projects.delete(owner, project),
             "project",
             lambda: created_ids.get("project"),
-            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "project"}),
+            lambda resource_id: client.lifecycle.delete_trash(body={"id": resource_id, "type": "project"}),
         )
     )
     project_result = client.projects.create(project=project, name="SDK CI project", visibility="private")
@@ -278,7 +278,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             lambda: client.projects.delete(owner, clone_project),
             "project",
             lambda: created_ids.get("project-clone"),
-            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "project"}),
+            lambda resource_id: client.lifecycle.delete_trash(body={"id": resource_id, "type": "project"}),
         )
     )
     project_clone = expected_error(
@@ -297,14 +297,14 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             lambda: client.datasets.delete(owner, dataset),
             "dataset",
             lambda: created_ids.get("dataset"),
-            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "dataset"}),
+            lambda resource_id: client.lifecycle.delete_trash(body={"id": resource_id, "type": "dataset"}),
         )
     )
     dataset_result = client.datasets.create(dataset=dataset, name="SDK CI dataset", task="detect", visibility="private")
     dataset_id = str(dataset_result["id"])
     created_ids["dataset"] = dataset_id
     archive = download_dataset()
-    upload = client.upload.retrieve_file_url(
+    upload = client.upload.signed_url(
         body={
             "assetId": dataset_id,
             "assetType": "datasets",
@@ -327,10 +327,10 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     if client.datasets.retrieve(owner, dataset)["dataset"].get("description") != "Full API lifecycle canary":
         raise RuntimeError("Dataset update did not persist")
     client.datasets.list(owner, limit=1)
-    client.datasets.retrieve_class_stats(owner, dataset)
-    client.datasets.list_images(owner, dataset, limit=1)
-    client.datasets.retrieve_selected_images(owner, dataset, image_ids=image_ids[:1])
-    client.datasets.list_models(owner, dataset)
+    client.datasets.class_stats(owner, dataset)
+    client.datasets.images(owner, dataset, limit=1)
+    client.datasets.selected_images(owner, dataset, image_ids=image_ids[:1])
+    client.datasets.models(owner, dataset)
     expected_error(
         lambda: client.datasets.delete_classes(owner, dataset, class_ids=[9999]),
         "post_api_datasets_owner_dataset_classes_delete",
@@ -372,23 +372,23 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         raise RuntimeError("Image label update did not persist")
     client.images.update(image_ids[0], body={"labels": labels})
     client.images.update_bulk(image_ids=[image_ids[1]], split="val")
-    client.images.retrieve_signed_urls(image_ids=image_ids[:1])
+    client.images.urls(image_ids=image_ids[:1])
     client.images.delete_bulk(image_ids=[image_ids[1]])
     client.images.delete(image_ids[2])
 
     version_result = client.datasets.create_export(owner, dataset, description="SDK CI version")
     version = int(version_result["version"])
-    client.datasets.retrieve_export(owner, dataset, v=version)
+    client.datasets.export(owner, dataset, v=version)
     client.datasets.update_export(owner, dataset, version=version, description="SDK CI version updated")
     client.datasets.restore(owner, dataset, version=version)
     client.datasets.create_embeddings(owner, dataset)
     for _ in range(24):
-        if client.datasets.retrieve_embeddings(owner, dataset).get("analyzedAt"):
+        if client.datasets.embeddings(owner, dataset).get("analyzedAt"):
             break
         time.sleep(5)
     else:
         raise RuntimeError("Canary dataset embedding analysis did not finish")
-    client.datasets.retrieve_images_clustering(owner, dataset, limit=1)
+    client.datasets.clustering(owner, dataset, limit=1)
     client.datasets.delete_embeddings(owner, dataset)
 
     clone_dataset = f"{slug}-clone"
@@ -398,7 +398,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             lambda: client.datasets.delete(owner, clone_dataset),
             "dataset",
             lambda: created_ids.get("dataset-clone"),
-            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "dataset"}),
+            lambda resource_id: client.lifecycle.delete_trash(body={"id": resource_id, "type": "dataset"}),
         )
     )
     dataset_clone = expected_error(
@@ -417,7 +417,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             lambda: client.models.delete(owner, project, model),
             "model",
             lambda: created_ids.get("model"),
-            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "model"}),
+            lambda resource_id: client.lifecycle.delete_trash(body={"id": resource_id, "type": "model"}),
         )
     )
     model_result = client.models.create(
@@ -429,8 +429,8 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     if client.models.retrieve(owner, project, model)["model"].get("description") != "Full API lifecycle canary":
         raise RuntimeError("Model update did not persist")
     client.models.list(owner, project, limit=1)
-    client.models.retrieve_files(owner, project, model)
-    client.models.retrieve_training(owner, project, model)
+    client.models.files(owner, project, model)
+    client.models.training(owner, project, model)
     expected_error(
         lambda: client.models.delete_training(owner, project, model),
         "delete_api_models_owner_project_model_training",
@@ -440,7 +440,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     unexpected_export_ids: set[str] = set()
 
     def discover_new_exports() -> set[str]:
-        result = client.exports.list_model(owner, project, model, limit=100)
+        result = client.exports.list(owner, project, model, limit=100)
         exports = result.get("exports") if isinstance(result, dict) else None
         return {
             str(item["id"])
@@ -449,7 +449,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         }
 
     def create_export() -> dict[str, Any]:
-        result = client.exports.export_model(owner, project, model, format="onnx")
+        result = client.exports.create(owner, project, model, format="onnx")
         if isinstance(result, dict) and result.get("id"):
             unexpected_export_ids.add(str(result["id"]))
         return result
@@ -458,7 +458,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         lambda: cleanup_created(
             unexpected_export_ids,
             discover_new_exports,
-            lambda export_id: client.exports.cancel_or_delete(owner, project, model, export_id),
+            lambda export_id: client.exports.delete(owner, project, model, export_id),
         )
     )
     export = expected_error(
@@ -469,13 +469,13 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     )
     export_id = str(export.get("id", missing))
     expected_error(
-        lambda: client.exports.retrieve_status(owner, project, model, export_id),
+        lambda: client.exports.retrieve(owner, project, model, export_id),
         "get_api_models_owner_project_model_exports_exportId",
         "No export exists after the intentionally rejected export request",
         expected_errors,
     )
     expected_error(
-        lambda: client.exports.cancel_or_delete(owner, project, model, export_id),
+        lambda: client.exports.delete(owner, project, model, export_id),
         "delete_api_models_owner_project_model_exports_exportId",
         "No export exists after the intentionally rejected export request",
         expected_errors,
@@ -506,7 +506,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             lambda: client.models.delete(owner, project, clone_model),
             "model",
             lambda: created_ids.get("model-clone"),
-            lambda resource_id: client.lifecycle.permanently_delete_trash(body={"id": resource_id, "type": "model"}),
+            lambda resource_id: client.lifecycle.delete_trash(body={"id": resource_id, "type": "model"}),
         )
     )
     model_clone = expected_error(
@@ -543,19 +543,19 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         expected_errors,
     )
     expected_error(
-        lambda: client.deployments.retrieve_health(owner, deployment),
+        lambda: client.deployments.health(owner, deployment),
         "get_api_deployments_owner_deployment_health",
         deployment_reason,
         expected_errors,
     )
     expected_error(
-        lambda: client.deployments.retrieve_logs(owner, deployment, limit=1),
+        lambda: client.deployments.logs(owner, deployment, limit=1),
         "get_api_deployments_owner_deployment_logs",
         deployment_reason,
         expected_errors,
     )
     expected_error(
-        lambda: client.deployments.retrieve_metrics(owner, deployment),
+        lambda: client.deployments.metrics(owner, deployment),
         "get_api_deployments_owner_deployment_metrics",
         deployment_reason,
         expected_errors,
@@ -573,19 +573,17 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         expected_errors,
     )
 
-    integrations = client.storage_integrations.list_cloud_storage_integrations()
+    integrations = client.storage_integrations.list()
     listed_integrations = integrations.get("integrations") if isinstance(integrations, dict) else None
     listed_integrations = listed_integrations if isinstance(listed_integrations, list) else []
     expected_error(
-        lambda: client.storage_integrations.browse_cloud_storage_objects("0" * 24, target="missing"),
+        lambda: client.storage_integrations.objects("0" * 24, target="missing"),
         "get_api_integrations_buckets_id_objects",
         "The canary has no configured cloud storage integration",
         expected_errors,
     )
     expected_error(
-        lambda: client.storage_integrations.discover_cloud_storage_locations(
-            body={"provider": "invalid", "credentials": {}}
-        ),
+        lambda: client.storage_integrations.discover(body={"provider": "invalid", "credentials": {}}),
         "post_api_integrations_buckets_discover",
         "An unknown provider is rejected before any external storage request",
         expected_errors,
@@ -598,7 +596,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     unexpected_integration_ids: set[str] = set()
 
     def discover_new_integrations() -> set[str]:
-        result = client.storage_integrations.list_cloud_storage_integrations()
+        result = client.storage_integrations.list()
         items = result.get("integrations") if isinstance(result, dict) else None
         return {
             str(item.get("id") or item.get("_id"))
@@ -609,9 +607,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         }
 
     def connect_storage() -> dict[str, Any]:
-        result = client.storage_integrations.connect_cloud_storage(
-            body={"provider": "invalid", "credentials": {}, "targets": []}
-        )
+        result = client.storage_integrations.create(body={"provider": "invalid", "credentials": {}, "targets": []})
         if isinstance(result, dict) and (result.get("id") or result.get("_id")):
             unexpected_integration_ids.add(str(result.get("id") or result.get("_id")))
         return result
@@ -620,7 +616,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         lambda: cleanup_created(
             unexpected_integration_ids,
             discover_new_integrations,
-            client.storage_integrations.disconnect_cloud_storage,
+            client.storage_integrations.delete,
         )
     )
     expected_error(
@@ -630,26 +626,26 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
         expected_errors,
     )
     expected_error(
-        lambda: client.storage_integrations.disconnect_cloud_storage("0" * 24),
+        lambda: client.storage_integrations.delete("0" * 24),
         "delete_api_integrations_buckets_id",
         "No cloud storage integration exists with the canary ID",
         expected_errors,
     )
     expected_error(
-        lambda: client.datasets.preview_roboflow_import(api_key="invalid"),
+        lambda: client.datasets.preview_roboflow(api_key="invalid"),
         "post_api_integrations_roboflow_preview",
         "Invalid credentials avoid importing external data",
         expected_errors,
     )
     expected_error(
-        lambda: client.datasets.import_from_roboflow(api_key="invalid", items=[]),
+        lambda: client.datasets.import_roboflow(api_key="invalid", items=[]),
         "post_api_integrations_roboflow_import",
         "Invalid credentials avoid importing external data",
         expected_errors,
     )
 
     client.datasets.delete(owner, dataset)
-    client.lifecycle.restore_trashed_item(id=dataset_id, type="dataset")
+    client.lifecycle.restore(id=dataset_id, type="dataset")
     client.datasets.delete(owner, dataset)
 
 

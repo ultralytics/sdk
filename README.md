@@ -39,7 +39,7 @@ with Platform(api_key="YOUR_API_KEY") as client:
     datasets = client.datasets.list("your_username")
     training = client.training.start(model_id="model_id", train_args={"epochs": 10})
     model = client.models.retrieve("your_username", "project", "model")
-    export = client.exports.export_model("your_username", "project", "model", format="onnx")
+    export = client.exports.create("your_username", "project", "model", format="onnx")
     deployment = client.deployments.create(
         "your_username",
         project="project",

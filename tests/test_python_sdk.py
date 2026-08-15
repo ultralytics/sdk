@@ -82,7 +82,7 @@ def test_priority_resource_requests() -> None:
             "user", project="project", model="model", deployment="production", name="Production", region="us-central1"
         )
         client.training.start(model_id="model-id", train_args={"epochs": 10})
-        client.exports.export_model("user", "project", "model", format="onnx")
+        client.exports.create("user", "project", "model", format="onnx")
 
     assert [(request.method, request.url.raw_path) for request in requests] == [
         ("GET", b"/api/datasets/user?limit=2"),

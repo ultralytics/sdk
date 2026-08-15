@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
+import json
 import time
+from collections.abc import Sequence
 from typing import Any
 from urllib.parse import quote
 
@@ -13,6 +16,12 @@ from ._exceptions import APIConnectionError, APIError
 
 class NotGiven:
     """Sentinel for omitted request values."""
+
+    def __bool__(self) -> bool:
+        return False
+
+    def __repr__(self) -> str:
+        return "NOT_GIVEN"
 
 
 NOT_GIVEN = NotGiven()
@@ -31,13 +40,13 @@ def _path_parameter(value: Any, *, explode: bool, allow_reserved: bool) -> str:
             else [encode(item) for pair in value.items() for item in pair]
         )
         return ",".join(parts)
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
         return ",".join(encode(item) for item in value)
     return encode(value)
 
 
 def _query_parameter(name: str, value: Any, *, style: str, explode: bool) -> list[tuple[str, Any]]:
-    if value is None:
+    if value is None or isinstance(value, NotGiven):
         return []
     if isinstance(value, dict):
         if style == "deepObject":
@@ -45,7 +54,7 @@ def _query_parameter(name: str, value: Any, *, style: str, explode: bool) -> lis
         if explode:
             return list(value.items())
         return [(name, ",".join(str(item) for pair in value.items() for item in pair))]
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
         if style == "form" and explode:
             return [(name, item) for item in value]
         separator = " " if style == "spaceDelimited" else "|" if style == "pipeDelimited" else ","
@@ -53,8 +62,8 @@ def _query_parameter(name: str, value: Any, *, style: str, explode: bool) -> lis
     return [(name, value)]
 
 
-def _without_none(values: Any) -> Any:
-    return {key: value for key, value in values.items() if value is not None} if isinstance(values, dict) else values
+def _without_none(values: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in values.items() if value is not None and not isinstance(value, NotGiven)}
 
 
 def _without_not_given(values: Any) -> Any:
@@ -63,13 +72,36 @@ def _without_not_given(values: Any) -> Any:
     return None if isinstance(values, NotGiven) else values
 
 
+def _json_value(value: Any) -> Any:
+    """Drop omitted values and turn any sequence into a list so the payload is JSON serializable."""
+    if isinstance(value, dict):
+        return {key: _json_value(item) for key, item in value.items() if not isinstance(item, NotGiven)}
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        return [_json_value(item) for item in value]
+    return None if isinstance(value, NotGiven) else value
+
+
+def _form_data(values: dict[str, Any], *, multipart: bool) -> dict[str, Any]:
+    """Encode object fields as JSON parts for multipart bodies and as exploded fields for URL-encoded bodies."""
+    fields: dict[str, Any] = {}
+    for name, value in _without_not_given(values).items():
+        if isinstance(value, dict):
+            if multipart:
+                fields[name] = json.dumps(value)
+            else:
+                fields.update(value)
+        else:
+            fields[name] = value
+    return fields
+
+
 def _retry_delay(response: httpx.Response | None, attempt: int) -> float:
     if response is not None:
         try:
-            return min(max(float(response.headers.get("retry-after", "")), 0), 60)
+            return min(max(float(response.headers.get("retry-after", "")), 0.0), 60.0)
         except ValueError:
             pass
-    return min(0.5 * (2**attempt), 8)
+    return min(0.5 * 2.0**attempt, 8.0)
 
 
 class SyncAPIClient:
@@ -82,57 +114,55 @@ class SyncAPIClient:
         max_retries: int,
         http_client: httpx.Client | None,
     ) -> None:
-        self._client = http_client or httpx.Client(
-            base_url=f"{base_url.rstrip('/')}/",
-            timeout=timeout,
-        )
-        self._client.base_url = httpx.URL(f"{base_url.rstrip('/')}/")
+        self._client = http_client or httpx.Client(timeout=timeout)
+        self._base_url = httpx.URL(f"{base_url.rstrip('/')}/")
         self._api_key = api_key
         self._max_retries = max_retries
 
     def request(self, method: str, path: str, **kwargs: Any) -> Any:
         retryable = method.upper() in {"GET", "HEAD", "OPTIONS"}
-        headers = _without_none(kwargs.get("headers")) or {}
+        headers = {**_without_none(kwargs.get("headers") or {}), **(kwargs.get("extra_headers") or {})}
         if self._api_key and (auth := kwargs.get("auth")):
             headers.setdefault(auth[0], f"{auth[1]}{self._api_key}")
-        request_path = (
-            self._client.base_url.join(f"{kwargs['server'].rstrip('/')}/{path.lstrip('/')}")
-            if kwargs.get("server")
-            else path.lstrip("/")
-        )
+        server = kwargs.get("server")
+        url = self._base_url.join(f"{server.rstrip('/')}/{path.lstrip('/')}" if server else path.lstrip("/"))
         for attempt in range(self._max_retries + 1):
             try:
                 response = self._client.request(
                     method,
-                    request_path,
-                    params=_without_none(kwargs.get("params")),
+                    url,
+                    params=kwargs.get("params"),
                     headers=headers,
-                    cookies=_without_none(kwargs.get("cookies")),
-                    json=_without_not_given(kwargs.get("json")),
-                    data=_without_not_given(kwargs.get("data")),
+                    cookies=_without_none(kwargs.get("cookies") or {}) or None,
+                    json=_json_value(kwargs.get("json")),
+                    data=kwargs.get("data"),
                     files=_without_not_given(kwargs.get("files")),
                     content=_without_not_given(kwargs.get("content")),
+                    **({"timeout": timeout} if (timeout := kwargs.get("timeout")) is not None else {}),
                 )
             except httpx.HTTPError as error:
                 if not retryable or attempt == self._max_retries:
                     raise APIConnectionError(str(error)) from error
                 time.sleep(_retry_delay(None, attempt))
                 continue
-            if not retryable or (response.status_code not in {408, 409, 429} and response.status_code < 500):
-                break
-            if attempt == self._max_retries:
-                break
-            time.sleep(_retry_delay(response, attempt))
-        if response.is_error:
-            raise APIError(response.status_code, response.text, response.headers.get("x-request-id"))
-        if response.status_code == 204 or not response.content:
-            return None
-        media_type = response.headers.get("content-type", "").split(";", 1)[0].lower()
-        if media_type == "application/json" or media_type.endswith("+json"):
-            return response.json()
-        if kwargs.get("text") or media_type.startswith("text/"):
-            return response.text
-        return response.content
+            if (
+                retryable
+                and attempt < self._max_retries
+                and (response.status_code in {408, 409, 429} or response.status_code >= 500)
+            ):
+                time.sleep(_retry_delay(response, attempt))
+                continue
+            if response.is_error:
+                raise APIError(response.status_code, response.text, response.headers.get("x-request-id"))
+            if response.status_code == 204 or not response.content:
+                return None
+            media_type = response.headers.get("content-type", "").split(";", 1)[0].lower()
+            if media_type == "application/json" or media_type.endswith("+json"):
+                return response.json()
+            if kwargs.get("text") or media_type.startswith("text/"):
+                return response.text
+            return response.content
+        raise APIConnectionError("Request was not attempted")
 
     def close(self) -> None:
         self._client.close()
@@ -148,57 +178,55 @@ class AsyncAPIClient:
         max_retries: int,
         http_client: httpx.AsyncClient | None,
     ) -> None:
-        self._client = http_client or httpx.AsyncClient(
-            base_url=f"{base_url.rstrip('/')}/",
-            timeout=timeout,
-        )
-        self._client.base_url = httpx.URL(f"{base_url.rstrip('/')}/")
+        self._client = http_client or httpx.AsyncClient(timeout=timeout)
+        self._base_url = httpx.URL(f"{base_url.rstrip('/')}/")
         self._api_key = api_key
         self._max_retries = max_retries
 
     async def request(self, method: str, path: str, **kwargs: Any) -> Any:
         retryable = method.upper() in {"GET", "HEAD", "OPTIONS"}
-        headers = _without_none(kwargs.get("headers")) or {}
+        headers = {**_without_none(kwargs.get("headers") or {}), **(kwargs.get("extra_headers") or {})}
         if self._api_key and (auth := kwargs.get("auth")):
             headers.setdefault(auth[0], f"{auth[1]}{self._api_key}")
-        request_path = (
-            self._client.base_url.join(f"{kwargs['server'].rstrip('/')}/{path.lstrip('/')}")
-            if kwargs.get("server")
-            else path.lstrip("/")
-        )
+        server = kwargs.get("server")
+        url = self._base_url.join(f"{server.rstrip('/')}/{path.lstrip('/')}" if server else path.lstrip("/"))
         for attempt in range(self._max_retries + 1):
             try:
                 response = await self._client.request(
                     method,
-                    request_path,
-                    params=_without_none(kwargs.get("params")),
+                    url,
+                    params=kwargs.get("params"),
                     headers=headers,
-                    cookies=_without_none(kwargs.get("cookies")),
-                    json=_without_not_given(kwargs.get("json")),
-                    data=_without_not_given(kwargs.get("data")),
+                    cookies=_without_none(kwargs.get("cookies") or {}) or None,
+                    json=_json_value(kwargs.get("json")),
+                    data=kwargs.get("data"),
                     files=_without_not_given(kwargs.get("files")),
                     content=_without_not_given(kwargs.get("content")),
+                    **({"timeout": timeout} if (timeout := kwargs.get("timeout")) is not None else {}),
                 )
             except httpx.HTTPError as error:
                 if not retryable or attempt == self._max_retries:
                     raise APIConnectionError(str(error)) from error
-                await __import__("asyncio").sleep(_retry_delay(None, attempt))
+                await asyncio.sleep(_retry_delay(None, attempt))
                 continue
-            if not retryable or (response.status_code not in {408, 409, 429} and response.status_code < 500):
-                break
-            if attempt == self._max_retries:
-                break
-            await __import__("asyncio").sleep(_retry_delay(response, attempt))
-        if response.is_error:
-            raise APIError(response.status_code, response.text, response.headers.get("x-request-id"))
-        if response.status_code == 204 or not response.content:
-            return None
-        media_type = response.headers.get("content-type", "").split(";", 1)[0].lower()
-        if media_type == "application/json" or media_type.endswith("+json"):
-            return response.json()
-        if kwargs.get("text") or media_type.startswith("text/"):
-            return response.text
-        return response.content
+            if (
+                retryable
+                and attempt < self._max_retries
+                and (response.status_code in {408, 409, 429} or response.status_code >= 500)
+            ):
+                await asyncio.sleep(_retry_delay(response, attempt))
+                continue
+            if response.is_error:
+                raise APIError(response.status_code, response.text, response.headers.get("x-request-id"))
+            if response.status_code == 204 or not response.content:
+                return None
+            media_type = response.headers.get("content-type", "").split(";", 1)[0].lower()
+            if media_type == "application/json" or media_type.endswith("+json"):
+                return response.json()
+            if kwargs.get("text") or media_type.startswith("text/"):
+                return response.text
+            return response.content
+        raise APIConnectionError("Request was not attempted")
 
     async def close(self) -> None:
         await self._client.aclose()

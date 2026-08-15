@@ -4,14 +4,18 @@ from __future__ import annotations
 
 from typing import cast
 
+import httpx
+
 from .._client import (
+    NOT_GIVEN,
     AsyncAPIClient,
+    NotGiven,
     SyncAPIClient,
     _query_parameter,
 )
 from ..types import (
-    BillingListTransactionsResponse,
-    BillingListUsageSummaryResponse,
+    BillingTransactionsResponse,
+    BillingUsageSummaryResponse,
 )
 
 
@@ -21,7 +25,14 @@ class Billing:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def list_transactions(self, *, from_: str | None = None, to: str | None = None) -> BillingListTransactionsResponse:
+    def transactions(
+        self,
+        *,
+        from_: str | NotGiven = NOT_GIVEN,
+        to: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> BillingTransactionsResponse:
         """View transaction history.
 
         Returns credit purchases, training charges, and other billing transactions.
@@ -29,18 +40,22 @@ class Billing:
         Args:
             from_ (str, optional): Earliest transaction timestamp
             to (str, optional): Latest transaction timestamp
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (BillingListTransactionsResponse): The API response.
+            (BillingTransactionsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            BillingListTransactionsResponse,
+            BillingTransactionsResponse,
             self._client.request(
                 "GET",
                 "/api/billing/transactions",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("from", from_, style="form", explode=True),
@@ -49,20 +64,32 @@ class Billing:
             ),
         )
 
-    def list_usage_summary(self) -> BillingListUsageSummaryResponse:
+    def usage_summary(
+        self, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> BillingUsageSummaryResponse:
         """View plan and usage.
 
         Returns plan status, storage usage, training credit, feature access, seats, and billing totals.
 
+        Args:
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
         Returns:
-            (BillingListUsageSummaryResponse): The API response.
+            (BillingUsageSummaryResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            BillingListUsageSummaryResponse,
-            self._client.request("GET", "/api/billing/usage-summary", auth=("Authorization", "Bearer ")),
+            BillingUsageSummaryResponse,
+            self._client.request(
+                "GET",
+                "/api/billing/usage-summary",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
         )
 
 
@@ -72,9 +99,14 @@ class AsyncBilling:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def list_transactions(
-        self, *, from_: str | None = None, to: str | None = None
-    ) -> BillingListTransactionsResponse:
+    async def transactions(
+        self,
+        *,
+        from_: str | NotGiven = NOT_GIVEN,
+        to: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> BillingTransactionsResponse:
         """View transaction history.
 
         Returns credit purchases, training charges, and other billing transactions.
@@ -82,18 +114,22 @@ class AsyncBilling:
         Args:
             from_ (str, optional): Earliest transaction timestamp
             to (str, optional): Latest transaction timestamp
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (BillingListTransactionsResponse): The API response.
+            (BillingTransactionsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            BillingListTransactionsResponse,
+            BillingTransactionsResponse,
             await self._client.request(
                 "GET",
                 "/api/billing/transactions",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("from", from_, style="form", explode=True),
@@ -102,18 +138,30 @@ class AsyncBilling:
             ),
         )
 
-    async def list_usage_summary(self) -> BillingListUsageSummaryResponse:
+    async def usage_summary(
+        self, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> BillingUsageSummaryResponse:
         """View plan and usage.
 
         Returns plan status, storage usage, training credit, feature access, seats, and billing totals.
 
+        Args:
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
         Returns:
-            (BillingListUsageSummaryResponse): The API response.
+            (BillingUsageSummaryResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            BillingListUsageSummaryResponse,
-            await self._client.request("GET", "/api/billing/usage-summary", auth=("Authorization", "Bearer ")),
+            BillingUsageSummaryResponse,
+            await self._client.request(
+                "GET",
+                "/api/billing/usage-summary",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
         )

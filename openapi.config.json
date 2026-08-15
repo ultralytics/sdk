@@ -35,6 +35,6 @@
     "project": "ultralytics-platform",
     "readme": "README.python.md",
     "requiresPython": ">=3.11",
-    "version": "0.1.4"
+    "version": "0.1.5"
   }
 }

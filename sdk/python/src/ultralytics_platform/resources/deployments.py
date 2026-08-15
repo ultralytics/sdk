@@ -4,20 +4,25 @@ from __future__ import annotations
 
 from typing import Any, Literal, cast
 
+import httpx
+
 from .._client import (
+    NOT_GIVEN,
     AsyncAPIClient,
+    NotGiven,
     SyncAPIClient,
+    _form_data,
     _path_parameter,
     _query_parameter,
 )
 from ..types import (
     DeploymentsCreateResponse,
     DeploymentsDeleteResponse,
+    DeploymentsHealthResponse,
     DeploymentsListResponse,
+    DeploymentsLogsResponse,
+    DeploymentsMetricsResponse,
     DeploymentsPredictResponse,
-    DeploymentsRetrieveHealthResponse,
-    DeploymentsRetrieveLogsResponse,
-    DeploymentsRetrieveMetricsResponse,
     DeploymentsRetrieveResponse,
     DeploymentsUpdateResponse,
 )
@@ -29,7 +34,13 @@ class Deployments:
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
 
-    def retrieve(self, owner: str, deployment: str) -> DeploymentsRetrieveResponse:
+    def retrieve(
+        self,
+        owner: str,
+        deployment: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsRetrieveResponse:
         """Get deployment details.
 
         Returns deployment configuration, status, and service URL.
@@ -37,6 +48,8 @@ class Deployments:
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsRetrieveResponse): The API response.
@@ -49,11 +62,21 @@ class Deployments:
             self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def update(self, owner: str, deployment: str, *, body: dict[str, Any]) -> DeploymentsUpdateResponse:
+    def update(
+        self,
+        owner: str,
+        deployment: str,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsUpdateResponse:
         """Update a deployment.
 
         Starts, stops, or rolls out another model while preserving the endpoint URL.
@@ -62,6 +85,8 @@ class Deployments:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): API request for updating a deployment
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsUpdateResponse): The API response.
@@ -74,12 +99,20 @@ class Deployments:
             self._client.request(
                 "PATCH",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json=body,
             ),
         )
 
-    def delete(self, owner: str, deployment: str) -> DeploymentsDeleteResponse:
+    def delete(
+        self,
+        owner: str,
+        deployment: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsDeleteResponse:
         """Delete a deployment.
 
         Permanently removes the inference endpoint.
@@ -87,6 +120,8 @@ class Deployments:
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsDeleteResponse): The API response.
@@ -99,11 +134,19 @@ class Deployments:
             self._client.request(
                 "DELETE",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def retrieve_health(self, owner: str, deployment: str) -> DeploymentsRetrieveHealthResponse:
+    def health(
+        self,
+        owner: str,
+        deployment: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsHealthResponse:
         """Check deployment health.
 
         Pings and warms the deployment endpoint.
@@ -111,31 +154,37 @@ class Deployments:
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DeploymentsRetrieveHealthResponse): The API response.
+            (DeploymentsHealthResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DeploymentsRetrieveHealthResponse,
+            DeploymentsHealthResponse,
             self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}/health",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def retrieve_logs(
+    def logs(
         self,
         owner: str,
         deployment: str,
         *,
-        severity: str | None = None,
-        limit: int | None = None,
-        page_token: str | None = None,
-    ) -> DeploymentsRetrieveLogsResponse:
+        severity: str | NotGiven = NOT_GIVEN,
+        limit: int | NotGiven = NOT_GIVEN,
+        page_token: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsLogsResponse:
         """Get deployment logs.
 
         Returns recent deployment service logs.
@@ -146,18 +195,22 @@ class Deployments:
             severity (str, optional): Comma-separated log severity levels
             limit (int, optional): Maximum log entries to return
             page_token (str, optional): Pagination token
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DeploymentsRetrieveLogsResponse): The API response.
+            (DeploymentsLogsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DeploymentsRetrieveLogsResponse,
+            DeploymentsLogsResponse,
             self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}/logs",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("severity", severity, style="form", explode=True),
@@ -167,14 +220,16 @@ class Deployments:
             ),
         )
 
-    def retrieve_metrics(
+    def metrics(
         self,
         owner: str,
         deployment: str,
         *,
-        range: Literal["1h", "6h", "24h", "7d", "30d"] | None = None,
-        sparkline: Literal["true", "false"] | None = None,
-    ) -> DeploymentsRetrieveMetricsResponse:
+        range: Literal["1h", "6h", "24h", "7d", "30d"] | NotGiven = NOT_GIVEN,
+        sparkline: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsMetricsResponse:
         """Get deployment metrics.
 
         Returns request volume, latency, errors, and resource utilization.
@@ -184,18 +239,22 @@ class Deployments:
             deployment (str): Deployment name
             range (Literal["1h", "6h", "24h", "7d", "30d"], optional): Metrics time range
             sparkline (Literal["true", "false"], optional): Return the compact dashboard summary
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DeploymentsRetrieveMetricsResponse): The API response.
+            (DeploymentsMetricsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DeploymentsRetrieveMetricsResponse,
+            DeploymentsMetricsResponse,
             self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}/metrics",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("range", range, style="form", explode=True),
@@ -204,7 +263,15 @@ class Deployments:
             ),
         )
 
-    def predict(self, owner: str, deployment: str, *, body: dict[str, Any]) -> DeploymentsPredictResponse:
+    def predict(
+        self,
+        owner: str,
+        deployment: str,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsPredictResponse:
         """Run deployment inference.
 
         Runs inference through a dedicated deployment endpoint.
@@ -213,6 +280,8 @@ class Deployments:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): Request body.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsPredictResponse): The API response.
@@ -225,8 +294,10 @@ class Deployments:
             self._client.request(
                 "POST",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}/predict",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                data={key: value for key, value in body.items() if key not in ["file"]},
+                data=_form_data({key: value for key, value in body.items() if key not in ["file"]}, multipart=True),
                 files={key: body[key] for key in ["file"] if key in body},
             ),
         )
@@ -235,9 +306,11 @@ class Deployments:
         self,
         owner: str,
         *,
-        status: Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"] | None = None,
-        model: str | None = None,
-        limit: int | None = None,
+        status: Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"] | NotGiven = NOT_GIVEN,
+        model: str | NotGiven = NOT_GIVEN,
+        limit: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsListResponse:
         """List deployments.
 
@@ -248,6 +321,8 @@ class Deployments:
             status (Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"], optional): Deployment status filter
             model (str, optional): Project and model names separated by a slash
             limit (int, optional): Maximum deployments to return
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsListResponse): The API response.
@@ -260,6 +335,8 @@ class Deployments:
             self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("status", status, style="form", explode=True),
@@ -321,6 +398,8 @@ class Deployments:
             "us-west3",
             "us-west4",
         ],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsCreateResponse:
         """Deploy a model.
 
@@ -333,6 +412,8 @@ class Deployments:
             deployment (str): Deployment name
             name (str): name request value.
             region (Literal["asia-east1", "asia-northeast1", "asia-northeast2", "asia-south1", "asia-southeast3", "europe-north1", "europe-north2", "europe-southwest1", "europe-west1", "europe-west4", "europe-west8", "europe-west9", "me-west1", "northamerica-south1", "us-central1", "us-east1", "us-east4", "us-east5", "us-south1", "us-west1", "africa-south1", "asia-east2", "asia-northeast3", "asia-southeast1", "asia-southeast2", "asia-south2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-west10", "europe-west12", "europe-west2", "europe-west3", "europe-west6", "me-central1", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "southamerica-west1", "us-west2", "us-west3", "us-west4"]): region request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsCreateResponse): The API response.
@@ -345,6 +426,8 @@ class Deployments:
             self._client.request(
                 "POST",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"project": project, "model": model, "deployment": deployment, "name": name, "region": region},
             ),
@@ -357,7 +440,13 @@ class AsyncDeployments:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
-    async def retrieve(self, owner: str, deployment: str) -> DeploymentsRetrieveResponse:
+    async def retrieve(
+        self,
+        owner: str,
+        deployment: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsRetrieveResponse:
         """Get deployment details.
 
         Returns deployment configuration, status, and service URL.
@@ -365,6 +454,8 @@ class AsyncDeployments:
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsRetrieveResponse): The API response.
@@ -377,11 +468,21 @@ class AsyncDeployments:
             await self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def update(self, owner: str, deployment: str, *, body: dict[str, Any]) -> DeploymentsUpdateResponse:
+    async def update(
+        self,
+        owner: str,
+        deployment: str,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsUpdateResponse:
         """Update a deployment.
 
         Starts, stops, or rolls out another model while preserving the endpoint URL.
@@ -390,6 +491,8 @@ class AsyncDeployments:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): API request for updating a deployment
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsUpdateResponse): The API response.
@@ -402,12 +505,20 @@ class AsyncDeployments:
             await self._client.request(
                 "PATCH",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json=body,
             ),
         )
 
-    async def delete(self, owner: str, deployment: str) -> DeploymentsDeleteResponse:
+    async def delete(
+        self,
+        owner: str,
+        deployment: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsDeleteResponse:
         """Delete a deployment.
 
         Permanently removes the inference endpoint.
@@ -415,6 +526,8 @@ class AsyncDeployments:
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsDeleteResponse): The API response.
@@ -427,11 +540,19 @@ class AsyncDeployments:
             await self._client.request(
                 "DELETE",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def retrieve_health(self, owner: str, deployment: str) -> DeploymentsRetrieveHealthResponse:
+    async def health(
+        self,
+        owner: str,
+        deployment: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsHealthResponse:
         """Check deployment health.
 
         Pings and warms the deployment endpoint.
@@ -439,31 +560,37 @@ class AsyncDeployments:
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DeploymentsRetrieveHealthResponse): The API response.
+            (DeploymentsHealthResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DeploymentsRetrieveHealthResponse,
+            DeploymentsHealthResponse,
             await self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}/health",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def retrieve_logs(
+    async def logs(
         self,
         owner: str,
         deployment: str,
         *,
-        severity: str | None = None,
-        limit: int | None = None,
-        page_token: str | None = None,
-    ) -> DeploymentsRetrieveLogsResponse:
+        severity: str | NotGiven = NOT_GIVEN,
+        limit: int | NotGiven = NOT_GIVEN,
+        page_token: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsLogsResponse:
         """Get deployment logs.
 
         Returns recent deployment service logs.
@@ -474,18 +601,22 @@ class AsyncDeployments:
             severity (str, optional): Comma-separated log severity levels
             limit (int, optional): Maximum log entries to return
             page_token (str, optional): Pagination token
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DeploymentsRetrieveLogsResponse): The API response.
+            (DeploymentsLogsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DeploymentsRetrieveLogsResponse,
+            DeploymentsLogsResponse,
             await self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}/logs",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("severity", severity, style="form", explode=True),
@@ -495,14 +626,16 @@ class AsyncDeployments:
             ),
         )
 
-    async def retrieve_metrics(
+    async def metrics(
         self,
         owner: str,
         deployment: str,
         *,
-        range: Literal["1h", "6h", "24h", "7d", "30d"] | None = None,
-        sparkline: Literal["true", "false"] | None = None,
-    ) -> DeploymentsRetrieveMetricsResponse:
+        range: Literal["1h", "6h", "24h", "7d", "30d"] | NotGiven = NOT_GIVEN,
+        sparkline: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsMetricsResponse:
         """Get deployment metrics.
 
         Returns request volume, latency, errors, and resource utilization.
@@ -512,18 +645,22 @@ class AsyncDeployments:
             deployment (str): Deployment name
             range (Literal["1h", "6h", "24h", "7d", "30d"], optional): Metrics time range
             sparkline (Literal["true", "false"], optional): Return the compact dashboard summary
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (DeploymentsRetrieveMetricsResponse): The API response.
+            (DeploymentsMetricsResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            DeploymentsRetrieveMetricsResponse,
+            DeploymentsMetricsResponse,
             await self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}/metrics",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("range", range, style="form", explode=True),
@@ -532,7 +669,15 @@ class AsyncDeployments:
             ),
         )
 
-    async def predict(self, owner: str, deployment: str, *, body: dict[str, Any]) -> DeploymentsPredictResponse:
+    async def predict(
+        self,
+        owner: str,
+        deployment: str,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DeploymentsPredictResponse:
         """Run deployment inference.
 
         Runs inference through a dedicated deployment endpoint.
@@ -541,6 +686,8 @@ class AsyncDeployments:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): Request body.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsPredictResponse): The API response.
@@ -553,8 +700,10 @@ class AsyncDeployments:
             await self._client.request(
                 "POST",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(deployment, explode=False, allow_reserved=False)}/predict",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                data={key: value for key, value in body.items() if key not in ["file"]},
+                data=_form_data({key: value for key, value in body.items() if key not in ["file"]}, multipart=True),
                 files={key: body[key] for key in ["file"] if key in body},
             ),
         )
@@ -563,9 +712,11 @@ class AsyncDeployments:
         self,
         owner: str,
         *,
-        status: Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"] | None = None,
-        model: str | None = None,
-        limit: int | None = None,
+        status: Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"] | NotGiven = NOT_GIVEN,
+        model: str | NotGiven = NOT_GIVEN,
+        limit: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsListResponse:
         """List deployments.
 
@@ -576,6 +727,8 @@ class AsyncDeployments:
             status (Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"], optional): Deployment status filter
             model (str, optional): Project and model names separated by a slash
             limit (int, optional): Maximum deployments to return
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsListResponse): The API response.
@@ -588,6 +741,8 @@ class AsyncDeployments:
             await self._client.request(
                 "GET",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
                     *_query_parameter("status", status, style="form", explode=True),
@@ -649,6 +804,8 @@ class AsyncDeployments:
             "us-west3",
             "us-west4",
         ],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsCreateResponse:
         """Deploy a model.
 
@@ -661,6 +818,8 @@ class AsyncDeployments:
             deployment (str): Deployment name
             name (str): name request value.
             region (Literal["asia-east1", "asia-northeast1", "asia-northeast2", "asia-south1", "asia-southeast3", "europe-north1", "europe-north2", "europe-southwest1", "europe-west1", "europe-west4", "europe-west8", "europe-west9", "me-west1", "northamerica-south1", "us-central1", "us-east1", "us-east4", "us-east5", "us-south1", "us-west1", "africa-south1", "asia-east2", "asia-northeast3", "asia-southeast1", "asia-southeast2", "asia-south2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-west10", "europe-west12", "europe-west2", "europe-west3", "europe-west6", "me-central1", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "southamerica-west1", "us-west2", "us-west3", "us-west4"]): region request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (DeploymentsCreateResponse): The API response.
@@ -673,6 +832,8 @@ class AsyncDeployments:
             await self._client.request(
                 "POST",
                 f"/api/deployments/{_path_parameter(owner, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"project": project, "model": model, "deployment": deployment, "name": name, "region": region},
             ),

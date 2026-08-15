@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any, Literal, cast
+
+import httpx
 
 from .._client import (
     NOT_GIVEN,
     AsyncAPIClient,
     NotGiven,
     SyncAPIClient,
+    _form_data,
     _path_parameter,
     _query_parameter,
 )
@@ -17,11 +21,11 @@ from ..types import (
     ModelsCreateResponse,
     ModelsDeleteResponse,
     ModelsDeleteTrainingResponse,
+    ModelsFilesResponse,
     ModelsListResponse,
     ModelsPredictResponse,
-    ModelsRetrieveFilesResponse,
     ModelsRetrieveResponse,
-    ModelsRetrieveTrainingResponse,
+    ModelsTrainingResponse,
     ModelsUpdateResponse,
 )
 
@@ -43,6 +47,8 @@ class Models:
         model_body: str | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ModelsCloneResponse:
         """Clone a model.
 
@@ -57,6 +63,8 @@ class Models:
             model_body (str, optional): Destination model name
             name (str, optional): Destination display name
             description (str, optional): description request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsCloneResponse): The API response.
@@ -69,6 +77,8 @@ class Models:
             self._client.request(
                 "POST",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/clone",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "owner": owner_body,
@@ -81,7 +91,14 @@ class Models:
         )
 
     def retrieve(
-        self, owner: str, project: str, model: str, *, analysis: Literal["1"] | None = None
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        *,
+        analysis: Literal["1"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ModelsRetrieveResponse:
         """Get model details.
 
@@ -92,6 +109,8 @@ class Models:
             project (str): Project name
             model (str): Model name
             analysis (Literal["1"], optional): Return per-image validation analysis instead of model details
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsRetrieveResponse): The API response.
@@ -104,6 +123,8 @@ class Models:
             self._client.request(
                 "GET",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("analysis", analysis, style="form", explode=True)],
             ),
@@ -140,12 +161,14 @@ class Models:
         | NotGiven = NOT_GIVEN,
         dataset_slug: str | None | NotGiven = NOT_GIVEN,
         train_args: dict[str, Any] | NotGiven = NOT_GIVEN,
-        train_results: list[dict[str, Any]] | NotGiven = NOT_GIVEN,
+        train_results: Sequence[dict[str, Any]] | NotGiven = NOT_GIVEN,
         epochs: float | NotGiven = NOT_GIVEN,
         best_epoch: float | NotGiven = NOT_GIVEN,
         best_fitness: float | NotGiven = NOT_GIVEN,
         version: str | NotGiven = NOT_GIVEN,
         training_error: dict[str, Any] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ModelsUpdateResponse:
         """Update a model.
 
@@ -164,12 +187,14 @@ class Models:
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             dataset_slug (str | None, optional): datasetSlug request value.
             train_args (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
-            train_results (list[dict[str, Any]], optional): trainResults request value.
+            train_results (Sequence[dict[str, Any]], optional): trainResults request value.
             epochs (float, optional): epochs request value.
             best_epoch (float, optional): bestEpoch request value.
             best_fitness (float, optional): bestFitness request value.
             version (str, optional): version request value.
             training_error (dict[str, Any], optional): trainingError request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsUpdateResponse): The API response.
@@ -182,6 +207,8 @@ class Models:
             self._client.request(
                 "PATCH",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "starred": starred,
@@ -203,7 +230,14 @@ class Models:
             ),
         )
 
-    def delete(self, owner: str, project: str, model: str) -> ModelsDeleteResponse:
+    def delete(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsDeleteResponse:
         """Delete a model.
 
         Moves the model to trash for 30 days.
@@ -212,6 +246,8 @@ class Models:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsDeleteResponse): The API response.
@@ -224,11 +260,20 @@ class Models:
             self._client.request(
                 "DELETE",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def retrieve_files(self, owner: str, project: str, model: str) -> ModelsRetrieveFilesResponse:
+    def files(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsFilesResponse:
         """Download model files.
 
         Returns a short-lived download URL for model weights.
@@ -237,23 +282,36 @@ class Models:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (ModelsRetrieveFilesResponse): The API response.
+            (ModelsFilesResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ModelsRetrieveFilesResponse,
+            ModelsFilesResponse,
             self._client.request(
                 "GET",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/files",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def predict(self, owner: str, project: str, model: str, *, body: dict[str, Any]) -> ModelsPredictResponse:
+    def predict(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsPredictResponse:
         """Run model inference.
 
         Runs inference on an image or video using a trained model.
@@ -263,6 +321,8 @@ class Models:
             project (str): Project name
             model (str): Model name
             body (dict[str, Any]): Request body.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsPredictResponse): The API response.
@@ -275,13 +335,22 @@ class Models:
             self._client.request(
                 "POST",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/predict",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                data={key: value for key, value in body.items() if key not in ["file"]},
+                data=_form_data({key: value for key, value in body.items() if key not in ["file"]}, multipart=True),
                 files={key: body[key] for key in ["file"] if key in body},
             ),
         )
 
-    def retrieve_training(self, owner: str, project: str, model: str) -> ModelsRetrieveTrainingResponse:
+    def training(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsTrainingResponse:
         """Check training progress.
 
         Returns live status, epoch progress, timing, compute, metrics, and safe error details.
@@ -290,23 +359,34 @@ class Models:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (ModelsRetrieveTrainingResponse): The API response.
+            (ModelsTrainingResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ModelsRetrieveTrainingResponse,
+            ModelsTrainingResponse,
             self._client.request(
                 "GET",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/training",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def delete_training(self, owner: str, project: str, model: str) -> ModelsDeleteTrainingResponse:
+    def delete_training(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsDeleteTrainingResponse:
         """Cancel training.
 
         Terminates active compute and marks the model as cancelled.
@@ -315,6 +395,8 @@ class Models:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsDeleteTrainingResponse): The API response.
@@ -327,11 +409,21 @@ class Models:
             self._client.request(
                 "DELETE",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/training",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    def list(self, owner: str, project: str, *, limit: int | None = None) -> ModelsListResponse:
+    def list(
+        self,
+        owner: str,
+        project: str,
+        *,
+        limit: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsListResponse:
         """List models in a project.
 
         Returns models by owner and project name.
@@ -340,6 +432,8 @@ class Models:
             owner (str): Project owner
             project (str): Project name
             limit (int, optional): Maximum models to return
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsListResponse): The API response.
@@ -352,18 +446,28 @@ class Models:
             self._client.request(
                 "GET",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("limit", limit, style="form", explode=True)],
             ),
         )
 
-    def create(self, *, body: dict[str, Any]) -> ModelsCreateResponse:
+    def create(
+        self,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsCreateResponse:
         """Create a model.
 
         Creates a model in an existing project.
 
         Args:
             body (dict[str, Any]): API request for creating a new model
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsCreateResponse): The API response.
@@ -373,7 +477,14 @@ class Models:
         """
         return cast(
             ModelsCreateResponse,
-            self._client.request("POST", "/api/models", auth=("Authorization", "Bearer "), json=body),
+            self._client.request(
+                "POST",
+                "/api/models",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json=body,
+            ),
         )
 
 
@@ -394,6 +505,8 @@ class AsyncModels:
         model_body: str | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ModelsCloneResponse:
         """Clone a model.
 
@@ -408,6 +521,8 @@ class AsyncModels:
             model_body (str, optional): Destination model name
             name (str, optional): Destination display name
             description (str, optional): description request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsCloneResponse): The API response.
@@ -420,6 +535,8 @@ class AsyncModels:
             await self._client.request(
                 "POST",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/clone",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "owner": owner_body,
@@ -432,7 +549,14 @@ class AsyncModels:
         )
 
     async def retrieve(
-        self, owner: str, project: str, model: str, *, analysis: Literal["1"] | None = None
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        *,
+        analysis: Literal["1"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ModelsRetrieveResponse:
         """Get model details.
 
@@ -443,6 +567,8 @@ class AsyncModels:
             project (str): Project name
             model (str): Model name
             analysis (Literal["1"], optional): Return per-image validation analysis instead of model details
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsRetrieveResponse): The API response.
@@ -455,6 +581,8 @@ class AsyncModels:
             await self._client.request(
                 "GET",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("analysis", analysis, style="form", explode=True)],
             ),
@@ -491,12 +619,14 @@ class AsyncModels:
         | NotGiven = NOT_GIVEN,
         dataset_slug: str | None | NotGiven = NOT_GIVEN,
         train_args: dict[str, Any] | NotGiven = NOT_GIVEN,
-        train_results: list[dict[str, Any]] | NotGiven = NOT_GIVEN,
+        train_results: Sequence[dict[str, Any]] | NotGiven = NOT_GIVEN,
         epochs: float | NotGiven = NOT_GIVEN,
         best_epoch: float | NotGiven = NOT_GIVEN,
         best_fitness: float | NotGiven = NOT_GIVEN,
         version: str | NotGiven = NOT_GIVEN,
         training_error: dict[str, Any] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ModelsUpdateResponse:
         """Update a model.
 
@@ -515,12 +645,14 @@ class AsyncModels:
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             dataset_slug (str | None, optional): datasetSlug request value.
             train_args (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
-            train_results (list[dict[str, Any]], optional): trainResults request value.
+            train_results (Sequence[dict[str, Any]], optional): trainResults request value.
             epochs (float, optional): epochs request value.
             best_epoch (float, optional): bestEpoch request value.
             best_fitness (float, optional): bestFitness request value.
             version (str, optional): version request value.
             training_error (dict[str, Any], optional): trainingError request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsUpdateResponse): The API response.
@@ -533,6 +665,8 @@ class AsyncModels:
             await self._client.request(
                 "PATCH",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={
                     "starred": starred,
@@ -554,7 +688,14 @@ class AsyncModels:
             ),
         )
 
-    async def delete(self, owner: str, project: str, model: str) -> ModelsDeleteResponse:
+    async def delete(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsDeleteResponse:
         """Delete a model.
 
         Moves the model to trash for 30 days.
@@ -563,6 +704,8 @@ class AsyncModels:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsDeleteResponse): The API response.
@@ -575,11 +718,20 @@ class AsyncModels:
             await self._client.request(
                 "DELETE",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def retrieve_files(self, owner: str, project: str, model: str) -> ModelsRetrieveFilesResponse:
+    async def files(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsFilesResponse:
         """Download model files.
 
         Returns a short-lived download URL for model weights.
@@ -588,23 +740,36 @@ class AsyncModels:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (ModelsRetrieveFilesResponse): The API response.
+            (ModelsFilesResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ModelsRetrieveFilesResponse,
+            ModelsFilesResponse,
             await self._client.request(
                 "GET",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/files",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def predict(self, owner: str, project: str, model: str, *, body: dict[str, Any]) -> ModelsPredictResponse:
+    async def predict(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsPredictResponse:
         """Run model inference.
 
         Runs inference on an image or video using a trained model.
@@ -614,6 +779,8 @@ class AsyncModels:
             project (str): Project name
             model (str): Model name
             body (dict[str, Any]): Request body.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsPredictResponse): The API response.
@@ -626,13 +793,22 @@ class AsyncModels:
             await self._client.request(
                 "POST",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/predict",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                data={key: value for key, value in body.items() if key not in ["file"]},
+                data=_form_data({key: value for key, value in body.items() if key not in ["file"]}, multipart=True),
                 files={key: body[key] for key in ["file"] if key in body},
             ),
         )
 
-    async def retrieve_training(self, owner: str, project: str, model: str) -> ModelsRetrieveTrainingResponse:
+    async def training(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsTrainingResponse:
         """Check training progress.
 
         Returns live status, epoch progress, timing, compute, metrics, and safe error details.
@@ -641,23 +817,34 @@ class AsyncModels:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
-            (ModelsRetrieveTrainingResponse): The API response.
+            (ModelsTrainingResponse): The API response.
 
         Raises:
             (APIError): If the API returns an unsuccessful response.
         """
         return cast(
-            ModelsRetrieveTrainingResponse,
+            ModelsTrainingResponse,
             await self._client.request(
                 "GET",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/training",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def delete_training(self, owner: str, project: str, model: str) -> ModelsDeleteTrainingResponse:
+    async def delete_training(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsDeleteTrainingResponse:
         """Cancel training.
 
         Terminates active compute and marks the model as cancelled.
@@ -666,6 +853,8 @@ class AsyncModels:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsDeleteTrainingResponse): The API response.
@@ -678,11 +867,21 @@ class AsyncModels:
             await self._client.request(
                 "DELETE",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/training",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
             ),
         )
 
-    async def list(self, owner: str, project: str, *, limit: int | None = None) -> ModelsListResponse:
+    async def list(
+        self,
+        owner: str,
+        project: str,
+        *,
+        limit: int | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsListResponse:
         """List models in a project.
 
         Returns models by owner and project name.
@@ -691,6 +890,8 @@ class AsyncModels:
             owner (str): Project owner
             project (str): Project name
             limit (int, optional): Maximum models to return
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsListResponse): The API response.
@@ -703,18 +904,28 @@ class AsyncModels:
             await self._client.request(
                 "GET",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("limit", limit, style="form", explode=True)],
             ),
         )
 
-    async def create(self, *, body: dict[str, Any]) -> ModelsCreateResponse:
+    async def create(
+        self,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsCreateResponse:
         """Create a model.
 
         Creates a model in an existing project.
 
         Args:
             body (dict[str, Any]): API request for creating a new model
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
 
         Returns:
             (ModelsCreateResponse): The API response.
@@ -724,5 +935,12 @@ class AsyncModels:
         """
         return cast(
             ModelsCreateResponse,
-            await self._client.request("POST", "/api/models", auth=("Authorization", "Bearer "), json=body),
+            await self._client.request(
+                "POST",
+                "/api/models",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json=body,
+            ),
         )
