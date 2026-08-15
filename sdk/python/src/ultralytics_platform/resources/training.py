@@ -28,7 +28,7 @@ class Training:
     ) -> TrainingRetrieveGpuAvailabilityResponse:
         """Get GPU availability.
 
-        Returns current cloud training capacity for each supported GPU type. The managed capacity probe requires authentication.
+        Returns current cloud training capacity for each supported GPU type. Basic queries are public; `managed=true` additionally probes Ultralytics managed capacity and requires authentication.
 
         Args:
             managed (Literal["true", "false"], optional): Include managed training capacity
@@ -44,6 +44,7 @@ class Training:
             self._client.request(
                 "GET",
                 "/api/training/gpu-availability",
+                auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("managed", managed, style="form", explode=True)],
             ),
         )
@@ -127,7 +128,7 @@ class AsyncTraining:
     ) -> TrainingRetrieveGpuAvailabilityResponse:
         """Get GPU availability.
 
-        Returns current cloud training capacity for each supported GPU type. The managed capacity probe requires authentication.
+        Returns current cloud training capacity for each supported GPU type. Basic queries are public; `managed=true` additionally probes Ultralytics managed capacity and requires authentication.
 
         Args:
             managed (Literal["true", "false"], optional): Include managed training capacity
@@ -143,6 +144,7 @@ class AsyncTraining:
             await self._client.request(
                 "GET",
                 "/api/training/gpu-availability",
+                auth=("Authorization", "Bearer "),
                 params=[*_query_parameter("managed", managed, style="form", explode=True)],
             ),
         )
