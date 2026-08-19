@@ -284,7 +284,7 @@ class Datasets:
         class_names: Sequence[str] | NotGiven = NOT_GIVEN,
         class_colors: dict[str, Any] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
-        task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
+        task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "CC0-1.0",
@@ -327,7 +327,7 @@ class Datasets:
             class_names (Sequence[str], optional): classNames request value.
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
+            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""], optional): iconLetter request value.
@@ -1036,7 +1036,7 @@ class Datasets:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
+        task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         image_count: int | NotGiven = NOT_GIVEN,
         class_names: Sequence[str] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
@@ -1076,7 +1076,7 @@ class Datasets:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
+            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
             image_count (int, optional): imageCount request value.
             class_names (Sequence[str], optional): classNames request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
@@ -1425,7 +1425,7 @@ class AsyncDatasets:
         class_names: Sequence[str] | NotGiven = NOT_GIVEN,
         class_colors: dict[str, Any] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
-        task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
+        task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
             "CC0-1.0",
@@ -1468,7 +1468,7 @@ class AsyncDatasets:
             class_names (Sequence[str], optional): classNames request value.
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
+            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""], optional): iconLetter request value.
@@ -2177,7 +2177,7 @@ class AsyncDatasets:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        task: Literal["detect", "segment", "semantic", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
+        task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         image_count: int | NotGiven = NOT_GIVEN,
         class_names: Sequence[str] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
@@ -2217,7 +2217,7 @@ class AsyncDatasets:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
-            task (Literal["detect", "segment", "semantic", "classify", "pose", "obb"], optional): Dataset task type (depth coming soon)
+            task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
             image_count (int, optional): imageCount request value.
             class_names (Sequence[str], optional): classNames request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
