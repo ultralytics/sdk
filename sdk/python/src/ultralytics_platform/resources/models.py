@@ -314,7 +314,7 @@ class Models:
     ) -> ModelsPredictResponse:
         """Run model inference.
 
-        Runs inference on an image or video using a trained model.
+        Runs inference on an image or video using a trained model. Depth models accept images only.
 
         Args:
             owner (str): Project owner
@@ -772,7 +772,7 @@ class AsyncModels:
     ) -> ModelsPredictResponse:
         """Run model inference.
 
-        Runs inference on an image or video using a trained model.
+        Runs inference on an image or video using a trained model. Depth models accept images only.
 
         Args:
             owner (str): Project owner

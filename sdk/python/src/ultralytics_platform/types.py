@@ -472,6 +472,7 @@ DatasetsRetrieveResponseDatasetSampleImagesItem = TypedDict(
     {
         "url": str,
         "imageUrl": NotRequired[str],
+        "depthPreviewUrl": NotRequired[str],
         "width": int,
         "height": int,
         "labels": NotRequired[list[DatasetsRetrieveResponseDatasetSampleImagesItemLabelsItem]],
@@ -500,7 +501,8 @@ DatasetsRetrieveResponseDatasetProcessingError = TypedDict(
 
 
 DatasetsRetrieveResponseDatasetLastIngestSummary = TypedDict(
-    "DatasetsRetrieveResponseDatasetLastIngestSummary", {"added": int, "errors": int, "skippedCounts": dict[str, int]}
+    "DatasetsRetrieveResponseDatasetLastIngestSummary",
+    {"added": int, "paired": NotRequired[int], "errors": int, "skippedCounts": dict[str, int]},
 )
 
 
@@ -677,6 +679,7 @@ DatasetsClusteringResponseImagesItem = TypedDict(
         "height": int,
         "bytes": int | None,
         "labelCount": int,
+        "labeled": bool,
         "missing": bool,
     },
 )
@@ -709,6 +712,20 @@ DatasetsImagesResponseImagesItemLabelsItem = TypedDict(
 )
 
 
+DatasetsImagesResponseImagesItemDepth = TypedDict(
+    "DatasetsImagesResponseImagesItemDepth",
+    {
+        "hash": str,
+        "bytes": int,
+        "shape": list[Any],
+        "min": NotRequired[float],
+        "max": NotRequired[float],
+        "validFraction": NotRequired[float],
+        "previewUrl": str,
+    },
+)
+
+
 DatasetsImagesResponseImagesItem = TypedDict(
     "DatasetsImagesResponseImagesItem",
     {
@@ -726,6 +743,7 @@ DatasetsImagesResponseImagesItem = TypedDict(
         "error": NotRequired[str | None],
         "labels": NotRequired[list[DatasetsImagesResponseImagesItemLabelsItem]],
         "labelsTruncated": NotRequired[Literal[True]],
+        "depth": NotRequired[DatasetsImagesResponseImagesItemDepth],
     },
 )
 
@@ -756,6 +774,20 @@ DatasetsSelectedImagesResponseImagesItemLabelsItem = TypedDict(
 )
 
 
+DatasetsSelectedImagesResponseImagesItemDepth = TypedDict(
+    "DatasetsSelectedImagesResponseImagesItemDepth",
+    {
+        "hash": str,
+        "bytes": int,
+        "shape": list[Any],
+        "min": NotRequired[float],
+        "max": NotRequired[float],
+        "validFraction": NotRequired[float],
+        "previewUrl": str,
+    },
+)
+
+
 DatasetsSelectedImagesResponseImagesItem = TypedDict(
     "DatasetsSelectedImagesResponseImagesItem",
     {
@@ -773,6 +805,7 @@ DatasetsSelectedImagesResponseImagesItem = TypedDict(
         "error": NotRequired[str | None],
         "labels": NotRequired[list[DatasetsSelectedImagesResponseImagesItemLabelsItem]],
         "labelsTruncated": NotRequired[Literal[True]],
+        "depth": NotRequired[DatasetsSelectedImagesResponseImagesItemDepth],
     },
 )
 
@@ -865,6 +898,7 @@ DatasetsListResponseDatasetsItemSampleImagesItem = TypedDict(
     {
         "url": str,
         "imageUrl": NotRequired[str],
+        "depthPreviewUrl": NotRequired[str],
         "width": int,
         "height": int,
         "labels": NotRequired[list[DatasetsListResponseDatasetsItemSampleImagesItemLabelsItem]],
@@ -893,7 +927,8 @@ DatasetsListResponseDatasetsItemProcessingError = TypedDict(
 
 
 DatasetsListResponseDatasetsItemLastIngestSummary = TypedDict(
-    "DatasetsListResponseDatasetsItemLastIngestSummary", {"added": int, "errors": int, "skippedCounts": dict[str, int]}
+    "DatasetsListResponseDatasetsItemLastIngestSummary",
+    {"added": int, "paired": NotRequired[int], "errors": int, "skippedCounts": dict[str, int]},
 )
 
 
@@ -1078,6 +1113,7 @@ DeploymentsRetrieveResponseDeployment = TypedDict(
         "owner": str,
         "project": NotRequired[str],
         "model": NotRequired[str],
+        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"]],
         "deployment": str,
         "name": str,
         "status": Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"],
@@ -1234,15 +1270,60 @@ DeploymentsMetricsResponseVariant2 = TypedDict(
 DeploymentsMetricsResponse = DeploymentsMetricsResponseVariant1 | DeploymentsMetricsResponseVariant2
 
 
+DeploymentsPredictResponseImagesItemSpeed = TypedDict(
+    "DeploymentsPredictResponseImagesItemSpeed", {"preprocess": float, "inference": float, "postprocess": float}
+)
+
+
+DeploymentsPredictResponseImagesItemResultsItemBox = TypedDict(
+    "DeploymentsPredictResponseImagesItemResultsItemBox",
+    {
+        "x1": float,
+        "y1": float,
+        "x2": float,
+        "y2": float,
+        "x3": NotRequired[float],
+        "y3": NotRequired[float],
+        "x4": NotRequired[float],
+        "y4": NotRequired[float],
+    },
+)
+
+
+DeploymentsPredictResponseImagesItemResultsItemSegments = TypedDict(
+    "DeploymentsPredictResponseImagesItemResultsItemSegments", {"x": list[float], "y": list[float]}
+)
+
+
+DeploymentsPredictResponseImagesItemResultsItemKeypoints = TypedDict(
+    "DeploymentsPredictResponseImagesItemResultsItemKeypoints",
+    {"x": list[float], "y": list[float], "visible": NotRequired[list[float]]},
+)
+
+
+DeploymentsPredictResponseImagesItemResultsItem = TypedDict(
+    "DeploymentsPredictResponseImagesItemResultsItem",
+    {
+        "name": str,
+        "class": int,
+        "confidence": NotRequired[float],
+        "pixel_ratio": NotRequired[float],
+        "box": NotRequired[DeploymentsPredictResponseImagesItemResultsItemBox],
+        "segments": NotRequired[DeploymentsPredictResponseImagesItemResultsItemSegments],
+        "keypoints": NotRequired[DeploymentsPredictResponseImagesItemResultsItemKeypoints],
+    },
+)
+
+
 DeploymentsPredictResponseImagesItemSemanticMask = TypedDict(
-    "DeploymentsPredictResponseImagesItemSemanticMask", {"shape": list[float], "encoding": Literal["png"], "data": str}
+    "DeploymentsPredictResponseImagesItemSemanticMask", {"shape": list[Any], "encoding": Literal["png"], "data": str}
 )
 
 
 DeploymentsPredictResponseImagesItemDepth = TypedDict(
     "DeploymentsPredictResponseImagesItemDepth",
     {
-        "shape": list[float],
+        "shape": list[Any],
         "encoding": Literal["png"],
         "data": str,
         "min": float,
@@ -1255,9 +1336,9 @@ DeploymentsPredictResponseImagesItemDepth = TypedDict(
 DeploymentsPredictResponseImagesItem = TypedDict(
     "DeploymentsPredictResponseImagesItem",
     {
-        "shape": list[float],
-        "speed": dict[str, float],
-        "results": list[Any],
+        "shape": list[Any],
+        "speed": DeploymentsPredictResponseImagesItemSpeed,
+        "results": list[DeploymentsPredictResponseImagesItemResultsItem],
         "semantic_mask": NotRequired[DeploymentsPredictResponseImagesItemSemanticMask],
         "depth": NotRequired[DeploymentsPredictResponseImagesItemDepth],
     },
@@ -1270,7 +1351,8 @@ DeploymentsPredictResponseMetadata = TypedDict(
         "imageCount": int,
         "functionTimeAlive": float,
         "functionTimeCall": float,
-        "task": str | None,
+        "model": NotRequired[str],
+        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | None],
         "version": dict[str, str],
     },
 )
@@ -1382,6 +1464,19 @@ ExploreSearchResponse = TypedDict(
 )
 
 
+ImagesRetrieveResponsePropertiesDepth = TypedDict(
+    "ImagesRetrieveResponsePropertiesDepth",
+    {
+        "hash": str,
+        "bytes": int,
+        "shape": list[Any],
+        "min": NotRequired[float],
+        "max": NotRequired[float],
+        "validFraction": NotRequired[float],
+    },
+)
+
+
 ImagesRetrieveResponseProperties = TypedDict(
     "ImagesRetrieveResponseProperties",
     {
@@ -1397,6 +1492,7 @@ ImagesRetrieveResponseProperties = TypedDict(
         "split": Literal["train", "val", "test"],
         "annotationCount": int,
         "classIds": NotRequired[list[int]],
+        "depth": NotRequired[ImagesRetrieveResponsePropertiesDepth],
         "bytes": NotRequired[int],
         "region": NotRequired[Literal["us", "eu", "ap"]],
         "externalKey": NotRequired[str],
@@ -1504,7 +1600,13 @@ ImagesDeleteBulkResponse = TypedDict(
 )
 
 
-ImagesUrlsResponse = TypedDict("ImagesUrlsResponse", {"urls": dict[str, str], "thumbnails": dict[str, str]})
+ImagesUrlsResponseDepthsValue = TypedDict("ImagesUrlsResponseDepthsValue", {"previewUrl": str})
+
+
+ImagesUrlsResponse = TypedDict(
+    "ImagesUrlsResponse",
+    {"urls": dict[str, str], "thumbnails": dict[str, str], "depths": dict[str, ImagesUrlsResponseDepthsValue]},
+)
 
 
 StorageIntegrationsDeleteResponse = TypedDict("StorageIntegrationsDeleteResponse", {"success": Literal[True]})
@@ -1727,6 +1829,7 @@ ModelsRetrieveResponseVariant1Model = TypedDict(
             Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"]
         ],
         "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"]],
+        "depthScaleVerified": NotRequired[bool],
         "color": NotRequired[str],
         "datasetId": NotRequired[str],
         "datasetVersion": NotRequired[ModelsRetrieveResponseVariant1ModelDatasetVersion],
@@ -2207,15 +2310,60 @@ ModelsFilesResponseFilesItem = TypedDict(
 ModelsFilesResponse = TypedDict("ModelsFilesResponse", {"files": list[ModelsFilesResponseFilesItem]})
 
 
+ModelsPredictResponseImagesItemSpeed = TypedDict(
+    "ModelsPredictResponseImagesItemSpeed", {"preprocess": float, "inference": float, "postprocess": float}
+)
+
+
+ModelsPredictResponseImagesItemResultsItemBox = TypedDict(
+    "ModelsPredictResponseImagesItemResultsItemBox",
+    {
+        "x1": float,
+        "y1": float,
+        "x2": float,
+        "y2": float,
+        "x3": NotRequired[float],
+        "y3": NotRequired[float],
+        "x4": NotRequired[float],
+        "y4": NotRequired[float],
+    },
+)
+
+
+ModelsPredictResponseImagesItemResultsItemSegments = TypedDict(
+    "ModelsPredictResponseImagesItemResultsItemSegments", {"x": list[float], "y": list[float]}
+)
+
+
+ModelsPredictResponseImagesItemResultsItemKeypoints = TypedDict(
+    "ModelsPredictResponseImagesItemResultsItemKeypoints",
+    {"x": list[float], "y": list[float], "visible": NotRequired[list[float]]},
+)
+
+
+ModelsPredictResponseImagesItemResultsItem = TypedDict(
+    "ModelsPredictResponseImagesItemResultsItem",
+    {
+        "name": str,
+        "class": int,
+        "confidence": NotRequired[float],
+        "pixel_ratio": NotRequired[float],
+        "box": NotRequired[ModelsPredictResponseImagesItemResultsItemBox],
+        "segments": NotRequired[ModelsPredictResponseImagesItemResultsItemSegments],
+        "keypoints": NotRequired[ModelsPredictResponseImagesItemResultsItemKeypoints],
+    },
+)
+
+
 ModelsPredictResponseImagesItemSemanticMask = TypedDict(
-    "ModelsPredictResponseImagesItemSemanticMask", {"shape": list[float], "encoding": Literal["png"], "data": str}
+    "ModelsPredictResponseImagesItemSemanticMask", {"shape": list[Any], "encoding": Literal["png"], "data": str}
 )
 
 
 ModelsPredictResponseImagesItemDepth = TypedDict(
     "ModelsPredictResponseImagesItemDepth",
     {
-        "shape": list[float],
+        "shape": list[Any],
         "encoding": Literal["png"],
         "data": str,
         "min": float,
@@ -2228,9 +2376,9 @@ ModelsPredictResponseImagesItemDepth = TypedDict(
 ModelsPredictResponseImagesItem = TypedDict(
     "ModelsPredictResponseImagesItem",
     {
-        "shape": list[float],
-        "speed": dict[str, float],
-        "results": list[Any],
+        "shape": list[Any],
+        "speed": ModelsPredictResponseImagesItemSpeed,
+        "results": list[ModelsPredictResponseImagesItemResultsItem],
         "semantic_mask": NotRequired[ModelsPredictResponseImagesItemSemanticMask],
         "depth": NotRequired[ModelsPredictResponseImagesItemDepth],
     },
@@ -2243,7 +2391,8 @@ ModelsPredictResponseMetadata = TypedDict(
         "imageCount": int,
         "functionTimeAlive": float,
         "functionTimeCall": float,
-        "task": str | None,
+        "model": NotRequired[str],
+        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | None],
         "version": dict[str, str],
     },
 )
@@ -2478,6 +2627,7 @@ ModelsListResponseModelsItem = TypedDict(
             Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"]
         ],
         "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"]],
+        "depthScaleVerified": NotRequired[bool],
         "color": NotRequired[str],
         "datasetId": NotRequired[str],
         "datasetVersion": NotRequired[ModelsListResponseModelsItemDatasetVersion],
