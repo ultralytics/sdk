@@ -274,7 +274,7 @@ class Deployments:
     ) -> DeploymentsPredictResponse:
         """Run deployment inference.
 
-        Runs inference through a dedicated deployment endpoint.
+        Runs inference through a dedicated deployment endpoint. Depth models accept images only.
 
         Args:
             owner (str): Deployment owner
@@ -680,7 +680,7 @@ class AsyncDeployments:
     ) -> DeploymentsPredictResponse:
         """Run deployment inference.
 
-        Runs inference through a dedicated deployment endpoint.
+        Runs inference through a dedicated deployment endpoint. Depth models accept images only.
 
         Args:
             owner (str): Deployment owner

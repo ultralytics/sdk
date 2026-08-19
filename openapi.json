@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.5",
+    "version": "0.1.7",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart/) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -1163,6 +1163,10 @@
                 ],
                 "description": "YOLO task type"
               },
+              "depthScale": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
               "imageCount": {
                 "type": "integer",
                 "minimum": 0
@@ -1284,6 +1288,10 @@
                       "type": "string"
                     },
                     "imageUrl": {
+                      "type": "string"
+                    },
+                    "depthPreviewUrl": {
+                      "description": "Colorizable depth PNG, present only on a paired depth image",
                       "type": "string"
                     },
                     "width": {
@@ -1522,6 +1530,11 @@
                 "type": "object",
                 "properties": {
                   "added": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "paired": {
+                    "description": "Stored images that gained a late depth target",
                     "type": "integer",
                     "minimum": 0
                   },
@@ -2057,6 +2070,10 @@
                   "type": "integer",
                   "minimum": 0
                 },
+                "labeled": {
+                  "type": "boolean",
+                  "description": "Task-aware labeled state — depth ground truth is a paired target, so `labelCount` is 0 there"
+                },
                 "missing": {
                   "type": "boolean"
                 }
@@ -2071,6 +2088,7 @@
                 "height",
                 "bytes",
                 "labelCount",
+                "labeled",
                 "missing"
               ],
               "additionalProperties": false
@@ -2282,6 +2300,58 @@
                 "labelsTruncated": {
                   "type": "boolean",
                   "const": true
+                },
+                "depth": {
+                  "type": "object",
+                  "properties": {
+                    "hash": {
+                      "type": "string",
+                      "pattern": "^[a-f\\d]{32}$",
+                      "description": "CAS hash of the depth asset"
+                    },
+                    "bytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Stored depth asset size in bytes"
+                    },
+                    "shape": {
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      "description": "Depth map [height, width]"
+                    },
+                    "min": {
+                      "description": "Minimum valid depth in meters",
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "max": {
+                      "description": "Maximum valid depth in meters",
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "validFraction": {
+                      "description": "Fraction of pixels containing valid depth",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "previewUrl": {
+                      "type": "string",
+                      "description": "Canonical depth PNG the client colorizes"
+                    }
+                  },
+                  "required": [
+                    "hash",
+                    "bytes",
+                    "shape",
+                    "previewUrl"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "required": [
@@ -2489,6 +2559,58 @@
                 "labelsTruncated": {
                   "type": "boolean",
                   "const": true
+                },
+                "depth": {
+                  "type": "object",
+                  "properties": {
+                    "hash": {
+                      "type": "string",
+                      "pattern": "^[a-f\\d]{32}$",
+                      "description": "CAS hash of the depth asset"
+                    },
+                    "bytes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Stored depth asset size in bytes"
+                    },
+                    "shape": {
+                      "minItems": 2,
+                      "maxItems": 2,
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0
+                      },
+                      "description": "Depth map [height, width]"
+                    },
+                    "min": {
+                      "description": "Minimum valid depth in meters",
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "max": {
+                      "description": "Maximum valid depth in meters",
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "validFraction": {
+                      "description": "Fraction of pixels containing valid depth",
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "previewUrl": {
+                      "type": "string",
+                      "description": "Canonical depth PNG the client colorizes"
+                    }
+                  },
+                  "required": [
+                    "hash",
+                    "bytes",
+                    "shape",
+                    "previewUrl"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "required": [
@@ -2794,6 +2916,10 @@
             ],
             "description": "YOLO task type"
           },
+          "depthScale": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
           "imageCount": {
             "type": "integer",
             "minimum": 0
@@ -2915,6 +3041,10 @@
                   "type": "string"
                 },
                 "imageUrl": {
+                  "type": "string"
+                },
+                "depthPreviewUrl": {
+                  "description": "Colorizable depth PNG, present only on a paired depth image",
                   "type": "string"
                 },
                 "width": {
@@ -3153,6 +3283,11 @@
             "type": "object",
             "properties": {
               "added": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "paired": {
+                "description": "Stored images that gained a late depth target",
                 "type": "integer",
                 "minimum": 0
               },
@@ -3404,6 +3539,19 @@
           "model": {
             "description": "Model name, absent if the model was permanently deleted",
             "type": "string"
+          },
+          "task": {
+            "description": "Task of the deployed model",
+            "type": "string",
+            "enum": [
+              "detect",
+              "segment",
+              "semantic",
+              "depth",
+              "classify",
+              "pose",
+              "obb"
+            ]
           },
           "deployment": {
             "type": "string",
@@ -3948,39 +4096,196 @@
               "type": "object",
               "properties": {
                 "shape": {
+                  "minItems": 2,
+                  "maxItems": 2,
                   "type": "array",
                   "items": {
                     "type": "number"
-                  }
+                  },
+                  "description": "Original image shape [height, width]"
                 },
                 "speed": {
                   "type": "object",
-                  "propertyNames": {
-                    "type": "string"
+                  "properties": {
+                    "preprocess": {
+                      "type": "number",
+                      "description": "Preprocessing time (ms)"
+                    },
+                    "inference": {
+                      "type": "number",
+                      "description": "Inference time (ms)"
+                    },
+                    "postprocess": {
+                      "type": "number",
+                      "description": "Postprocessing time (ms)"
+                    }
                   },
-                  "additionalProperties": {
-                    "type": "number"
-                  }
+                  "required": [
+                    "preprocess",
+                    "inference",
+                    "postprocess"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Timing breakdown"
                 },
                 "results": {
                   "type": "array",
-                  "items": {}
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Class name"
+                      },
+                      "class": {
+                        "type": "integer",
+                        "description": "Class index"
+                      },
+                      "confidence": {
+                        "description": "Detection confidence",
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "pixel_ratio": {
+                        "description": "Semantic segmentation pixel coverage for this class",
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      },
+                      "box": {
+                        "description": "Bounding box (pixel coordinates by default, normalized if normalize=true)",
+                        "type": "object",
+                        "properties": {
+                          "x1": {
+                            "type": "number",
+                            "description": "Left x coordinate (pixels or normalized)"
+                          },
+                          "y1": {
+                            "type": "number",
+                            "description": "Top y coordinate (pixels or normalized)"
+                          },
+                          "x2": {
+                            "type": "number",
+                            "description": "Right x coordinate (pixels or normalized)"
+                          },
+                          "y2": {
+                            "type": "number",
+                            "description": "Bottom y coordinate (pixels or normalized)"
+                          },
+                          "x3": {
+                            "description": "OBB corner 3 x coordinate",
+                            "type": "number"
+                          },
+                          "y3": {
+                            "description": "OBB corner 3 y coordinate",
+                            "type": "number"
+                          },
+                          "x4": {
+                            "description": "OBB corner 4 x coordinate",
+                            "type": "number"
+                          },
+                          "y4": {
+                            "description": "OBB corner 4 y coordinate",
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "x1",
+                          "y1",
+                          "x2",
+                          "y2"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "segments": {
+                        "description": "Segmentation coordinates",
+                        "type": "object",
+                        "properties": {
+                          "x": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            },
+                            "description": "X coordinates of segment"
+                          },
+                          "y": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            },
+                            "description": "Y coordinates of segment"
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "keypoints": {
+                        "description": "Pose keypoints",
+                        "type": "object",
+                        "properties": {
+                          "x": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            },
+                            "description": "X coordinates of keypoints"
+                          },
+                          "y": {
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            },
+                            "description": "Y coordinates of keypoints"
+                          },
+                          "visible": {
+                            "description": "Visibility scores (0-2), omitted for 2-step keypoint formats",
+                            "type": "array",
+                            "items": {
+                              "type": "number"
+                            }
+                          }
+                        },
+                        "required": [
+                          "x",
+                          "y"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "class"
+                    ],
+                    "additionalProperties": false,
+                    "description": "Single prediction result from inference"
+                  },
+                  "description": "Detection results"
                 },
                 "semantic_mask": {
+                  "description": "Semantic segmentation class-map (pixel value = class id)",
                   "type": "object",
                   "properties": {
                     "shape": {
+                      "minItems": 2,
+                      "maxItems": 2,
                       "type": "array",
                       "items": {
                         "type": "number"
-                      }
+                      },
+                      "description": "Pixel-map shape [height, width]"
                     },
                     "encoding": {
                       "type": "string",
-                      "const": "png"
+                      "const": "png",
+                      "description": "Pixel-map encoding"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Base64-encoded grayscale PNG"
                     }
                   },
                   "required": [
@@ -3991,26 +4296,34 @@
                   "additionalProperties": false
                 },
                 "depth": {
+                  "description": "Depth map as grayscale PNG: depth = pixel × max / divisor, 0 = no depth",
                   "type": "object",
                   "properties": {
                     "shape": {
+                      "minItems": 2,
+                      "maxItems": 2,
                       "type": "array",
                       "items": {
                         "type": "number"
-                      }
+                      },
+                      "description": "Pixel-map shape [height, width]"
                     },
                     "encoding": {
                       "type": "string",
-                      "const": "png"
+                      "const": "png",
+                      "description": "Pixel-map encoding"
                     },
                     "data": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Base64-encoded grayscale PNG"
                     },
                     "min": {
-                      "type": "number"
+                      "type": "number",
+                      "description": "Minimum valid predicted depth"
                     },
                     "max": {
-                      "type": "number"
+                      "type": "number",
+                      "description": "Maximum valid predicted depth"
                     },
                     "bits": {
                       "anyOf": [
@@ -4047,25 +4360,44 @@
                 "results"
               ],
               "additionalProperties": false
-            }
+            },
+            "description": "Results for each image/frame"
           },
           "metadata": {
             "type": "object",
             "properties": {
               "imageCount": {
                 "type": "integer",
-                "minimum": 0
+                "minimum": 0,
+                "description": "Number of images processed"
               },
               "functionTimeAlive": {
-                "type": "number"
+                "type": "number",
+                "description": "Time since service started (seconds)"
               },
               "functionTimeCall": {
-                "type": "number"
+                "type": "number",
+                "description": "Time for this call (seconds)"
+              },
+              "model": {
+                "description": "Model path used, when the predict service reports one",
+                "type": "string"
               },
               "task": {
+                "description": "YOLO task type returned by the loaded model",
                 "anyOf": [
                   {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                      "detect",
+                      "segment",
+                      "semantic",
+                      "depth",
+                      "classify",
+                      "pose",
+                      "obb"
+                    ],
+                    "description": "YOLO task type"
                   },
                   {
                     "type": "null"
@@ -4079,14 +4411,14 @@
                 },
                 "additionalProperties": {
                   "type": "string"
-                }
+                },
+                "description": "Version information"
               }
             },
             "required": [
               "imageCount",
               "functionTimeAlive",
               "functionTimeCall",
-              "task",
               "version"
             ],
             "additionalProperties": false
@@ -4587,6 +4919,53 @@
                   "type": "integer",
                   "minimum": 0
                 }
+              },
+              "depth": {
+                "type": "object",
+                "properties": {
+                  "hash": {
+                    "type": "string",
+                    "pattern": "^[a-f\\d]{32}$",
+                    "description": "CAS hash of the depth asset"
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Stored depth asset size in bytes"
+                  },
+                  "shape": {
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0
+                    },
+                    "description": "Depth map [height, width]"
+                  },
+                  "min": {
+                    "description": "Minimum valid depth in meters",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "max": {
+                    "description": "Maximum valid depth in meters",
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "validFraction": {
+                    "description": "Fraction of pixels containing valid depth",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "required": [
+                  "hash",
+                  "bytes",
+                  "shape"
+                ],
+                "additionalProperties": false
               },
               "bytes": {
                 "type": "integer",
@@ -5167,11 +5546,35 @@
               "type": "string"
             },
             "description": "Thumbnail URLs keyed by image ID"
+          },
+          "depths": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "minLength": 24,
+              "maxLength": 24,
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "507f1f77bcf86cd799439011"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "previewUrl": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "previewUrl"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Depth target previews keyed by image ID, for the paired images among those requested"
           }
         },
         "required": [
           "urls",
-          "thumbnails"
+          "thumbnails",
+          "depths"
         ],
         "additionalProperties": false
       },
@@ -5660,6 +6063,10 @@
                   "obb"
                 ],
                 "description": "YOLO task type"
+              },
+              "depthScaleVerified": {
+                "description": "Depth scale was calibrated against a labeled sample; absent means predictions are relative",
+                "type": "boolean"
               },
               "color": {
                 "type": "string"
@@ -9007,6 +9414,10 @@
               "obb"
             ],
             "description": "YOLO task type"
+          },
+          "depthScaleVerified": {
+            "description": "Depth scale was calibrated against a labeled sample; absent means predictions are relative",
+            "type": "boolean"
           },
           "color": {
             "type": "string"
@@ -12789,11 +13200,12 @@
                       "detect",
                       "segment",
                       "semantic",
+                      "depth",
                       "classify",
                       "pose",
                       "obb"
                     ],
-                    "description": "Dataset task type (depth coming soon)"
+                    "description": "Dataset task type"
                   },
                   "license": {
                     "type": "string",
@@ -12893,7 +13305,7 @@
             }
           },
           "409": {
-            "description": "Dataset change conflicts with its source or license",
+            "description": "Dataset change conflicts with its source, license, task, or a running import",
             "content": {
               "application/json": {
                 "schema": {
@@ -15455,11 +15867,12 @@
                       "detect",
                       "segment",
                       "semantic",
+                      "depth",
                       "classify",
                       "pose",
                       "obb"
                     ],
-                    "description": "Dataset task type (depth coming soon)"
+                    "description": "Dataset task type"
                   },
                   "imageCount": {
                     "default": 0,
@@ -16470,7 +16883,7 @@
           "Deployments"
         ],
         "operationId": "post_api_deployments_owner_deployment_predict",
-        "description": "Runs inference through a dedicated deployment endpoint.",
+        "description": "Runs inference through a dedicated deployment endpoint. Depth models accept images only.",
         "parameters": [
           {
             "name": "owner",
@@ -17705,7 +18118,7 @@
           "Images"
         ],
         "operationId": "post_api_images_imageId_predict",
-        "description": "Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI.",
+        "description": "Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI. Depth datasets are rejected because dense maps cannot be converted to annotations.",
         "parameters": [
           {
             "name": "imageId",
@@ -17770,7 +18183,7 @@
             }
           },
           "400": {
-            "description": "Invalid input or model task mismatch",
+            "description": "Invalid input, depth dataset, or model task mismatch",
             "content": {
               "application/json": {
                 "schema": {
@@ -20849,7 +21262,7 @@
           "Models"
         ],
         "operationId": "post_api_models_owner_project_model_predict",
-        "description": "Runs inference on an image or video using a trained model.",
+        "description": "Runs inference on an image or video using a trained model. Depth models accept images only.",
         "security": [
           {},
           {

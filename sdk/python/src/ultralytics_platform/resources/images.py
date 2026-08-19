@@ -137,7 +137,7 @@ class Images:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI.
+        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
@@ -384,7 +384,7 @@ class AsyncImages:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI.
+        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
