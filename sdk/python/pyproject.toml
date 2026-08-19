@@ -6,7 +6,7 @@ build-backend = "uv_build"
 
 [project]
 name = "ultralytics-platform"
-version = "0.1.5"
+version = "0.1.6"
 description = "Typed Python SDK for the Ultralytics Platform API"
 requires-python = ">=3.11"
 authors = [{ name = "Ultralytics", email = "hello@ultralytics.com" }]
