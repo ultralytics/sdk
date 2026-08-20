@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart/) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -1507,6 +1507,10 @@
               "processingTimeMs": {
                 "type": "number",
                 "minimum": 0
+              },
+              "lastIngestJobId": {
+                "description": "Latest completed ingest job ID (owners only)",
+                "type": "string"
               },
               "processingError": {
                 "type": "object",
@@ -3260,6 +3264,10 @@
           "processingTimeMs": {
             "type": "number",
             "minimum": 0
+          },
+          "lastIngestJobId": {
+            "description": "Latest completed ingest job ID (owners only)",
+            "type": "string"
           },
           "processingError": {
             "type": "object",
@@ -6284,13 +6292,6 @@
                     "minimum": 0.5,
                     "maximum": 10
                   },
-                  "label_smoothing": {
-                    "description": "Label smoothing factor. Adds regularization by softening one-hot labels.",
-                    "default": 0,
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 0.1
-                  },
                   "hsv_h": {
                     "description": "HSV-Hue augmentation range for color variation.",
                     "default": 0.015,
@@ -6576,7 +6577,7 @@
                     "maximum": 10000
                   }
                 },
-                "additionalProperties": false
+                "additionalProperties": {}
               },
               "metrics": {
                 "type": "object",
@@ -9635,13 +9636,6 @@
                 "minimum": 0.5,
                 "maximum": 10
               },
-              "label_smoothing": {
-                "description": "Label smoothing factor. Adds regularization by softening one-hot labels.",
-                "default": 0,
-                "type": "number",
-                "minimum": 0,
-                "maximum": 0.1
-              },
               "hsv_h": {
                 "description": "HSV-Hue augmentation range for color variation.",
                 "default": 0.015,
@@ -10474,13 +10468,6 @@
                 "type": "number",
                 "minimum": 0.5,
                 "maximum": 10
-              },
-              "label_smoothing": {
-                "description": "Label smoothing factor. Adds regularization by softening one-hot labels.",
-                "default": 0,
-                "type": "number",
-                "minimum": 0,
-                "maximum": 0.1
               },
               "hsv_h": {
                 "description": "HSV-Hue augmentation range for color variation.",
@@ -23717,13 +23704,6 @@
                         "minimum": 0.5,
                         "maximum": 10
                       },
-                      "label_smoothing": {
-                        "description": "Label smoothing factor. Adds regularization by softening one-hot labels.",
-                        "default": 0,
-                        "type": "number",
-                        "minimum": 0,
-                        "maximum": 0.1
-                      },
                       "hsv_h": {
                         "description": "HSV-Hue augmentation range for color variation.",
                         "default": 0.015,
@@ -24143,7 +24123,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"507f1f77bcf86cd799439011\",\n    train_args={\"model\": \"yolo26n.pt\", \"data\": \"ul://jane-doe/datasets/coco8\", \"task\": \"detect\", \"classes\": [1], \"project\": \"example-project\", \"name\": \"example-name\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"label_smoothing\": 0, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": 1, \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"507f1f77bcf86cd799439011\",\n    train_args={\"model\": \"yolo26n.pt\", \"data\": \"ul://jane-doe/datasets/coco8\", \"task\": \"detect\", \"classes\": [1], \"project\": \"example-project\", \"name\": \"example-name\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": 1, \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
           }
         ]
       }
