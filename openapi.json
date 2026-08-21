@@ -3,8 +3,8 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.8",
-    "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart/) to get started.",
+    "version": "0.1.9",
+    "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
       "name": "Ultralytics",
@@ -18,7 +18,7 @@
   },
   "externalDocs": {
     "description": "Full documentation with guides and examples",
-    "url": "https://docs.ultralytics.com/platform/api/"
+    "url": "https://docs.ultralytics.com/platform/api"
   },
   "servers": [
     {
@@ -34,10 +34,10 @@
   "tags": [
     {
       "name": "Datasets",
-      "description": "Create, browse, and manage labeled image datasets for training YOLO models. See [Datasets documentation](https://docs.ultralytics.com/platform/data/datasets/).",
+      "description": "Create, browse, and manage labeled image datasets for training YOLO models. See [Datasets documentation](https://docs.ultralytics.com/platform/data/datasets).",
       "externalDocs": {
         "description": "Datasets documentation",
-        "url": "https://docs.ultralytics.com/platform/data/datasets/"
+        "url": "https://docs.ultralytics.com/platform/data/datasets"
       }
     },
     {
@@ -46,42 +46,42 @@
     },
     {
       "name": "Projects",
-      "description": "Organize your models into projects. Each model belongs to one project. See [Projects documentation](https://docs.ultralytics.com/platform/train/projects/).",
+      "description": "Organize your models into projects. Each model belongs to one project. See [Projects documentation](https://docs.ultralytics.com/platform/train/projects).",
       "externalDocs": {
         "description": "Projects documentation",
-        "url": "https://docs.ultralytics.com/platform/train/projects/"
+        "url": "https://docs.ultralytics.com/platform/train/projects"
       }
     },
     {
       "name": "Models",
-      "description": "Manage trained YOLO models — view metrics, download weights, run inference, and export to other formats. See [Models documentation](https://docs.ultralytics.com/platform/train/models/).",
+      "description": "Manage trained YOLO models — view metrics, download weights, run inference, and export to other formats. See [Models documentation](https://docs.ultralytics.com/platform/train/models).",
       "externalDocs": {
         "description": "Models documentation",
-        "url": "https://docs.ultralytics.com/platform/train/models/"
+        "url": "https://docs.ultralytics.com/platform/train/models"
       }
     },
     {
       "name": "Training",
-      "description": "Launch YOLO training on cloud GPUs (RTX 4090, A100, H100) and monitor progress in real time. See [Cloud Training documentation](https://docs.ultralytics.com/platform/train/cloud-training/).",
+      "description": "Launch YOLO training on cloud GPUs (RTX 4090, A100, H100) and monitor progress in real time. See [Cloud Training documentation](https://docs.ultralytics.com/platform/train/cloud-training).",
       "externalDocs": {
         "description": "Cloud Training documentation",
-        "url": "https://docs.ultralytics.com/platform/train/cloud-training/"
+        "url": "https://docs.ultralytics.com/platform/train/cloud-training"
       }
     },
     {
       "name": "Exports",
-      "description": "Convert models to optimized formats like ONNX, TensorRT, CoreML, and LiteRT for edge deployment. See [Deploy documentation](https://docs.ultralytics.com/platform/deploy/).",
+      "description": "Convert models to optimized formats like ONNX, TensorRT, CoreML, and LiteRT for edge deployment. See [Deploy documentation](https://docs.ultralytics.com/platform/deploy).",
       "externalDocs": {
         "description": "Deploy documentation",
-        "url": "https://docs.ultralytics.com/platform/deploy/"
+        "url": "https://docs.ultralytics.com/platform/deploy"
       }
     },
     {
       "name": "Deployments",
-      "description": "Deploy models to dedicated inference endpoints with auto-scaling, health checks, and monitoring. See [Endpoints documentation](https://docs.ultralytics.com/platform/deploy/endpoints/).",
+      "description": "Deploy models to dedicated inference endpoints with auto-scaling, health checks, and monitoring. See [Endpoints documentation](https://docs.ultralytics.com/platform/deploy/endpoints).",
       "externalDocs": {
         "description": "Endpoints documentation",
-        "url": "https://docs.ultralytics.com/platform/deploy/endpoints/"
+        "url": "https://docs.ultralytics.com/platform/deploy/endpoints"
       }
     },
     {
@@ -94,10 +94,10 @@
     },
     {
       "name": "Upload",
-      "description": "Upload files directly to cloud storage using signed URLs for fast, reliable transfers. See [Data documentation](https://docs.ultralytics.com/platform/data/).",
+      "description": "Upload files directly to cloud storage using signed URLs for fast, reliable transfers. See [Data documentation](https://docs.ultralytics.com/platform/data).",
       "externalDocs": {
         "description": "Data documentation",
-        "url": "https://docs.ultralytics.com/platform/data/"
+        "url": "https://docs.ultralytics.com/platform/data"
       }
     },
     {
