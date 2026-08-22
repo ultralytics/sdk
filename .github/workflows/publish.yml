@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   check:
-    if: github.repository == 'ultralytics/sdk' && github.actor == 'glenn-jocher' && github.ref == 'refs/heads/main'
+    if: github.repository == 'ultralytics/sdk' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.actor == 'glenn-jocher')
     runs-on: ubuntu-latest
     permissions:
       contents: write
