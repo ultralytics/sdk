@@ -105,6 +105,8 @@ class Projects:
         self,
         owner: str,
         project: str,
+        *,
+        search: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ProjectsRetrieveResponse:
@@ -115,6 +117,7 @@ class Projects:
         Args:
             owner (str): Project owner
             project (str): Project name
+            search (str, optional): Model name or metadata search
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -132,6 +135,7 @@ class Projects:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("search", search, style="form", explode=True)],
             ),
         )
 
@@ -443,6 +447,8 @@ class AsyncProjects:
         self,
         owner: str,
         project: str,
+        *,
+        search: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ProjectsRetrieveResponse:
@@ -453,6 +459,7 @@ class AsyncProjects:
         Args:
             owner (str): Project owner
             project (str): Project name
+            search (str, optional): Model name or metadata search
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -470,6 +477,7 @@ class AsyncProjects:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("search", search, style="form", explode=True)],
             ),
         )
 

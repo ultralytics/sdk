@@ -1692,72 +1692,6 @@ ModelsRetrieveResponseVariant1ModelSourceModel = TypedDict(
 )
 
 
-ModelsRetrieveResponseVariant1ModelTrainArgs = TypedDict(
-    "ModelsRetrieveResponseVariant1ModelTrainArgs",
-    {
-        "model": NotRequired[str],
-        "data": NotRequired[str],
-        "classes": NotRequired[list[int] | None],
-        "lr0": NotRequired[float],
-        "lrf": NotRequired[float],
-        "momentum": NotRequired[float],
-        "weight_decay": NotRequired[float],
-        "warmup_epochs": NotRequired[float],
-        "warmup_momentum": NotRequired[float],
-        "warmup_bias_lr": NotRequired[float],
-        "optimizer": NotRequired[
-            Literal["auto", "SGD", "MuSGD", "Adam", "AdamW", "NAdam", "RAdam", "RMSProp", "Adamax"]
-        ],
-        "box": NotRequired[float],
-        "cls": NotRequired[float],
-        "dfl": NotRequired[float],
-        "pose": NotRequired[float],
-        "kobj": NotRequired[float],
-        "hsv_h": NotRequired[float],
-        "hsv_s": NotRequired[float],
-        "hsv_v": NotRequired[float],
-        "degrees": NotRequired[float],
-        "translate": NotRequired[float],
-        "scale": NotRequired[float],
-        "shear": NotRequired[float],
-        "perspective": NotRequired[float],
-        "flipud": NotRequired[float],
-        "fliplr": NotRequired[float],
-        "mosaic": NotRequired[float],
-        "mixup": NotRequired[float],
-        "copy_paste": NotRequired[float],
-        "epochs": NotRequired[int],
-        "batch": NotRequired[int],
-        "imgsz": NotRequired[int],
-        "pretrained": NotRequired[bool],
-        "patience": NotRequired[int],
-        "time": NotRequired[float | None],
-        "seed": NotRequired[int],
-        "deterministic": NotRequired[bool],
-        "amp": NotRequired[bool],
-        "cos_lr": NotRequired[bool],
-        "compile": NotRequired[
-            bool | Literal["default", "reduce-overhead", "max-autotune", "max-autotune-no-cudagraphs"]
-        ],
-        "close_mosaic": NotRequired[int],
-        "save_period": NotRequired[int],
-        "fraction": NotRequired[float],
-        "freeze": NotRequired[int | None],
-        "single_cls": NotRequired[bool],
-        "rect": NotRequired[bool],
-        "multi_scale": NotRequired[float],
-        "val": NotRequired[bool],
-        "resume": NotRequired[bool],
-        "device": NotRequired[Literal["0", "auto", "cpu", "mps"]],
-        "cache": NotRequired[Literal["ram", "disk", "false"]],
-        "workers": NotRequired[int],
-        "dropout": NotRequired[float],
-        "iou": NotRequired[float],
-        "max_det": NotRequired[int],
-    },
-)
-
-
 ModelsRetrieveResponseVariant1ModelTrainResultsItem = TypedDict(
     "ModelsRetrieveResponseVariant1ModelTrainResultsItem",
     {
@@ -1797,6 +1731,11 @@ ModelsRetrieveResponseVariant1ModelCloudJob = TypedDict(
 ModelsRetrieveResponseVariant1ModelConsoleChunksItem = TypedDict(
     "ModelsRetrieveResponseVariant1ModelConsoleChunksItem",
     {"chunkId": float, "content": str, "lineCount": float, "timestamp": str},
+)
+
+
+ModelsRetrieveResponseVariant1ModelDataset = TypedDict(
+    "ModelsRetrieveResponseVariant1ModelDataset", {"owner": str, "dataset": str}
 )
 
 
@@ -1842,7 +1781,7 @@ ModelsRetrieveResponseVariant1Model = TypedDict(
         "epochs": NotRequired[int],
         "bestEpoch": NotRequired[int | None],
         "bestFitness": NotRequired[float | None],
-        "trainArgs": NotRequired[ModelsRetrieveResponseVariant1ModelTrainArgs],
+        "trainArgs": NotRequired[dict[str, Any]],
         "metrics": NotRequired[dict[str, float]],
         "trainResults": NotRequired[list[ModelsRetrieveResponseVariant1ModelTrainResultsItem]],
         "hasWeights": bool,
@@ -1865,6 +1804,7 @@ ModelsRetrieveResponseVariant1Model = TypedDict(
         "createdAt": str,
         "updatedAt": str,
         "metadata": dict[str, Any],
+        "dataset": NotRequired[ModelsRetrieveResponseVariant1ModelDataset],
     },
 )
 
@@ -2491,72 +2431,6 @@ ModelsListResponseModelsItemSourceModel = TypedDict(
 )
 
 
-ModelsListResponseModelsItemTrainArgs = TypedDict(
-    "ModelsListResponseModelsItemTrainArgs",
-    {
-        "model": NotRequired[str],
-        "data": NotRequired[str],
-        "classes": NotRequired[list[int] | None],
-        "lr0": NotRequired[float],
-        "lrf": NotRequired[float],
-        "momentum": NotRequired[float],
-        "weight_decay": NotRequired[float],
-        "warmup_epochs": NotRequired[float],
-        "warmup_momentum": NotRequired[float],
-        "warmup_bias_lr": NotRequired[float],
-        "optimizer": NotRequired[
-            Literal["auto", "SGD", "MuSGD", "Adam", "AdamW", "NAdam", "RAdam", "RMSProp", "Adamax"]
-        ],
-        "box": NotRequired[float],
-        "cls": NotRequired[float],
-        "dfl": NotRequired[float],
-        "pose": NotRequired[float],
-        "kobj": NotRequired[float],
-        "hsv_h": NotRequired[float],
-        "hsv_s": NotRequired[float],
-        "hsv_v": NotRequired[float],
-        "degrees": NotRequired[float],
-        "translate": NotRequired[float],
-        "scale": NotRequired[float],
-        "shear": NotRequired[float],
-        "perspective": NotRequired[float],
-        "flipud": NotRequired[float],
-        "fliplr": NotRequired[float],
-        "mosaic": NotRequired[float],
-        "mixup": NotRequired[float],
-        "copy_paste": NotRequired[float],
-        "epochs": NotRequired[int],
-        "batch": NotRequired[int],
-        "imgsz": NotRequired[int],
-        "pretrained": NotRequired[bool],
-        "patience": NotRequired[int],
-        "time": NotRequired[float | None],
-        "seed": NotRequired[int],
-        "deterministic": NotRequired[bool],
-        "amp": NotRequired[bool],
-        "cos_lr": NotRequired[bool],
-        "compile": NotRequired[
-            bool | Literal["default", "reduce-overhead", "max-autotune", "max-autotune-no-cudagraphs"]
-        ],
-        "close_mosaic": NotRequired[int],
-        "save_period": NotRequired[int],
-        "fraction": NotRequired[float],
-        "freeze": NotRequired[int | None],
-        "single_cls": NotRequired[bool],
-        "rect": NotRequired[bool],
-        "multi_scale": NotRequired[float],
-        "val": NotRequired[bool],
-        "resume": NotRequired[bool],
-        "device": NotRequired[Literal["0", "auto", "cpu", "mps"]],
-        "cache": NotRequired[Literal["ram", "disk", "false"]],
-        "workers": NotRequired[int],
-        "dropout": NotRequired[float],
-        "iou": NotRequired[float],
-        "max_det": NotRequired[int],
-    },
-)
-
-
 ModelsListResponseModelsItemTrainResultsItem = TypedDict(
     "ModelsListResponseModelsItemTrainResultsItem",
     {
@@ -2639,7 +2513,7 @@ ModelsListResponseModelsItem = TypedDict(
         "epochs": NotRequired[int],
         "bestEpoch": NotRequired[int | None],
         "bestFitness": NotRequired[float | None],
-        "trainArgs": NotRequired[ModelsListResponseModelsItemTrainArgs],
+        "trainArgs": NotRequired[dict[str, Any]],
         "metrics": NotRequired[dict[str, float]],
         "trainResults": NotRequired[list[ModelsListResponseModelsItemTrainResultsItem]],
         "hasWeights": bool,
@@ -2836,72 +2710,6 @@ ProjectsRetrieveResponseProject = TypedDict(
 ProjectsRetrieveResponseModelsItemFile = TypedDict("ProjectsRetrieveResponseModelsItemFile", {"size": float})
 
 
-ProjectsRetrieveResponseModelsItemTrainArgs = TypedDict(
-    "ProjectsRetrieveResponseModelsItemTrainArgs",
-    {
-        "model": NotRequired[str],
-        "data": NotRequired[str],
-        "classes": NotRequired[list[int] | None],
-        "lr0": NotRequired[float],
-        "lrf": NotRequired[float],
-        "momentum": NotRequired[float],
-        "weight_decay": NotRequired[float],
-        "warmup_epochs": NotRequired[float],
-        "warmup_momentum": NotRequired[float],
-        "warmup_bias_lr": NotRequired[float],
-        "optimizer": NotRequired[
-            Literal["auto", "SGD", "MuSGD", "Adam", "AdamW", "NAdam", "RAdam", "RMSProp", "Adamax"]
-        ],
-        "box": NotRequired[float],
-        "cls": NotRequired[float],
-        "dfl": NotRequired[float],
-        "pose": NotRequired[float],
-        "kobj": NotRequired[float],
-        "hsv_h": NotRequired[float],
-        "hsv_s": NotRequired[float],
-        "hsv_v": NotRequired[float],
-        "degrees": NotRequired[float],
-        "translate": NotRequired[float],
-        "scale": NotRequired[float],
-        "shear": NotRequired[float],
-        "perspective": NotRequired[float],
-        "flipud": NotRequired[float],
-        "fliplr": NotRequired[float],
-        "mosaic": NotRequired[float],
-        "mixup": NotRequired[float],
-        "copy_paste": NotRequired[float],
-        "epochs": NotRequired[int],
-        "batch": NotRequired[int],
-        "imgsz": NotRequired[int],
-        "pretrained": NotRequired[bool],
-        "patience": NotRequired[int],
-        "time": NotRequired[float | None],
-        "seed": NotRequired[int],
-        "deterministic": NotRequired[bool],
-        "amp": NotRequired[bool],
-        "cos_lr": NotRequired[bool],
-        "compile": NotRequired[
-            bool | Literal["default", "reduce-overhead", "max-autotune", "max-autotune-no-cudagraphs"]
-        ],
-        "close_mosaic": NotRequired[int],
-        "save_period": NotRequired[int],
-        "fraction": NotRequired[float],
-        "freeze": NotRequired[int | None],
-        "single_cls": NotRequired[bool],
-        "rect": NotRequired[bool],
-        "multi_scale": NotRequired[float],
-        "val": NotRequired[bool],
-        "resume": NotRequired[bool],
-        "device": NotRequired[Literal["0", "auto", "cpu", "mps"]],
-        "cache": NotRequired[Literal["ram", "disk", "false"]],
-        "workers": NotRequired[int],
-        "dropout": NotRequired[float],
-        "iou": NotRequired[float],
-        "max_det": NotRequired[int],
-    },
-)
-
-
 ProjectsRetrieveResponseModelsItem = TypedDict(
     "ProjectsRetrieveResponseModelsItem",
     {
@@ -2921,7 +2729,7 @@ ProjectsRetrieveResponseModelsItem = TypedDict(
         "startedAt": NotRequired[str],
         "file": NotRequired[ProjectsRetrieveResponseModelsItemFile],
         "hasWeights": bool,
-        "trainArgs": NotRequired[ProjectsRetrieveResponseModelsItemTrainArgs],
+        "trainArgs": NotRequired[dict[str, Any]],
         "createdAt": str,
         "updatedAt": str,
     },
