@@ -143,26 +143,35 @@ jobs:
           uv pip install --system pytest jsonschema referencing "./sdk/python"
           pytest tests -v
 
-      - name: Open contract update
+      - name: Open, validate, and merge contract update
         if: steps.sync.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets._GITHUB_TOKEN }}
           CONTRACT_HASH: ${{ steps.sync.outputs.hash }}
         run: |
           branch="automation/openapi-${CONTRACT_HASH}"
-          if [ "$(gh pr list --head "$branch" --state all --json number --jq length)" -gt 0 ]; then
-            exit 0
+          pr_url=$(gh pr list --head "$branch" --state open --json url --jq '.[0].url // empty')
+          if [ -z "$pr_url" ]; then
+            if [ "$(gh pr list --head "$branch" --state all --json number --jq length)" -gt 0 ]; then
+              exit 0
+            fi
+            if ! git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              gh auth setup-git
+              git switch --create "$branch"
+              git add openapi.json openapi.sha256 sdk/python
+              git commit -m "Update Platform API contract"
+              git push --set-upstream origin "$branch"
+            fi
+            pr_url=$(gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. CI validates the generated package before the workflow merges the exact green head. The package version follows the contract info.version, so merging a bumped version publishes to PyPI.")
           fi
-          if ! git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            gh auth setup-git
-            git switch --create "$branch"
-            git add openapi.json openapi.sha256 sdk/python
-            git commit -m "Update Platform API contract"
-            git push --set-upstream origin "$branch"
-          fi
-          gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. Review this diff for semantic versioning impact (added, removed, or changed operations and schemas). The package version follows the contract info.version, so confirm the contract was bumped upstream before merge; merging a bumped version publishes to PyPI."
+          echo "PR ready: $pr_url"
+
+          sleep 60 # Let format.yml and ci.yml register their checks before --watch
+          head_sha=$(gh pr view "$pr_url" --json headRefOid --jq .headRefOid)
+          gh pr checks "$pr_url" --watch --fail-fast
+          gh pr merge "$pr_url" --squash --delete-branch --admin --match-head-commit "$head_sha"
 
       - name: Create, edit, and delete resources through every SDK operation
         env:
