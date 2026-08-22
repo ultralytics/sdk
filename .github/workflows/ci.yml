@@ -186,6 +186,7 @@ jobs:
           gh pr merge "$pr_url" --squash --delete-branch --admin --match-head-commit "$head_sha"
 
       - name: Create, edit, and delete resources through every SDK operation
+        if: steps.sync.outputs.changed != 'true'
         env:
           ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}
         run: |
