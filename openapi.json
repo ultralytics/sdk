@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.11",
+    "version": "0.1.13",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -348,6 +348,7 @@
                     "subscription",
                     "monthly_grant",
                     "training",
+                    "annotation",
                     "refund",
                     "adjustment",
                     "promo",
@@ -2810,6 +2811,173 @@
         "required": [
           "models",
           "count"
+        ],
+        "additionalProperties": false
+      },
+      "BatchPredictStatusResponse": {
+        "type": "object",
+        "properties": {
+          "activeJob": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "stopping": {
+                    "type": "boolean"
+                  },
+                  "progress": {
+                    "type": "object",
+                    "properties": {
+                      "processed": {
+                        "type": "number",
+                        "description": "Images inferred so far"
+                      },
+                      "total": {
+                        "type": "number",
+                        "description": "Images the run targets"
+                      }
+                    },
+                    "required": [
+                      "processed",
+                      "total"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "startedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+                  }
+                },
+                "required": [
+                  "id",
+                  "stopping",
+                  "progress",
+                  "startedAt"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lastRun": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "failed": {
+                    "type": "boolean"
+                  },
+                  "stopped": {
+                    "type": "boolean"
+                  },
+                  "error": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "results": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "processed": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Images successfully inferred"
+                          },
+                          "annotations": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Annotations written"
+                          },
+                          "classes": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Distinct classes predicted"
+                          }
+                        },
+                        "required": [
+                          "processed",
+                          "annotations",
+                          "classes"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "failed",
+                  "stopped",
+                  "error",
+                  "results"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "activeJob",
+          "lastRun"
+        ],
+        "additionalProperties": false
+      },
+      "StartBatchPredictResponse": {
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "additionalProperties": false
+      },
+      "ResolveBatchPredictResponse": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "cancelled",
+              "dismissed",
+              "none"
+            ],
+            "description": "What happened to the run"
+          },
+          "jobId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "action",
+          "jobId"
         ],
         "additionalProperties": false
       },
@@ -5441,6 +5609,13 @@
             },
             "description": "Predicted annotations"
           },
+          "confidences": {
+            "description": "Detection confidence per prediction, index-aligned, for previewing a threshold locally",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
           "modelUsed": {
             "type": "string",
             "description": "Model used for inference"
@@ -6008,6 +6183,15 @@
               "projectName": {
                 "type": "string",
                 "description": "Project display name"
+              },
+              "projectIconColor": {
+                "type": "string"
+              },
+              "projectIconLetter": {
+                "type": "string"
+              },
+              "projectIconImage": {
+                "type": "string"
               },
               "model": {
                 "type": "string",
@@ -8963,6 +9147,15 @@
           "projectName": {
             "type": "string",
             "description": "Project display name"
+          },
+          "projectIconColor": {
+            "type": "string"
+          },
+          "projectIconLetter": {
+            "type": "string"
+          },
+          "projectIconImage": {
+            "type": "string"
           },
           "model": {
             "type": "string",
@@ -14168,6 +14361,410 @@
             "label": "Python SDK",
             "lang": "Python",
             "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.models(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n)\nprint(response)"
+          }
+        ]
+      }
+    },
+    "/api/datasets/{owner}/{dataset}/predict/batch": {
+      "get": {
+        "summary": "Get auto-annotation run status",
+        "tags": [
+          "Datasets"
+        ],
+        "operationId": "get_api_datasets_owner_dataset_predict_batch",
+        "description": "Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal.",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 32,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "ultralytics"
+            },
+            "description": "Dataset owner"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "coco8"
+            },
+            "description": "Dataset name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPredictStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid owner or dataset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Dataset editor access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dataset not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.batch(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n)\nprint(response)"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Auto-annotate a dataset",
+        "tags": [
+          "Datasets"
+        ],
+        "operationId": "post_api_datasets_owner_dataset_predict_batch",
+        "description": "Saves a dataset version, then queues a run that labels every unlabeled image with the given model. Existing labels are never changed, and the run is billed for the images it actually processes.",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 32,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "ultralytics"
+            },
+            "description": "Dataset owner"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "coco8"
+            },
+            "description": "Dataset name"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "modelId": {
+                    "type": "string",
+                    "maxLength": 256,
+                    "pattern": "^ul:\\/\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$",
+                    "description": "Fully qualified model URI",
+                    "example": "ul://ultralytics/yolo26/yolo26n"
+                  },
+                  "confidence": {
+                    "default": 0.25,
+                    "description": "Confidence threshold",
+                    "type": "number",
+                    "minimum": 0.01,
+                    "maximum": 1
+                  },
+                  "iou": {
+                    "default": 0.7,
+                    "description": "IoU threshold for non-maximum suppression",
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 0.95
+                  }
+                },
+                "required": [
+                  "modelId"
+                ],
+                "description": "Input for dataset auto-annotation prediction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Auto-annotation queued",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartBatchPredictResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or model task mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Not enough credits to auto-annotate this dataset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Dataset editor access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dataset or model not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Dataset is not ready, has no unlabeled images, or a run is in progress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Model classes do not match the dataset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The previous run's billing could not be completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.create_batch(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    model_id=\"ul://ultralytics/yolo26/yolo26n\",\n)\nprint(response)"
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Cancel or dismiss an auto-annotation run",
+        "tags": [
+          "Datasets"
+        ],
+        "operationId": "delete_api_datasets_owner_dataset_predict_batch",
+        "description": "Cancels an in-flight run, or settles billing and dismisses its terminal summary.",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 32,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "ultralytics"
+            },
+            "description": "Dataset owner"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "coco8"
+            },
+            "description": "Dataset name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run cancelled or dismissed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolveBatchPredictResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid owner or dataset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Dataset editor access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dataset not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Billing could not be completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.delete_batch(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n)\nprint(response)"
           }
         ]
       }

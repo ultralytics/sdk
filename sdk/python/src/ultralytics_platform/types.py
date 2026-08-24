@@ -220,6 +220,7 @@ BillingTransactionsResponseTransactionsItem = TypedDict(
             "subscription",
             "monthly_grant",
             "training",
+            "annotation",
             "refund",
             "adjustment",
             "promo",
@@ -860,6 +861,42 @@ DatasetsModelsResponseModelsItem = TypedDict(
 
 DatasetsModelsResponse = TypedDict(
     "DatasetsModelsResponse", {"models": list[DatasetsModelsResponseModelsItem], "count": int}
+)
+
+
+DatasetsBatchResponseActiveJobProgress = TypedDict(
+    "DatasetsBatchResponseActiveJobProgress", {"processed": float, "total": float}
+)
+
+
+DatasetsBatchResponseActiveJob = TypedDict(
+    "DatasetsBatchResponseActiveJob",
+    {"id": str, "stopping": bool, "progress": DatasetsBatchResponseActiveJobProgress, "startedAt": str},
+)
+
+
+DatasetsBatchResponseLastRunResults = TypedDict(
+    "DatasetsBatchResponseLastRunResults", {"processed": int, "annotations": int, "classes": int}
+)
+
+
+DatasetsBatchResponseLastRun = TypedDict(
+    "DatasetsBatchResponseLastRun",
+    {"failed": bool, "stopped": bool, "error": str | None, "results": DatasetsBatchResponseLastRunResults | None},
+)
+
+
+DatasetsBatchResponse = TypedDict(
+    "DatasetsBatchResponse",
+    {"activeJob": DatasetsBatchResponseActiveJob | None, "lastRun": DatasetsBatchResponseLastRun | None},
+)
+
+
+DatasetsCreateBatchResponse = TypedDict("DatasetsCreateBatchResponse", {"jobId": str})
+
+
+DatasetsDeleteBatchResponse = TypedDict(
+    "DatasetsDeleteBatchResponse", {"action": Literal["cancelled", "dismissed", "none"], "jobId": str | None}
 )
 
 
@@ -1582,6 +1619,7 @@ ImagesPredictResponse = TypedDict(
     {
         "success": Literal[True],
         "predictions": list[ImagesPredictResponsePredictionsItem],
+        "confidences": NotRequired[list[float]],
         "modelUsed": str,
         "inferenceTime": NotRequired[float],
     },
@@ -1746,6 +1784,9 @@ ModelsRetrieveResponseVariant1Model = TypedDict(
         "owner": str,
         "project": str,
         "projectName": str,
+        "projectIconColor": NotRequired[str],
+        "projectIconLetter": NotRequired[str],
+        "projectIconImage": NotRequired[str],
         "model": str,
         "visibility": Literal["public", "private"],
         "name": str,
@@ -2478,6 +2519,9 @@ ModelsListResponseModelsItem = TypedDict(
         "owner": str,
         "project": str,
         "projectName": str,
+        "projectIconColor": NotRequired[str],
+        "projectIconLetter": NotRequired[str],
+        "projectIconImage": NotRequired[str],
         "model": str,
         "visibility": Literal["public", "private"],
         "name": str,
