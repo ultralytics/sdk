@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.13",
+    "version": "0.1.14",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -1163,6 +1163,10 @@
                   "obb"
                 ],
                 "description": "YOLO task type"
+              },
+              "channels": {
+                "type": "integer",
+                "exclusiveMinimum": 0
               },
               "depthScale": {
                 "type": "number",
@@ -3087,6 +3091,10 @@
               "obb"
             ],
             "description": "YOLO task type"
+          },
+          "channels": {
+            "type": "integer",
+            "exclusiveMinimum": 0
           },
           "depthScale": {
             "type": "number",
