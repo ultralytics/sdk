@@ -16,12 +16,15 @@ from .._client import (
     _query_parameter,
 )
 from ..types import (
+    DatasetsBatchResponse,
     DatasetsClassStatsResponse,
     DatasetsCloneResponse,
     DatasetsClusteringResponse,
+    DatasetsCreateBatchResponse,
     DatasetsCreateEmbeddingsResponse,
     DatasetsCreateExportResponse,
     DatasetsCreateResponse,
+    DatasetsDeleteBatchResponse,
     DatasetsDeleteClassesResponse,
     DatasetsDeleteEmbeddingsResponse,
     DatasetsDeleteResponse,
@@ -898,6 +901,116 @@ class Datasets:
             self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/models",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
+        )
+
+    def batch(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsBatchResponse:
+        """Get auto-annotation run status.
+
+        Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsBatchResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsBatchResponse,
+            self._client.request(
+                "GET",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/predict/batch",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
+        )
+
+    def create_batch(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        model_id: str,
+        confidence: float | NotGiven = NOT_GIVEN,
+        iou: float | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsCreateBatchResponse:
+        """Auto-annotate a dataset.
+
+        Saves a dataset version, then queues a run that labels every unlabeled image with the given model. Existing labels are never changed, and the run is billed for the images it actually processes.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            model_id (str): Fully qualified model URI
+            confidence (float, optional): Confidence threshold
+            iou (float, optional): IoU threshold for non-maximum suppression
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsCreateBatchResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsCreateBatchResponse,
+            self._client.request(
+                "POST",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/predict/batch",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"modelId": model_id, "confidence": confidence, "iou": iou},
+            ),
+        )
+
+    def delete_batch(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsDeleteBatchResponse:
+        """Cancel or dismiss an auto-annotation run.
+
+        Cancels an in-flight run, or settles billing and dismisses its terminal summary.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsDeleteBatchResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsDeleteBatchResponse,
+            self._client.request(
+                "DELETE",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/predict/batch",
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
@@ -2039,6 +2152,116 @@ class AsyncDatasets:
             await self._client.request(
                 "GET",
                 f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/models",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
+        )
+
+    async def batch(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsBatchResponse:
+        """Get auto-annotation run status.
+
+        Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsBatchResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsBatchResponse,
+            await self._client.request(
+                "GET",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/predict/batch",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
+        )
+
+    async def create_batch(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        model_id: str,
+        confidence: float | NotGiven = NOT_GIVEN,
+        iou: float | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsCreateBatchResponse:
+        """Auto-annotate a dataset.
+
+        Saves a dataset version, then queues a run that labels every unlabeled image with the given model. Existing labels are never changed, and the run is billed for the images it actually processes.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            model_id (str): Fully qualified model URI
+            confidence (float, optional): Confidence threshold
+            iou (float, optional): IoU threshold for non-maximum suppression
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsCreateBatchResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsCreateBatchResponse,
+            await self._client.request(
+                "POST",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/predict/batch",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"modelId": model_id, "confidence": confidence, "iou": iou},
+            ),
+        )
+
+    async def delete_batch(
+        self,
+        owner: str,
+        dataset: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsDeleteBatchResponse:
+        """Cancel or dismiss an auto-annotation run.
+
+        Cancels an in-flight run, or settles billing and dismisses its terminal summary.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsDeleteBatchResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsDeleteBatchResponse,
+            await self._client.request(
+                "DELETE",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/predict/batch",
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
