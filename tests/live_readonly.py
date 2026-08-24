@@ -345,13 +345,13 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     )
     client.datasets.redistribute_splits(owner, dataset, train=80, val=10, test=10)
     client.datasets.batch(owner, dataset)
+    cleanup.append(lambda: client.datasets.delete_batch(owner, dataset))
     expected_error(
         lambda: client.datasets.create_batch(owner, dataset, model_id=f"ul://{owner}/{missing}/{missing}"),
         "post_api_datasets_owner_dataset_predict_batch",
         "A missing model avoids starting paid compute",
         expected_errors,
     )
-    client.datasets.delete_batch(owner, dataset)
 
     detail = client.images.retrieve(image_ids[0])
     metadata = detail.get("metadata", {})
