@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.14",
+    "version": "0.1.16",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -2351,7 +2351,7 @@
                     },
                     "previewUrl": {
                       "type": "string",
-                      "description": "Canonical depth PNG the client colorizes"
+                      "description": "Normalized grayscale depth PNG the client colorizes"
                     }
                   },
                   "required": [
@@ -2610,7 +2610,7 @@
                     },
                     "previewUrl": {
                       "type": "string",
-                      "description": "Canonical depth PNG the client colorizes"
+                      "description": "Normalized grayscale depth PNG the client colorizes"
                     }
                   },
                   "required": [
@@ -14485,7 +14485,7 @@
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_predict_batch",
-        "description": "Saves a dataset version, then queues a run that labels every unlabeled image with the given model. Existing labels are never changed, and the run is billed for the images it actually processes.",
+        "description": "Saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Existing labels are never changed, and the run is billed for the images it actually processes.",
         "parameters": [
           {
             "name": "owner",
@@ -14541,12 +14541,17 @@
                     "type": "number",
                     "minimum": 0,
                     "maximum": 0.95
+                  },
+                  "includeAnnotated": {
+                    "default": false,
+                    "description": "Also annotate images that already have labels, keeping the labels they have",
+                    "type": "boolean"
                   }
                 },
                 "required": [
                   "modelId"
                 ],
-                "description": "Input for dataset auto-annotation prediction"
+                "description": "Input for a dataset auto-annotation run"
               }
             }
           }

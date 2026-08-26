@@ -949,12 +949,13 @@ class Datasets:
         model_id: str,
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
+        include_annotated: bool | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateBatchResponse:
         """Auto-annotate a dataset.
 
-        Saves a dataset version, then queues a run that labels every unlabeled image with the given model. Existing labels are never changed, and the run is billed for the images it actually processes.
+        Saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Existing labels are never changed, and the run is billed for the images it actually processes.
 
         Args:
             owner (str): Dataset owner
@@ -962,6 +963,7 @@ class Datasets:
             model_id (str): Fully qualified model URI
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
+            include_annotated (bool, optional): Also annotate images that already have labels, keeping the labels they have
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -979,7 +981,7 @@ class Datasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou},
+                json={"modelId": model_id, "confidence": confidence, "iou": iou, "includeAnnotated": include_annotated},
             ),
         )
 
@@ -2200,12 +2202,13 @@ class AsyncDatasets:
         model_id: str,
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
+        include_annotated: bool | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateBatchResponse:
         """Auto-annotate a dataset.
 
-        Saves a dataset version, then queues a run that labels every unlabeled image with the given model. Existing labels are never changed, and the run is billed for the images it actually processes.
+        Saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Existing labels are never changed, and the run is billed for the images it actually processes.
 
         Args:
             owner (str): Dataset owner
@@ -2213,6 +2216,7 @@ class AsyncDatasets:
             model_id (str): Fully qualified model URI
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
+            include_annotated (bool, optional): Also annotate images that already have labels, keeping the labels they have
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2230,7 +2234,7 @@ class AsyncDatasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou},
+                json={"modelId": model_id, "confidence": confidence, "iou": iou, "includeAnnotated": include_annotated},
             ),
         )
 
