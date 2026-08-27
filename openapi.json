@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.16",
+    "version": "0.1.18",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -1209,18 +1209,27 @@
                   "CC0-1.0",
                   "PDM-1.0",
                   "CC-BY-2.5",
+                  "CC-BY-3.0",
                   "CC-BY-4.0",
                   "CC-BY-NC-2.0",
-                  "CC-BY-SA-4.0",
+                  "CC-BY-NC-3.0",
                   "CC-BY-NC-4.0",
+                  "CC-BY-SA-3.0",
+                  "CC-BY-SA-4.0",
                   "CC-BY-NC-SA-3.0",
                   "CC-BY-NC-SA-4.0",
                   "CC-BY-ND-4.0",
+                  "CC-BY-NC-ND-2.0",
                   "CC-BY-NC-ND-4.0",
                   "Apache-2.0",
                   "MIT",
+                  "BSD-3-Clause",
                   "AGPL-3.0",
+                  "GPL-2.0",
                   "GPL-3.0",
+                  "LGPL-3.0",
+                  "ODbL-1.0",
+                  "DbCL-1.0",
                   "Research-Only",
                   "Other"
                 ],
@@ -3137,18 +3146,27 @@
               "CC0-1.0",
               "PDM-1.0",
               "CC-BY-2.5",
+              "CC-BY-3.0",
               "CC-BY-4.0",
               "CC-BY-NC-2.0",
-              "CC-BY-SA-4.0",
+              "CC-BY-NC-3.0",
               "CC-BY-NC-4.0",
+              "CC-BY-SA-3.0",
+              "CC-BY-SA-4.0",
               "CC-BY-NC-SA-3.0",
               "CC-BY-NC-SA-4.0",
               "CC-BY-ND-4.0",
+              "CC-BY-NC-ND-2.0",
               "CC-BY-NC-ND-4.0",
               "Apache-2.0",
               "MIT",
+              "BSD-3-Clause",
               "AGPL-3.0",
+              "GPL-2.0",
               "GPL-3.0",
+              "LGPL-3.0",
+              "ODbL-1.0",
+              "DbCL-1.0",
               "Research-Only",
               "Other"
             ],
@@ -10982,6 +11000,16 @@
             "type": "string",
             "format": "date-time",
             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+          },
+          "headers": {
+            "description": "Headers required when uploading to the signed URL",
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -11834,18 +11862,27 @@
                       "CC0-1.0",
                       "PDM-1.0",
                       "CC-BY-2.5",
+                      "CC-BY-3.0",
                       "CC-BY-4.0",
                       "CC-BY-NC-2.0",
-                      "CC-BY-SA-4.0",
+                      "CC-BY-NC-3.0",
                       "CC-BY-NC-4.0",
+                      "CC-BY-SA-3.0",
+                      "CC-BY-SA-4.0",
                       "CC-BY-NC-SA-3.0",
                       "CC-BY-NC-SA-4.0",
                       "CC-BY-ND-4.0",
+                      "CC-BY-NC-ND-2.0",
                       "CC-BY-NC-ND-4.0",
                       "Apache-2.0",
                       "MIT",
+                      "BSD-3-Clause",
                       "AGPL-3.0",
+                      "GPL-2.0",
                       "GPL-3.0",
+                      "LGPL-3.0",
+                      "ODbL-1.0",
+                      "DbCL-1.0",
                       "Research-Only",
                       "Other"
                     ],
@@ -12203,18 +12240,27 @@
                       "CC0-1.0",
                       "PDM-1.0",
                       "CC-BY-2.5",
+                      "CC-BY-3.0",
                       "CC-BY-4.0",
                       "CC-BY-NC-2.0",
-                      "CC-BY-SA-4.0",
+                      "CC-BY-NC-3.0",
                       "CC-BY-NC-4.0",
+                      "CC-BY-SA-3.0",
+                      "CC-BY-SA-4.0",
                       "CC-BY-NC-SA-3.0",
                       "CC-BY-NC-SA-4.0",
                       "CC-BY-ND-4.0",
+                      "CC-BY-NC-ND-2.0",
                       "CC-BY-NC-ND-4.0",
                       "Apache-2.0",
                       "MIT",
+                      "BSD-3-Clause",
                       "AGPL-3.0",
+                      "GPL-2.0",
                       "GPL-3.0",
+                      "LGPL-3.0",
+                      "ODbL-1.0",
+                      "DbCL-1.0",
                       "Research-Only",
                       "Other"
                     ],
@@ -15313,22 +15359,36 @@
                       "CC0-1.0",
                       "PDM-1.0",
                       "CC-BY-2.5",
+                      "CC-BY-3.0",
                       "CC-BY-4.0",
                       "CC-BY-NC-2.0",
-                      "CC-BY-SA-4.0",
+                      "CC-BY-NC-3.0",
                       "CC-BY-NC-4.0",
+                      "CC-BY-SA-3.0",
+                      "CC-BY-SA-4.0",
                       "CC-BY-NC-SA-3.0",
                       "CC-BY-NC-SA-4.0",
                       "CC-BY-ND-4.0",
+                      "CC-BY-NC-ND-2.0",
                       "CC-BY-NC-ND-4.0",
                       "Apache-2.0",
                       "MIT",
+                      "BSD-3-Clause",
                       "AGPL-3.0",
+                      "GPL-2.0",
                       "GPL-3.0",
+                      "LGPL-3.0",
+                      "ODbL-1.0",
+                      "DbCL-1.0",
                       "Research-Only",
                       "Other"
                     ],
                     "description": "Dataset license identifier"
+                  },
+                  "requireExactSlug": {
+                    "default": false,
+                    "description": "Reject a slug conflict instead of creating an automatically suffixed dataset",
+                    "type": "boolean"
                   },
                   "owner": {
                     "description": "Workspace owner",
@@ -15381,6 +15441,16 @@
           },
           "403": {
             "description": "Workspace editor access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Dataset slug already exists",
             "content": {
               "application/json": {
                 "schema": {
@@ -23106,7 +23176,7 @@
                         "maximum": 4
                       },
                       "dfl": {
-                        "description": "Distribution Focal Loss weight. Adjusts how much DFL impacts box regression accuracy.",
+                        "description": "Weight of the box-distance regression term: DFL when reg_max > 1; otherwise L1 loss on normalized box distances.",
                         "default": 1.5,
                         "type": "number",
                         "minimum": 0.4,
@@ -23317,11 +23387,45 @@
                         "maximum": 100
                       },
                       "fraction": {
-                        "description": "Fraction of dataset to use for training (1.0 = full dataset).",
-                        "default": 1,
-                        "type": "number",
-                        "minimum": 0.1,
-                        "maximum": 1
+                        "description": "Ratio/count or [train, val]; 1.0 means all, 1 means one. NDJSON selection is evenly spaced.",
+                        "default": "1.0",
+                        "anyOf": [
+                          {
+                            "anyOf": [
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "array",
+                            "prefixItems": [
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              },
+                              {
+                                "anyOf": [
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "string"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
                       },
                       "freeze": {
                         "description": "Number of layers to freeze. Retains pretrained features. Use null to train all layers.",
@@ -23545,7 +23649,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"507f1f77bcf86cd799439011\",\n    train_args={\"model\": \"yolo26n.pt\", \"data\": \"ul://jane-doe/datasets/coco8\", \"task\": \"detect\", \"classes\": [1], \"project\": \"example-project\", \"name\": \"example-name\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": 1, \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.start(\n    model_id=\"507f1f77bcf86cd799439011\",\n    train_args={\"model\": \"yolo26n.pt\", \"data\": \"ul://jane-doe/datasets/coco8\", \"task\": \"detect\", \"classes\": [1], \"project\": \"example-project\", \"name\": \"example-name\", \"lr0\": 0.01, \"lrf\": 0.01, \"momentum\": 0.937, \"weight_decay\": 0.0005, \"warmup_epochs\": 3, \"warmup_momentum\": 0.8, \"warmup_bias_lr\": 0.1, \"optimizer\": \"auto\", \"box\": 7.5, \"cls\": 0.5, \"dfl\": 1.5, \"pose\": 12, \"kobj\": 1, \"hsv_h\": 0.015, \"hsv_s\": 0.7, \"hsv_v\": 0.4, \"degrees\": 0, \"translate\": 0.1, \"scale\": 0.5, \"shear\": 0, \"perspective\": 0, \"flipud\": 0, \"fliplr\": 0.5, \"mosaic\": 1, \"mixup\": 0, \"copy_paste\": 0, \"epochs\": 1, \"batch\": -1, \"imgsz\": 640, \"pretrained\": True, \"patience\": 100, \"time\": 1, \"seed\": 0, \"deterministic\": True, \"amp\": True, \"cos_lr\": False, \"compile\": False, \"close_mosaic\": 10, \"save_period\": -1, \"fraction\": \"1.0\", \"freeze\": 1, \"single_cls\": False, \"rect\": False, \"multi_scale\": 0, \"val\": True, \"resume\": False, \"device\": \"auto\", \"cache\": \"false\", \"workers\": 8, \"dropout\": 0, \"iou\": 0.7, \"max_det\": 300},\n)\nprint(response)"
           }
         ]
       }
@@ -23948,6 +24052,12 @@
                   "checksum": {
                     "type": "string",
                     "maxLength": 128
+                  },
+                  "md5": {
+                    "description": "Expected uploaded object MD5 digest in hexadecimal",
+                    "type": "string",
+                    "maxLength": 32,
+                    "pattern": "^[0-9a-f]{32}$"
                   }
                 },
                 "required": [
@@ -24009,6 +24119,16 @@
               }
             }
           },
+          "409": {
+            "description": "Upload completion conflicts with another request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "429": {
             "description": "Rate limit exceeded",
             "content": {
@@ -24046,7 +24166,7 @@
           "Upload"
         ],
         "operationId": "post_api_upload_signed_url",
-        "description": "Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.",
+        "description": "Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.",
         "requestBody": {
           "required": true,
           "content": {
