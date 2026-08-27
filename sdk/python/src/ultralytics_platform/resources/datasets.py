@@ -178,18 +178,27 @@ class Datasets:
             "CC0-1.0",
             "PDM-1.0",
             "CC-BY-2.5",
+            "CC-BY-3.0",
             "CC-BY-4.0",
             "CC-BY-NC-2.0",
-            "CC-BY-SA-4.0",
+            "CC-BY-NC-3.0",
             "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
             "CC-BY-NC-SA-3.0",
             "CC-BY-NC-SA-4.0",
             "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
             "CC-BY-NC-ND-4.0",
             "Apache-2.0",
             "MIT",
+            "BSD-3-Clause",
             "AGPL-3.0",
+            "GPL-2.0",
             "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
             "Research-Only",
             "Other",
         ]
@@ -209,7 +218,7 @@ class Datasets:
             dataset_body (str, optional): Name for the cloned dataset
             description (str, optional): description request value.
             visibility (Literal["public", "private"], optional): Resource visibility
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner_body (str, optional): Destination owner
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -293,18 +302,27 @@ class Datasets:
             "CC0-1.0",
             "PDM-1.0",
             "CC-BY-2.5",
+            "CC-BY-3.0",
             "CC-BY-4.0",
             "CC-BY-NC-2.0",
-            "CC-BY-SA-4.0",
+            "CC-BY-NC-3.0",
             "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
             "CC-BY-NC-SA-3.0",
             "CC-BY-NC-SA-4.0",
             "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
             "CC-BY-NC-ND-4.0",
             "Apache-2.0",
             "MIT",
+            "BSD-3-Clause",
             "AGPL-3.0",
+            "GPL-2.0",
             "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
             "Research-Only",
             "Other",
         ]
@@ -331,7 +349,7 @@ class Datasets:
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""], optional): iconLetter request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
@@ -1161,22 +1179,32 @@ class Datasets:
             "CC0-1.0",
             "PDM-1.0",
             "CC-BY-2.5",
+            "CC-BY-3.0",
             "CC-BY-4.0",
             "CC-BY-NC-2.0",
-            "CC-BY-SA-4.0",
+            "CC-BY-NC-3.0",
             "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
             "CC-BY-NC-SA-3.0",
             "CC-BY-NC-SA-4.0",
             "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
             "CC-BY-NC-ND-4.0",
             "Apache-2.0",
             "MIT",
+            "BSD-3-Clause",
             "AGPL-3.0",
+            "GPL-2.0",
             "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
             "Research-Only",
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
+        require_exact_slug: bool | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
@@ -1196,7 +1224,8 @@ class Datasets:
             class_names (Sequence[str], optional): classNames request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             tags (Sequence[str], optional): tags request value.
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
+            require_exact_slug (bool, optional): Reject a slug conflict instead of creating an automatically suffixed dataset
             owner (str, optional): Workspace owner
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -1227,6 +1256,7 @@ class Datasets:
                     "format": format,
                     "tags": tags,
                     "license": license,
+                    "requireExactSlug": require_exact_slug,
                     "owner": owner,
                 },
             ),
@@ -1431,18 +1461,27 @@ class AsyncDatasets:
             "CC0-1.0",
             "PDM-1.0",
             "CC-BY-2.5",
+            "CC-BY-3.0",
             "CC-BY-4.0",
             "CC-BY-NC-2.0",
-            "CC-BY-SA-4.0",
+            "CC-BY-NC-3.0",
             "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
             "CC-BY-NC-SA-3.0",
             "CC-BY-NC-SA-4.0",
             "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
             "CC-BY-NC-ND-4.0",
             "Apache-2.0",
             "MIT",
+            "BSD-3-Clause",
             "AGPL-3.0",
+            "GPL-2.0",
             "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
             "Research-Only",
             "Other",
         ]
@@ -1462,7 +1501,7 @@ class AsyncDatasets:
             dataset_body (str, optional): Name for the cloned dataset
             description (str, optional): description request value.
             visibility (Literal["public", "private"], optional): Resource visibility
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
             owner_body (str, optional): Destination owner
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -1546,18 +1585,27 @@ class AsyncDatasets:
             "CC0-1.0",
             "PDM-1.0",
             "CC-BY-2.5",
+            "CC-BY-3.0",
             "CC-BY-4.0",
             "CC-BY-NC-2.0",
-            "CC-BY-SA-4.0",
+            "CC-BY-NC-3.0",
             "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
             "CC-BY-NC-SA-3.0",
             "CC-BY-NC-SA-4.0",
             "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
             "CC-BY-NC-ND-4.0",
             "Apache-2.0",
             "MIT",
+            "BSD-3-Clause",
             "AGPL-3.0",
+            "GPL-2.0",
             "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
             "Research-Only",
             "Other",
         ]
@@ -1584,7 +1632,7 @@ class AsyncDatasets:
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
             icon_color (str, optional): iconColor request value.
             icon_letter (str | Literal[""], optional): iconLetter request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
@@ -2414,22 +2462,32 @@ class AsyncDatasets:
             "CC0-1.0",
             "PDM-1.0",
             "CC-BY-2.5",
+            "CC-BY-3.0",
             "CC-BY-4.0",
             "CC-BY-NC-2.0",
-            "CC-BY-SA-4.0",
+            "CC-BY-NC-3.0",
             "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
             "CC-BY-NC-SA-3.0",
             "CC-BY-NC-SA-4.0",
             "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
             "CC-BY-NC-ND-4.0",
             "Apache-2.0",
             "MIT",
+            "BSD-3-Clause",
             "AGPL-3.0",
+            "GPL-2.0",
             "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
             "Research-Only",
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
+        require_exact_slug: bool | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
@@ -2449,7 +2507,8 @@ class AsyncDatasets:
             class_names (Sequence[str], optional): classNames request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             tags (Sequence[str], optional): tags request value.
-            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-SA-4.0", "CC-BY-NC-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "AGPL-3.0", "GPL-3.0", "Research-Only", "Other"], optional): Dataset license identifier
+            license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
+            require_exact_slug (bool, optional): Reject a slug conflict instead of creating an automatically suffixed dataset
             owner (str, optional): Workspace owner
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -2480,6 +2539,7 @@ class AsyncDatasets:
                     "format": format,
                     "tags": tags,
                     "license": license,
+                    "requireExactSlug": require_exact_slug,
                     "owner": owner,
                 },
             ),

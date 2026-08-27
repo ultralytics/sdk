@@ -29,6 +29,7 @@ class Upload:
         *,
         session_id: str,
         checksum: str | NotGiven = NOT_GIVEN,
+        md5: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> UploadCompleteResponse:
@@ -39,6 +40,7 @@ class Upload:
         Args:
             session_id (str): Upload session ID from signed-url response
             checksum (str, optional): checksum request value.
+            md5 (str, optional): Expected uploaded object MD5 digest in hexadecimal
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -56,7 +58,7 @@ class Upload:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"sessionId": session_id, "checksum": checksum},
+                json={"sessionId": session_id, "checksum": checksum, "md5": md5},
             ),
         )
 
@@ -69,7 +71,7 @@ class Upload:
     ) -> UploadSignedUrlResponse:
         """Get a file upload URL.
 
-        Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
+        Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
 
         Args:
             body (dict[str, Any]): Request body for generating a signed upload URL
@@ -106,6 +108,7 @@ class AsyncUpload:
         *,
         session_id: str,
         checksum: str | NotGiven = NOT_GIVEN,
+        md5: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> UploadCompleteResponse:
@@ -116,6 +119,7 @@ class AsyncUpload:
         Args:
             session_id (str): Upload session ID from signed-url response
             checksum (str, optional): checksum request value.
+            md5 (str, optional): Expected uploaded object MD5 digest in hexadecimal
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -133,7 +137,7 @@ class AsyncUpload:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"sessionId": session_id, "checksum": checksum},
+                json={"sessionId": session_id, "checksum": checksum, "md5": md5},
             ),
         )
 
@@ -146,7 +150,7 @@ class AsyncUpload:
     ) -> UploadSignedUrlResponse:
         """Get a file upload URL.
 
-        Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
+        Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
 
         Args:
             body (dict[str, Any]): Request body for generating a signed upload URL
