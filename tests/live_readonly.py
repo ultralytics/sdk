@@ -313,7 +313,8 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
             "totalBytes": len(archive),
         }
     )
-    response = httpx.put(upload["uploadUrl"], content=archive, headers={"Content-Type": "application/zip"}, timeout=60)
+    upload_headers = {"Content-Type": "application/zip", **upload.get("headers", {})}
+    response = httpx.put(upload["uploadUrl"], content=archive, headers=upload_headers, timeout=60)
     response.raise_for_status()
     client.upload.complete(session_id=upload["sessionId"])
     client.datasets.ingest(owner, dataset, body={"sessionId": upload["sessionId"]})
