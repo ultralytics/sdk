@@ -132,6 +132,7 @@ class Images:
         model_id: str,
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
+        class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ImagesPredictResponse:
@@ -144,6 +145,7 @@ class Images:
             model_id (str): Fully qualified model URI
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
+            class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -161,7 +163,7 @@ class Images:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou},
+                json={"modelId": model_id, "confidence": confidence, "iou": iou, "classMapping": class_mapping},
             ),
         )
 
@@ -379,6 +381,7 @@ class AsyncImages:
         model_id: str,
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
+        class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ImagesPredictResponse:
@@ -391,6 +394,7 @@ class AsyncImages:
             model_id (str): Fully qualified model URI
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
+            class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -408,7 +412,7 @@ class AsyncImages:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou},
+                json={"modelId": model_id, "confidence": confidence, "iou": iou, "classMapping": class_mapping},
             ),
         )
 

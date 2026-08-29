@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.18",
+    "version": "0.1.19",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -14588,6 +14588,22 @@
                     "minimum": 0,
                     "maximum": 0.95
                   },
+                  "classMapping": {
+                    "description": "Dataset class index for each model class, or null to drop it",
+                    "maxItems": 25000,
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
                   "includeAnnotated": {
                     "default": false,
                     "description": "Also annotate images that already have labels, keeping the labels they have",
@@ -14614,7 +14630,7 @@
             }
           },
           "400": {
-            "description": "Invalid input or model task mismatch",
+            "description": "Invalid input or class mapping",
             "content": {
               "application/json": {
                 "schema": {
@@ -14674,7 +14690,7 @@
             }
           },
           "422": {
-            "description": "Model classes do not match the dataset",
+            "description": "Dataset has no classes",
             "content": {
               "application/json": {
                 "schema": {
@@ -17629,6 +17645,22 @@
                     "type": "number",
                     "minimum": 0,
                     "maximum": 0.95
+                  },
+                  "classMapping": {
+                    "description": "Dataset class index for each model class, or null to drop it",
+                    "maxItems": 25000,
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
                   }
                 },
                 "required": [

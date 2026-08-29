@@ -967,6 +967,7 @@ class Datasets:
         model_id: str,
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
+        class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
         include_annotated: bool | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
@@ -981,6 +982,7 @@ class Datasets:
             model_id (str): Fully qualified model URI
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
+            class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
             include_annotated (bool, optional): Also annotate images that already have labels, keeping the labels they have
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -999,7 +1001,13 @@ class Datasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou, "includeAnnotated": include_annotated},
+                json={
+                    "modelId": model_id,
+                    "confidence": confidence,
+                    "iou": iou,
+                    "classMapping": class_mapping,
+                    "includeAnnotated": include_annotated,
+                },
             ),
         )
 
@@ -2250,6 +2258,7 @@ class AsyncDatasets:
         model_id: str,
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
+        class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
         include_annotated: bool | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
@@ -2264,6 +2273,7 @@ class AsyncDatasets:
             model_id (str): Fully qualified model URI
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
+            class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
             include_annotated (bool, optional): Also annotate images that already have labels, keeping the labels they have
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -2282,7 +2292,13 @@ class AsyncDatasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou, "includeAnnotated": include_annotated},
+                json={
+                    "modelId": model_id,
+                    "confidence": confidence,
+                    "iou": iou,
+                    "classMapping": class_mapping,
+                    "includeAnnotated": include_annotated,
+                },
             ),
         )
 
