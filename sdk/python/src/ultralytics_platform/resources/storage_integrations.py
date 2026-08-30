@@ -131,14 +131,18 @@ class StorageIntegrations:
         )
 
     def create(
-        self, *, body: Any, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+        self,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> StorageIntegrationsCreateResponse:
         """Connect cloud storage.
 
         Validates and saves a GCS, Amazon S3, or Azure Blob Storage integration.
 
         Args:
-            body (Any): Request body.
+            body (dict[str, Any]): Request body.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -303,14 +307,18 @@ class AsyncStorageIntegrations:
         )
 
     async def create(
-        self, *, body: Any, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+        self,
+        *,
+        body: dict[str, Any],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> StorageIntegrationsCreateResponse:
         """Connect cloud storage.
 
         Validates and saves a GCS, Amazon S3, or Azure Blob Storage integration.
 
         Args:
-            body (Any): Request body.
+            body (dict[str, Any]): Request body.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
