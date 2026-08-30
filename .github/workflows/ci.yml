@@ -71,7 +71,7 @@ jobs:
 
   Live:
     name: Full API lifecycle
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
@@ -151,7 +151,7 @@ jobs:
           python tests/live_readonly.py
 
       - name: Open, validate, and merge contract update
-        if: steps.sync.outputs.changed == 'true'
+        if: github.ref == 'refs/heads/main' && steps.sync.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets._GITHUB_TOKEN }}
           CONTRACT_HASH: ${{ steps.sync.outputs.hash }}

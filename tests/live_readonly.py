@@ -21,6 +21,7 @@ BASE_URL = "https://platform.ultralytics.com"
 DATASET_URL = "https://github.com/ultralytics/assets/releases/download/v0.0.0/coco32.zip"
 HTTP_METHODS = {"delete", "get", "patch", "post", "put"}
 DATASET_IMAGE_COUNT = 32
+MIN_REQUEST_INTERVAL = 0.75
 EXPECTED_FORBIDDEN = {
     "post_api_integrations_buckets": "Google Cloud Storage, Amazon S3, and Azure Blob Storage datasets require a Pro or Enterprise plan. Upgrade at Settings > Plans.",
     "post_api_integrations_buckets_discover": "Google Cloud Storage, Amazon S3, and Azure Blob Storage datasets require a Pro or Enterprise plan. Upgrade at Settings > Plans.",
@@ -665,8 +666,20 @@ def validate_sdk(document: dict[str, Any]) -> None:
     expected_errors: dict[str, str] = {}
     validation_errors: list[RuntimeError] = []
     cleanup: list[Callable[[], Any]] = []
+    last_request_at = 0.0
+
+    def pace_request(_: httpx.Request) -> None:
+        """Keep the canary below the production API-key request limit."""
+        nonlocal last_request_at
+        time.sleep(max(0.0, MIN_REQUEST_INTERVAL - (time.monotonic() - last_request_at)))
+        last_request_at = time.monotonic()
+
     http_client = httpx.Client(
-        timeout=60, event_hooks={"response": [response_validator(document, statuses, validation_errors)]}
+        timeout=60,
+        event_hooks={
+            "request": [pace_request],
+            "response": [response_validator(document, statuses, validation_errors)],
+        },
     )
     exercise_error: Exception | None = None
     cleanup_errors: list[Exception] = []

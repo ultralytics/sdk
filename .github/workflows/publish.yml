@@ -5,8 +5,9 @@
 name: Publish to PyPI
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
   workflow_dispatch:
     inputs:
       pypi:
@@ -19,16 +20,22 @@ concurrency:
 
 jobs:
   check:
-    if: github.repository == 'ultralytics/sdk' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.actor == 'glenn-jocher')
+    if: >-
+      github.repository == 'ultralytics/sdk' &&
+      ((github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && github.actor == 'glenn-jocher'))
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     outputs:
       increment: ${{ steps.check_pypi.outputs.increment }}
       current_tag: ${{ steps.check_pypi.outputs.current_tag }}
       previous_tag: ${{ steps.check_pypi.outputs.previous_tag }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
@@ -49,26 +56,6 @@ jobs:
               os.system(f'echo "previous_tag=v{online_version}" >> $GITHUB_OUTPUT')
           if publish:
               print('Ready to publish new version to PyPI ✅.')
-      - name: Tag and Release
-        if: steps.check_pypi.outputs.increment == 'True'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CURRENT_TAG: ${{ steps.check_pypi.outputs.current_tag }}
-          PREVIOUS_TAG: ${{ steps.check_pypi.outputs.previous_tag }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          if [ -z "$(git ls-remote --tags origin "refs/tags/$CURRENT_TAG")" ]; then
-            git config --global user.name "UltralyticsAssistant"
-            git config --global user.email "web@ultralytics.com"
-            git tag -a "$CURRENT_TAG" -m "$(git log -1 --pretty=%B)"
-            git push origin "$CURRENT_TAG"
-          fi
-          if ! gh release view "$CURRENT_TAG" >/dev/null 2>&1; then
-            [ -n "$PREVIOUS_TAG" ] || git fetch --unshallow --tags # summarize resolves the previous tag from git history
-            ultralytics-actions-summarize-release
-          fi
-          uv cache prune --ci
-
   build:
     needs: check
     if: needs.check.outputs.increment == 'True'
@@ -77,6 +64,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
@@ -119,14 +108,50 @@ jobs:
         with:
           skip-existing: true
 
-  sbom:
-    needs: [check, build, publish]
+  release:
+    needs: [check, publish]
     if: needs.check.outputs.increment == 'True'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - uses: ultralytics/actions/setup-uv@main
+      - run: uv pip install --system --no-cache ultralytics-actions
+      - name: Tag and Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CURRENT_TAG: ${{ needs.check.outputs.current_tag }}
+          PREVIOUS_TAG: ${{ needs.check.outputs.previous_tag }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$(git ls-remote --tags origin "refs/tags/$CURRENT_TAG")" ]; then
+            git config --global user.name "UltralyticsAssistant"
+            git config --global user.email "web@ultralytics.com"
+            git tag -a "$CURRENT_TAG" -m "$(git log -1 --pretty=%B)"
+            git push origin "$CURRENT_TAG"
+          fi
+          if ! gh release view "$CURRENT_TAG" >/dev/null 2>&1; then
+            ultralytics-actions-summarize-release
+          fi
+          uv cache prune --ci
+
+  sbom:
+    needs: [check, build, publish, release]
+    if: needs.check.outputs.increment == 'True'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
@@ -146,7 +171,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify:
-    needs: [check, publish, sbom]
+    needs: [check, publish, release, sbom]
     if: always() && needs.check.outputs.increment == 'True'
     runs-on: ubuntu-latest
     permissions:
@@ -163,7 +188,7 @@ jobs:
           TITLE=$(printf '%s' "$TITLE" | sed -E "s@#([0-9]+)@<https://github.com/$GH_REPO/pull/\1|#\1>@g")
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
       - name: Notify Success
-        if: needs.publish.result == 'success' && needs.sbom.result == 'success' && github.event_name == 'push'
+        if: needs.publish.result == 'success' && needs.sbom.result == 'success' && github.event_name == 'workflow_run'
         uses: slackapi/slack-github-action@v4.0.0
         with:
           webhook-type: incoming-webhook
@@ -171,7 +196,7 @@ jobs:
           payload: |
             text: "*${{ github.workflow }}* ✅ `${{ github.repository }}` ${{ steps.release.outputs.title || needs.check.outputs.current_tag }}  <https://github.com/${{ github.repository }}/releases/tag/${{ needs.check.outputs.current_tag }}|*Release*>  ·  <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|*Run*>"
       - name: Notify Failure
-        if: needs.publish.result != 'success' || needs.sbom.result != 'success'
+        if: needs.publish.result != 'success' || needs.release.result != 'success' || needs.sbom.result != 'success'
         uses: slackapi/slack-github-action@v4.0.0
         with:
           webhook-type: incoming-webhook
