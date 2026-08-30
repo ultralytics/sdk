@@ -2432,12 +2432,7 @@ ModelsTrainingResponseJobCompute = TypedDict(
 
 ModelsTrainingResponseJobTrainArgs = TypedDict(
     "ModelsTrainingResponseJobTrainArgs",
-    {
-        "model": NotRequired[str],
-        "epochs": NotRequired[float | str],
-        "batch": NotRequired[float | str],
-        "imgsz": NotRequired[float | str],
-    },
+    {"model": NotRequired[str], "epochs": NotRequired[float], "batch": NotRequired[float], "imgsz": NotRequired[float]},
 )
 
 
