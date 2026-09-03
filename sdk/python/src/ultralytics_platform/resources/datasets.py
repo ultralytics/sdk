@@ -16,6 +16,7 @@ from .._client import (
     _query_parameter,
 )
 from ..types import (
+    DatasetsAdoptImagesResponse,
     DatasetsBatchResponse,
     DatasetsClassStatsResponse,
     DatasetsCloneResponse,
@@ -636,6 +637,44 @@ class Datasets:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"version": version, "description": description},
+            ),
+        )
+
+    def adopt_images(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        image_ids: Sequence[str],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsAdoptImagesResponse:
+        """Add images to a dataset.
+
+        Copies hosted images from public datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            image_ids (Sequence[str]): imageIds request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsAdoptImagesResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsAdoptImagesResponse,
+            self._client.request(
+                "POST",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/images/adopt",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"imageIds": image_ids},
             ),
         )
 
@@ -1927,6 +1966,44 @@ class AsyncDatasets:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"version": version, "description": description},
+            ),
+        )
+
+    async def adopt_images(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        image_ids: Sequence[str],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsAdoptImagesResponse:
+        """Add images to a dataset.
+
+        Copies hosted images from public datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            image_ids (Sequence[str]): imageIds request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsAdoptImagesResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsAdoptImagesResponse,
+            await self._client.request(
+                "POST",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/images/adopt",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"imageIds": image_ids},
             ),
         )
 

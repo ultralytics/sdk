@@ -17,6 +17,7 @@ from .._client import (
 from ..types import (
     ImagesDeleteBulkResponse,
     ImagesDeleteResponse,
+    ImagesFindSimilarImagesResponse,
     ImagesPredictResponse,
     ImagesRetrieveResponse,
     ImagesUpdateBulkResponse,
@@ -164,6 +165,35 @@ class Images:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"modelId": model_id, "confidence": confidence, "iou": iou, "classMapping": class_mapping},
+            ),
+        )
+
+    def find_similar_images(
+        self, image_id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> ImagesFindSimilarImagesResponse:
+        """Find similar images.
+
+        Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset.
+
+        Args:
+            image_id (str): Image ID
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ImagesFindSimilarImagesResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ImagesFindSimilarImagesResponse,
+            self._client.request(
+                "GET",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/similar",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
             ),
         )
 
@@ -413,6 +443,35 @@ class AsyncImages:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"modelId": model_id, "confidence": confidence, "iou": iou, "classMapping": class_mapping},
+            ),
+        )
+
+    async def find_similar_images(
+        self, image_id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+    ) -> ImagesFindSimilarImagesResponse:
+        """Find similar images.
+
+        Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset.
+
+        Args:
+            image_id (str): Image ID
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ImagesFindSimilarImagesResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ImagesFindSimilarImagesResponse,
+            await self._client.request(
+                "GET",
+                f"/api/images/{_path_parameter(image_id, explode=False, allow_reserved=False)}/similar",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
             ),
         )
 

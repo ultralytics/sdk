@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.21",
+    "version": "0.1.24",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -2013,6 +2013,20 @@
         },
         "required": [
           "ok"
+        ],
+        "additionalProperties": false
+      },
+      "AdoptImagesResponse": {
+        "type": "object",
+        "properties": {
+          "adopted": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Images inserted; duplicates already held are skipped"
+          }
+        },
+        "required": [
+          "adopted"
         ],
         "additionalProperties": false
       },
@@ -5646,6 +5660,101 @@
         ],
         "additionalProperties": false
       },
+      "SimilarImagesResponse": {
+        "type": "object",
+        "properties": {
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 24,
+                  "maxLength": 24,
+                  "pattern": "^[0-9a-fA-F]{24}$",
+                  "example": "507f1f77bcf86cd799439011"
+                },
+                "thumbnailUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "dataset": {
+                  "type": "object",
+                  "properties": {
+                    "owner": {
+                      "type": "string"
+                    },
+                    "dataset": {
+                      "type": "string"
+                    },
+                    "license": {
+                      "type": "string",
+                      "enum": [
+                        "None",
+                        "CC0-1.0",
+                        "PDM-1.0",
+                        "CC-BY-2.5",
+                        "CC-BY-3.0",
+                        "CC-BY-4.0",
+                        "CC-BY-NC-2.0",
+                        "CC-BY-NC-3.0",
+                        "CC-BY-NC-4.0",
+                        "CC-BY-SA-3.0",
+                        "CC-BY-SA-4.0",
+                        "CC-BY-NC-SA-3.0",
+                        "CC-BY-NC-SA-4.0",
+                        "CC-BY-ND-4.0",
+                        "CC-BY-NC-ND-2.0",
+                        "CC-BY-NC-ND-4.0",
+                        "Apache-2.0",
+                        "MIT",
+                        "BSD-3-Clause",
+                        "AGPL-3.0",
+                        "GPL-2.0",
+                        "GPL-3.0",
+                        "LGPL-3.0",
+                        "ODbL-1.0",
+                        "DbCL-1.0",
+                        "Research-Only",
+                        "Other"
+                      ],
+                      "description": "Dataset license identifier"
+                    }
+                  },
+                  "required": [
+                    "owner",
+                    "dataset",
+                    "license"
+                  ],
+                  "additionalProperties": false
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Normalized Atlas vector search score"
+                }
+              },
+              "required": [
+                "id",
+                "thumbnailUrl",
+                "dataset",
+                "score"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "images"
+        ],
+        "additionalProperties": false
+      },
       "BulkUpdateImageSplitResponse": {
         "type": "object",
         "properties": {
@@ -8648,6 +8757,32 @@
         "anyOf": [
           {
             "$ref": "#/components/schemas/UpdateModelResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "success": {
+                "type": "boolean",
+                "const": true
+              },
+              "slug": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "renamed": {
+                "type": "boolean"
+              },
+              "projectSlug": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "success",
+              "slug"
+            ],
+            "additionalProperties": false
           },
           {
             "type": "object",
@@ -13261,6 +13396,153 @@
         ]
       }
     },
+    "/api/datasets/{owner}/{dataset}/images/adopt": {
+      "post": {
+        "summary": "Add images to a dataset",
+        "tags": [
+          "Datasets"
+        ],
+        "operationId": "post_api_datasets_owner_dataset_images_adopt",
+        "description": "Copies hosted images from public datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.",
+        "x-sdk-method": "adopt_images",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 32,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "ultralytics"
+            },
+            "description": "Dataset owner"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "coco8"
+            },
+            "description": "Dataset name"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "imageIds": {
+                    "minItems": 1,
+                    "maxItems": 1000,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 24,
+                      "maxLength": 24,
+                      "pattern": "^[0-9a-fA-F]{24}$",
+                      "example": "507f1f77bcf86cd799439011",
+                      "description": "Image ID"
+                    }
+                  }
+                },
+                "required": [
+                  "imageIds"
+                ],
+                "description": "Request body with image IDs"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Images added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdoptImagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid owner, dataset, or image IDs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Dataset editor access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dataset not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Dataset is connected to external storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.adopt_images(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    image_ids=[\"507f1f77bcf86cd799439011\"],\n)\nprint(response)"
+          }
+        ]
+      }
+    },
     "/api/datasets/{owner}/{dataset}/images/clustering": {
       "get": {
         "summary": "Get dataset clustering layout",
@@ -17829,6 +18111,91 @@
         ]
       }
     },
+    "/api/images/{imageId}/similar": {
+      "get": {
+        "summary": "Find similar images",
+        "tags": [
+          "Images"
+        ],
+        "operationId": "get_api_images_imageId_similar",
+        "description": "Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset.",
+        "x-sdk-method": "find_similar_images",
+        "parameters": [
+          {
+            "name": "imageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 24,
+              "maxLength": 24,
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "507f1f77bcf86cd799439011"
+            },
+            "description": "Image ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Similar images",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimilarImagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid image ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Image not found, or the image has no embedding yet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.images.find_similar_images(\n    image_id=\"507f1f77bcf86cd799439011\",\n)\nprint(response)"
+          }
+        ]
+      }
+    },
     "/api/images/bulk": {
       "patch": {
         "summary": "Move images to a different split",
@@ -19480,7 +19847,7 @@
           "Models"
         ],
         "operationId": "patch_api_models_owner_project_model",
-        "description": "Updates model properties such as name, description, metadata, or training status.",
+        "description": "Updates model properties such as name, description, metadata, or training status. Pass projectId alone to move the model into another project owned by the same account.",
         "parameters": [
           {
             "name": "owner",
@@ -19609,6 +19976,14 @@
                         "const": null
                       }
                     ]
+                  },
+                  "projectId": {
+                    "description": "Move the model into this project (same owner)",
+                    "type": "string",
+                    "minLength": 24,
+                    "maxLength": 24,
+                    "pattern": "^[0-9a-fA-F]{24}$",
+                    "example": "507f1f77bcf86cd799439011"
                   },
                   "trainArgs": {
                     "type": "object",
@@ -19743,7 +20118,7 @@
             }
           },
           "404": {
-            "description": "Model not found",
+            "description": "Model or target project not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -19753,7 +20128,7 @@
             }
           },
           "409": {
-            "description": "Model name already exists",
+            "description": "Model name already exists, training is in progress, or the move state changed",
             "content": {
               "application/json": {
                 "schema": {
