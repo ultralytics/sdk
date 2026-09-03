@@ -160,6 +160,7 @@ class Models:
         ]
         | NotGiven = NOT_GIVEN,
         dataset_slug: str | None | NotGiven = NOT_GIVEN,
+        project_id: str | NotGiven = NOT_GIVEN,
         train_args: dict[str, Any] | NotGiven = NOT_GIVEN,
         train_results: Sequence[dict[str, Any]] | NotGiven = NOT_GIVEN,
         epochs: float | NotGiven = NOT_GIVEN,
@@ -172,7 +173,7 @@ class Models:
     ) -> ModelsUpdateResponse:
         """Update a model.
 
-        Updates model properties such as name, description, metadata, or training status.
+        Updates model properties such as name, description, metadata, or training status. Pass projectId alone to move the model into another project owned by the same account.
 
         Args:
             owner (str): Project owner
@@ -186,6 +187,7 @@ class Models:
             status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional): Training/model status
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             dataset_slug (str | None, optional): datasetSlug request value.
+            project_id (str, optional): Move the model into this project (same owner)
             train_args (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             train_results (Sequence[dict[str, Any]], optional): trainResults request value.
             epochs (float, optional): epochs request value.
@@ -219,6 +221,7 @@ class Models:
                     "status": status,
                     "license": license,
                     "datasetSlug": dataset_slug,
+                    "projectId": project_id,
                     "trainArgs": train_args,
                     "trainResults": train_results,
                     "epochs": epochs,
@@ -618,6 +621,7 @@ class AsyncModels:
         ]
         | NotGiven = NOT_GIVEN,
         dataset_slug: str | None | NotGiven = NOT_GIVEN,
+        project_id: str | NotGiven = NOT_GIVEN,
         train_args: dict[str, Any] | NotGiven = NOT_GIVEN,
         train_results: Sequence[dict[str, Any]] | NotGiven = NOT_GIVEN,
         epochs: float | NotGiven = NOT_GIVEN,
@@ -630,7 +634,7 @@ class AsyncModels:
     ) -> ModelsUpdateResponse:
         """Update a model.
 
-        Updates model properties such as name, description, metadata, or training status.
+        Updates model properties such as name, description, metadata, or training status. Pass projectId alone to move the model into another project owned by the same account.
 
         Args:
             owner (str): Project owner
@@ -644,6 +648,7 @@ class AsyncModels:
             status (Literal["pending", "untrained", "starting", "running", "completed", "failed", "cancelled"], optional): Training/model status
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
             dataset_slug (str | None, optional): datasetSlug request value.
+            project_id (str, optional): Move the model into this project (same owner)
             train_args (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             train_results (Sequence[dict[str, Any]], optional): trainResults request value.
             epochs (float, optional): epochs request value.
@@ -677,6 +682,7 @@ class AsyncModels:
                     "status": status,
                     "license": license,
                     "datasetSlug": dataset_slug,
+                    "projectId": project_id,
                     "trainArgs": train_args,
                     "trainResults": train_results,
                     "epochs": epochs,

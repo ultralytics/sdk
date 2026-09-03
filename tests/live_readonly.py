@@ -400,6 +400,11 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     else:
         raise RuntimeError("Canary dataset embedding analysis did not finish")
     client.datasets.clustering(owner, dataset, limit=1)
+    similar = client.images.find_similar_images(image_ids[0])["images"]
+    if not similar:
+        raise RuntimeError("Similar image search returned no public neighbors")
+    if client.datasets.adopt_images(owner, dataset, image_ids=[similar[0]["id"]])["adopted"] != 1:
+        raise RuntimeError("Adopting a public image did not persist")
     client.datasets.delete_embeddings(owner, dataset)
 
     clone_dataset = f"{slug}-clone"
