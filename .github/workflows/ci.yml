@@ -73,7 +73,7 @@ jobs:
     name: Full API lifecycle
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     concurrency:
       group: openapi-sync
       cancel-in-progress: false
