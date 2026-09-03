@@ -19,7 +19,6 @@ from ultralytics_platform import APIConnectionError, APIError, Platform
 ROOT = Path(__file__).parents[1]
 BASE_URL = "https://platform.ultralytics.com"
 DATASET_URL = "https://github.com/ultralytics/assets/releases/download/v0.0.0/coco32.zip"
-HTTP_METHODS = {"delete", "get", "patch", "post", "put"}
 DATASET_IMAGE_COUNT = 32
 MIN_REQUEST_INTERVAL = 0.75
 EXPECTED_FORBIDDEN = {
@@ -52,19 +51,6 @@ def absolute_references(value: Any) -> Any:
     if isinstance(value, list):
         return [absolute_references(item) for item in value]
     return value
-
-
-def operation_coverage(document: dict[str, Any]) -> set[str]:
-    """Return every unique contract operation required by the live SDK suite."""
-    declarations = [
-        operation["operationId"]
-        for path_item in document["paths"].values()
-        for method, operation in path_item.items()
-        if method in HTTP_METHODS
-    ]
-    if len(declarations) != len(set(declarations)):
-        raise RuntimeError("The OpenAPI contract contains duplicate operation IDs")
-    return set(declarations)
 
 
 def response_validator(
@@ -667,7 +653,6 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
 
 
 def validate_sdk(document: dict[str, Any]) -> None:
-    expected = operation_coverage(document)
     statuses: dict[str, set[int]] = {}
     expected_errors: dict[str, str] = {}
     validation_errors: list[RuntimeError] = []
@@ -706,11 +691,6 @@ def validate_sdk(document: dict[str, Any]) -> None:
         raise RuntimeError(f"Canary cleanup failed: {cleanup_errors}")
     if validation_errors:
         raise RuntimeError(f"Live response schema validation failed: {validation_errors}")
-    observed = set(statuses)
-    if observed != expected:
-        raise RuntimeError(
-            f"Live SDK operation drift: missing={sorted(expected - observed)}, extra={sorted(observed - expected)}"
-        )
     error_only = {operation_id for operation_id, codes in statuses.items() if not any(code < 400 for code in codes)}
     if error_only != set(expected_errors):
         raise RuntimeError(
@@ -719,7 +699,7 @@ def validate_sdk(document: dict[str, Any]) -> None:
         )
     for operation_id, reason in sorted(expected_errors.items()):
         print(f"{operation_id}: expected non-success ({reason})")
-    print(f"Validated all {len(observed)} generated Python SDK operations against production")
+    print(f"Validated {len(statuses)} generated Python SDK operations against production")
 
 
 def main() -> None:

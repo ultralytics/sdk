@@ -37,7 +37,7 @@ uv build sdk/python
 uv run --with pytest --with ./sdk/python pytest tests -v
 ```
 
-CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform contract against `openapi.sha256`, regenerates the Python output from the `main` branch of `ultralytics/openapi`, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install. The scheduled and manual `Live` job downloads the upstream contract and fails when a new snapshot must be reviewed and pinned.
+CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform contract against `openapi.sha256`, regenerates the Python output from the `main` branch of `ultralytics/openapi`, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install. The scheduled and manual `Live` job downloads the upstream contract, regenerates the SDK, opens and merges the contract-update PR on green checks without human involvement, and only then runs the production canary in `tests/live_readonly.py`, so a canary failure never blocks the SDK from tracking the contract. New endpoints do not need canary coverage; add it only when live behavior is worth guarding.
 
 ## Architecture
 

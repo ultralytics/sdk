@@ -143,13 +143,6 @@ jobs:
           uv pip install --system pytest jsonschema referencing "./sdk/python"
           pytest tests -v
 
-      - name: Create, edit, and delete resources through every SDK operation
-        env:
-          ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}
-        run: |
-          uv pip install --system ./sdk/python jsonschema referencing
-          python tests/live_readonly.py
-
       - name: Open, validate, and merge contract update
         if: github.ref == 'refs/heads/main' && steps.sync.outputs.changed == 'true'
         env:
@@ -191,3 +184,10 @@ jobs:
             all(.[]; .bucket == "pass" or (.name == "Full API lifecycle" and .bucket == "skipping"))
           ' <<< "$checks" > /dev/null
           gh pr merge "$pr_url" --squash --delete-branch --admin --match-head-commit "$head_sha"
+
+      - name: Create, edit, and delete resources through every SDK operation
+        env:
+          ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}
+        run: |
+          uv pip install --system ./sdk/python jsonschema referencing
+          python tests/live_readonly.py
