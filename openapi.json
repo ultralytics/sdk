@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.24",
+    "version": "0.1.25",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -18118,7 +18118,7 @@
           "Images"
         ],
         "operationId": "get_api_images_imageId_similar",
-        "description": "Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset.",
+        "description": "Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset and copies of the query image.",
         "x-sdk-method": "find_similar_images",
         "parameters": [
           {
