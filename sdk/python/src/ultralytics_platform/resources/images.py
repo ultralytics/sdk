@@ -173,7 +173,7 @@ class Images:
     ) -> ImagesFindSimilarImagesResponse:
         """Find similar images.
 
-        Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset.
+        Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset and copies of the query image.
 
         Args:
             image_id (str): Image ID
@@ -451,7 +451,7 @@ class AsyncImages:
     ) -> ImagesFindSimilarImagesResponse:
         """Find similar images.
 
-        Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset.
+        Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset and copies of the query image.
 
         Args:
             image_id (str): Image ID
