@@ -496,6 +496,25 @@ DatasetsRetrieveResponseDatasetSourceVariant3 = TypedDict(
 )
 
 
+DatasetsRetrieveResponseDatasetKptSkeletonKeypointsItem = TypedDict(
+    "DatasetsRetrieveResponseDatasetKptSkeletonKeypointsItem",
+    {"name": str, "x": float, "y": float, "color": NotRequired[str]},
+)
+
+
+DatasetsRetrieveResponseDatasetKptSkeleton = TypedDict(
+    "DatasetsRetrieveResponseDatasetKptSkeleton",
+    {
+        "id": str,
+        "name": str,
+        "description": NotRequired[str],
+        "keypoints": list[DatasetsRetrieveResponseDatasetKptSkeletonKeypointsItem],
+        "connections": list[list[Any]],
+        "url": NotRequired[str],
+    },
+)
+
+
 DatasetsRetrieveResponseDatasetProcessingError = TypedDict(
     "DatasetsRetrieveResponseDatasetProcessingError", {"message": str, "timestamp": str}
 )
@@ -593,6 +612,7 @@ DatasetsRetrieveResponseDataset = TypedDict(
         ],
         "classColors": NotRequired[dict[str, str]],
         "kptShape": NotRequired[list[Any]],
+        "kptSkeleton": NotRequired[DatasetsRetrieveResponseDatasetKptSkeleton],
         "flipIdx": NotRequired[list[int]],
         "processingTimeMs": NotRequired[float],
         "lastIngestJobId": NotRequired[str],
@@ -973,6 +993,25 @@ DatasetsListResponseDatasetsItemSourceVariant3 = TypedDict(
 )
 
 
+DatasetsListResponseDatasetsItemKptSkeletonKeypointsItem = TypedDict(
+    "DatasetsListResponseDatasetsItemKptSkeletonKeypointsItem",
+    {"name": str, "x": float, "y": float, "color": NotRequired[str]},
+)
+
+
+DatasetsListResponseDatasetsItemKptSkeleton = TypedDict(
+    "DatasetsListResponseDatasetsItemKptSkeleton",
+    {
+        "id": str,
+        "name": str,
+        "description": NotRequired[str],
+        "keypoints": list[DatasetsListResponseDatasetsItemKptSkeletonKeypointsItem],
+        "connections": list[list[Any]],
+        "url": NotRequired[str],
+    },
+)
+
+
 DatasetsListResponseDatasetsItemProcessingError = TypedDict(
     "DatasetsListResponseDatasetsItemProcessingError", {"message": str, "timestamp": str}
 )
@@ -1070,6 +1109,7 @@ DatasetsListResponseDatasetsItem = TypedDict(
         ],
         "classColors": NotRequired[dict[str, str]],
         "kptShape": NotRequired[list[Any]],
+        "kptSkeleton": NotRequired[DatasetsListResponseDatasetsItemKptSkeleton],
         "flipIdx": NotRequired[list[int]],
         "processingTimeMs": NotRequired[float],
         "lastIngestJobId": NotRequired[str],
@@ -1413,6 +1453,7 @@ DeploymentsPredictResponseMetadata = TypedDict(
     "DeploymentsPredictResponseMetadata",
     {
         "imageCount": int,
+        "classNames": NotRequired[list[str]],
         "functionTimeAlive": float,
         "functionTimeCall": float,
         "model": NotRequired[str],
@@ -2463,6 +2504,7 @@ ModelsPredictResponseMetadata = TypedDict(
     "ModelsPredictResponseMetadata",
     {
         "imageCount": int,
+        "classNames": NotRequired[list[str]],
         "functionTimeAlive": float,
         "functionTimeCall": float,
         "model": NotRequired[str],

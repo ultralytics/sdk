@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.25",
+    "version": "0.1.28",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -1505,6 +1505,94 @@
                   "not": {}
                 },
                 "minItems": 2
+              },
+              "kptSkeleton": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "description": {
+                    "description": "Short description of the skeleton template",
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "keypoints": {
+                    "minItems": 1,
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 50
+                        },
+                        "x": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "color": {
+                          "type": "string",
+                          "maxLength": 7
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "x",
+                        "y"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "connections": {
+                    "maxItems": 1000,
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    }
+                  },
+                  "url": {
+                    "description": "External reference URL for the skeleton dataset/standard",
+                    "type": "string",
+                    "maxLength": 4096,
+                    "format": "uri"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "keypoints",
+                  "connections"
+                ],
+                "additionalProperties": false
               },
               "flipIdx": {
                 "type": "array",
@@ -3474,6 +3562,94 @@
             },
             "minItems": 2
           },
+          "kptSkeleton": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "description": {
+                "description": "Short description of the skeleton template",
+                "type": "string",
+                "maxLength": 200
+              },
+              "keypoints": {
+                "minItems": 1,
+                "maxItems": 500,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 50
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "color": {
+                      "type": "string",
+                      "maxLength": 7
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "x",
+                    "y"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "connections": {
+                "maxItems": 1000,
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "url": {
+                "description": "External reference URL for the skeleton dataset/standard",
+                "type": "string",
+                "maxLength": 4096,
+                "format": "uri"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "keypoints",
+              "connections"
+            ],
+            "additionalProperties": false
+          },
           "flipIdx": {
             "type": "array",
             "items": {
@@ -4568,6 +4744,13 @@
                 "type": "integer",
                 "minimum": 0,
                 "description": "Number of images processed"
+              },
+              "classNames": {
+                "description": "Class names from the loaded model, indexed by class ID",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               },
               "functionTimeAlive": {
                 "type": "number",
@@ -12412,6 +12595,11 @@
                       "obb"
                     ],
                     "description": "Dataset task type"
+                  },
+                  "kptSkeletonId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
                   },
                   "license": {
                     "type": "string",
