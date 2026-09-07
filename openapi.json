@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.29",
+    "version": "0.1.31",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -7187,6 +7187,14 @@
                                   "type": "integer",
                                   "minimum": 0
                                 },
+                                "classIds": {
+                                  "description": "All ground-truth class IDs in the image",
+                                  "type": "array",
+                                  "items": {
+                                    "type": "integer",
+                                    "minimum": 0
+                                  }
+                                },
                                 "labels": {
                                   "description": "Ground-truth annotations, capped at 100 with polygons decimated to 100 points",
                                   "type": "array",
@@ -7459,6 +7467,14 @@
                                   "description": "Ground-truth instances, which may exceed `labels` length",
                                   "type": "integer",
                                   "minimum": 0
+                                },
+                                "classIds": {
+                                  "description": "All ground-truth class IDs in the image",
+                                  "type": "array",
+                                  "items": {
+                                    "type": "integer",
+                                    "minimum": 0
+                                  }
                                 },
                                 "labels": {
                                   "description": "Ground-truth annotations, capped at 100 with polygons decimated to 100 points",
@@ -21657,6 +21673,128 @@
             "label": "Python SDK",
             "lang": "Python",
             "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.predict(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    body={\"file\": \"path/to/file\"},\n)\nprint(response)"
+          }
+        ]
+      }
+    },
+    "/api/models/{owner}/{project}/{model}/similar-images": {
+      "get": {
+        "summary": "Find images similar to a run's worst validation images",
+        "tags": [
+          "Models"
+        ],
+        "operationId": "get_api_models_owner_project_model_similar_images",
+        "description": "Returns images from public datasets that look like the ones this training run scored worst on, drawn from each worst image's nearest neighbors in turn and excluding images the training dataset already holds. Empty when the run recorded no per-image results.",
+        "x-sdk-method": "find_similar_training_images",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 32,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "ultralytics"
+            },
+            "description": "Project owner"
+          },
+          {
+            "name": "project",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "yolo26"
+            },
+            "description": "Project name"
+          },
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "yolo26n"
+            },
+            "description": "Model name"
+          },
+          {
+            "name": "hashes",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated subset of the run's captured worst image hashes; defaults to the whole cohort",
+            "schema": {
+              "type": "string",
+              "maxLength": 3299,
+              "pattern": "^[a-f\\d]{32}(,[a-f\\d]{32}){0,99}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Similar images",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimilarImagesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid path or hashes outside the captured worst cohort",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Model not found, has no validated run, or none of its selected worst images are embedded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.find_similar_training_images(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n)\nprint(response)"
           }
         ]
       }

@@ -22,6 +22,7 @@ from ..types import (
     ModelsDeleteResponse,
     ModelsDeleteTrainingResponse,
     ModelsFilesResponse,
+    ModelsFindSimilarTrainingImagesResponse,
     ModelsListResponse,
     ModelsPredictResponse,
     ModelsRetrieveResponse,
@@ -343,6 +344,46 @@ class Models:
                 auth=("Authorization", "Bearer "),
                 data=_form_data({key: value for key, value in body.items() if key not in ["file"]}, multipart=True),
                 files={key: body[key] for key in ["file"] if key in body},
+            ),
+        )
+
+    def find_similar_training_images(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        *,
+        hashes: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsFindSimilarTrainingImagesResponse:
+        """Find images similar to a run's worst validation images.
+
+        Returns images from public datasets that look like the ones this training run scored worst on, drawn from each worst image's nearest neighbors in turn and excluding images the training dataset already holds. Empty when the run recorded no per-image results.
+
+        Args:
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            hashes (str, optional): Comma-separated subset of the run's captured worst image hashes; defaults to the whole cohort
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ModelsFindSimilarTrainingImagesResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ModelsFindSimilarTrainingImagesResponse,
+            self._client.request(
+                "GET",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/similar-images",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("hashes", hashes, style="form", explode=True)],
             ),
         )
 
@@ -804,6 +845,46 @@ class AsyncModels:
                 auth=("Authorization", "Bearer "),
                 data=_form_data({key: value for key, value in body.items() if key not in ["file"]}, multipart=True),
                 files={key: body[key] for key in ["file"] if key in body},
+            ),
+        )
+
+    async def find_similar_training_images(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        *,
+        hashes: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsFindSimilarTrainingImagesResponse:
+        """Find images similar to a run's worst validation images.
+
+        Returns images from public datasets that look like the ones this training run scored worst on, drawn from each worst image's nearest neighbors in turn and excluding images the training dataset already holds. Empty when the run recorded no per-image results.
+
+        Args:
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            hashes (str, optional): Comma-separated subset of the run's captured worst image hashes; defaults to the whole cohort
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ModelsFindSimilarTrainingImagesResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ModelsFindSimilarTrainingImagesResponse,
+            await self._client.request(
+                "GET",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/similar-images",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("hashes", hashes, style="form", explode=True)],
             ),
         )
 

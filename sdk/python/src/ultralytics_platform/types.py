@@ -2029,6 +2029,7 @@ ModelsRetrieveResponseVariant2AnalysisCohortsWorstExamplesItem = TypedDict(
         "pixels": NotRequired[float],
         "aspectRatio": NotRequired[float],
         "instanceCount": NotRequired[int],
+        "classIds": NotRequired[list[int]],
         "labels": NotRequired[list[ModelsRetrieveResponseVariant2AnalysisCohortsWorstExamplesItemLabelsItem]],
     },
 )
@@ -2085,6 +2086,7 @@ ModelsRetrieveResponseVariant2AnalysisCohortsBestExamplesItem = TypedDict(
         "pixels": NotRequired[float],
         "aspectRatio": NotRequired[float],
         "instanceCount": NotRequired[int],
+        "classIds": NotRequired[list[int]],
         "labels": NotRequired[list[ModelsRetrieveResponseVariant2AnalysisCohortsBestExamplesItemLabelsItem]],
     },
 )
@@ -2517,6 +2519,61 @@ ModelsPredictResponseMetadata = TypedDict(
 ModelsPredictResponse = TypedDict(
     "ModelsPredictResponse",
     {"images": list[ModelsPredictResponseImagesItem], "metadata": ModelsPredictResponseMetadata},
+)
+
+
+ModelsFindSimilarTrainingImagesResponseImagesItemDataset = TypedDict(
+    "ModelsFindSimilarTrainingImagesResponseImagesItemDataset",
+    {
+        "owner": str,
+        "dataset": str,
+        "license": Literal[
+            "None",
+            "CC0-1.0",
+            "PDM-1.0",
+            "CC-BY-2.5",
+            "CC-BY-3.0",
+            "CC-BY-4.0",
+            "CC-BY-NC-2.0",
+            "CC-BY-NC-3.0",
+            "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
+            "CC-BY-NC-SA-3.0",
+            "CC-BY-NC-SA-4.0",
+            "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
+            "CC-BY-NC-ND-4.0",
+            "Apache-2.0",
+            "MIT",
+            "BSD-3-Clause",
+            "AGPL-3.0",
+            "GPL-2.0",
+            "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
+            "Research-Only",
+            "Other",
+        ],
+    },
+)
+
+
+ModelsFindSimilarTrainingImagesResponseImagesItem = TypedDict(
+    "ModelsFindSimilarTrainingImagesResponseImagesItem",
+    {
+        "id": str,
+        "thumbnailUrl": str,
+        "imageUrl": NotRequired[str],
+        "dataset": ModelsFindSimilarTrainingImagesResponseImagesItemDataset,
+        "score": float,
+    },
+)
+
+
+ModelsFindSimilarTrainingImagesResponse = TypedDict(
+    "ModelsFindSimilarTrainingImagesResponse", {"images": list[ModelsFindSimilarTrainingImagesResponseImagesItem]}
 )
 
 
