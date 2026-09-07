@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.28",
+    "version": "0.1.29",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -21005,7 +21005,7 @@
                             "maximum": 8192
                           },
                           "quantize": {
-                            "description": "Export precision: 8=INT8, 16=FP16, 32/unset=FP32",
+                            "description": "Export precision: 8/int8 (INT8), 16/fp16 (FP16), 32/fp32 (FP32); unset lets the exporter choose; also w8a8|w16a16|w8a16|w8a32",
                             "enum": [
                               8,
                               16,
@@ -21062,12 +21062,11 @@
                             "maximum": 16
                           },
                           "nms": {
-                            "description": "Include NMS in export",
-                            "type": "boolean"
-                          },
-                          "end2end": {
-                            "description": "Use YOLO26 end-to-end NMS-free export",
-                            "type": "boolean"
+                            "description": "null/unset: raw outputs for external NMS (default); true: embed NMS; false: NMS-free head when available",
+                            "type": [
+                              "boolean",
+                              "null"
+                            ]
                           },
                           "optimize": {
                             "description": "DEEPX compiler optimization",
