@@ -12,13 +12,13 @@
 
 Typed SDKs for the [Ultralytics Platform API](https://platform.ultralytics.com), generated from a pinned contract with [Ultralytics OpenAPI](https://github.com/ultralytics/openapi). The [interactive API reference](https://platform.ultralytics.com/api/docs) renders the live contract directly and includes Python SDK examples.
 
-| Output                        | Status      |
-| ----------------------------- | ----------- |
+| Output                                                                 | Status      |
+| ---------------------------------------------------------------------- | ----------- |
 | [Interactive API reference](https://platform.ultralytics.com/api/docs) | Available   |
-| [Python SDK](https://pypi.org/project/ultralytics-platform/) | Available   |
-| TypeScript SDK                | Coming soon |
-| Go SDK                        | Coming soon |
-| Java SDK                      | Coming soon |
+| [Python SDK](https://pypi.org/project/ultralytics-platform/)           | Available   |
+| TypeScript SDK                                                         | Coming soon |
+| Go SDK                                                                 | Coming soon |
+| Java SDK                                                               | Coming soon |
 
 ## 🐍 Python
 
@@ -30,7 +30,7 @@ Install the standalone [`ultralytics-platform`](https://pypi.org/project/ultraly
 uv pip install ultralytics-platform
 ```
 
-Pass your [Platform API key](https://platform.ultralytics.com/settings?tab=api-keys) directly as shown below. Alternatively, set `ULTRALYTICS_API_KEY` and omit the `api_key` argument.
+Pass your [Platform API key](https://platform.ultralytics.com/settings?tab=api-keys) directly as shown below. Alternatively, omit `api_key` to use `ULTRALYTICS_API_KEY` or the Platform key saved by `yolo login`. Both clients use explicit credentials first, then the environment, then saved settings. Pass `api_key=""` to disable authentication. `yolo logout` removes the saved key; it does not unset an environment variable. The SDK reads the existing Ultralytics settings directory, including `YOLO_CONFIG_DIR` and Linux `XDG_CONFIG_HOME`, without importing or installing `ultralytics`.
 
 ```python
 from ultralytics_platform import Platform
@@ -87,7 +87,9 @@ Platform OpenAPI contract
 
 ## 🛠️ Validation
 
-[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) regenerates the Python SDK from the versioned contract with the `main` branch of [Ultralytics OpenAPI](https://github.com/ultralytics/openapi), then fails on contract mismatch or generated drift. Pushes to `main`, scheduled runs, and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. The package version is the contract's `info.version`, so a contract version bump reaching `main` publishes [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) to PyPI through trusted publishing.
+[CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) regenerates the Python SDK from the versioned contract with the `main` branch of [Ultralytics OpenAPI](https://github.com/ultralytics/openapi), then fails on contract mismatch or generated drift. Pushes to `main`, scheduled runs, and manual runs detect upstream contract changes without breaking unrelated pull requests. CI also formats and lints Python, compiles the package, builds its wheel, installs through the Git subdirectory boundary, and exercises representative sync and async requests against a mock transport. The package version follows the contract's `info.version`; SDK-only changes receive an automatic post-release. Both publish [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) to PyPI through trusted publishing.
+
+Generator improvements follow `ultralytics/openapi` `main` through the existing daily synchronization. When generated output changes without a contract version bump, synchronization increments the SDK post-release automatically. A new contract version clears that override, so API releases continue to follow `info.version`. Both paths use the existing validation and publishing workflows.
 
 ## 💡 Contribute
 

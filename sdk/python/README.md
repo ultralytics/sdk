@@ -16,7 +16,7 @@ Install the standalone [`ultralytics-platform`](https://pypi.org/project/ultraly
 uv pip install ultralytics-platform
 ```
 
-Pass your [API key](https://platform.ultralytics.com/settings?tab=api-keys) directly as shown below. Alternatively, set `ULTRALYTICS_API_KEY` and omit the `api_key` argument.
+Pass your [API key](https://platform.ultralytics.com/settings?tab=api-keys) directly as shown below. Alternatively, omit `api_key` to use `ULTRALYTICS_API_KEY` or the Platform key saved by `yolo login`. Both clients use explicit credentials first, then the environment, then saved settings. Pass `api_key=""` to disable authentication. `yolo logout` removes the saved key; it does not unset an environment variable. The SDK reads the existing Ultralytics settings directory, including `YOLO_CONFIG_DIR` and Linux `XDG_CONFIG_HOME`, without importing or installing `ultralytics`.
 
 ```python
 from ultralytics_platform import Platform

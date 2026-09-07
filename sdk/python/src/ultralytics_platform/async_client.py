@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import os
-
 import httpx
 
-from ._client import AsyncAPIClient
+from ._client import AsyncAPIClient, _resolve_api_key
 from .resources import (
     AsyncAccount,
     AsyncBilling,
@@ -39,13 +37,13 @@ class AsyncPlatform:
         """Initialize the client.
 
         Args:
-            api_key (str, optional): API key. Defaults to ULTRALYTICS_API_KEY.
+            api_key (str, optional): API key. Defaults to ULTRALYTICS_API_KEY then saved settings. Pass an empty string to disable authentication.
             base_url (str): API base URL.
             timeout (float | httpx.Timeout): Request timeout.
             max_retries (int): Retries for connection errors and retryable responses.
             http_client (httpx.AsyncClient, optional): Custom HTTP client.
         """
-        resolved_api_key = api_key or os.environ.get("ULTRALYTICS_API_KEY")
+        resolved_api_key = _resolve_api_key(api_key)
         self._client = AsyncAPIClient(
             api_key=resolved_api_key,
             base_url=base_url,

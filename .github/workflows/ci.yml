@@ -109,6 +109,16 @@ jobs:
             mv openapi.live.json openapi.json
             sha256sum openapi.json > openapi.sha256
           fi
+          python - <<'PYTHON'
+          import json
+          from pathlib import Path
+          path = Path("openapi.config.json")
+          config = json.loads(path.read_text())
+          version = json.loads(Path("openapi.json").read_text())["info"]["version"]
+          if config["python"].get("version", version).split(".post")[0] != version:
+              del config["python"]["version"]
+              path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n")
+          PYTHON
 
       - name: Regenerate Python SDK
         working-directory: .generator
@@ -124,9 +134,23 @@ jobs:
           sdk_changed=false
           if ! diff --recursive --brief .generator/generated/python sdk/python; then
             sdk_changed=true
+            python - <<'PYTHON'
+          import json
+          import tomllib
+          from pathlib import Path
+          previous = tomllib.loads(Path("sdk/python/pyproject.toml").read_text())["project"]["version"]
+          generated = tomllib.loads(Path(".generator/generated/python/pyproject.toml").read_text())["project"]["version"]
+          if generated == previous:
+              base, _, post = previous.partition(".post")
+              path = Path("openapi.config.json")
+              config = json.loads(path.read_text())
+              config["python"]["version"] = f"{base}.post{int(post or 0) + 1}"
+              path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n")
+          PYTHON
+            (cd .generator && OPENAPI_CONFIG="$GITHUB_WORKSPACE/openapi.config.json" bun run generate)
             rsync --archive --delete .generator/generated/python/ sdk/python/
           fi
-          if [ "$sdk_changed" = false ] && git diff --quiet -- openapi.json openapi.sha256 sdk/python; then
+          if [ "$sdk_changed" = false ] && git diff --quiet -- openapi.config.json openapi.json openapi.sha256 sdk/python; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -160,11 +184,11 @@ jobs:
               git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
               gh auth setup-git
               git switch --create "$branch"
-              git add openapi.json openapi.sha256 sdk/python
+              git add openapi.config.json openapi.json openapi.sha256 sdk/python
               git commit -m "Update Platform API contract"
               git push --set-upstream origin "$branch"
             fi
-            pr_url=$(gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. CI validates the generated package before the workflow merges the exact green head. The package version follows the contract info.version, so merging a bumped version publishes to PyPI.")
+            pr_url=$(gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. CI validates the generated package before the workflow merges the exact green head. API changes follow the contract info.version; generator-only changes increment the SDK post-release automatically so both publish to PyPI.")
           fi
           echo "PR ready: $pr_url"
 
