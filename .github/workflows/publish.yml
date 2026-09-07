@@ -40,18 +40,25 @@ jobs:
         with:
           python-version: "3.x"
       - uses: ultralytics/actions/setup-uv@main
-      - run: uv pip install --system --no-cache ultralytics-actions packaging
+      - run: uv pip install --system --no-cache packaging requests
       - id: check_pypi
         shell: python
         env:
           PYPI_DISPATCH: ${{ github.event.inputs.pypi }}
         run: |
           import os
-          from actions.utils import check_pypi_version
+          import tomllib
+          from pathlib import Path
+          import requests
           from packaging.version import Version
-          local_version, online_version, publish = check_pypi_version("sdk/python/pyproject.toml")
-          # Contract versions can skip releases, so do not apply the shared patch-gap limit.
-          publish = publish or (online_version is not None and Version(local_version) > Version(online_version))
+          project = tomllib.loads(Path("sdk/python/pyproject.toml").read_text())["project"]
+          local_version = project["version"]
+          response = requests.get(f"https://pypi.org/pypi/{project['name']}/json", timeout=30)
+          if response.status_code != 404:
+              response.raise_for_status()
+          online_version = response.json()["info"]["version"] if response.status_code == 200 else None
+          print(f"Local: {local_version}, PyPI: {online_version or 'Not Found'}")
+          publish = online_version is None or Version(local_version) > Version(online_version)
           publish = publish or os.environ.get("PYPI_DISPATCH") == "true"  # manual recovery re-run
           os.system(f'echo "increment={publish}" >> $GITHUB_OUTPUT')
           os.system(f'echo "current_tag=v{local_version}" >> $GITHUB_OUTPUT')
