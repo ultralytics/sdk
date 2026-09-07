@@ -83,7 +83,7 @@ Platform OpenAPI contract
         └── java/       # coming soon
 ```
 
-`openapi.config.json` contains product and package configuration, including the source path for `README.python.md`. `openapi.json` and `openapi.sha256` pin the exact consumed contract. Generated files are never edited manually; update the contract snapshot, configuration, package README source, or generator and regenerate.
+`openapi.config.json` contains product and package configuration, including the source path for `README.python.md`. `auth.py` owns the Python SDK's Ultralytics credential discovery and is included by the generic `python.authProvider` hook on every regeneration. `openapi.json` and `openapi.sha256` pin the exact consumed contract. Generated files are never edited manually; update the contract snapshot, configuration, package README source, or generator and regenerate.
 
 ## 🛠️ Validation
 

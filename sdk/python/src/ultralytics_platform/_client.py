@@ -5,44 +5,24 @@ from __future__ import annotations
 import asyncio
 import json
 import os
-import sys
 import time
 from collections.abc import Sequence
-from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
 import httpx
 
+from ._auth import get_api_key
 from ._exceptions import APIConnectionError, APIError
 
 
 def _resolve_api_key(api_key: str | None) -> str | None:
-    """Resolve explicit credentials, the environment, then the configured saved key."""
+    """Resolve explicit credentials, the environment, then the optional provider."""
     if api_key is not None:
         return api_key
     if api_key := os.environ.get("ULTRALYTICS_API_KEY"):
         return api_key
-    if config_dir := os.environ.get("YOLO_CONFIG_DIR"):
-        directory = Path(config_dir).expanduser() / "Ultralytics"
-    elif sys.platform == "linux":
-        directory = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "Ultralytics"
-    elif sys.platform == "win32":
-        directory = Path.home() / "AppData" / "Roaming" / "Ultralytics"
-    elif sys.platform == "darwin":
-        directory = Path.home() / "Library" / "Application Support" / "Ultralytics"
-    else:
-        return None
-    # Select the same directory as the settings writer; never revive a key from another location after logout.
-    for candidate in (directory, Path("/tmp") / "Ultralytics", Path.cwd() / "Ultralytics"):
-        if candidate.exists() or os.access(candidate.parent, os.W_OK):
-            break
-    try:
-        settings = json.loads((candidate / "settings.json").read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
-    api_key = settings.get("api_key") if isinstance(settings, dict) else None
-    return api_key if isinstance(api_key, str) else None
+    return get_api_key()
 
 
 class NotGiven:

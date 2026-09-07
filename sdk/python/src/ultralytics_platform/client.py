@@ -37,7 +37,7 @@ class Platform:
         """Initialize the client.
 
         Args:
-            api_key (str, optional): API key. Defaults to ULTRALYTICS_API_KEY then saved settings. Pass an empty string to disable authentication.
+            api_key (str, optional): API key. Defaults to ULTRALYTICS_API_KEY then the configured credential provider. Pass an empty string to disable authentication.
             base_url (str): API base URL.
             timeout (float | httpx.Timeout): Request timeout.
             max_retries (int): Retries for connection errors and retryable responses.
