@@ -4,6 +4,8 @@ This file provides guidance to AI coding agents (Claude Code, etc.) when working
 
 ## Core Principles (CRITICAL)
 
+**PyPI releases:** Ultralytics-owned packages must use three-number `MAJOR.MINOR.PATCH` versions only; increment the patch number, never add suffixes or bypass version guards.
+
 **Less is more. The simplest solution is the best solution.** The action hierarchy for every change: **Delete > Replace > Add**.
 
 1. **Solve at the owner**: Put behavior in the code path that owns or observes it. For fixes, never guard a symptom with a staleness check, initialization flag, skip-first-call branch, or `try/except` around broken logic; relocate the trigger and delete the wrong path. For features, extend the existing owner rather than creating a parallel abstraction.
@@ -38,10 +40,6 @@ uv run --with pytest --with ./sdk/python pytest tests -v
 ```
 
 CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform contract against `openapi.sha256`, regenerates the Python output from the `main` branch of `ultralytics/openapi`, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install. The scheduled and manual `Live` job downloads the upstream contract, regenerates the SDK, opens and merges the contract-update PR on green checks without human involvement, and only then runs the production canary in `tests/live_readonly.py`, so a canary failure never blocks the SDK from tracking the contract. New endpoints do not need canary coverage; add it only when live behavior is worth guarding.
-
-## Release Policy (CRITICAL)
-
-Every Ultralytics-owned package published to PyPI must use exactly three numeric version components: `MAJOR.MINOR.PATCH`. Never publish post-releases, prereleases, development releases, local versions, or any other suffix. SDK-only changes increment the patch number. Preserve the publishing version guard; never weaken or bypass it to accommodate a different version scheme. This is an organization-wide Ultralytics release standard, not a restriction on third-party consumers of the general OpenAPI converter.
 
 ## Architecture
 
