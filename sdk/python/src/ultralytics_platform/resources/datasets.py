@@ -295,6 +295,7 @@ class Datasets:
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
         tags: Sequence[str] | NotGiven = NOT_GIVEN,
         class_names: Sequence[str] | NotGiven = NOT_GIVEN,
+        initialize_class_names: bool | NotGiven = NOT_GIVEN,
         class_colors: dict[str, Any] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
@@ -348,6 +349,7 @@ class Datasets:
             visibility (Literal["public", "private"], optional): Resource visibility
             tags (Sequence[str], optional): tags request value.
             class_names (Sequence[str], optional): classNames request value.
+            initialize_class_names (bool, optional): Require the dataset to have no classes or annotations
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
@@ -380,6 +382,7 @@ class Datasets:
                     "visibility": visibility,
                     "tags": tags,
                     "classNames": class_names,
+                    "initializeClassNames": initialize_class_names,
                     "classColors": class_colors,
                     "format": format,
                     "task": task,
@@ -1627,6 +1630,7 @@ class AsyncDatasets:
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
         tags: Sequence[str] | NotGiven = NOT_GIVEN,
         class_names: Sequence[str] | NotGiven = NOT_GIVEN,
+        initialize_class_names: bool | NotGiven = NOT_GIVEN,
         class_colors: dict[str, Any] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
@@ -1680,6 +1684,7 @@ class AsyncDatasets:
             visibility (Literal["public", "private"], optional): Resource visibility
             tags (Sequence[str], optional): tags request value.
             class_names (Sequence[str], optional): classNames request value.
+            initialize_class_names (bool, optional): Require the dataset to have no classes or annotations
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
@@ -1712,6 +1717,7 @@ class AsyncDatasets:
                     "visibility": visibility,
                     "tags": tags,
                     "classNames": class_names,
+                    "initializeClassNames": initialize_class_names,
                     "classColors": class_colors,
                     "format": format,
                     "task": task,
