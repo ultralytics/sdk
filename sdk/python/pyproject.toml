@@ -6,7 +6,7 @@ build-backend = "uv_build"
 
 [project]
 name = "ultralytics-platform"
-version = "0.1.33"
+version = "0.1.34"
 description = "Typed Python SDK for the Ultralytics Platform API"
 requires-python = ">=3.11"
 authors = [{ name = "Ultralytics", email = "hello@ultralytics.com" }]
@@ -32,6 +32,9 @@ dependencies = ["httpx>=0.28,<1"]
 [project.urls]
 Repository = "https://github.com/ultralytics/sdk"
 Issues = "https://github.com/ultralytics/sdk/issues"
+
+[project.scripts]
+"ul" = "ultralytics_platform.cli:main"
 
 [tool.ruff]
 line-length = 120

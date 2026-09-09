@@ -30,6 +30,7 @@ After opening a PR:
 
 ```bash
 sha256sum --check openapi.sha256
+(cd .generator && OPENAPI_CONFIG=../openapi.config.json bun run generate)
 uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests
 uvx ruff@0.16.2 check sdk/python tests
 python3 -m compileall -q sdk/python/src
@@ -43,7 +44,7 @@ CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform con
 
 - The API/docs/SDK repository chain always follows `main`: cross-repository `ultralytics/openapi` checkouts must use `ref: main` and must never pin a commit SHA or tag.
 
-This repository contains generated SDKs for Ultralytics products. `openapi.config.json` defines the consumer configuration, while the versioned `openapi.json` snapshot and `openapi.sha256` pin the exact contract consumed by CI. `sdk/python/` is a generated descendant and must never be edited manually; update the contract snapshot, consumer configuration, or generic generator and regenerate. `tests/` owns focused consumer-level wire checks. `format.yml` runs Ultralytics Actions on pull requests, `ci.yml` owns deterministic regeneration, upstream drift detection, and package validation, and `publish.yml` owns version-gated tagging, releases, and PyPI trusted publishing.
+This repository contains generated SDKs for Ultralytics products. `openapi.config.json` defines the consumer configuration; `openapi.json` and `openapi.sha256` pin the contract. All of `sdk/python/` is generated, committed, and drift-checked; never edit it manually. Maintain CLI behavior in root `cli.py` and shared credentials in `auth.py`. The generator copies these sources into the package, emits multipart binary-field metadata in `_cli_metadata.py`, and registers `ul`; `cli.py` owns the launcher. The CLI discovers operations, types, and help from SDK signatures and docstrings. After changing sources, configuration, or contract, regenerate with an `ultralytics/openapi` main checkout at `.generator/` and copy `.generator/generated/python/` to `sdk/python/`. `tests/` owns consumer checks; `format.yml` applies Ultralytics Actions, `ci.yml` owns regeneration and package validation, and `publish.yml` owns releases and PyPI publishing.
 
 ## Conventions
 

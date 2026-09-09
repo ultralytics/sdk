@@ -22,6 +22,8 @@ Typed SDKs for the [Ultralytics Platform API](https://platform.ultralytics.com),
 
 ## 🐍 Python
 
+The package includes the unified `ul` CLI for local YOLO and Platform SDK commands; see the [CLI guide](README.python.md#unified-ul-cli). Maintain `cli.py` and `auth.py` at the repository root, then regenerate their installed copies through the configured `python.cli.source` and `python.authProvider` hooks.
+
 [![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-platform?logo=pypi&logoColor=white)](https://pypi.org/project/ultralytics-platform/) [![Ultralytics Downloads](https://static.pepy.tech/badge/ultralytics-platform)](https://clickpy.clickhouse.com/dashboard/ultralytics-platform) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-platform?logo=python&logoColor=gold)](https://pypi.org/project/ultralytics-platform/)
 
 Install the standalone [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) package from PyPI in a [**Python >=3.11**](https://www.python.org/) environment. It has one lightweight runtime dependency (`httpx`) and does not install the larger `ultralytics` package:
