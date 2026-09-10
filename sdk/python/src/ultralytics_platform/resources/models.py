@@ -244,7 +244,7 @@ class Models:
     ) -> ModelsDeleteResponse:
         """Delete a model.
 
-        Moves the model to trash for 30 days.
+        Moves the model to trash for 30 days and permanently deletes every deployment using it, including pending replacements. Restoring the model does not restore deployments.
 
         Args:
             owner (str): Project owner
@@ -745,7 +745,7 @@ class AsyncModels:
     ) -> ModelsDeleteResponse:
         """Delete a model.
 
-        Moves the model to trash for 30 days.
+        Moves the model to trash for 30 days and permanently deletes every deployment using it, including pending replacements. Restoring the model does not restore deployments.
 
         Args:
             owner (str): Project owner

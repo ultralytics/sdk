@@ -20,7 +20,10 @@
       }
     ],
     "client": "Platform",
-    "cli": { "command": "ul", "source": "cli.py" },
+    "cli": {
+      "command": "ul",
+      "source": "cli.py"
+    },
     "classifiers": [
       "Development Status :: 5 - Production/Stable",
       "Intended Audience :: Developers",
@@ -54,7 +57,6 @@
     "project": "ultralytics-platform",
     "readme": "README.python.md",
     "requiresPython": ">=3.11",
-    "version": "0.1.35",
     "authProvider": "auth.py"
   }
 }
