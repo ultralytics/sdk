@@ -398,6 +398,8 @@ class Deployments:
             "us-west3",
             "us-west4",
         ],
+        cpu: Literal[1, 2, 4, 6, 8] | NotGiven = NOT_GIVEN,
+        memory_gi: Literal[2, 4, 8, 16, 24, 32] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsCreateResponse:
@@ -412,6 +414,8 @@ class Deployments:
             deployment (str): Deployment name
             name (str): Display name
             region (Literal["asia-east1", "asia-northeast1", "asia-northeast2", "asia-south1", "asia-southeast3", "europe-north1", "europe-north2", "europe-southwest1", "europe-west1", "europe-west4", "europe-west8", "europe-west9", "me-west1", "northamerica-south1", "us-central1", "us-east1", "us-east4", "us-east5", "us-south1", "us-west1", "africa-south1", "asia-east2", "asia-northeast3", "asia-southeast1", "asia-southeast2", "asia-south2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-west10", "europe-west12", "europe-west2", "europe-west3", "europe-west6", "me-central1", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "southamerica-west1", "us-west2", "us-west3", "us-west4"]): region request value.
+            cpu (Literal[1, 2, 4, 6, 8], optional): vCPU cores
+            memory_gi (Literal[2, 4, 8, 16, 24, 32], optional): Memory in GiB
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -429,7 +433,15 @@ class Deployments:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"project": project, "model": model, "deployment": deployment, "name": name, "region": region},
+                json={
+                    "project": project,
+                    "model": model,
+                    "deployment": deployment,
+                    "name": name,
+                    "region": region,
+                    "cpu": cpu,
+                    "memoryGi": memory_gi,
+                },
             ),
         )
 
@@ -804,6 +816,8 @@ class AsyncDeployments:
             "us-west3",
             "us-west4",
         ],
+        cpu: Literal[1, 2, 4, 6, 8] | NotGiven = NOT_GIVEN,
+        memory_gi: Literal[2, 4, 8, 16, 24, 32] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsCreateResponse:
@@ -818,6 +832,8 @@ class AsyncDeployments:
             deployment (str): Deployment name
             name (str): Display name
             region (Literal["asia-east1", "asia-northeast1", "asia-northeast2", "asia-south1", "asia-southeast3", "europe-north1", "europe-north2", "europe-southwest1", "europe-west1", "europe-west4", "europe-west8", "europe-west9", "me-west1", "northamerica-south1", "us-central1", "us-east1", "us-east4", "us-east5", "us-south1", "us-west1", "africa-south1", "asia-east2", "asia-northeast3", "asia-southeast1", "asia-southeast2", "asia-south2", "australia-southeast1", "australia-southeast2", "europe-central2", "europe-west10", "europe-west12", "europe-west2", "europe-west3", "europe-west6", "me-central1", "northamerica-northeast1", "northamerica-northeast2", "southamerica-east1", "southamerica-west1", "us-west2", "us-west3", "us-west4"]): region request value.
+            cpu (Literal[1, 2, 4, 6, 8], optional): vCPU cores
+            memory_gi (Literal[2, 4, 8, 16, 24, 32], optional): Memory in GiB
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -835,6 +851,14 @@ class AsyncDeployments:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"project": project, "model": model, "deployment": deployment, "name": name, "region": region},
+                json={
+                    "project": project,
+                    "model": model,
+                    "deployment": deployment,
+                    "name": name,
+                    "region": region,
+                    "cpu": cpu,
+                    "memoryGi": memory_gi,
+                },
             ),
         )

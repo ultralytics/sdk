@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.33",
+    "version": "0.1.38",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -348,6 +348,7 @@
                     "subscription",
                     "monthly_grant",
                     "training",
+                    "deployment",
                     "annotation",
                     "refund",
                     "adjustment",
@@ -4002,6 +4003,10 @@
               "maxInstances"
             ],
             "additionalProperties": false
+          },
+          "metered": {
+            "description": "Whether uptime on this endpoint is charged",
+            "type": "boolean"
           },
           "deployedAt": {
             "type": "string",
@@ -11295,6 +11300,46 @@
         "additionalProperties": false,
         "description": "Restorable resources in the workspace trash"
       },
+      "TrashPreviewResponse": {
+        "type": "object",
+        "properties": {
+          "resources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "project",
+                    "model",
+                    "deployment"
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "region": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "type",
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "resources"
+        ],
+        "additionalProperties": false
+      },
       "RestoreTrashResponse": {
         "type": "object",
         "properties": {
@@ -16252,6 +16297,44 @@
                       "action"
                     ],
                     "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "cpu": {
+                        "type": "number",
+                        "enum": [
+                          1,
+                          2,
+                          4,
+                          6,
+                          8
+                        ],
+                        "description": "vCPU cores"
+                      },
+                      "memoryGi": {
+                        "type": "number",
+                        "enum": [
+                          2,
+                          4,
+                          8,
+                          16,
+                          24,
+                          32
+                        ],
+                        "description": "Memory in GiB"
+                      },
+                      "action": {
+                        "type": "string",
+                        "const": "resize"
+                      }
+                    },
+                    "required": [
+                      "cpu",
+                      "memoryGi",
+                      "action"
+                    ],
+                    "additionalProperties": false
                   }
                 ],
                 "description": "API request for updating a deployment"
@@ -17419,6 +17502,31 @@
                       "us-west3",
                       "us-west4"
                     ]
+                  },
+                  "cpu": {
+                    "default": 1,
+                    "type": "number",
+                    "enum": [
+                      1,
+                      2,
+                      4,
+                      6,
+                      8
+                    ],
+                    "description": "vCPU cores"
+                  },
+                  "memoryGi": {
+                    "default": 2,
+                    "type": "number",
+                    "enum": [
+                      2,
+                      4,
+                      8,
+                      16,
+                      24,
+                      32
+                    ],
+                    "description": "Memory in GiB"
                   }
                 },
                 "required": [
@@ -19081,7 +19189,7 @@
                           "client_email": {
                             "type": "string",
                             "maxLength": 254,
-                            "pattern": "^(?:\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*|\\s*\"\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*\"\\s*|\\s*'\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*'\\s*)$",
+                            "pattern": "^(?:\\s*(?:(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*|\\s*\"\\s*(?:(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*\"\\s*|\\s*'\\s*(?:(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*'\\s*)$",
                             "example": "service-account@my-gcp-project.iam.gserviceaccount.com"
                           },
                           "private_key": {
@@ -19305,7 +19413,7 @@
                           "client_email": {
                             "type": "string",
                             "maxLength": 254,
-                            "pattern": "^(?:\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*|\\s*\"\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*\"\\s*|\\s*'\\s*(?:(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*'\\s*)$",
+                            "pattern": "^(?:\\s*(?:(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*|\\s*\"\\s*(?:(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*\"\\s*|\\s*'\\s*(?:(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,})\\s*'\\s*)$",
                             "example": "service-account@my-gcp-project.iam.gserviceaccount.com"
                           },
                           "private_key": {
@@ -20372,7 +20480,7 @@
           "Models"
         ],
         "operationId": "delete_api_models_owner_project_model",
-        "description": "Moves the model to trash for 30 days.",
+        "description": "Moves the model to trash for 30 days and permanently deletes every deployment using it, including pending replacements. Restoring the model does not restore deployments.",
         "parameters": [
           {
             "name": "owner",
@@ -20467,6 +20575,16 @@
           },
           "429": {
             "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Deletion incomplete; model files remain in Trash until deployment cleanup succeeds",
             "content": {
               "application/json": {
                 "schema": {
@@ -23232,7 +23350,7 @@
           "Projects"
         ],
         "operationId": "delete_api_projects_owner_project",
-        "description": "Moves a project and its models to trash for 30 days.",
+        "description": "Moves a project and its models to trash for 30 days and permanently deletes their deployments. Restoring the project does not restore deployments.",
         "parameters": [
           {
             "name": "owner",
@@ -23314,6 +23432,16 @@
           },
           "429": {
             "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Deletion incomplete; model files remain in Trash until deployment cleanup succeeds",
             "content": {
               "application/json": {
                 "schema": {
@@ -24617,8 +24745,20 @@
           "Lifecycle"
         ],
         "operationId": "get_api_trash",
-        "description": "Returns deleted items that can still be restored. Items are permanently deleted after 30 days.",
+        "description": "Returns restorable trash, or previews affected models and permanently deleted deployments when id and type are provided. Trash expires after 30 days.",
         "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Preview resources affected by deleting this model or project",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "example": "507f1f77bcf86cd799439011"
+            }
+          },
           {
             "name": "type",
             "in": "query",
@@ -24665,11 +24805,18 @@
         ],
         "responses": {
           "200": {
-            "description": "Trashed items",
+            "description": "Trashed items or deletion preview",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListTrashResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ListTrashResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TrashPreviewResponse"
+                    }
+                  ]
                 }
               }
             }
@@ -24696,6 +24843,16 @@
           },
           "403": {
             "description": "Workspace access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Preview resource not found",
             "content": {
               "application/json": {
                 "schema": {

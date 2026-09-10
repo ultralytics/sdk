@@ -233,7 +233,7 @@ class Projects:
     ) -> ProjectsDeleteResponse:
         """Delete a project.
 
-        Moves a project and its models to trash for 30 days.
+        Moves a project and its models to trash for 30 days and permanently deletes their deployments. Restoring the project does not restore deployments.
 
         Args:
             owner (str): Project owner
@@ -575,7 +575,7 @@ class AsyncProjects:
     ) -> ProjectsDeleteResponse:
         """Delete a project.
 
-        Moves a project and its models to trash for 30 days.
+        Moves a project and its models to trash for 30 days and permanently deletes their deployments. Restoring the project does not restore deployments.
 
         Args:
             owner (str): Project owner

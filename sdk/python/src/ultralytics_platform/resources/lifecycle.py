@@ -29,6 +29,7 @@ class Lifecycle:
     def trash(
         self,
         *,
+        id: str | NotGiven = NOT_GIVEN,
         type: Literal["all", "project", "dataset", "model"] | NotGiven = NOT_GIVEN,
         page: int | NotGiven = NOT_GIVEN,
         limit: int | NotGiven = NOT_GIVEN,
@@ -37,9 +38,10 @@ class Lifecycle:
     ) -> LifecycleTrashResponse:
         """View trash.
 
-        Returns deleted items that can still be restored. Items are permanently deleted after 30 days.
+        Returns restorable trash, or previews affected models and permanently deleted deployments when id and type are provided. Trash expires after 30 days.
 
         Args:
+            id (str, optional): Preview resources affected by deleting this model or project
             type (Literal["all", "project", "dataset", "model"], optional): type query parameter.
             page (int, optional): page query parameter.
             limit (int, optional): limit query parameter.
@@ -61,6 +63,7 @@ class Lifecycle:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
+                    *_query_parameter("id", id, style="form", explode=True),
                     *_query_parameter("type", type, style="form", explode=True),
                     *_query_parameter("page", page, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
@@ -148,6 +151,7 @@ class AsyncLifecycle:
     async def trash(
         self,
         *,
+        id: str | NotGiven = NOT_GIVEN,
         type: Literal["all", "project", "dataset", "model"] | NotGiven = NOT_GIVEN,
         page: int | NotGiven = NOT_GIVEN,
         limit: int | NotGiven = NOT_GIVEN,
@@ -156,9 +160,10 @@ class AsyncLifecycle:
     ) -> LifecycleTrashResponse:
         """View trash.
 
-        Returns deleted items that can still be restored. Items are permanently deleted after 30 days.
+        Returns restorable trash, or previews affected models and permanently deleted deployments when id and type are provided. Trash expires after 30 days.
 
         Args:
+            id (str, optional): Preview resources affected by deleting this model or project
             type (Literal["all", "project", "dataset", "model"], optional): type query parameter.
             page (int, optional): page query parameter.
             limit (int, optional): limit query parameter.
@@ -180,6 +185,7 @@ class AsyncLifecycle:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 params=[
+                    *_query_parameter("id", id, style="form", explode=True),
                     *_query_parameter("type", type, style="form", explode=True),
                     *_query_parameter("page", page, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),

@@ -220,6 +220,7 @@ BillingTransactionsResponseTransactionsItem = TypedDict(
             "subscription",
             "monthly_grant",
             "training",
+            "deployment",
             "annotation",
             "refund",
             "adjustment",
@@ -1225,6 +1226,7 @@ DeploymentsRetrieveResponseDeployment = TypedDict(
         "region": str,
         "serviceUrl": NotRequired[str],
         "resources": DeploymentsRetrieveResponseDeploymentResources,
+        "metered": NotRequired[bool],
         "deployedAt": NotRequired[str],
         "apiKeyId": NotRequired[str],
         "createdAt": str,
@@ -3077,13 +3079,13 @@ TrainingStartResponse = TypedDict(
 )
 
 
-LifecycleTrashResponseItemsItemParentProject = TypedDict(
-    "LifecycleTrashResponseItemsItemParentProject", {"_id": str, "name": str, "slug": str}
+LifecycleTrashResponseVariant1ItemsItemParentProject = TypedDict(
+    "LifecycleTrashResponseVariant1ItemsItemParentProject", {"_id": str, "name": str, "slug": str}
 )
 
 
-LifecycleTrashResponseItemsItem = TypedDict(
-    "LifecycleTrashResponseItemsItem",
+LifecycleTrashResponseVariant1ItemsItem = TypedDict(
+    "LifecycleTrashResponseVariant1ItemsItem",
     {
         "_id": str,
         "type": Literal["project", "dataset", "model"],
@@ -3092,59 +3094,75 @@ LifecycleTrashResponseItemsItem = TypedDict(
         "trashedAt": str,
         "daysRemaining": int,
         "cascadedCount": NotRequired[int],
-        "parentProject": NotRequired[LifecycleTrashResponseItemsItemParentProject],
+        "parentProject": NotRequired[LifecycleTrashResponseVariant1ItemsItemParentProject],
         "sizeBytes": NotRequired[float],
     },
 )
 
 
-LifecycleTrashResponseSummaryByTypeProjects = TypedDict("LifecycleTrashResponseSummaryByTypeProjects", {"count": int})
-
-
-LifecycleTrashResponseSummaryByTypeDatasets = TypedDict(
-    "LifecycleTrashResponseSummaryByTypeDatasets", {"count": int, "sizeBytes": float}
+LifecycleTrashResponseVariant1SummaryByTypeProjects = TypedDict(
+    "LifecycleTrashResponseVariant1SummaryByTypeProjects", {"count": int}
 )
 
 
-LifecycleTrashResponseSummaryByTypeModels = TypedDict(
-    "LifecycleTrashResponseSummaryByTypeModels", {"count": int, "sizeBytes": float}
+LifecycleTrashResponseVariant1SummaryByTypeDatasets = TypedDict(
+    "LifecycleTrashResponseVariant1SummaryByTypeDatasets", {"count": int, "sizeBytes": float}
 )
 
 
-LifecycleTrashResponseSummaryByTypeExports = TypedDict(
-    "LifecycleTrashResponseSummaryByTypeExports", {"count": int, "sizeBytes": float}
+LifecycleTrashResponseVariant1SummaryByTypeModels = TypedDict(
+    "LifecycleTrashResponseVariant1SummaryByTypeModels", {"count": int, "sizeBytes": float}
 )
 
 
-LifecycleTrashResponseSummaryByType = TypedDict(
-    "LifecycleTrashResponseSummaryByType",
+LifecycleTrashResponseVariant1SummaryByTypeExports = TypedDict(
+    "LifecycleTrashResponseVariant1SummaryByTypeExports", {"count": int, "sizeBytes": float}
+)
+
+
+LifecycleTrashResponseVariant1SummaryByType = TypedDict(
+    "LifecycleTrashResponseVariant1SummaryByType",
     {
-        "projects": LifecycleTrashResponseSummaryByTypeProjects,
-        "datasets": LifecycleTrashResponseSummaryByTypeDatasets,
-        "models": LifecycleTrashResponseSummaryByTypeModels,
-        "exports": LifecycleTrashResponseSummaryByTypeExports,
+        "projects": LifecycleTrashResponseVariant1SummaryByTypeProjects,
+        "datasets": LifecycleTrashResponseVariant1SummaryByTypeDatasets,
+        "models": LifecycleTrashResponseVariant1SummaryByTypeModels,
+        "exports": LifecycleTrashResponseVariant1SummaryByTypeExports,
     },
 )
 
 
-LifecycleTrashResponseSummary = TypedDict(
-    "LifecycleTrashResponseSummary",
-    {"totalItems": int, "totalSizeBytes": float, "byType": LifecycleTrashResponseSummaryByType},
+LifecycleTrashResponseVariant1Summary = TypedDict(
+    "LifecycleTrashResponseVariant1Summary",
+    {"totalItems": int, "totalSizeBytes": float, "byType": LifecycleTrashResponseVariant1SummaryByType},
 )
 
 
-LifecycleTrashResponse = TypedDict(
-    "LifecycleTrashResponse",
+LifecycleTrashResponseVariant1 = TypedDict(
+    "LifecycleTrashResponseVariant1",
     {
-        "items": list[LifecycleTrashResponseItemsItem],
+        "items": list[LifecycleTrashResponseVariant1ItemsItem],
         "total": int,
         "page": int,
         "limit": int,
         "totalPages": int,
-        "summary": LifecycleTrashResponseSummary,
+        "summary": LifecycleTrashResponseVariant1Summary,
         "region": Literal["us", "eu", "ap"],
     },
 )
+
+
+LifecycleTrashResponseVariant2ResourcesItem = TypedDict(
+    "LifecycleTrashResponseVariant2ResourcesItem",
+    {"id": str, "type": Literal["project", "model", "deployment"], "name": str, "region": NotRequired[str]},
+)
+
+
+LifecycleTrashResponseVariant2 = TypedDict(
+    "LifecycleTrashResponseVariant2", {"resources": list[LifecycleTrashResponseVariant2ResourcesItem]}
+)
+
+
+LifecycleTrashResponse = LifecycleTrashResponseVariant1 | LifecycleTrashResponseVariant2
 
 
 LifecycleRestoreResponse = TypedDict(
