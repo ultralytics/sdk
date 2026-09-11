@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.38",
+    "version": "0.1.39",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -13658,7 +13658,7 @@
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_images_adopt",
-        "description": "Copies hosted images from public datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.",
+        "description": "Copies hosted images from accessible public or private datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.",
         "x-sdk-method": "adopt_images",
         "parameters": [
           {
