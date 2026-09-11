@@ -37,27 +37,29 @@ uv venv --python 3.11 && source .venv/bin/activate
 uv pip install pytest jsonschema referencing -e ./sdk/python
 uv pip install --reinstall-package ultralytics-platform -e ./sdk/python   # only after pyproject metadata/version/entry-point changes
 
-# Unit suite exactly as CI runs it (loopback HTTP server + httpx.MockTransport; no external network, no credentials)
-pytest tests -v
-pytest tests/test_cli.py -v                   # single file
-pytest tests -k test_api_error_details -v     # single test
-
-# Regenerate sdk/python after changing openapi.json, openapi.config.json, cli.py, auth.py, or README.python.md.
+# 1. After editing openapi.json, openapi.config.json, cli.py, auth.py, or README.python.md: regenerate and copy first.
 # .generator/ is gitignored; always use the generator's main branch, never a SHA or tag. Needs bun and uvx.
 git clone --branch main https://github.com/ultralytics/openapi.git .generator
 export OPENAPI_CONFIG="$PWD/openapi.config.json"
 (cd .generator && bun install --frozen-lockfile && bun run generate)   # writes .generator/generated/python
-diff --recursive --unified sdk/python .generator/generated/python      # CI's drift gate; run BEFORE compileall/build/pytest, which add __pycache__ and dist/
 rsync --archive --delete .generator/generated/python/ sdk/python/      # replace the committed tree
 
-# CI validation steps (ci.yml "Validate Python SDK"; ruff is pinned, there is no root ruff config, keep --line-length 120)
+# 2. Drift gate exactly as CI runs it, on a clean tree (pytest/compileall/build add __pycache__ and dist/ that the diff reports)
+diff --recursive --unified sdk/python .generator/generated/python      # must print nothing
+
+# 3. Unit suite exactly as CI runs it (loopback HTTP server + httpx.MockTransport; no external network, no credentials)
+pytest tests -v
+pytest tests/test_cli.py -v                   # single file
+pytest tests -k test_api_error_details -v     # single test
+
+# 4. Remaining CI validation steps (ci.yml "Validate Python SDK"; ruff is pinned, there is no root ruff config, keep --line-length 120)
 sha256sum --check openapi.sha256
 uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests cli.py auth.py
 uvx ruff@0.16.2 check sdk/python tests cli.py auth.py
 python -m compileall -q sdk/python/src
 uv build --project sdk/python
 
-# After replacing openapi.json by hand (the Live job normally does this), re-pin the hash
+# After replacing openapi.json by hand (the Live job normally does this), re-pin the hash before regenerating
 sha256sum openapi.json > openapi.sha256
 
 # CLI smoke test. A Unix `ul` (macOS ships /usr/bin/ul) can shadow the console script, so activate the venv or use the module form.
@@ -67,7 +69,7 @@ python -m ultralytics_platform.cli cloud account summary   # needs ULTRALYTICS_A
 
 Root `cli.py` uses package-relative imports (`from . import ...`) and is not a runnable script; always exercise the installed `ultralytics_platform.cli` module.
 
-CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform contract against `openapi.sha256`, regenerates the Python output from the `main` branch of `ultralytics/openapi`, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install (`uv pip install "git+file://$GITHUB_WORKSPACE@<sha>#subdirectory=sdk/python"`). The `Live` job ("Full API lifecycle") runs on every `main` ref build (pushes and the daily cron) and on manual dispatch — never on pull requests. It downloads the upstream contract and regenerates the SDK; only `main` runs with detected changes open and merge the contract-update PR on green checks without human involvement (a manual run on another ref skips that step), and every Live run ends with the production canary in `tests/live_readonly.py`, so a canary failure never blocks the SDK from tracking the contract. New endpoints do not need canary coverage; add it only when live behavior is worth guarding.
+CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform contract against `openapi.sha256`, regenerates the Python output from the `main` branch of `ultralytics/openapi`, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install (`uv pip install "git+file://$GITHUB_WORKSPACE@<sha>#subdirectory=sdk/python"`). The `Live` job ("Full API lifecycle") runs on every `main` ref build (pushes and the daily cron) and on manual dispatch — never on pull requests. It downloads the upstream contract and regenerates the SDK; only `main` runs with detected changes open and merge the contract-update PR on green checks without human involvement (a manual run on another ref skips that step), and every Live run ends with the production canary in `tests/live_readonly.py`, so a canary failure never blocks the SDK from tracking the contract. A canary failure does fail the CI run, and `publish.yml` only fires on a successful CI `workflow_run` for that push, so it blocks automatic PyPI publication until a later `main` build succeeds (or a manual `pypi` dispatch). New endpoints do not need canary coverage; add it only when live behavior is worth guarding.
 
 Workflows in `.github/workflows/`:
 
@@ -107,7 +109,7 @@ Generated output is a function of four things: `openapi.json`, `openapi.config.j
 
 - `__init__.py` exports exactly `NOT_GIVEN`, `NotGiven`, `APIConnectionError`, `APIError`, `AsyncPlatform`, `Platform`.
 - `client.py` / `async_client.py`: `Platform(*, api_key=None, base_url="https://platform.ultralytics.com", timeout=60.0, max_retries=2, http_client=None)` resolves the key with `_resolve_api_key` and attaches one resource object per contract tag as attributes (`account`, `billing`, `datasets`, `deployments`, `explore`, `images`, `storage_integrations`, `models`, `exports`, `projects`, `training`, `lifecycle`, `upload`). `timeout=` only configures a client the constructor creates; a supplied `http_client=` keeps its own timeout and is closed by `Platform.close()` / the context manager. `ULTRALYTICS_PLATFORM_URL` is read by the CLI only — Python callers pass `base_url=`.
-- `_client.py`: `_resolve_api_key(api_key)` — explicit value (even `""`, which disables auth) → non-empty `ULTRALYTICS_API_KEY` → `get_api_key()` from `_auth.py`. `SyncAPIClient.request` / `AsyncAPIClient.request` build the URL from `base_url` (plus a per-operation `server` override), add the header from the operation's `auth=("Authorization", "Bearer ")` tuple only when a key is set, and serialize: JSON bodies omit fields holding `NOT_GIVEN` but send explicit `None` as `null` (`_json_value`); query parameters, generated headers, and cookies omit both `None` and `NOT_GIVEN` (`_query_parameter`, `_without_none`); multipart/form bodies omit `NOT_GIVEN` and JSON-encode nested objects (`_form_data`). Decoding: 204 or empty body → `None`, `application/json`/`+json` → parsed JSON, `text/*` (or `text=True`) → `str`, else `bytes`. Retries: GET/HEAD/OPTIONS retry connection errors and HTTP 408/409/429/5xx; any other method retries only HTTP 429 and only when it carried a JSON body (multipart `predict` is never retried); `max_retries=2` means up to three attempts; delay uses a numeric `Retry-After` (capped 60s; an HTTP-date value is ignored) else `0.5 * 2**attempt` capped at 8s. Errors: `APIError(status_code, body, request_id)` with a `.json` property, `APIConnectionError`.
+- `_client.py`: `_resolve_api_key(api_key)` — explicit value (even `""`, which disables auth) → non-empty `ULTRALYTICS_API_KEY` → `get_api_key()` from `_auth.py`. `SyncAPIClient.request` / `AsyncAPIClient.request` build the URL from `base_url` (plus a per-operation `server` override), add the header from the operation's `auth=("Authorization", "Bearer ")` tuple only when a key is set, and serialize: JSON bodies omit fields holding `NOT_GIVEN` but send explicit `None` as `null` (`_json_value`); query parameters, generated headers, and cookies omit both `None` and `NOT_GIVEN` (`_query_parameter`, `_without_none`); form bodies omit `NOT_GIVEN`, and nested dicts are JSON-encoded as a single part for multipart but flattened into individual fields for URL-encoded forms (`_form_data`). Decoding: 204 or empty body → `None`, `application/json`/`+json` → parsed JSON, `text/*` (or `text=True`) → `str`, else `bytes`. Retries: GET/HEAD/OPTIONS retry connection errors and HTTP 408/409/429/5xx; any other method retries only HTTP 429 and only when it carried a JSON body (multipart `predict` is never retried); `max_retries=2` means up to three attempts; delay uses a numeric `Retry-After` (capped 60s; an HTTP-date value is ignored) else `0.5 * 2**attempt` capped at 8s. Errors: `APIError(status_code, body, request_id)` with a `.json` property, `APIConnectionError`.
 - `resources/<tag>.py`: one `<Tag>` and one `Async<Tag>` class per contract tag, one method per operation. Path parameters are positional-or-keyword, API arguments are keyword-only with optional ones defaulting to `NOT_GIVEN`, and every method also takes `timeout=None` and `extra_headers=None` (positional-or-keyword on methods without other keyword-only arguments, e.g. `account.summary`, `datasets.retrieve` — the CLI drops these two names before classifying parameters). Python names are snake_case while wire names stay camelCase: `training.start(model_id=..., train_args=...)` sends `modelId`/`trainArgs`; `models.clone(owner, project, model, *, project_body=..., owner_body=..., model_body=...)` separates source path identifiers from destination JSON fields. Whole-object bodies are `body: dict[str, Any]` (e.g. `upload.signed_url`, `images.update`, `deployments.update`, both `predict`s) and keep wire spelling. Return annotations are aliases in `types.py` named `<PascalTag><PascalMethod>Response` — `TypedDict`s, unions of variants (`DatasetsExportResponse`), or plain typed dicts (`TrainingGpuAvailabilityResponse`); methods `cast` the decoded JSON, so there is no runtime response validation. `models.predict` and `deployments.predict` are the only multipart operations: `body["file"]` must be an open binary file object (the SDK never opens a path string, even though the contract's embedded `x-codeSamples` example passes `"path/to/file"`); other `body` keys become form fields.
 - `_cli_metadata.py`: `MULTIPART_FILES = {"deployments.predict": ["file"], "models.predict": ["file"]}`, computed from `multipart/form-data` bodies whose properties have `format: binary`.
 
