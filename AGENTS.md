@@ -33,13 +33,13 @@ uv venv --python 3.11
 source .venv/bin/activate
 uv pip install pytest jsonschema referencing -e ./sdk/python
 
+sha256sum --check openapi.sha256
 git clone --branch main https://github.com/ultralytics/openapi.git .generator
 export OPENAPI_CONFIG="$PWD/openapi.config.json"
 (cd .generator && bun install --frozen-lockfile && bun run generate)
 diff --recursive --unified sdk/python .generator/generated/python
 
 pytest tests -v
-sha256sum --check openapi.sha256
 uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests cli.py auth.py
 uvx ruff@0.16.2 check sdk/python tests cli.py auth.py
 ```
