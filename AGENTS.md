@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance to AI coding agents (Claude Code, etc.) when working with code in this repository. CLAUDE.md is a symlink to this file.
+Repository guidance for coding agents. `CLAUDE.md` is a symlink to this file.
 
 ## Core Principles (CRITICAL)
 
@@ -26,28 +26,51 @@ After opening a PR:
 4. Never fight other commits: Ultralytics Actions pushes auto-format and header commits, and multiple users may work on the same PR. `git pull --rebase` before pushing; never reset or revert commits you did not author.
 5. After the PR merges, clean up: remove local worktrees and branches for it, then `git checkout main && git pull`.
 
-## Commands
+## Commands and validation
 
 ```bash
+uv venv --python 3.11
+source .venv/bin/activate
+uv pip install pytest jsonschema referencing -e ./sdk/python
+
 sha256sum --check openapi.sha256
-(cd .generator && OPENAPI_CONFIG=../openapi.config.json bun run generate)
-uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests
-uvx ruff@0.16.2 check sdk/python tests
-python3 -m compileall -q sdk/python/src
-uv build sdk/python
-uv run --with pytest --with ./sdk/python pytest tests -v
+if [ -d .generator ]; then
+  git -C .generator switch main
+  git -C .generator pull --ff-only origin main
+else
+  git clone --branch main https://github.com/ultralytics/openapi.git .generator
+fi
+export OPENAPI_CONFIG="$PWD/openapi.config.json"
+(cd .generator && bun install --frozen-lockfile && bun run generate)
+diff --recursive --unified sdk/python .generator/generated/python
+
+pytest tests -v
+uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests cli.py auth.py
+uvx ruff@0.16.2 check sdk/python tests cli.py auth.py
 ```
 
-CI checks Python 3.11 and 3.14 on Ubuntu. It verifies the versioned Platform contract against `openapi.sha256`, regenerates the Python output from the `main` branch of `ultralytics/openapi`, fails on generated drift, and then runs the Python checks above plus a Git subdirectory install. The scheduled and manual `Live` job downloads the upstream contract, regenerates the SDK, opens and merges the contract-update PR on green checks without human involvement, and only then runs the production canary in `tests/live_readonly.py`, so a canary failure never blocks the SDK from tracking the contract. New endpoints do not need canary coverage; add it only when live behavior is worth guarding.
+Use the generator's `main` branch, never a pinned SHA or tag; update an existing `.generator` checkout before regenerating. Check drift before running tests/builds, which leave ignored artifacts in the generated tree. After intentional source changes, inspect the diff, then copy with `rsync --archive --delete .generator/generated/python/ sdk/python/`. Never repair generated files by hand. Install the package in the same interpreter that runs pytest. Use `python -m ultralytics_platform.cli` if the system `ul` command shadows the console script.
 
-## Architecture
+## Where to look
 
-- The API/docs/SDK repository chain always follows `main`: cross-repository `ultralytics/openapi` checkouts must use `ref: main` and must never pin a commit SHA or tag.
-
-This repository contains generated SDKs for Ultralytics products. `openapi.config.json` defines the consumer configuration; `openapi.json` and `openapi.sha256` pin the contract. All of `sdk/python/` is generated, committed, and drift-checked; never edit it manually. Maintain CLI behavior in root `cli.py` and shared credentials in `auth.py`. The generator copies these sources into the package, emits multipart binary-field metadata in `_cli_metadata.py`, and registers `ul`; `cli.py` owns the launcher. The CLI discovers operations, types, and help from SDK signatures and docstrings. After changing sources, configuration, or contract, regenerate with an `ultralytics/openapi` main checkout at `.generator/` and copy `.generator/generated/python/` to `sdk/python/`. `tests/` owns consumer checks; `format.yml` applies Ultralytics Actions, `ci.yml` owns regeneration and package validation, and `publish.yml` owns releases and PyPI publishing.
+- CLI and credential customization → `cli.py`, `auth.py`.
+- Generator configuration and README template → `openapi.config.json`, `README.python.md`.
+- Pinned contract → `openapi.json`, `openapi.sha256`.
+- Generated package → `sdk/python/`.
+- Regeneration and contract sync → `.github/workflows/ci.yml`.
+- Release rules → `.github/workflows/publish.yml`, `README.md`.
 
 ## Conventions
 
 - Ultralytics-owned PyPI packages use `MAJOR.MINOR.PATCH` versions only; no suffixes.
-- License headers (`# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license`) are added automatically by Ultralytics Actions — don't add or revert them manually.
-- Google-style docstrings, `from __future__ import annotations` for modern type hints, line length 120; formatting is auto-applied by `format.yml`.
+- License headers (`# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license`) are added automatically by Ultralytics Actions — don't add or revert them manually. Generated files receive the same header from the generator (`header` in `openapi.config.json`).
+- Google-style docstrings, `from __future__ import annotations` for modern type hints, line length 120; formatting is checked by `ci.yml` with the pinned `uvx ruff@0.16.2` (`format.yml` runs with `python: false`, so nothing reformats Python on PR branches) and the generator formats its own output.
+
+## Pitfalls
+
+- `tests/live_readonly.py` is not read-only and is not collected by pytest. It needs `ULTRALYTICS_API_KEY`, runs against production, creates and deletes `sdk-ci-<timestamp>` projects/datasets/models, uploads `coco32.zip` from `ultralytics/assets`, and paces requests at 0.75s. Its response hook validates successful responses that declare a JSON schema against `openapi.json`, rejects 401/5xx and undocumented statuses, and checks the exact error message of any 403 against `EXPECTED_FORBIDDEN`. Operations that cannot succeed on the canary account (training start, export, deployment create, ...) are wrapped in `expected_error(...)` and must fail; the final gate fails when the set of error-only operations drifts from those classifications. It exercises explicit scenarios, not every operation (e.g. `models.find_similar_training_images` is not called). Run it only deliberately.
+- `ULTRALYTICS_API_KEY=""` (empty) does not disable auth — `_resolve_api_key` treats an empty environment value as unset and falls through to the saved `yolo login` key (that is how `tests/test_cli.py` forces the settings path). Only an explicit `Platform(api_key="")` disables the header.
+- Shell quoting: JSON arguments need single quotes (`'train_args={"epochs":1}'`), `@-` may be used by at most one argument per invocation, and binary fields must be `@path` (never stdin) even when nested inside a multipart `body` JSON.
+- `format.yml` will not reformat Python or Markdown for you here (`python: false`, `prettier: false`); run the pinned `uvx ruff@0.16.2 format --line-length 120` on `cli.py`, `auth.py`, and `tests/` yourself before pushing.
+
+Contract snapshots keep upstream samples until Portal deploys its rebuilt OpenAPI output and automation synchronizes it. For intentional SDK changes, update `python.version` and regenerate in the same PR; the sync job only supplies a patch bump when generated output changes at an unchanged version. Keep both READMEs aligned with `.github/workflows/ci.yml`.
