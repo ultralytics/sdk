@@ -28,6 +28,8 @@ After opening a PR:
 
 ## Commands and validation
 
+Setup below assumes a fresh checkout. If `.generator` already exists, update that checkout to the latest `main` instead of cloning it again.
+
 ```bash
 uv venv --python 3.11
 source .venv/bin/activate
