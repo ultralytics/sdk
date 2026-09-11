@@ -28,15 +28,18 @@ After opening a PR:
 
 ## Commands and validation
 
-Setup below assumes a fresh checkout. If `.generator` already exists, update that checkout to the latest `main` instead of cloning it again.
-
 ```bash
 uv venv --python 3.11
 source .venv/bin/activate
 uv pip install pytest jsonschema referencing -e ./sdk/python
 
 sha256sum --check openapi.sha256
-git clone --branch main https://github.com/ultralytics/openapi.git .generator
+if [ -d .generator ]; then
+  git -C .generator switch main
+  git -C .generator pull --ff-only origin main
+else
+  git clone --branch main https://github.com/ultralytics/openapi.git .generator
+fi
 export OPENAPI_CONFIG="$PWD/openapi.config.json"
 (cd .generator && bun install --frozen-lockfile && bun run generate)
 diff --recursive --unified sdk/python .generator/generated/python
