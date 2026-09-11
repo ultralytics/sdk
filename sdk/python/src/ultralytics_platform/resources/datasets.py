@@ -657,7 +657,7 @@ class Datasets:
     ) -> DatasetsAdoptImagesResponse:
         """Add images to a dataset.
 
-        Copies hosted images from public datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.
+        Copies hosted images from accessible public or private datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.
 
         Args:
             owner (str): Dataset owner
@@ -1992,7 +1992,7 @@ class AsyncDatasets:
     ) -> DatasetsAdoptImagesResponse:
         """Add images to a dataset.
 
-        Copies hosted images from public datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.
+        Copies hosted images from accessible public or private datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.
 
         Args:
             owner (str): Dataset owner
