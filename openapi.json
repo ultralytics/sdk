@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.39",
+    "version": "0.1.40",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -17250,7 +17250,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.predict(\n    owner=\"ultralytics\",\n    deployment=\"yolo26-api\",\n    body={\"file\": \"path/to/file\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.predict(\n    owner=\"ultralytics\",\n    deployment=\"yolo26-api\",\n    body={\"file\": open(\"path/to/file\", \"rb\")},\n)\nprint(response)"
           }
         ]
       }
@@ -21797,7 +21797,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.predict(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    body={\"file\": \"path/to/file\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.predict(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    body={\"file\": open(\"path/to/file\", \"rb\")},\n)\nprint(response)"
           }
         ]
       }
