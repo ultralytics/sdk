@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import httpx
 
 from ._client import SyncAPIClient, _resolve_api_key
@@ -32,6 +34,7 @@ class Platform:
         base_url: str = "https://platform.ultralytics.com",
         timeout: float | httpx.Timeout = 60.0,
         max_retries: int = 2,
+        retry_methods: Sequence[str] = ("GET", "HEAD", "OPTIONS"),
         http_client: httpx.Client | None = None,
     ) -> None:
         """Initialize the client.
@@ -41,6 +44,7 @@ class Platform:
             base_url (str): API base URL.
             timeout (float | httpx.Timeout): Request timeout.
             max_retries (int): Retries for connection errors and retryable responses.
+            retry_methods (Sequence[str]): HTTP methods safe to repeat after network errors or HTTP 408, 409, 429, and 5xx responses. Defaults to GET, HEAD, OPTIONS. Opt in only when the operation is safe to repeat and its request body can be resent.
             http_client (httpx.Client, optional): Custom HTTP client.
         """
         resolved_api_key = _resolve_api_key(api_key)
@@ -49,6 +53,7 @@ class Platform:
             base_url=base_url,
             timeout=timeout,
             max_retries=max_retries,
+            retry_methods=retry_methods,
             http_client=http_client,
         )
         self.account = Account(self._client)

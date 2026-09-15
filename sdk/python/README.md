@@ -118,3 +118,16 @@ For bug reports or feature suggestions related to this SDK, please submit an iss
   <img src="https://raw.githubusercontent.com/ultralytics/assets/main/social/logo-transparent.png" width="3%" alt="space">
   <a href="https://discord.com/invite/ultralytics"><img src="https://raw.githubusercontent.com/ultralytics/assets/main/social/logo-social-discord.png" width="3%" alt="Ultralytics Discord"></a>
 </div>
+
+## Retries
+
+Clients default to two retries after the initial attempt for GET, HEAD, and OPTIONS connection failures and transient HTTP responses. JSON requests also retry HTTP 429. Set `max_retries=0` to disable retries.
+
+For an operation you know is safe to repeat, configure a client with `retry_methods=("POST",)`. This replaces the default method set and enables retries for network errors, HTTP 408, 409, 429, and 5xx responses. The request body must also support being resent; do not opt in with a non-rewindable stream. This option does not make an operation idempotent: do not enable it for ordinary create/start operations without server-side duplicate prevention.
+
+```python
+with Platform(retry_methods=("POST",)) as client:
+    upload = client.models.upload_checkpoint(model_id=model_id, run_id=run_id, filename="best.pt")
+```
+
+The same settings apply to `AsyncPlatform`. Retry waits follow the SDK backoff and `Retry-After` handling; callers do not need another retry loop.

@@ -123,15 +123,17 @@ class SyncAPIClient:
         base_url: str,
         timeout: float | httpx.Timeout,
         max_retries: int,
+        retry_methods: Sequence[str],
         http_client: httpx.Client | None,
     ) -> None:
         self._client = http_client or httpx.Client(timeout=timeout)
         self._base_url = httpx.URL(f"{base_url.rstrip('/')}/")
         self._api_key = api_key
         self._max_retries = max_retries
+        self._retry_methods = {method.upper() for method in retry_methods}
 
     def request(self, method: str, path: str, **kwargs: Any) -> Any:
-        retryable = method.upper() in {"GET", "HEAD", "OPTIONS"}
+        retryable = method.upper() in self._retry_methods
         headers = {**_without_none(kwargs.get("headers") or {}), **(kwargs.get("extra_headers") or {})}
         if self._api_key and (auth := kwargs.get("auth")):
             headers.setdefault(auth[0], f"{auth[1]}{self._api_key}")
@@ -187,15 +189,17 @@ class AsyncAPIClient:
         base_url: str,
         timeout: float | httpx.Timeout,
         max_retries: int,
+        retry_methods: Sequence[str],
         http_client: httpx.AsyncClient | None,
     ) -> None:
         self._client = http_client or httpx.AsyncClient(timeout=timeout)
         self._base_url = httpx.URL(f"{base_url.rstrip('/')}/")
         self._api_key = api_key
         self._max_retries = max_retries
+        self._retry_methods = {method.upper() for method in retry_methods}
 
     async def request(self, method: str, path: str, **kwargs: Any) -> Any:
-        retryable = method.upper() in {"GET", "HEAD", "OPTIONS"}
+        retryable = method.upper() in self._retry_methods
         headers = {**_without_none(kwargs.get("headers") or {}), **(kwargs.get("extra_headers") or {})}
         if self._api_key and (auth := kwargs.get("auth")):
             headers.setdefault(auth[0], f"{auth[1]}{self._api_key}")

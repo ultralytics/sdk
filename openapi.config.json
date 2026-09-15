@@ -20,6 +20,7 @@
       }
     ],
     "client": "Platform",
+    "version": "0.1.43",
     "cli": {
       "command": "ul",
       "source": "cli.py"

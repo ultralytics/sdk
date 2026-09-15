@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.41",
+    "version": "0.1.43",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -3900,7 +3900,135 @@
         "type": "object",
         "properties": {
           "deployment": {
-            "$ref": "#/components/schemas/Deployment"
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Deployment ID"
+              },
+              "owner": {
+                "type": "string",
+                "description": "Deployment owner"
+              },
+              "project": {
+                "description": "Project name, absent if the project was permanently deleted",
+                "type": "string"
+              },
+              "model": {
+                "description": "Model name, absent if the model was permanently deleted",
+                "type": "string"
+              },
+              "task": {
+                "description": "Task of the deployed model",
+                "type": "string",
+                "enum": [
+                  "detect",
+                  "segment",
+                  "semantic",
+                  "depth",
+                  "classify",
+                  "pose",
+                  "obb"
+                ]
+              },
+              "deployment": {
+                "type": "string",
+                "description": "Deployment name used in Platform URLs"
+              },
+              "name": {
+                "type": "string",
+                "description": "Deployment display name"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "creating",
+                  "deploying",
+                  "ready",
+                  "stopping",
+                  "stopped",
+                  "failed"
+                ],
+                "description": "Dedicated deployment lifecycle status"
+              },
+              "statusMessage": {
+                "type": "string"
+              },
+              "region": {
+                "type": "string",
+                "description": "Deployment region"
+              },
+              "serviceUrl": {
+                "type": "string"
+              },
+              "resources": {
+                "type": "object",
+                "properties": {
+                  "cpu": {
+                    "type": "number"
+                  },
+                  "memoryGi": {
+                    "type": "number"
+                  },
+                  "minInstances": {
+                    "type": "number"
+                  },
+                  "maxInstances": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "cpu",
+                  "memoryGi",
+                  "minInstances",
+                  "maxInstances"
+                ],
+                "additionalProperties": false
+              },
+              "metered": {
+                "description": "Whether uptime on this endpoint is charged",
+                "type": "boolean"
+              },
+              "deployedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "apiKeyId": {
+                "description": "API key the endpoint authenticates with, owners only",
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "metadata": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "id",
+              "owner",
+              "deployment",
+              "name",
+              "status",
+              "region",
+              "resources",
+              "createdAt",
+              "updatedAt",
+              "metadata"
+            ],
+            "additionalProperties": false
           },
           "region": {
             "type": "string",
@@ -3918,45 +4046,12 @@
         ],
         "additionalProperties": false
       },
-      "Deployment": {
+      "UpdateDeploymentResponse": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "description": "Deployment ID"
-          },
-          "owner": {
-            "type": "string",
-            "description": "Deployment owner"
-          },
-          "project": {
-            "description": "Project name, absent if the project was permanently deleted",
-            "type": "string"
-          },
-          "model": {
-            "description": "Model name, absent if the model was permanently deleted",
-            "type": "string"
-          },
-          "task": {
-            "description": "Task of the deployed model",
-            "type": "string",
-            "enum": [
-              "detect",
-              "segment",
-              "semantic",
-              "depth",
-              "classify",
-              "pose",
-              "obb"
-            ]
-          },
-          "deployment": {
-            "type": "string",
-            "description": "Deployment name used in Platform URLs"
-          },
-          "name": {
-            "type": "string",
-            "description": "Deployment display name"
+          "success": {
+            "type": "boolean",
+            "const": true
           },
           "status": {
             "type": "string",
@@ -3969,92 +4064,6 @@
               "failed"
             ],
             "description": "Dedicated deployment lifecycle status"
-          },
-          "statusMessage": {
-            "type": "string"
-          },
-          "region": {
-            "type": "string",
-            "description": "Deployment region"
-          },
-          "serviceUrl": {
-            "type": "string"
-          },
-          "resources": {
-            "type": "object",
-            "properties": {
-              "cpu": {
-                "type": "number"
-              },
-              "memoryGi": {
-                "type": "number"
-              },
-              "minInstances": {
-                "type": "number"
-              },
-              "maxInstances": {
-                "type": "number"
-              }
-            },
-            "required": [
-              "cpu",
-              "memoryGi",
-              "minInstances",
-              "maxInstances"
-            ],
-            "additionalProperties": false
-          },
-          "metered": {
-            "description": "Whether uptime on this endpoint is charged",
-            "type": "boolean"
-          },
-          "deployedAt": {
-            "type": "string",
-            "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-          },
-          "apiKeyId": {
-            "description": "API key the endpoint authenticates with, owners only",
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-          }
-        },
-        "required": [
-          "id",
-          "owner",
-          "deployment",
-          "name",
-          "status",
-          "region",
-          "resources",
-          "createdAt",
-          "updatedAt"
-        ],
-        "additionalProperties": false,
-        "description": "Dedicated inference endpoint"
-      },
-      "UpdateDeploymentResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "const": true
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "ready",
-              "stopped"
-            ]
           },
           "message": {
             "type": "string"
@@ -4426,6 +4435,139 @@
               "cpuUtilization",
               "memoryUtilization",
               "instanceCount"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "deploymentId",
+          "region",
+          "timeRange",
+          "summary",
+          "timeSeries"
+        ],
+        "additionalProperties": false
+      },
+      "DeploymentOverviewResponse": {
+        "type": "object",
+        "properties": {
+          "deploymentId": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "timeRange": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "additionalProperties": false
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "totalRequests": {
+                "type": "number"
+              },
+              "errorRate": {
+                "type": "number"
+              },
+              "p95LatencyMs": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "totalRequests",
+              "errorRate",
+              "p95LatencyMs"
+            ],
+            "additionalProperties": false
+          },
+          "timeSeries": {
+            "type": "object",
+            "properties": {
+              "requests": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "timestamp",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "errors": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "timestamp",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "latencyP95": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "timestamp",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "requests",
+              "errors",
+              "latencyP95"
             ],
             "additionalProperties": false
           }
@@ -4844,6 +4986,130 @@
           "region"
         ],
         "additionalProperties": false
+      },
+      "Deployment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Deployment ID"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Deployment owner"
+          },
+          "project": {
+            "description": "Project name, absent if the project was permanently deleted",
+            "type": "string"
+          },
+          "model": {
+            "description": "Model name, absent if the model was permanently deleted",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task of the deployed model",
+            "type": "string",
+            "enum": [
+              "detect",
+              "segment",
+              "semantic",
+              "depth",
+              "classify",
+              "pose",
+              "obb"
+            ]
+          },
+          "deployment": {
+            "type": "string",
+            "description": "Deployment name used in Platform URLs"
+          },
+          "name": {
+            "type": "string",
+            "description": "Deployment display name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "creating",
+              "deploying",
+              "ready",
+              "stopping",
+              "stopped",
+              "failed"
+            ],
+            "description": "Dedicated deployment lifecycle status"
+          },
+          "statusMessage": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string",
+            "description": "Deployment region"
+          },
+          "serviceUrl": {
+            "type": "string"
+          },
+          "resources": {
+            "type": "object",
+            "properties": {
+              "cpu": {
+                "type": "number"
+              },
+              "memoryGi": {
+                "type": "number"
+              },
+              "minInstances": {
+                "type": "number"
+              },
+              "maxInstances": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "cpu",
+              "memoryGi",
+              "minInstances",
+              "maxInstances"
+            ],
+            "additionalProperties": false
+          },
+          "metered": {
+            "description": "Whether uptime on this endpoint is charged",
+            "type": "boolean"
+          },
+          "deployedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "apiKeyId": {
+            "description": "API key the endpoint authenticates with, owners only",
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          }
+        },
+        "required": [
+          "id",
+          "owner",
+          "deployment",
+          "name",
+          "status",
+          "region",
+          "resources",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false,
+        "description": "Dedicated inference endpoint"
       },
       "CreateDeploymentResponse": {
         "type": "object",
@@ -16094,7 +16360,7 @@
           "Deployments"
         ],
         "operationId": "get_api_deployments_owner_deployment",
-        "description": "Returns deployment configuration, status, and service URL.",
+        "description": "Returns deployment configuration, status, service URL, and custom metadata.",
         "parameters": [
           {
             "name": "owner",
@@ -16199,7 +16465,7 @@
           "Deployments"
         ],
         "operationId": "patch_api_deployments_owner_deployment",
-        "description": "Starts, stops, or rolls out another model while preserving the endpoint URL.",
+        "description": "Updates custom metadata, starts, stops, resizes, or rolls out another model while preserving the endpoint URL.",
         "parameters": [
           {
             "name": "owner",
@@ -16233,108 +16499,133 @@
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
+                "anyOf": [
                   {
                     "type": "object",
                     "properties": {
-                      "action": {
-                        "type": "string",
-                        "const": "start"
+                      "metadata": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "maxLength": 128
+                        },
+                        "additionalProperties": {
+                          "$ref": "#/components/schemas/MetadataValue"
+                        },
+                        "description": "Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.",
+                        "x-max-serialized-characters": 500000
                       }
                     },
                     "required": [
-                      "action"
+                      "metadata"
                     ],
                     "additionalProperties": false
                   },
                   {
-                    "type": "object",
-                    "properties": {
-                      "action": {
-                        "type": "string",
-                        "const": "stop"
-                      }
-                    },
-                    "required": [
-                      "action"
-                    ],
-                    "additionalProperties": false
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "project": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 128,
-                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-                        "description": "Project name",
-                        "example": "yolo26"
-                      },
-                      "model": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 128,
-                        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-                        "description": "Model name",
-                        "example": "yolo26n"
-                      },
-                      "name": {
-                        "description": "Optional new deployment display name",
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 100,
-                        "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$"
-                      },
-                      "action": {
-                        "type": "string",
-                        "const": "replace"
-                      }
-                    },
-                    "required": [
-                      "project",
-                      "model",
-                      "action"
-                    ],
-                    "additionalProperties": false
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "cpu": {
-                        "type": "number",
-                        "enum": [
-                          1,
-                          2,
-                          4,
-                          6,
-                          8
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "action": {
+                            "type": "string",
+                            "const": "start"
+                          }
+                        },
+                        "required": [
+                          "action"
                         ],
-                        "description": "vCPU cores"
+                        "additionalProperties": false
                       },
-                      "memoryGi": {
-                        "type": "number",
-                        "enum": [
-                          2,
-                          4,
-                          8,
-                          16,
-                          24,
-                          32
+                      {
+                        "type": "object",
+                        "properties": {
+                          "action": {
+                            "type": "string",
+                            "const": "stop"
+                          }
+                        },
+                        "required": [
+                          "action"
                         ],
-                        "description": "Memory in GiB"
+                        "additionalProperties": false
                       },
-                      "action": {
-                        "type": "string",
-                        "const": "resize"
+                      {
+                        "type": "object",
+                        "properties": {
+                          "project": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128,
+                            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                            "description": "Project name",
+                            "example": "yolo26"
+                          },
+                          "model": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128,
+                            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                            "description": "Model name",
+                            "example": "yolo26n"
+                          },
+                          "name": {
+                            "description": "Optional new deployment display name",
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 100,
+                            "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$"
+                          },
+                          "action": {
+                            "type": "string",
+                            "const": "replace"
+                          }
+                        },
+                        "required": [
+                          "project",
+                          "model",
+                          "action"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "cpu": {
+                            "type": "number",
+                            "enum": [
+                              1,
+                              2,
+                              4,
+                              6,
+                              8
+                            ],
+                            "description": "vCPU cores"
+                          },
+                          "memoryGi": {
+                            "type": "number",
+                            "enum": [
+                              2,
+                              4,
+                              8,
+                              16,
+                              24,
+                              32
+                            ],
+                            "description": "Memory in GiB"
+                          },
+                          "action": {
+                            "type": "string",
+                            "const": "resize"
+                          }
+                        },
+                        "required": [
+                          "cpu",
+                          "memoryGi",
+                          "action"
+                        ],
+                        "additionalProperties": false
                       }
-                    },
-                    "required": [
-                      "cpu",
-                      "memoryGi",
-                      "action"
-                    ],
-                    "additionalProperties": false
+                    ]
                   }
                 ],
                 "description": "API request for updating a deployment"
@@ -16448,7 +16739,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.update(\n    owner=\"ultralytics\",\n    deployment=\"yolo26-api\",\n    body={\"action\": \"start\"},\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.deployments.update(\n    owner=\"ultralytics\",\n    deployment=\"yolo26-api\",\n    body={\"metadata\": {\"key\": \"example-key\"}},\n)\nprint(response)"
           }
         ]
       },
@@ -16832,7 +17123,7 @@
           "Deployments"
         ],
         "operationId": "get_api_deployments_owner_deployment_metrics",
-        "description": "Returns request volume, latency, errors, and resource utilization.",
+        "description": "Returns request volume, latency, errors, and resource utilization. Use view=overview for only request, error, and P95 latency metrics.",
         "parameters": [
           {
             "name": "owner",
@@ -16890,6 +17181,16 @@
                 "false"
               ]
             }
+          },
+          {
+            "name": "view",
+            "in": "query",
+            "required": false,
+            "description": "Fetch only request, error, and P95 latency metrics",
+            "schema": {
+              "type": "string",
+              "const": "overview"
+            }
           }
         ],
         "responses": {
@@ -16901,6 +17202,9 @@
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/DeploymentMetricsResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DeploymentOverviewResponse"
                     },
                     {
                       "$ref": "#/components/schemas/DeploymentSparklineData"

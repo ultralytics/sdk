@@ -159,3 +159,56 @@ def test_api_error_details() -> None:
     assert raised.value.status_code == 422
     assert raised.value.body == '{"detail":"invalid"}'
     assert raised.value.request_id == "request-1"
+
+
+@pytest.mark.parametrize("asynchronous", [False, True])
+@pytest.mark.parametrize(
+    ("method", "failure", "opt_in", "attempts"),
+    [
+        ("GET", 503, False, 2),
+        ("POST", 503, False, 1),
+        ("POST", 429, False, 2),
+        ("POST", "connection", False, 1),
+        ("POST", "connection", True, 2),
+        ("POST", 408, True, 2),
+        ("POST", 503, True, 2),
+        ("POST", 409, True, 2),
+        ("POST", 401, True, 1),
+        ("POST", 403, True, 1),
+    ],
+)
+def test_retry_policy(asynchronous, method, failure, opt_in, attempts):
+    """Exercise the real SDK retry loop with a deterministic external transport boundary."""
+    from ultralytics_platform import APIConnectionError
+
+    requests = []
+
+    def handle(request):
+        requests.append(request.content)
+        if len(requests) == 1:
+            if failure == "connection":
+                raise httpx.ReadError("Response lost", request=request)
+            return httpx.Response(failure, json={"error": "temporary"}, headers={"Retry-After": "0"})
+        return httpx.Response(200, json={"ok": True})
+
+    options = {"api_key": "", "max_retries": 1}
+    if opt_in:
+        options["retry_methods"] = ("POST",)
+
+    async def run_async():
+        async with AsyncPlatform(**options, http_client=httpx.AsyncClient(transport=httpx.MockTransport(handle))) as c:
+            return await (c.account.summary() if method == "GET" else c.training.metrics(event="epoch_end", data={}))
+
+    def run():
+        if asynchronous:
+            return asyncio.run(run_async())
+        with Platform(**options, http_client=httpx.Client(transport=httpx.MockTransport(handle))) as c:
+            return c.account.summary() if method == "GET" else c.training.metrics(event="epoch_end", data={})
+
+    if attempts == 1:
+        with pytest.raises(APIConnectionError if failure == "connection" else APIError):
+            run()
+    else:
+        assert run() == {"ok": True}
+        assert requests[0] == requests[1]
+    assert len(requests) == attempts

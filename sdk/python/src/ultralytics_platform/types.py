@@ -1231,6 +1231,7 @@ DeploymentsRetrieveResponseDeployment = TypedDict(
         "apiKeyId": NotRequired[str],
         "createdAt": str,
         "updatedAt": str,
+        "metadata": dict[str, Any],
     },
 )
 
@@ -1243,7 +1244,11 @@ DeploymentsRetrieveResponse = TypedDict(
 
 DeploymentsUpdateResponseVariant1 = TypedDict(
     "DeploymentsUpdateResponseVariant1",
-    {"success": Literal[True], "status": Literal["ready", "stopped"], "message": str},
+    {
+        "success": Literal[True],
+        "status": Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"],
+        "message": str,
+    },
 )
 
 
@@ -1367,13 +1372,62 @@ DeploymentsMetricsResponseVariant1 = TypedDict(
 )
 
 
+DeploymentsMetricsResponseVariant2TimeRange = TypedDict(
+    "DeploymentsMetricsResponseVariant2TimeRange", {"start": str, "end": str}
+)
+
+
+DeploymentsMetricsResponseVariant2Summary = TypedDict(
+    "DeploymentsMetricsResponseVariant2Summary", {"totalRequests": float, "errorRate": float, "p95LatencyMs": float}
+)
+
+
+DeploymentsMetricsResponseVariant2TimeSeriesRequestsItem = TypedDict(
+    "DeploymentsMetricsResponseVariant2TimeSeriesRequestsItem", {"timestamp": str, "value": float}
+)
+
+
+DeploymentsMetricsResponseVariant2TimeSeriesErrorsItem = TypedDict(
+    "DeploymentsMetricsResponseVariant2TimeSeriesErrorsItem", {"timestamp": str, "value": float}
+)
+
+
+DeploymentsMetricsResponseVariant2TimeSeriesLatencyP95Item = TypedDict(
+    "DeploymentsMetricsResponseVariant2TimeSeriesLatencyP95Item", {"timestamp": str, "value": float}
+)
+
+
+DeploymentsMetricsResponseVariant2TimeSeries = TypedDict(
+    "DeploymentsMetricsResponseVariant2TimeSeries",
+    {
+        "requests": list[DeploymentsMetricsResponseVariant2TimeSeriesRequestsItem],
+        "errors": list[DeploymentsMetricsResponseVariant2TimeSeriesErrorsItem],
+        "latencyP95": list[DeploymentsMetricsResponseVariant2TimeSeriesLatencyP95Item],
+    },
+)
+
+
 DeploymentsMetricsResponseVariant2 = TypedDict(
     "DeploymentsMetricsResponseVariant2",
+    {
+        "deploymentId": str,
+        "region": str,
+        "timeRange": DeploymentsMetricsResponseVariant2TimeRange,
+        "summary": DeploymentsMetricsResponseVariant2Summary,
+        "timeSeries": DeploymentsMetricsResponseVariant2TimeSeries,
+    },
+)
+
+
+DeploymentsMetricsResponseVariant3 = TypedDict(
+    "DeploymentsMetricsResponseVariant3",
     {"requests24h": list[float], "totalRequests": float, "errorRate": float, "avgLatencyMs": float},
 )
 
 
-DeploymentsMetricsResponse = DeploymentsMetricsResponseVariant1 | DeploymentsMetricsResponseVariant2
+DeploymentsMetricsResponse = (
+    DeploymentsMetricsResponseVariant1 | DeploymentsMetricsResponseVariant2 | DeploymentsMetricsResponseVariant3
+)
 
 
 DeploymentsPredictResponseImagesItemSpeed = TypedDict(
@@ -1471,9 +1525,39 @@ DeploymentsPredictResponse = TypedDict(
 )
 
 
+DeploymentsListResponseDeploymentsItemResources = TypedDict(
+    "DeploymentsListResponseDeploymentsItemResources",
+    {"cpu": float, "memoryGi": float, "minInstances": float, "maxInstances": float},
+)
+
+
+DeploymentsListResponseDeploymentsItem = TypedDict(
+    "DeploymentsListResponseDeploymentsItem",
+    {
+        "id": str,
+        "owner": str,
+        "project": NotRequired[str],
+        "model": NotRequired[str],
+        "task": NotRequired[Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"]],
+        "deployment": str,
+        "name": str,
+        "status": Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"],
+        "statusMessage": NotRequired[str],
+        "region": str,
+        "serviceUrl": NotRequired[str],
+        "resources": DeploymentsListResponseDeploymentsItemResources,
+        "metered": NotRequired[bool],
+        "deployedAt": NotRequired[str],
+        "apiKeyId": NotRequired[str],
+        "createdAt": str,
+        "updatedAt": str,
+    },
+)
+
+
 DeploymentsListResponse = TypedDict(
     "DeploymentsListResponse",
-    {"deployments": list[DeploymentsRetrieveResponseDeployment], "total": float, "region": Literal["us", "eu", "ap"]},
+    {"deployments": list[DeploymentsListResponseDeploymentsItem], "total": float, "region": Literal["us", "eu", "ap"]},
 )
 
 
