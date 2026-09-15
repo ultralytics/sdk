@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.40",
+    "version": "0.1.41",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -25634,6 +25634,351 @@
             "label": "Python SDK",
             "lang": "Python",
             "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.account.follow(\n    username=\"ultralytics\",\n    followed=False,\n)\nprint(response)"
+          }
+        ]
+      }
+    },
+    "/api/webhooks/models/upload": {
+      "post": {
+        "summary": "Get a training checkpoint upload URL",
+        "tags": [
+          "Models"
+        ],
+        "operationId": "post_api_webhooks_models_upload",
+        "description": "Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.",
+        "x-sdk-method": "upload_checkpoint",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "project": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "filename": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  },
+                  "modelId": {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  "runId": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "size": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "filename"
+                ],
+                "description": "Webhook body for model checkpoint upload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkpoint upload URL ready",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploadUrl": {
+                      "type": "string",
+                      "description": "Signed URL for a PUT with Content-Type: application/octet-stream"
+                    },
+                    "gcsPath": {
+                      "type": "string",
+                      "description": "Checkpoint GCS path; for runId uploads, send as data.modelPath in checkpoint_saved"
+                    },
+                    "uploadPath": {
+                      "description": "Staging path returned for runId uploads; send in checkpoint_saved",
+                      "type": "string"
+                    },
+                    "modelId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "uploadUrl",
+                    "gcsPath",
+                    "modelId"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid model, run, filename, or file size",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Training run is not assigned to this worker",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project, model, or training run not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Unable to generate upload URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.models.upload_checkpoint(\n    filename=\"example-filename\",\n)\nprint(response)"
+          }
+        ]
+      }
+    },
+    "/api/webhooks/training/metrics": {
+      "post": {
+        "summary": "Send a training event",
+        "tags": [
+          "Training"
+        ],
+        "operationId": "post_api_webhooks_training_metrics",
+        "description": "Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); the authenticated user owns the run, regardless of any username prefix in project. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "modelId": {
+                    "type": "string",
+                    "maxLength": 128
+                  },
+                  "project": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100
+                  },
+                  "event": {
+                    "type": "string",
+                    "enum": [
+                      "training_started",
+                      "training_progress",
+                      "epoch_end",
+                      "system_metrics",
+                      "console_output",
+                      "checkpoint_saved",
+                      "training_complete",
+                      "training_failed"
+                    ]
+                  },
+                  "data": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {},
+                    "description": "Event-specific callback data, preserving original field names and nested values. training_started: trainArgs, epochs, device, environment, modelInfo. epoch_end: epoch, metrics, system, fitness, modelInfo, total_epochs or epochs_total. system_metrics: cpu, memory, disk, diskIo, network, gpus. console_output: content, lineCount, chunkId, progress. checkpoint_saved: runId, modelPath (the upload response gcsPath), uploadPath. training_complete: runId, results, classNames, plots. training_failed: error, code, instanceId. training_progress: liveness data. Worker callbacks include runId when available."
+                  }
+                },
+                "required": [
+                  "event",
+                  "data"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event acknowledged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "received": {
+                      "type": "boolean",
+                      "const": true
+                    },
+                    "event": {
+                      "type": "string"
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "cloud",
+                        "remote"
+                      ]
+                    },
+                    "modelId": {
+                      "type": "string"
+                    },
+                    "runId": {
+                      "description": "Run start time in Unix milliseconds; retain for checkpoints",
+                      "type": "integer",
+                      "exclusiveMinimum": 0
+                    },
+                    "modelSlug": {
+                      "description": "Final model slug assigned during registration",
+                      "type": "string"
+                    },
+                    "cancelled": {
+                      "description": "Stop training when true, including during startup",
+                      "type": "boolean"
+                    },
+                    "action": {
+                      "type": "string",
+                      "const": "training_terminated"
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "warning": {
+                      "type": "string"
+                    },
+                    "ignored": {
+                      "type": "string",
+                      "const": "stale_instance"
+                    }
+                  },
+                  "required": [
+                    "received",
+                    "event"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid callback or checkpoint metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Worker assignment or storage quota denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project, model, or training run not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Checkpoint training run is no longer active",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.metrics(\n    event=\"training_started\",\n    data={\"key\": \"example-key\"},\n)\nprint(response)"
           }
         ]
       }

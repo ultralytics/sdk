@@ -15,6 +15,7 @@ from .._client import (
 )
 from ..types import (
     TrainingGpuAvailabilityResponse,
+    TrainingMetricsResponse,
     TrainingStartResponse,
 )
 
@@ -132,6 +133,57 @@ class Training:
             ),
         )
 
+    def metrics(
+        self,
+        *,
+        event: Literal[
+            "training_started",
+            "training_progress",
+            "epoch_end",
+            "system_metrics",
+            "console_output",
+            "checkpoint_saved",
+            "training_complete",
+            "training_failed",
+        ],
+        data: dict[str, Any],
+        model_id: str | NotGiven = NOT_GIVEN,
+        project: str | NotGiven = NOT_GIVEN,
+        name: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> TrainingMetricsResponse:
+        """Send a training event.
+
+        Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); the authenticated user owns the run, regardless of any username prefix in project. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).
+
+        Args:
+            model_id (str, optional): modelId request value.
+            project (str, optional): project request value.
+            name (str, optional): name request value.
+            event (Literal["training_started", "training_progress", "epoch_end", "system_metrics", "console_output", "checkpoint_saved", "training_complete", "training_failed"]): event request value.
+            data (dict[str, Any]): Event-specific callback data, preserving original field names and nested values. training_started: trainArgs, epochs, device, environment, modelInfo. epoch_end: epoch, metrics, system, fitness, modelInfo, total_epochs or epochs_total. system_metrics: cpu, memory, disk, diskIo, network, gpus. console_output: content, lineCount, chunkId, progress. checkpoint_saved: runId, modelPath (the upload response gcsPath), uploadPath. training_complete: runId, results, classNames, plots. training_failed: error, code, instanceId. training_progress: liveness data. Worker callbacks include runId when available.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (TrainingMetricsResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            TrainingMetricsResponse,
+            self._client.request(
+                "POST",
+                "/api/webhooks/training/metrics",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"modelId": model_id, "project": project, "name": name, "event": event, "data": data},
+            ),
+        )
+
 
 class AsyncTraining:
     """Asynchronous Training API operations."""
@@ -243,5 +295,56 @@ class AsyncTraining:
                     "captureDatasetVersion": capture_dataset_version,
                     "trainArgs": train_args,
                 },
+            ),
+        )
+
+    async def metrics(
+        self,
+        *,
+        event: Literal[
+            "training_started",
+            "training_progress",
+            "epoch_end",
+            "system_metrics",
+            "console_output",
+            "checkpoint_saved",
+            "training_complete",
+            "training_failed",
+        ],
+        data: dict[str, Any],
+        model_id: str | NotGiven = NOT_GIVEN,
+        project: str | NotGiven = NOT_GIVEN,
+        name: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> TrainingMetricsResponse:
+        """Send a training event.
+
+        Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); the authenticated user owns the run, regardless of any username prefix in project. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).
+
+        Args:
+            model_id (str, optional): modelId request value.
+            project (str, optional): project request value.
+            name (str, optional): name request value.
+            event (Literal["training_started", "training_progress", "epoch_end", "system_metrics", "console_output", "checkpoint_saved", "training_complete", "training_failed"]): event request value.
+            data (dict[str, Any]): Event-specific callback data, preserving original field names and nested values. training_started: trainArgs, epochs, device, environment, modelInfo. epoch_end: epoch, metrics, system, fitness, modelInfo, total_epochs or epochs_total. system_metrics: cpu, memory, disk, diskIo, network, gpus. console_output: content, lineCount, chunkId, progress. checkpoint_saved: runId, modelPath (the upload response gcsPath), uploadPath. training_complete: runId, results, classNames, plots. training_failed: error, code, instanceId. training_progress: liveness data. Worker callbacks include runId when available.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (TrainingMetricsResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            TrainingMetricsResponse,
+            await self._client.request(
+                "POST",
+                "/api/webhooks/training/metrics",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"modelId": model_id, "project": project, "name": name, "event": event, "data": data},
             ),
         )

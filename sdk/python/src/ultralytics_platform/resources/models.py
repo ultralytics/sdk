@@ -28,6 +28,7 @@ from ..types import (
     ModelsRetrieveResponse,
     ModelsTrainingResponse,
     ModelsUpdateResponse,
+    ModelsUploadCheckpointResponse,
 )
 
 
@@ -531,6 +532,57 @@ class Models:
             ),
         )
 
+    def upload_checkpoint(
+        self,
+        *,
+        filename: str,
+        project: str | NotGiven = NOT_GIVEN,
+        name: str | NotGiven = NOT_GIVEN,
+        model_id: str | NotGiven = NOT_GIVEN,
+        run_id: int | NotGiven = NOT_GIVEN,
+        size: float | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsUploadCheckpointResponse:
+        """Get a training checkpoint upload URL.
+
+        Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.
+
+        Args:
+            project (str, optional): project request value.
+            name (str, optional): name request value.
+            filename (str): filename request value.
+            model_id (str, optional): modelId request value.
+            run_id (int, optional): runId request value.
+            size (float | None, optional): size request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ModelsUploadCheckpointResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ModelsUploadCheckpointResponse,
+            self._client.request(
+                "POST",
+                "/api/webhooks/models/upload",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={
+                    "project": project,
+                    "name": name,
+                    "filename": filename,
+                    "modelId": model_id,
+                    "runId": run_id,
+                    "size": size,
+                },
+            ),
+        )
+
 
 class AsyncModels:
     """Asynchronous Models API operations."""
@@ -1029,5 +1081,56 @@ class AsyncModels:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json=body,
+            ),
+        )
+
+    async def upload_checkpoint(
+        self,
+        *,
+        filename: str,
+        project: str | NotGiven = NOT_GIVEN,
+        name: str | NotGiven = NOT_GIVEN,
+        model_id: str | NotGiven = NOT_GIVEN,
+        run_id: int | NotGiven = NOT_GIVEN,
+        size: float | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ModelsUploadCheckpointResponse:
+        """Get a training checkpoint upload URL.
+
+        Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.
+
+        Args:
+            project (str, optional): project request value.
+            name (str, optional): name request value.
+            filename (str): filename request value.
+            model_id (str, optional): modelId request value.
+            run_id (int, optional): runId request value.
+            size (float | None, optional): size request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ModelsUploadCheckpointResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ModelsUploadCheckpointResponse,
+            await self._client.request(
+                "POST",
+                "/api/webhooks/models/upload",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={
+                    "project": project,
+                    "name": name,
+                    "filename": filename,
+                    "modelId": model_id,
+                    "runId": run_id,
+                    "size": size,
+                },
             ),
         )

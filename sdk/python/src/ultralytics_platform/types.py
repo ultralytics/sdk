@@ -2779,6 +2779,11 @@ ModelsCreateResponse = TypedDict(
 )
 
 
+ModelsUploadCheckpointResponse = TypedDict(
+    "ModelsUploadCheckpointResponse", {"uploadUrl": str, "gcsPath": str, "uploadPath": NotRequired[str], "modelId": str}
+)
+
+
 ExportsRetrieveResponseExportFile = TypedDict(
     "ExportsRetrieveResponseExportFile",
     {"size": NotRequired[float], "downloadUrl": NotRequired[str], "downloadFilename": NotRequired[str]},
@@ -3075,6 +3080,24 @@ TrainingStartResponse = TypedDict(
         "gpuType": str,
         "estimatedCost": TrainingStartResponseEstimatedCost,
         "billing": TrainingStartResponseBilling,
+    },
+)
+
+
+TrainingMetricsResponse = TypedDict(
+    "TrainingMetricsResponse",
+    {
+        "received": Literal[True],
+        "event": str,
+        "mode": NotRequired[Literal["cloud", "remote"]],
+        "modelId": NotRequired[str],
+        "runId": NotRequired[int],
+        "modelSlug": NotRequired[str],
+        "cancelled": NotRequired[bool],
+        "action": NotRequired[Literal["training_terminated"]],
+        "reason": NotRequired[str],
+        "warning": NotRequired[str],
+        "ignored": NotRequired[Literal["stale_instance"]],
     },
 )
 
