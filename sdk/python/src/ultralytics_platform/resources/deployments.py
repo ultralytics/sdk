@@ -43,7 +43,7 @@ class Deployments:
     ) -> DeploymentsRetrieveResponse:
         """Get deployment details.
 
-        Returns deployment configuration, status, and service URL.
+        Returns deployment configuration, status, service URL, and custom metadata.
 
         Args:
             owner (str): Deployment owner
@@ -79,7 +79,7 @@ class Deployments:
     ) -> DeploymentsUpdateResponse:
         """Update a deployment.
 
-        Starts, stops, or rolls out another model while preserving the endpoint URL.
+        Updates the display name or custom metadata, starts, stops, resizes, or rolls out another model while preserving the endpoint URL.
 
         Args:
             owner (str): Deployment owner
@@ -227,18 +227,20 @@ class Deployments:
         *,
         range: Literal["1h", "6h", "24h", "7d", "30d"] | NotGiven = NOT_GIVEN,
         sparkline: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        view: Literal["overview"] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsMetricsResponse:
         """Get deployment metrics.
 
-        Returns request volume, latency, errors, and resource utilization.
+        Returns request volume, latency, errors, and resource utilization. Use view=overview for only request, error, and P95 latency metrics.
 
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
             range (Literal["1h", "6h", "24h", "7d", "30d"], optional): Metrics time range
             sparkline (Literal["true", "false"], optional): Return the compact dashboard summary
+            view (Literal["overview"], optional): Fetch only request, error, and P95 latency metrics
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -259,6 +261,7 @@ class Deployments:
                 params=[
                     *_query_parameter("range", range, style="form", explode=True),
                     *_query_parameter("sparkline", sparkline, style="form", explode=True),
+                    *_query_parameter("view", view, style="form", explode=True),
                 ],
             ),
         )
@@ -461,7 +464,7 @@ class AsyncDeployments:
     ) -> DeploymentsRetrieveResponse:
         """Get deployment details.
 
-        Returns deployment configuration, status, and service URL.
+        Returns deployment configuration, status, service URL, and custom metadata.
 
         Args:
             owner (str): Deployment owner
@@ -497,7 +500,7 @@ class AsyncDeployments:
     ) -> DeploymentsUpdateResponse:
         """Update a deployment.
 
-        Starts, stops, or rolls out another model while preserving the endpoint URL.
+        Updates the display name or custom metadata, starts, stops, resizes, or rolls out another model while preserving the endpoint URL.
 
         Args:
             owner (str): Deployment owner
@@ -645,18 +648,20 @@ class AsyncDeployments:
         *,
         range: Literal["1h", "6h", "24h", "7d", "30d"] | NotGiven = NOT_GIVEN,
         sparkline: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        view: Literal["overview"] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsMetricsResponse:
         """Get deployment metrics.
 
-        Returns request volume, latency, errors, and resource utilization.
+        Returns request volume, latency, errors, and resource utilization. Use view=overview for only request, error, and P95 latency metrics.
 
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
             range (Literal["1h", "6h", "24h", "7d", "30d"], optional): Metrics time range
             sparkline (Literal["true", "false"], optional): Return the compact dashboard summary
+            view (Literal["overview"], optional): Fetch only request, error, and P95 latency metrics
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -677,6 +682,7 @@ class AsyncDeployments:
                 params=[
                     *_query_parameter("range", range, style="form", explode=True),
                     *_query_parameter("sparkline", sparkline, style="form", explode=True),
+                    *_query_parameter("view", view, style="form", explode=True),
                 ],
             ),
         )
