@@ -57,6 +57,7 @@
     "project": "ultralytics-platform",
     "readme": "README.python.md",
     "requiresPython": ">=3.11",
-    "authProvider": "auth.py"
+    "authProvider": "auth.py",
+    "version": "0.1.45"
   }
 }
