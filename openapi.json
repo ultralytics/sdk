@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.44",
+    "version": "0.1.45",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -14733,7 +14733,7 @@
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_ingest",
-        "description": "Processes a completed upload, remote archive, or connected data source into this dataset.",
+        "description": "Verifies and completes an upload before processing it, or imports a remote archive or connected data source into this dataset. Calling upload/complete first is optional for dataset uploads.",
         "parameters": [
           {
             "name": "owner",

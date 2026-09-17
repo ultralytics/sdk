@@ -58,6 +58,6 @@
     "readme": "README.python.md",
     "requiresPython": ">=3.11",
     "authProvider": "auth.py",
-    "version": "0.1.45"
+    "version": "0.1.46"
   }
 }

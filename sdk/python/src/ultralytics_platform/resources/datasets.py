@@ -909,7 +909,7 @@ class Datasets:
     ) -> DatasetsIngestResponse:
         """Ingest dataset data.
 
-        Processes a completed upload, remote archive, or connected data source into this dataset.
+        Verifies and completes an upload before processing it, or imports a remote archive or connected data source into this dataset. Calling upload/complete first is optional for dataset uploads.
 
         Args:
             owner (str): Dataset owner
@@ -2244,7 +2244,7 @@ class AsyncDatasets:
     ) -> DatasetsIngestResponse:
         """Ingest dataset data.
 
-        Processes a completed upload, remote archive, or connected data source into this dataset.
+        Verifies and completes an upload before processing it, or imports a remote archive or connected data source into this dataset. Calling upload/complete first is optional for dataset uploads.
 
         Args:
             owner (str): Dataset owner
