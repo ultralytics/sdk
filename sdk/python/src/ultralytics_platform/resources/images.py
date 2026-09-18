@@ -130,7 +130,7 @@ class Images:
         self,
         image_id: str,
         *,
-        model_id: str,
+        model_id: str | Literal["qwen", "moondream"],
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -139,11 +139,11 @@ class Images:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI. Depth datasets are rejected because dense maps cannot be converted to annotations.
+        Generates label predictions using a YOLO model (ul:// URI), qwen, or moondream. Vision-language models detect the dataset classes (1–100) and return no confidence scores. Truncated Qwen output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
-            model_id (str): Fully qualified model URI
+            model_id (str | Literal["qwen", "moondream"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
@@ -408,7 +408,7 @@ class AsyncImages:
         self,
         image_id: str,
         *,
-        model_id: str,
+        model_id: str | Literal["qwen", "moondream"],
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -417,11 +417,11 @@ class AsyncImages:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI. Depth datasets are rejected because dense maps cannot be converted to annotations.
+        Generates label predictions using a YOLO model (ul:// URI), qwen, or moondream. Vision-language models detect the dataset classes (1–100) and return no confidence scores. Truncated Qwen output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
-            model_id (str): Fully qualified model URI
+            model_id (str | Literal["qwen", "moondream"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it

@@ -910,7 +910,8 @@ DatasetsBatchResponseActiveJob = TypedDict(
 
 
 DatasetsBatchResponseLastRunResults = TypedDict(
-    "DatasetsBatchResponseLastRunResults", {"processed": int, "annotations": int, "classes": int}
+    "DatasetsBatchResponseLastRunResults",
+    {"processed": int, "annotations": int, "classes": int, "partialImages": NotRequired[int]},
 )
 
 
@@ -1769,6 +1770,7 @@ ImagesPredictResponse = TypedDict(
     {
         "success": Literal[True],
         "predictions": list[ImagesPredictResponsePredictionsItem],
+        "partial": NotRequired[bool],
         "confidences": NotRequired[list[float]],
         "modelUsed": str,
         "inferenceTime": NotRequired[float],
@@ -1817,6 +1819,10 @@ ImagesFindSimilarImagesResponseImagesItemDataset = TypedDict(
 ImagesFindSimilarImagesResponseImagesItem = TypedDict(
     "ImagesFindSimilarImagesResponseImagesItem",
     {
+        "name": str,
+        "hash": str,
+        "width": int,
+        "height": int,
         "id": str,
         "thumbnailUrl": str,
         "imageUrl": NotRequired[str],
@@ -2649,6 +2655,10 @@ ModelsFindSimilarTrainingImagesResponseImagesItemDataset = TypedDict(
 ModelsFindSimilarTrainingImagesResponseImagesItem = TypedDict(
     "ModelsFindSimilarTrainingImagesResponseImagesItem",
     {
+        "name": str,
+        "hash": str,
+        "width": int,
+        "height": int,
         "id": str,
         "thumbnailUrl": str,
         "imageUrl": NotRequired[str],

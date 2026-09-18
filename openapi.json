@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.45",
+    "version": "0.1.48",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -3004,6 +3004,11 @@
                             "type": "integer",
                             "minimum": 0,
                             "description": "Distinct classes predicted"
+                          },
+                          "partialImages": {
+                            "description": "Images with recovered but incomplete predictions",
+                            "type": "integer",
+                            "minimum": 0
                           }
                         },
                         "required": [
@@ -6090,6 +6095,10 @@
             },
             "description": "Predicted annotations"
           },
+          "partial": {
+            "description": "Output limit reached; only complete boxes were recovered and objects may be missing",
+            "type": "boolean"
+          },
           "confidences": {
             "description": "Detection confidence per prediction, index-aligned, for previewing a threshold locally",
             "type": "array",
@@ -6122,6 +6131,20 @@
             "items": {
               "type": "object",
               "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": 0
+                },
                 "id": {
                   "type": "string",
                   "minLength": 24,
@@ -6195,6 +6218,10 @@
                 }
               },
               "required": [
+                "name",
+                "hash",
+                "width",
+                "height",
                 "id",
                 "thumbnailUrl",
                 "dataset",
@@ -15274,7 +15301,7 @@
           "Datasets"
         ],
         "operationId": "get_api_datasets_owner_dataset_predict_batch",
-        "description": "Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal.",
+        "description": "Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered.",
         "parameters": [
           {
             "name": "owner",
@@ -15416,11 +15443,22 @@
                 "type": "object",
                 "properties": {
                   "modelId": {
-                    "type": "string",
-                    "maxLength": 256,
-                    "pattern": "^ul:\\/\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$",
-                    "description": "Fully qualified model URI",
-                    "example": "ul://ultralytics/yolo26/yolo26n"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 256,
+                        "pattern": "^ul:\\/\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$",
+                        "description": "Fully qualified model URI",
+                        "example": "ul://ultralytics/yolo26/yolo26n"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "qwen",
+                          "moondream"
+                        ]
+                      }
+                    ]
                   },
                   "confidence": {
                     "default": 0.25,
@@ -18568,7 +18606,7 @@
           "Images"
         ],
         "operationId": "post_api_images_imageId_predict",
-        "description": "Runs YOLO inference on an image to generate label predictions for auto-annotation. Supports custom models via ul:// URI. Depth datasets are rejected because dense maps cannot be converted to annotations.",
+        "description": "Generates label predictions using a YOLO model (ul:// URI), qwen, or moondream. Vision-language models detect the dataset classes (1–100) and return no confidence scores. Truncated Qwen output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.",
         "parameters": [
           {
             "name": "imageId",
@@ -18592,11 +18630,22 @@
                 "type": "object",
                 "properties": {
                   "modelId": {
-                    "type": "string",
-                    "maxLength": 256,
-                    "pattern": "^ul:\\/\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$",
-                    "description": "Fully qualified model URI",
-                    "example": "ul://ultralytics/yolo26/yolo26n"
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "maxLength": 256,
+                        "pattern": "^ul:\\/\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$",
+                        "description": "Fully qualified model URI",
+                        "example": "ul://ultralytics/yolo26/yolo26n"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "qwen",
+                          "moondream"
+                        ]
+                      }
+                    ]
                   },
                   "confidence": {
                     "default": 0.25,
@@ -18774,7 +18823,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Similar images",
+            "description": "Similar images with filenames and dimensions",
             "content": {
               "application/json": {
                 "schema": {
@@ -22184,7 +22233,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Similar images",
+            "description": "Similar images with filenames and dimensions",
             "content": {
               "application/json": {
                 "schema": {

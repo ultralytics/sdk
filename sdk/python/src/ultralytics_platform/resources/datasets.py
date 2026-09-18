@@ -979,7 +979,7 @@ class Datasets:
     ) -> DatasetsBatchResponse:
         """Get auto-annotation run status.
 
-        Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal.
+        Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered.
 
         Args:
             owner (str): Dataset owner
@@ -1009,7 +1009,7 @@ class Datasets:
         owner: str,
         dataset: str,
         *,
-        model_id: str,
+        model_id: str | Literal["qwen", "moondream"],
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -1024,7 +1024,7 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            model_id (str): Fully qualified model URI
+            model_id (str | Literal["qwen", "moondream"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
@@ -2314,7 +2314,7 @@ class AsyncDatasets:
     ) -> DatasetsBatchResponse:
         """Get auto-annotation run status.
 
-        Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal.
+        Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered.
 
         Args:
             owner (str): Dataset owner
@@ -2344,7 +2344,7 @@ class AsyncDatasets:
         owner: str,
         dataset: str,
         *,
-        model_id: str,
+        model_id: str | Literal["qwen", "moondream"],
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -2359,7 +2359,7 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            model_id (str): Fully qualified model URI
+            model_id (str | Literal["qwen", "moondream"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
