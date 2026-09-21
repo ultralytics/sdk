@@ -54,7 +54,7 @@ jobs:
           config = json.loads(Path("openapi.config.json").read_text())
           contract = json.loads(Path("openapi.json").read_text())["info"]["version"]
           package = tomllib.loads(Path("sdk/python/pyproject.toml").read_text())["project"]["version"]
-          assert "version" not in config["python"], "Portal owns the SDK version; remove python.version"
+          assert "version" not in config["python"], "The Platform API contract owns the SDK version; remove python.version"
           assert package == contract, f"SDK {package} must match API {contract}"
           PYTHON
 
@@ -171,7 +171,7 @@ jobs:
               git commit -m "Update Platform API contract"
               git push --set-upstream origin "$branch"
             fi
-            pr_url=$(gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. CI validates the generated package before the workflow merges the exact green head. The SDK package version equals the Portal-owned contract version; SDK and generator releases require an upstream contract version bump. Every Ultralytics PyPI version uses MAJOR.MINOR.PATCH.")
+            pr_url=$(gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. CI validates the generated package before the workflow merges the exact green head. The SDK package version equals the upstream Platform API contract version; SDK and generator releases require an upstream contract version bump. Every Ultralytics PyPI version uses MAJOR.MINOR.PATCH.")
           fi
           echo "PR ready: $pr_url"
 

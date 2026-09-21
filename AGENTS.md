@@ -28,14 +28,14 @@ After opening a PR:
 
 ## API and SDK versioning (CRITICAL)
 
-**One version, one owner: `ultralytics/portal` → `scripts/generate-openapi.ts` → Alpha's `info.version`. The Python SDK package version MUST equal the API contract version it contains.** This SDK repository consumes the deployed contract through automation; it does not choose release versions.
+**One version, one owner: the upstream Platform API contract's `info.version`. The Python SDK package version MUST equal the API contract version it contains.** This repository consumes the deployed contract through automation; it does not choose release versions.
 
 - NEVER set `python.version` in `openapi.config.json`, independently bump the SDK patch, or edit versions in generated files. Do not restore automatic patch bumps or `max(API version, SDK version)` logic. A newer SDK number is a mismatch, not successful coordination.
-- This also applies to SDK-only CLI/help/auth fixes and generator improvements. Merge the source fix, bump Alpha's contract version in Portal, deploy it, then let SDK contract synchronization regenerate and publish that same version. Do not manually repair the snapshot or generated descendants to manufacture a release.
+- This also applies to SDK-only CLI/help/auth fixes and generator improvements. Merge the source fix, coordinate a contract version bump and deployment with the Platform API maintainers, then let SDK contract synchronization regenerate and publish that same version. Do not manually repair the snapshot or generated descendants to manufacture a release.
 - Before updating a consumer's minimum SDK requirement, verify the published wheel contains the required behavior and its version matches the deployed API. A successful install or green CI alone does not prove this.
-- If SDK versions have already been published ahead of the API, advance the Portal-owned API version beyond every published SDK version, then synchronize. Never downgrade the SDK, reuse a published version, or claim the offset will self-heal. API `0.1.50` with SDK `0.1.52` is INVALID; both at `0.1.52` is valid.
+- If SDK versions have already been published ahead of the API, the API maintainers must advance the upstream contract beyond every published SDK version, then synchronize. Never downgrade the SDK, reuse a published version, or claim the offset will self-heal. API `0.1.50` with SDK `0.1.52` is INVALID; both at `0.1.52` is valid.
 
-Contract snapshots keep upstream samples until Portal deploys its rebuilt OpenAPI output and automation synchronizes it. Keep both READMEs aligned with `.github/workflows/ci.yml`.
+Contract snapshots keep upstream samples until the Platform API deploys its rebuilt OpenAPI output and automation synchronizes it. Keep both READMEs aligned with `.github/workflows/ci.yml`.
 
 ## Commands and validation
 
