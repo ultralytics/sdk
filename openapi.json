@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.48",
+    "version": "0.1.49",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -13946,12 +13946,12 @@
     },
     "/api/datasets/{owner}/{dataset}/images/adopt": {
       "post": {
-        "summary": "Add images to a dataset",
+        "summary": "Copy or move images to a dataset",
         "tags": [
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_images_adopt",
-        "description": "Copies hosted images from accessible public or private datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.",
+        "description": "Copies hosted images as content-addressed references without moving bytes. Omit release and classMapping for unlabeled train images. Set release to false (copy) or true (move), or supply classMapping, to preserve annotations, metadata, depth targets, and splits from editable sources; classes match by name. Other readable sources remain unlabeled train images. Moves delete only inserted source rows in the same transaction. Existing images are skipped.",
         "x-sdk-method": "adopt_images",
         "parameters": [
           {
@@ -14000,12 +14000,44 @@
                       "example": "507f1f77bcf86cd799439011",
                       "description": "Image ID"
                     }
+                  },
+                  "release": {
+                    "description": "Set false to copy editable-source annotations, metadata, depth targets, and splits; true also deletes source rows atomically. Omit both release and classMapping to adopt unlabeled train images.",
+                    "type": "boolean"
+                  },
+                  "classMapping": {
+                    "description": "Mapping from source class names to this dataset",
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 24999
+                        },
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f]+$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "maxProperties": 25000
                   }
                 },
                 "required": [
                   "imageIds"
                 ],
-                "description": "Request body with image IDs"
+                "description": "Copy or move images into a dataset"
               }
             }
           }
@@ -14022,7 +14054,7 @@
             }
           },
           "400": {
-            "description": "Invalid owner, dataset, or image IDs",
+            "description": "Invalid owner, dataset, image IDs, or class mapping",
             "content": {
               "application/json": {
                 "schema": {
@@ -14062,7 +14094,17 @@
             }
           },
           "409": {
-            "description": "Dataset is connected to external storage",
+            "description": "Dataset is connected to external storage, or tasks, image channels, pose metadata, or depth scale do not match",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`unmatchedClasses` lists source classes with no match here; retry with classMapping",
             "content": {
               "application/json": {
                 "schema": {

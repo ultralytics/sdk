@@ -652,17 +652,21 @@ class Datasets:
         dataset: str,
         *,
         image_ids: Sequence[str],
+        release: bool | NotGiven = NOT_GIVEN,
+        class_mapping: dict[str, Any] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsAdoptImagesResponse:
-        """Add images to a dataset.
+        """Copy or move images to a dataset.
 
-        Copies hosted images from accessible public or private datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.
+        Copies hosted images as content-addressed references without moving bytes. Omit release and classMapping for unlabeled train images. Set release to false (copy) or true (move), or supply classMapping, to preserve annotations, metadata, depth targets, and splits from editable sources; classes match by name. Other readable sources remain unlabeled train images. Moves delete only inserted source rows in the same transaction. Existing images are skipped.
 
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
             image_ids (Sequence[str]): imageIds request value.
+            release (bool, optional): Set false to copy editable-source annotations, metadata, depth targets, and splits; true also deletes source rows atomically. Omit both release and classMapping to adopt unlabeled train images.
+            class_mapping (dict[str, Any], optional): Mapping from source class names to this dataset
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -680,7 +684,7 @@ class Datasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"imageIds": image_ids},
+                json={"imageIds": image_ids, "release": release, "classMapping": class_mapping},
             ),
         )
 
@@ -1987,17 +1991,21 @@ class AsyncDatasets:
         dataset: str,
         *,
         image_ids: Sequence[str],
+        release: bool | NotGiven = NOT_GIVEN,
+        class_mapping: dict[str, Any] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsAdoptImagesResponse:
-        """Add images to a dataset.
+        """Copy or move images to a dataset.
 
-        Copies hosted images from accessible public or private datasets into this dataset as content-addressed references, unlabeled and in the train split. Images already held are skipped.
+        Copies hosted images as content-addressed references without moving bytes. Omit release and classMapping for unlabeled train images. Set release to false (copy) or true (move), or supply classMapping, to preserve annotations, metadata, depth targets, and splits from editable sources; classes match by name. Other readable sources remain unlabeled train images. Moves delete only inserted source rows in the same transaction. Existing images are skipped.
 
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
             image_ids (Sequence[str]): imageIds request value.
+            release (bool, optional): Set false to copy editable-source annotations, metadata, depth targets, and splits; true also deletes source rows atomically. Omit both release and classMapping to adopt unlabeled train images.
+            class_mapping (dict[str, Any], optional): Mapping from source class names to this dataset
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2015,7 +2023,7 @@ class AsyncDatasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"imageIds": image_ids},
+                json={"imageIds": image_ids, "release": release, "classMapping": class_mapping},
             ),
         )
 
