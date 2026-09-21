@@ -49,12 +49,14 @@ jobs:
           sha256sum --check openapi.sha256
           python - <<'PYTHON'
           import json
+          import re
           import tomllib
           from pathlib import Path
           config = json.loads(Path("openapi.config.json").read_text())
           contract = json.loads(Path("openapi.json").read_text())["info"]["version"]
           package = tomllib.loads(Path("sdk/python/pyproject.toml").read_text())["project"]["version"]
           assert "version" not in config["python"], "The Platform API contract owns the SDK version; remove python.version"
+          assert re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", contract), f"Ultralytics releases require MAJOR.MINOR.PATCH: {contract}"
           assert package == contract, f"SDK {package} must match API {contract}"
           PYTHON
 
