@@ -30,6 +30,7 @@ After opening a PR:
 
 **One version, one owner: the upstream Platform API contract's `info.version`. The Python SDK package version MUST equal the API contract version it contains.** This repository consumes the deployed contract through automation; it does not choose release versions.
 
+- Keep public documentation and PR text scoped to the public upstream API contract. Do not include private repository names, internal paths, or private PR links.
 - NEVER set `python.version` in `openapi.config.json`, independently bump the SDK patch, or edit versions in generated files. Do not restore automatic patch bumps or `max(API version, SDK version)` logic. A newer SDK number is a mismatch, not successful coordination.
 - This also applies to SDK-only CLI/help/auth fixes and generator improvements. Merge the source fix, coordinate a contract version bump and deployment with the Platform API maintainers, then let SDK contract synchronization regenerate and publish that same version. Do not manually repair the snapshot or generated descendants to manufacture a release.
 - Before updating a consumer's minimum SDK requirement, verify the published wheel contains the required behavior and its version matches the deployed API. A successful install or green CI alone does not prove this.
