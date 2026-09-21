@@ -45,7 +45,18 @@ jobs:
       - uses: ultralytics/actions/setup-uv@main
 
       - name: Verify pinned OpenAPI contract
-        run: sha256sum --check openapi.sha256
+        run: |
+          sha256sum --check openapi.sha256
+          python - <<'PYTHON'
+          import json
+          import tomllib
+          from pathlib import Path
+          config = json.loads(Path("openapi.config.json").read_text())
+          contract = json.loads(Path("openapi.json").read_text())["info"]["version"]
+          package = tomllib.loads(Path("sdk/python/pyproject.toml").read_text())["project"]["version"]
+          assert "version" not in config["python"], "Portal owns the SDK version; remove python.version"
+          assert package == contract, f"SDK {package} must match API {contract}"
+          PYTHON
 
       - name: Regenerate Python SDK
         working-directory: .generator
@@ -109,26 +120,6 @@ jobs:
             mv openapi.live.json openapi.json
             sha256sum openapi.json > openapi.sha256
           fi
-          python - <<'PYTHON'
-          import json
-          import re
-          import tomllib
-          from pathlib import Path
-          path = Path("openapi.config.json")
-          config = json.loads(path.read_text())
-          contract = json.loads(Path("openapi.json").read_text())["info"]["version"]
-          previous = tomllib.loads(Path("sdk/python/pyproject.toml").read_text())["project"]["version"]
-          for version in (contract, previous):
-              if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
-                  raise ValueError(f"Ultralytics releases require MAJOR.MINOR.PATCH: {version}")
-          version = max((contract, previous), key=lambda value: tuple(map(int, value.split("."))))
-          if version == contract:
-              config["python"].pop("version", None)
-          else:
-              config["python"]["version"] = version
-          if config != json.loads(path.read_text()):
-              path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n")
-          PYTHON
 
       - name: Regenerate Python SDK
         working-directory: .generator
@@ -141,26 +132,8 @@ jobs:
       - name: Apply generated changes
         id: sync
         run: |
-          sdk_changed=false
-          if ! diff --recursive --brief .generator/generated/python sdk/python; then
-            sdk_changed=true
-            python - <<'PYTHON'
-          import json
-          import tomllib
-          from pathlib import Path
-          previous = tomllib.loads(Path("sdk/python/pyproject.toml").read_text())["project"]["version"]
-          generated = tomllib.loads(Path(".generator/generated/python/pyproject.toml").read_text())["project"]["version"]
-          if generated == previous:
-              major, minor, patch = map(int, previous.split("."))
-              path = Path("openapi.config.json")
-              config = json.loads(path.read_text())
-              config["python"]["version"] = f"{major}.{minor}.{patch + 1}"
-              path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n")
-          PYTHON
-            (cd .generator && OPENAPI_CONFIG="$GITHUB_WORKSPACE/openapi.config.json" bun run generate)
-            rsync --archive --delete .generator/generated/python/ sdk/python/
-          fi
-          if [ "$sdk_changed" = false ] && git diff --quiet -- openapi.config.json openapi.json openapi.sha256 sdk/python; then
+          rsync --archive --delete --checksum .generator/generated/python/ sdk/python/
+          if git diff --quiet -- openapi.json openapi.sha256 sdk/python; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -198,7 +171,7 @@ jobs:
               git commit -m "Update Platform API contract"
               git push --set-upstream origin "$branch"
             fi
-            pr_url=$(gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. CI validates the generated package before the workflow merges the exact green head. API changes follow newer contract versions; SDK-only changes increment the patch number automatically. Every Ultralytics PyPI version uses MAJOR.MINOR.PATCH.")
+            pr_url=$(gh pr create --base main --head "$branch" --title "Update Platform API contract" --body "Synchronizes the live OpenAPI contract and deterministically regenerates the Python SDK. CI validates the generated package before the workflow merges the exact green head. The SDK package version equals the Portal-owned contract version; SDK and generator releases require an upstream contract version bump. Every Ultralytics PyPI version uses MAJOR.MINOR.PATCH.")
           fi
           echo "PR ready: $pr_url"
 

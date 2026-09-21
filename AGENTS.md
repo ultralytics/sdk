@@ -26,6 +26,17 @@ After opening a PR:
 4. Never fight other commits: Ultralytics Actions pushes auto-format and header commits, and multiple users may work on the same PR. `git pull --rebase` before pushing; never reset or revert commits you did not author.
 5. After the PR merges, clean up: remove local worktrees and branches for it, then `git checkout main && git pull`.
 
+## API and SDK versioning (CRITICAL)
+
+**One version, one owner: `ultralytics/portal` → `scripts/generate-openapi.ts` → Alpha's `info.version`. The Python SDK package version MUST equal the API contract version it contains.** This SDK repository consumes the deployed contract through automation; it does not choose release versions.
+
+- NEVER set `python.version` in `openapi.config.json`, independently bump the SDK patch, or edit versions in generated files. Do not restore automatic patch bumps or `max(API version, SDK version)` logic. A newer SDK number is a mismatch, not successful coordination.
+- This also applies to SDK-only CLI/help/auth fixes and generator improvements. Merge the source fix, bump Alpha's contract version in Portal, deploy it, then let SDK contract synchronization regenerate and publish that same version. Do not manually repair the snapshot or generated descendants to manufacture a release.
+- Before updating a consumer's minimum SDK requirement, verify the published wheel contains the required behavior and its version matches the deployed API. A successful install or green CI alone does not prove this.
+- If SDK versions have already been published ahead of the API, advance the Portal-owned API version beyond every published SDK version, then synchronize. Never downgrade the SDK, reuse a published version, or claim the offset will self-heal. API `0.1.50` with SDK `0.1.52` is INVALID; both at `0.1.52` is valid.
+
+Contract snapshots keep upstream samples until Portal deploys its rebuilt OpenAPI output and automation synchronizes it. Keep both READMEs aligned with `.github/workflows/ci.yml`.
+
 ## Commands and validation
 
 ```bash
@@ -72,5 +83,3 @@ Use the generator's `main` branch, never a pinned SHA or tag; update an existing
 - `ULTRALYTICS_API_KEY=""` (empty) does not disable auth — `_resolve_api_key` treats an empty environment value as unset and falls through to the saved `yolo login` key (that is how `tests/test_cli.py` forces the settings path). Only an explicit `Platform(api_key="")` disables the header.
 - Shell quoting: JSON arguments need single quotes (`'train_args={"epochs":1}'`), `@-` may be used by at most one argument per invocation, and binary fields must be `@path` (never stdin) even when nested inside a multipart `body` JSON.
 - `format.yml` will not reformat Python or Markdown for you here (`python: false`, `prettier: false`); run the pinned `uvx ruff@0.16.2 format --line-length 120` on `cli.py`, `auth.py`, and `tests/` yourself before pushing.
-
-Contract snapshots keep upstream samples until Portal deploys its rebuilt OpenAPI output and automation synchronizes it. For intentional SDK changes, update `python.version` and regenerate in the same PR; the sync job only supplies a patch bump when generated output changes at an unchanged version. Keep both READMEs aligned with `.github/workflows/ci.yml`.
