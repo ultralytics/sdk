@@ -89,6 +89,8 @@ Platform OpenAPI 契约
 
 [CI](https://github.com/ultralytics/sdk/actions/workflows/ci.yml) 使用版本化的契约和 [Ultralytics OpenAPI](https://github.com/ultralytics/openapi) 的 `main` 分支重新生成 Python SDK，并在契约不匹配或生成内容漂移时失败。计划任务和手动运行会检测上游契约变更，而不会中断无关的拉取请求。CI 还会检查 Python 格式和 lint、编译软件包、构建 wheel、通过 Git 子目录边界进行安装，并使用模拟传输测试具有代表性的同步和异步请求。软件包版本必须等于 上游 Platform API 契约 `info.version`，格式为 `MAJOR.MINOR.PATCH`，并通过可信发布将 [`ultralytics-platform`](https://pypi.org/project/ultralytics-platform/) 发布到 PyPI。CI 会拒绝独立的 `python.version` 覆盖以及与契约版本不同的软件包版本。需要发布的 SDK 或生成器改动必须先与 Platform API 维护者协调更新上游契约版本；部署契约后，由自动同步更新快照和生成的软件包。SDK 不会独立递增版本。
 
+提高使用方的最低 SDK 版本要求前，必须确认已发布的 wheel 包含所需功能，并且其版本与已部署的 API 一致。如果 SDK 已发布的版本高于 API，应与 API 维护者协调，将上游契约版本提高到所有已发布 SDK 版本之上，然后同步；切勿降低 SDK 版本或重复使用已发布的版本。
+
 ## 💡 贡献
 
 Ultralytics 因社区协作而蓬勃发展，我们非常重视您的贡献！请参阅[贡献指南](https://docs.ultralytics.com/zh/help/contributing)，了解参与方式。我们也欢迎您通过[问卷调查](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey)分享反馈。衷心感谢 🙏 所有贡献者！

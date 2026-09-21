@@ -95,6 +95,8 @@ Platform OpenAPI contract
 
 Generator improvements follow `ultralytics/openapi` `main` through the existing daily synchronization. SDK or generator changes that need a release require a contract version bump coordinated with the Platform API maintainers. Deploy the contract, then let synchronization update the snapshot and generated package; the SDK never increments its version independently.
 
+Before raising a consumer's minimum SDK version, verify the published wheel contains the required behavior and matches the deployed API version. If an SDK version was published ahead of the API, coordinate an upstream contract version greater than every published SDK version and synchronize; never downgrade the SDK or reuse a published version.
+
 ## 💡 Contribute
 
 Ultralytics thrives on community collaboration, and we deeply value your contributions! Please see our [Contributing Guide](https://docs.ultralytics.com/help/contributing) for details on how you can get involved. We also encourage you to share your feedback through our [Survey](https://www.ultralytics.com/survey?utm_source=github&utm_medium=social&utm_campaign=Survey). A huge thank you 🙏 to all our contributors!
