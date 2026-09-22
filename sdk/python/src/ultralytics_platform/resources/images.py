@@ -130,7 +130,29 @@ class Images:
         self,
         image_id: str,
         *,
-        model_id: str | Literal["qwen", "moondream"],
+        model_id: str
+        | Literal[
+            "qwen",
+            "moondream",
+            "florence2",
+            "owlv2",
+            "yoloe26x",
+            "groundingdino",
+            "gpt-6-astra",
+            "gpt-5.6-sol",
+            "gpt-5.6-terra",
+            "claude-fable-5-1",
+            "claude-opus-5",
+            "claude-sonnet-5",
+            "gemini-3.1-pro-preview",
+            "kimi-k3",
+            "gpt-5.6-luna",
+            "claude-haiku-4-5-20251001",
+            "gemini-3.8-flash",
+            "gemini-3.5-flash-lite",
+            "glm-5.3-flash",
+            "deepseek-flash",
+        ],
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -139,11 +161,11 @@ class Images:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Generates label predictions using a YOLO model (ul:// URI), qwen, or moondream. Vision-language models detect the dataset classes (1–100) and return no confidence scores. Truncated Qwen output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
+        Generates label predictions using a YOLO model (ul:// URI), qwen, moondream, florence2, owlv2, yoloe26x, or groundingdino. Hosted models detect the dataset classes (1–100) using model-specific thresholds and return no confidence scores. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "moondream"]): modelId request value.
+            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-5.6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
@@ -408,7 +430,29 @@ class AsyncImages:
         self,
         image_id: str,
         *,
-        model_id: str | Literal["qwen", "moondream"],
+        model_id: str
+        | Literal[
+            "qwen",
+            "moondream",
+            "florence2",
+            "owlv2",
+            "yoloe26x",
+            "groundingdino",
+            "gpt-6-astra",
+            "gpt-5.6-sol",
+            "gpt-5.6-terra",
+            "claude-fable-5-1",
+            "claude-opus-5",
+            "claude-sonnet-5",
+            "gemini-3.1-pro-preview",
+            "kimi-k3",
+            "gpt-5.6-luna",
+            "claude-haiku-4-5-20251001",
+            "gemini-3.8-flash",
+            "gemini-3.5-flash-lite",
+            "glm-5.3-flash",
+            "deepseek-flash",
+        ],
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -417,11 +461,11 @@ class AsyncImages:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Generates label predictions using a YOLO model (ul:// URI), qwen, or moondream. Vision-language models detect the dataset classes (1–100) and return no confidence scores. Truncated Qwen output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
+        Generates label predictions using a YOLO model (ul:// URI), qwen, moondream, florence2, owlv2, yoloe26x, or groundingdino. Hosted models detect the dataset classes (1–100) using model-specific thresholds and return no confidence scores. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "moondream"]): modelId request value.
+            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-5.6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it

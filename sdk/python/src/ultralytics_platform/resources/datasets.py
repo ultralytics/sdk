@@ -1013,7 +1013,29 @@ class Datasets:
         owner: str,
         dataset: str,
         *,
-        model_id: str | Literal["qwen", "moondream"],
+        model_id: str
+        | Literal[
+            "qwen",
+            "moondream",
+            "florence2",
+            "owlv2",
+            "yoloe26x",
+            "groundingdino",
+            "gpt-6-astra",
+            "gpt-5.6-sol",
+            "gpt-5.6-terra",
+            "claude-fable-5-1",
+            "claude-opus-5",
+            "claude-sonnet-5",
+            "gemini-3.1-pro-preview",
+            "kimi-k3",
+            "gpt-5.6-luna",
+            "claude-haiku-4-5-20251001",
+            "gemini-3.8-flash",
+            "gemini-3.5-flash-lite",
+            "glm-5.3-flash",
+            "deepseek-flash",
+        ],
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -1028,7 +1050,7 @@ class Datasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            model_id (str | Literal["qwen", "moondream"]): modelId request value.
+            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-5.6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
@@ -2352,7 +2374,29 @@ class AsyncDatasets:
         owner: str,
         dataset: str,
         *,
-        model_id: str | Literal["qwen", "moondream"],
+        model_id: str
+        | Literal[
+            "qwen",
+            "moondream",
+            "florence2",
+            "owlv2",
+            "yoloe26x",
+            "groundingdino",
+            "gpt-6-astra",
+            "gpt-5.6-sol",
+            "gpt-5.6-terra",
+            "claude-fable-5-1",
+            "claude-opus-5",
+            "claude-sonnet-5",
+            "gemini-3.1-pro-preview",
+            "kimi-k3",
+            "gpt-5.6-luna",
+            "claude-haiku-4-5-20251001",
+            "gemini-3.8-flash",
+            "gemini-3.5-flash-lite",
+            "glm-5.3-flash",
+            "deepseek-flash",
+        ],
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -2367,7 +2411,7 @@ class AsyncDatasets:
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            model_id (str | Literal["qwen", "moondream"]): modelId request value.
+            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-5.6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
