@@ -24898,7 +24898,7 @@
                         "minimum": 1
                       },
                       "fraction": {
-                        "description": "Limits dataset size. Leave 1 for all images; use a 0–1 ratio or integer above 1 for a count. A [train, val, test] list controls each split, and only test accepts 0 for none.",
+                        "description": "Limits dataset size. Test images download only when used for validation. Leave 1 for all selected images; use a 0–1 ratio or integer above 1 for a count. A [train, val, test] list controls each split, and only test accepts 0 for none.",
                         "default": 1,
                         "anyOf": [
                           {
