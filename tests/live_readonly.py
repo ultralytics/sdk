@@ -335,7 +335,7 @@ def exercise_api(client: Platform, cleanup: list[Callable[[], Any]], expected_er
     client.datasets.batch(owner, dataset)
     cleanup.append(lambda: ignore_missing(lambda: client.datasets.delete_batch(owner, dataset)))
     expected_error(
-        lambda: client.datasets.create_batch(owner, dataset, model_id=f"ul://{owner}/{missing}/{missing}"),
+        lambda: client.datasets.create_batch(owner, dataset, body={"modelId": f"ul://{owner}/{missing}/{missing}"}),
         "post_api_datasets_owner_dataset_predict_batch",
         "A missing model avoids starting paid compute",
         expected_errors,
