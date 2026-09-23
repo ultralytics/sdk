@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.54",
+    "version": "0.1.57",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -1160,6 +1160,9 @@
               "channels": {
                 "type": "integer",
                 "exclusiveMinimum": 0
+              },
+              "blurFaces": {
+                "type": "boolean"
               },
               "depthScale": {
                 "type": "number",
@@ -2928,8 +2931,51 @@
                   "id": {
                     "type": "string"
                   },
+                  "operation": {
+                    "type": "string",
+                    "const": "blur"
+                  },
+                  "preview": {
+                    "type": "boolean"
+                  },
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "boxScale": {
+                    "type": "number"
+                  },
+                  "imageId": {
+                    "type": "string"
+                  },
                   "stopping": {
                     "type": "boolean"
+                  },
+                  "previews": {
+                    "maxItems": 6,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "imageId": {
+                          "type": "string",
+                          "minLength": 24,
+                          "maxLength": 24,
+                          "pattern": "^[0-9a-fA-F]{24}$",
+                          "example": "507f1f77bcf86cd799439011"
+                        },
+                        "imageUrl": {
+                          "type": "string"
+                        },
+                        "thumbnailUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "imageId",
+                        "imageUrl"
+                      ],
+                      "additionalProperties": false
+                    }
                   },
                   "progress": {
                     "type": "object",
@@ -2957,6 +3003,8 @@
                 },
                 "required": [
                   "id",
+                  "confidence",
+                  "boxScale",
                   "stopping",
                   "progress",
                   "startedAt"
@@ -2973,6 +3021,25 @@
               {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "operation": {
+                    "type": "string",
+                    "const": "blur"
+                  },
+                  "preview": {
+                    "type": "boolean"
+                  },
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "boxScale": {
+                    "type": "number"
+                  },
+                  "imageId": {
+                    "type": "string"
+                  },
                   "failed": {
                     "type": "boolean"
                   },
@@ -2994,6 +3061,38 @@
                             "type": "integer",
                             "minimum": 0,
                             "description": "Images successfully inferred"
+                          },
+                          "faces": {
+                            "description": "Faces blurred",
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "previews": {
+                            "maxItems": 6,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "imageId": {
+                                  "type": "string",
+                                  "minLength": 24,
+                                  "maxLength": 24,
+                                  "pattern": "^[0-9a-fA-F]{24}$",
+                                  "example": "507f1f77bcf86cd799439011"
+                                },
+                                "imageUrl": {
+                                  "type": "string"
+                                },
+                                "thumbnailUrl": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "imageId",
+                                "imageUrl"
+                              ],
+                              "additionalProperties": false
+                            }
                           },
                           "annotations": {
                             "type": "integer",
@@ -3025,6 +3124,9 @@
                   }
                 },
                 "required": [
+                  "id",
+                  "confidence",
+                  "boxScale",
                   "failed",
                   "stopped",
                   "error",
@@ -3221,6 +3323,9 @@
           "channels": {
             "type": "integer",
             "exclusiveMinimum": 0
+          },
+          "blurFaces": {
+            "type": "boolean"
           },
           "depthScale": {
             "type": "number",
@@ -12943,6 +13048,9 @@
                     ],
                     "description": "Dataset annotation format"
                   },
+                  "blurFaces": {
+                    "type": "boolean"
+                  },
                   "task": {
                     "type": "string",
                     "enum": [
@@ -15338,12 +15446,12 @@
     },
     "/api/datasets/{owner}/{dataset}/predict/batch": {
       "get": {
-        "summary": "Get auto-annotation run status",
+        "summary": "Get image-processing run status",
         "tags": [
           "Datasets"
         ],
         "operationId": "get_api_datasets_owner_dataset_predict_batch",
-        "description": "Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered.",
+        "description": "Returns the dataset's in-flight image-processing run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered. While applying blur previews, activeJob.previews provides refreshed signed URLs for the accepted images and their thumbnails.",
         "parameters": [
           {
             "name": "owner",
@@ -15443,12 +15551,12 @@
         ]
       },
       "post": {
-        "summary": "Auto-annotate a dataset",
+        "summary": "Auto-annotate images or blur faces",
         "tags": [
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_predict_batch",
-        "description": "Saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Existing labels are never changed, and the run is billed for the images it actually processes.",
+        "description": "For auto-annotation, saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.",
         "parameters": [
           {
             "name": "owner",
@@ -15482,91 +15590,144 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "modelId": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "maxLength": 256,
-                        "pattern": "^ul:\\/\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$",
-                        "description": "Fully qualified model URI",
-                        "example": "ul://ultralytics/yolo26/yolo26n"
-                      },
-                      {
-                        "type": "string",
-                        "enum": [
-                          "qwen",
-                          "moondream",
-                          "florence2",
-                          "owlv2",
-                          "yoloe26x",
-                          "groundingdino",
-                          "gpt-6-astra",
-                          "gpt-5.6-sol",
-                          "gpt-5.6-terra",
-                          "claude-fable-5-1",
-                          "claude-opus-5",
-                          "claude-sonnet-5",
-                          "gemini-3.1-pro-preview",
-                          "kimi-k3",
-                          "gpt-5.6-luna",
-                          "claude-haiku-4-5-20251001",
-                          "gemini-3.8-flash",
-                          "gemini-3.5-flash-lite",
-                          "glm-5.3-flash",
-                          "deepseek-flash"
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "modelId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 256,
+                            "pattern": "^ul:\\/\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\/(?![^/]*--)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$",
+                            "description": "Fully qualified model URI",
+                            "example": "ul://ultralytics/yolo26/yolo26n"
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "qwen",
+                              "moondream",
+                              "florence2",
+                              "owlv2",
+                              "yoloe26x",
+                              "groundingdino",
+                              "gpt-6-astra",
+                              "gpt-6-sol",
+                              "claude-fable-5-1",
+                              "claude-opus-5-5",
+                              "claude-sonnet-5",
+                              "gemini-3.1-pro-preview",
+                              "kimi-k3",
+                              "gpt-6-luna",
+                              "claude-haiku-4-5-20251001",
+                              "gemini-3.8-flash",
+                              "gemini-3.5-flash-lite",
+                              "glm-5.3-flash",
+                              "deepseek-flash"
+                            ]
+                          }
                         ]
+                      },
+                      "confidence": {
+                        "default": 0.25,
+                        "description": "Confidence threshold",
+                        "type": "number",
+                        "minimum": 0.01,
+                        "maximum": 1
+                      },
+                      "iou": {
+                        "default": 0.7,
+                        "description": "IoU threshold for non-maximum suppression",
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 0.95
+                      },
+                      "classMapping": {
+                        "description": "Dataset class index for each model class, or null to drop it",
+                        "maxItems": 25000,
+                        "type": "array",
+                        "items": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "operation": {
+                        "type": "string",
+                        "const": "annotate"
+                      },
+                      "includeAnnotated": {
+                        "default": false,
+                        "description": "Also annotate images that already have labels",
+                        "type": "boolean"
                       }
+                    },
+                    "required": [
+                      "modelId"
                     ]
                   },
-                  "confidence": {
-                    "default": 0.25,
-                    "description": "Confidence threshold",
-                    "type": "number",
-                    "minimum": 0.01,
-                    "maximum": 1
-                  },
-                  "iou": {
-                    "default": 0.7,
-                    "description": "IoU threshold for non-maximum suppression",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 0.95
-                  },
-                  "classMapping": {
-                    "description": "Dataset class index for each model class, or null to drop it",
-                    "maxItems": 25000,
-                    "type": "array",
-                    "items": {
-                      "anyOf": [
-                        {
-                          "type": "integer",
-                          "minimum": 0
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    }
-                  },
-                  "includeAnnotated": {
-                    "default": false,
-                    "description": "Also annotate images that already have labels, keeping the labels they have",
-                    "type": "boolean"
+                  {
+                    "type": "object",
+                    "properties": {
+                      "operation": {
+                        "type": "string",
+                        "const": "blur"
+                      },
+                      "confidence": {
+                        "default": 0.25,
+                        "description": "Confidence threshold",
+                        "type": "number",
+                        "minimum": 0.01,
+                        "maximum": 1
+                      },
+                      "boxScale": {
+                        "default": 1,
+                        "description": "Scale face boxes around their centers",
+                        "type": "number",
+                        "minimum": 0.5,
+                        "maximum": 1.5
+                      },
+                      "preview": {
+                        "description": "Preview up to six images without changing pixels or creating a version",
+                        "type": "boolean"
+                      },
+                      "imageId": {
+                        "description": "Blur one image; omit for the entire dataset",
+                        "type": "string",
+                        "minLength": 24,
+                        "maxLength": 24,
+                        "pattern": "^[0-9a-fA-F]{24}$",
+                        "example": "507f1f77bcf86cd799439011"
+                      },
+                      "previewJobId": {
+                        "description": "Apply this completed preview without processing its images again",
+                        "type": "string",
+                        "minLength": 24,
+                        "maxLength": 24,
+                        "pattern": "^[0-9a-fA-F]{24}$",
+                        "example": "507f1f77bcf86cd799439011"
+                      }
+                    },
+                    "required": [
+                      "operation"
+                    ]
                   }
-                },
-                "required": [
-                  "modelId"
                 ],
-                "description": "Input for a dataset auto-annotation run"
+                "description": "Auto-annotate images or preview and apply face blurring"
               }
             }
           }
         },
         "responses": {
           "202": {
-            "description": "Auto-annotation queued",
+            "description": "Image processing queued",
             "content": {
               "application/json": {
                 "schema": {
@@ -15596,7 +15757,7 @@
             }
           },
           "402": {
-            "description": "Not enough credits to auto-annotate this dataset",
+            "description": "Not enough credits to process this dataset",
             "content": {
               "application/json": {
                 "schema": {
@@ -15626,7 +15787,7 @@
             }
           },
           "409": {
-            "description": "Dataset is not ready, has no unlabeled images, or a run is in progress",
+            "description": "Dataset is not ready, has no eligible images, or a run is in progress",
             "content": {
               "application/json": {
                 "schema": {
@@ -15670,12 +15831,12 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.create_batch(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    model_id=\"ul://ultralytics/yolo26/yolo26n\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.create_batch(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    body={\"modelId\": \"ul://ultralytics/yolo26/yolo26n\"},\n)\nprint(response)"
           }
         ]
       },
       "delete": {
-        "summary": "Cancel or dismiss an auto-annotation run",
+        "summary": "Cancel or dismiss an image-processing run",
         "tags": [
           "Datasets"
         ],
@@ -15707,6 +15868,18 @@
               "example": "coco8"
             },
             "description": "Dataset name"
+          },
+          {
+            "name": "previewJobId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 24,
+              "maxLength": 24,
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "507f1f77bcf86cd799439011"
+            }
           }
         ],
         "responses": {
@@ -16265,6 +16438,10 @@
                       "private"
                     ],
                     "description": "Resource visibility"
+                  },
+                  "blurFaces": {
+                    "description": "Automatically blur faces in uploaded images",
+                    "type": "boolean"
                   },
                   "task": {
                     "default": "detect",
@@ -18708,14 +18885,13 @@
                           "yoloe26x",
                           "groundingdino",
                           "gpt-6-astra",
-                          "gpt-5.6-sol",
-                          "gpt-5.6-terra",
+                          "gpt-6-sol",
                           "claude-fable-5-1",
-                          "claude-opus-5",
+                          "claude-opus-5-5",
                           "claude-sonnet-5",
                           "gemini-3.1-pro-preview",
                           "kimi-k3",
-                          "gpt-5.6-luna",
+                          "gpt-6-luna",
                           "claude-haiku-4-5-20251001",
                           "gemini-3.8-flash",
                           "gemini-3.5-flash-lite",
@@ -18882,7 +19058,7 @@
           "Images"
         ],
         "operationId": "get_api_images_imageId_similar",
-        "description": "Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset and copies of the query image.",
+        "description": "Returns visually similar images with their similarity score, source dataset, and license, automatically embedding the query image when needed, excluding images already in the source dataset and copies of the query image.",
         "x-sdk-method": "find_similar_images",
         "parameters": [
           {
@@ -18931,7 +19107,7 @@
             }
           },
           "404": {
-            "description": "Image not found, or the image has no embedding yet",
+            "description": "Image not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -18942,6 +19118,16 @@
           },
           "429": {
             "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Image embedding could not be prepared; retry the search",
             "content": {
               "application/json": {
                 "schema": {

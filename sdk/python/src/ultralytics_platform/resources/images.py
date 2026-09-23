@@ -139,14 +139,13 @@ class Images:
             "yoloe26x",
             "groundingdino",
             "gpt-6-astra",
-            "gpt-5.6-sol",
-            "gpt-5.6-terra",
+            "gpt-6-sol",
             "claude-fable-5-1",
-            "claude-opus-5",
+            "claude-opus-5-5",
             "claude-sonnet-5",
             "gemini-3.1-pro-preview",
             "kimi-k3",
-            "gpt-5.6-luna",
+            "gpt-6-luna",
             "claude-haiku-4-5-20251001",
             "gemini-3.8-flash",
             "gemini-3.5-flash-lite",
@@ -165,7 +164,7 @@ class Images:
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-5.6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
+            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-6-sol", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
@@ -195,7 +194,7 @@ class Images:
     ) -> ImagesFindSimilarImagesResponse:
         """Find similar images.
 
-        Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset and copies of the query image.
+        Returns visually similar images with their similarity score, source dataset, and license, automatically embedding the query image when needed, excluding images already in the source dataset and copies of the query image.
 
         Args:
             image_id (str): Image ID
@@ -439,14 +438,13 @@ class AsyncImages:
             "yoloe26x",
             "groundingdino",
             "gpt-6-astra",
-            "gpt-5.6-sol",
-            "gpt-5.6-terra",
+            "gpt-6-sol",
             "claude-fable-5-1",
-            "claude-opus-5",
+            "claude-opus-5-5",
             "claude-sonnet-5",
             "gemini-3.1-pro-preview",
             "kimi-k3",
-            "gpt-5.6-luna",
+            "gpt-6-luna",
             "claude-haiku-4-5-20251001",
             "gemini-3.8-flash",
             "gemini-3.5-flash-lite",
@@ -465,7 +463,7 @@ class AsyncImages:
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-5.6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
+            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-6-sol", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
@@ -495,7 +493,7 @@ class AsyncImages:
     ) -> ImagesFindSimilarImagesResponse:
         """Find similar images.
 
-        Returns visually similar images with their similarity score, source dataset, and license, excluding images already in the source dataset and copies of the query image.
+        Returns visually similar images with their similarity score, source dataset, and license, automatically embedding the query image when needed, excluding images already in the source dataset and copies of the query image.
 
         Args:
             image_id (str): Image ID

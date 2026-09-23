@@ -298,6 +298,7 @@ class Datasets:
         initialize_class_names: bool | NotGiven = NOT_GIVEN,
         class_colors: dict[str, Any] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
+        blur_faces: bool | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         kpt_skeleton_id: str | NotGiven = NOT_GIVEN,
         license: Literal[
@@ -352,6 +353,7 @@ class Datasets:
             initialize_class_names (bool, optional): Require the dataset to have no classes or annotations
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
+            blur_faces (bool, optional): blurFaces request value.
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
             kpt_skeleton_id (str, optional): kptSkeletonId request value.
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
@@ -385,6 +387,7 @@ class Datasets:
                     "initializeClassNames": initialize_class_names,
                     "classColors": class_colors,
                     "format": format,
+                    "blurFaces": blur_faces,
                     "task": task,
                     "kptSkeletonId": kpt_skeleton_id,
                     "license": license,
@@ -981,9 +984,9 @@ class Datasets:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsBatchResponse:
-        """Get auto-annotation run status.
+        """Get image-processing run status.
 
-        Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered.
+        Returns the dataset's in-flight image-processing run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered. While applying blur previews, activeJob.previews provides refreshed signed URLs for the accepted images and their thumbnails.
 
         Args:
             owner (str): Dataset owner
@@ -1013,48 +1016,18 @@ class Datasets:
         owner: str,
         dataset: str,
         *,
-        model_id: str
-        | Literal[
-            "qwen",
-            "moondream",
-            "florence2",
-            "owlv2",
-            "yoloe26x",
-            "groundingdino",
-            "gpt-6-astra",
-            "gpt-5.6-sol",
-            "gpt-5.6-terra",
-            "claude-fable-5-1",
-            "claude-opus-5",
-            "claude-sonnet-5",
-            "gemini-3.1-pro-preview",
-            "kimi-k3",
-            "gpt-5.6-luna",
-            "claude-haiku-4-5-20251001",
-            "gemini-3.8-flash",
-            "gemini-3.5-flash-lite",
-            "glm-5.3-flash",
-            "deepseek-flash",
-        ],
-        confidence: float | NotGiven = NOT_GIVEN,
-        iou: float | NotGiven = NOT_GIVEN,
-        class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
-        include_annotated: bool | NotGiven = NOT_GIVEN,
+        body: dict[str, Any],
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateBatchResponse:
-        """Auto-annotate a dataset.
+        """Auto-annotate images or blur faces.
 
-        Saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Existing labels are never changed, and the run is billed for the images it actually processes.
+        For auto-annotation, saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.
 
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-5.6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
-            confidence (float, optional): Confidence threshold
-            iou (float, optional): IoU threshold for non-maximum suppression
-            class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
-            include_annotated (bool, optional): Also annotate images that already have labels, keeping the labels they have
+            body (dict[str, Any]): Auto-annotate images or preview and apply face blurring
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -1072,13 +1045,7 @@ class Datasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={
-                    "modelId": model_id,
-                    "confidence": confidence,
-                    "iou": iou,
-                    "classMapping": class_mapping,
-                    "includeAnnotated": include_annotated,
-                },
+                json=body,
             ),
         )
 
@@ -1086,16 +1053,19 @@ class Datasets:
         self,
         owner: str,
         dataset: str,
+        *,
+        preview_job_id: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsDeleteBatchResponse:
-        """Cancel or dismiss an auto-annotation run.
+        """Cancel or dismiss an image-processing run.
 
         Cancels an in-flight run, or settles billing and dismisses its terminal summary.
 
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            preview_job_id (str, optional): previewJobId query parameter.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -1113,6 +1083,7 @@ class Datasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("previewJobId", preview_job_id, style="form", explode=True)],
             ),
         )
 
@@ -1248,6 +1219,7 @@ class Datasets:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
+        blur_faces: bool | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         image_count: int | NotGiven = NOT_GIVEN,
         class_names: Sequence[str] | NotGiven = NOT_GIVEN,
@@ -1298,6 +1270,7 @@ class Datasets:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
+            blur_faces (bool, optional): Automatically blur faces in uploaded images
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
             image_count (int, optional): imageCount request value.
             class_names (Sequence[str], optional): classNames request value.
@@ -1329,6 +1302,7 @@ class Datasets:
                     "description": description,
                     "metadata": metadata,
                     "visibility": visibility,
+                    "blurFaces": blur_faces,
                     "task": task,
                     "imageCount": image_count,
                     "classNames": class_names,
@@ -1659,6 +1633,7 @@ class AsyncDatasets:
         initialize_class_names: bool | NotGiven = NOT_GIVEN,
         class_colors: dict[str, Any] | NotGiven = NOT_GIVEN,
         format: Literal["yolo", "coco", "raw", "ndjson"] | NotGiven = NOT_GIVEN,
+        blur_faces: bool | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         kpt_skeleton_id: str | NotGiven = NOT_GIVEN,
         license: Literal[
@@ -1713,6 +1688,7 @@ class AsyncDatasets:
             initialize_class_names (bool, optional): Require the dataset to have no classes or annotations
             class_colors (dict[str, Any], optional): classColors request value.
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
+            blur_faces (bool, optional): blurFaces request value.
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
             kpt_skeleton_id (str, optional): kptSkeletonId request value.
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
@@ -1746,6 +1722,7 @@ class AsyncDatasets:
                     "initializeClassNames": initialize_class_names,
                     "classColors": class_colors,
                     "format": format,
+                    "blurFaces": blur_faces,
                     "task": task,
                     "kptSkeletonId": kpt_skeleton_id,
                     "license": license,
@@ -2342,9 +2319,9 @@ class AsyncDatasets:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsBatchResponse:
-        """Get auto-annotation run status.
+        """Get image-processing run status.
 
-        Returns the dataset's in-flight auto-annotation run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered.
+        Returns the dataset's in-flight image-processing run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered. While applying blur previews, activeJob.previews provides refreshed signed URLs for the accepted images and their thumbnails.
 
         Args:
             owner (str): Dataset owner
@@ -2374,48 +2351,18 @@ class AsyncDatasets:
         owner: str,
         dataset: str,
         *,
-        model_id: str
-        | Literal[
-            "qwen",
-            "moondream",
-            "florence2",
-            "owlv2",
-            "yoloe26x",
-            "groundingdino",
-            "gpt-6-astra",
-            "gpt-5.6-sol",
-            "gpt-5.6-terra",
-            "claude-fable-5-1",
-            "claude-opus-5",
-            "claude-sonnet-5",
-            "gemini-3.1-pro-preview",
-            "kimi-k3",
-            "gpt-5.6-luna",
-            "claude-haiku-4-5-20251001",
-            "gemini-3.8-flash",
-            "gemini-3.5-flash-lite",
-            "glm-5.3-flash",
-            "deepseek-flash",
-        ],
-        confidence: float | NotGiven = NOT_GIVEN,
-        iou: float | NotGiven = NOT_GIVEN,
-        class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
-        include_annotated: bool | NotGiven = NOT_GIVEN,
+        body: dict[str, Any],
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateBatchResponse:
-        """Auto-annotate a dataset.
+        """Auto-annotate images or blur faces.
 
-        Saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Existing labels are never changed, and the run is billed for the images it actually processes.
+        For auto-annotation, saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.
 
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
-            model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "groundingdino", "gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "claude-fable-5-1", "claude-opus-5", "claude-sonnet-5", "gemini-3.1-pro-preview", "kimi-k3", "gpt-5.6-luna", "claude-haiku-4-5-20251001", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash"]): modelId request value.
-            confidence (float, optional): Confidence threshold
-            iou (float, optional): IoU threshold for non-maximum suppression
-            class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
-            include_annotated (bool, optional): Also annotate images that already have labels, keeping the labels they have
+            body (dict[str, Any]): Auto-annotate images or preview and apply face blurring
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2433,13 +2380,7 @@ class AsyncDatasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={
-                    "modelId": model_id,
-                    "confidence": confidence,
-                    "iou": iou,
-                    "classMapping": class_mapping,
-                    "includeAnnotated": include_annotated,
-                },
+                json=body,
             ),
         )
 
@@ -2447,16 +2388,19 @@ class AsyncDatasets:
         self,
         owner: str,
         dataset: str,
+        *,
+        preview_job_id: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsDeleteBatchResponse:
-        """Cancel or dismiss an auto-annotation run.
+        """Cancel or dismiss an image-processing run.
 
         Cancels an in-flight run, or settles billing and dismisses its terminal summary.
 
         Args:
             owner (str): Dataset owner
             dataset (str): Dataset name
+            preview_job_id (str, optional): previewJobId query parameter.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2474,6 +2418,7 @@ class AsyncDatasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("previewJobId", preview_job_id, style="form", explode=True)],
             ),
         )
 
@@ -2609,6 +2554,7 @@ class AsyncDatasets:
         description: str | NotGiven = NOT_GIVEN,
         metadata: dict[str, Any] | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
+        blur_faces: bool | NotGiven = NOT_GIVEN,
         task: Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"] | NotGiven = NOT_GIVEN,
         image_count: int | NotGiven = NOT_GIVEN,
         class_names: Sequence[str] | NotGiven = NOT_GIVEN,
@@ -2659,6 +2605,7 @@ class AsyncDatasets:
             description (str, optional): description request value.
             metadata (dict[str, Any], optional): Custom JSON metadata with keys limited to 128 characters and at most 500,000 serialized characters.
             visibility (Literal["public", "private"], optional): Resource visibility
+            blur_faces (bool, optional): Automatically blur faces in uploaded images
             task (Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"], optional): Dataset task type
             image_count (int, optional): imageCount request value.
             class_names (Sequence[str], optional): classNames request value.
@@ -2690,6 +2637,7 @@ class AsyncDatasets:
                     "description": description,
                     "metadata": metadata,
                     "visibility": visibility,
+                    "blurFaces": blur_faces,
                     "task": task,
                     "imageCount": image_count,
                     "classNames": class_names,
