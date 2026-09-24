@@ -97,7 +97,7 @@ def parse(raw: dict[str, str | None], arguments: dict[str, dict]) -> dict:
     stdin_used = False
     for name, text in raw.items():
         if name not in arguments:
-            raise ValueError(f"unknown argument: {name}")
+            raise ValueError(f"unknown argument: {name}. Valid arguments: {', '.join(arguments)}")
         arg = arguments[name]
         kinds_ = {"string"} if "binary" in arg["types"] else arg["types"]
         if text is None:
@@ -692,7 +692,9 @@ def dispatch(tokens: list[str]) -> int:
             method = next((name for name, keys in implicit.items() if keys and any(key in raw for key in keys)), None)
             method = method or ("list" if "list" in implicit else None)
         if method is None and tokens and not help_requested:
-            raise ValueError("Choose a resource operation before supplying arguments")
+            raise ValueError(
+                f"Choose a resource operation before supplying arguments. Valid {resource} operations: {', '.join(methods)}"
+            )
         if method is None or help_requested:
             if CLOUD_COMMANDS:
                 print(f"ul cloud {'|'.join(CLOUD_COMMANDS)} key=value ... — YOLO workflows on Platform")
