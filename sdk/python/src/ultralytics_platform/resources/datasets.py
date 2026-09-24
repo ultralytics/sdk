@@ -986,7 +986,7 @@ class Datasets:
     ) -> DatasetsBatchResponse:
         """Get image-processing run status.
 
-        Returns the dataset's in-flight image-processing run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered. While applying blur previews, activeJob.previews provides refreshed signed URLs for the accepted images and their thumbnails.
+        Returns the dataset's in-flight image-processing run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered. For blur runs, activeJob.previews provides refreshed signed URLs for each prepared image and its thumbnail as it becomes ready.
 
         Args:
             owner (str): Dataset owner
@@ -2321,7 +2321,7 @@ class AsyncDatasets:
     ) -> DatasetsBatchResponse:
         """Get image-processing run status.
 
-        Returns the dataset's in-flight image-processing run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered. While applying blur previews, activeJob.previews provides refreshed signed URLs for the accepted images and their thumbnails.
+        Returns the dataset's in-flight image-processing run and its progress, or the last finished run awaiting dismissal. Results include partialImages when predictions reached the output limit and only complete boxes were recovered. For blur runs, activeJob.previews provides refreshed signed URLs for each prepared image and its thumbnail as it becomes ready.
 
         Args:
             owner (str): Dataset owner

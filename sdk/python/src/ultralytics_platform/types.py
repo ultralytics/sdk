@@ -549,6 +549,18 @@ DatasetsRetrieveResponseDatasetVersionsItem = TypedDict(
 )
 
 
+DatasetsRetrieveResponseDatasetProcessingProgress = TypedDict(
+    "DatasetsRetrieveResponseDatasetProcessingProgress",
+    {
+        "stage": str,
+        "percent": float,
+        "processed": NotRequired[float],
+        "total": NotRequired[float],
+        "objects": NotRequired[float],
+    },
+)
+
+
 DatasetsRetrieveResponseDataset = TypedDict(
     "DatasetsRetrieveResponseDataset",
     {
@@ -631,6 +643,7 @@ DatasetsRetrieveResponseDataset = TypedDict(
         "createdAt": str,
         "updatedAt": str,
         "metadata": dict[str, Any],
+        "processingProgress": NotRequired[DatasetsRetrieveResponseDatasetProcessingProgress],
     },
 )
 
