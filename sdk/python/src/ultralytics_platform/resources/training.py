@@ -155,7 +155,7 @@ class Training:
     ) -> TrainingMetricsResponse:
         """Send a training event.
 
-        Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); the authenticated user owns the run, regardless of any username prefix in project. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).
+        Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); an existing username prefix selects that workspace and requires editor access; other paths belong to the caller. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).
 
         Args:
             model_id (str, optional): modelId request value.
@@ -320,7 +320,7 @@ class AsyncTraining:
     ) -> TrainingMetricsResponse:
         """Send a training event.
 
-        Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); the authenticated user owns the run, regardless of any username prefix in project. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).
+        Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); an existing username prefix selects that workspace and requires editor access; other paths belong to the caller. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).
 
         Args:
             model_id (str, optional): modelId request value.

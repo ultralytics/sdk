@@ -76,6 +76,7 @@ class Images:
         Args:
             image_id (str): Image ID
             body (dict[str, Any]): Replace labels for an image Or Replace custom metadata for an image
+                Valid body objects (? marks an optional key): {labels} or {metadata}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -380,6 +381,7 @@ class AsyncImages:
         Args:
             image_id (str): Image ID
             body (dict[str, Any]): Replace labels for an image Or Replace custom metadata for an image
+                Valid body objects (? marks an optional key): {labels} or {metadata}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 

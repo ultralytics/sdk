@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.62",
+    "version": "0.1.65",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -14538,7 +14538,7 @@
             "name": "search",
             "in": "query",
             "required": false,
-            "description": "Image name or metadata search",
+            "description": "Image name, class name or metadata search",
             "schema": {
               "type": "string",
               "maxLength": 200
@@ -14767,7 +14767,7 @@
             "name": "search",
             "in": "query",
             "required": false,
-            "description": "Image name or metadata search",
+            "description": "Image name, class name or metadata search",
             "schema": {
               "type": "string",
               "maxLength": 200
@@ -16423,7 +16423,7 @@
           "Datasets"
         ],
         "operationId": "post_api_datasets",
-        "description": "Creates an empty dataset in your personal workspace or a team workspace.",
+        "description": "Creates an empty dataset in your personal workspace or a team workspace. An existing slug is rejected with 409.",
         "requestBody": {
           "required": true,
           "content": {
@@ -16555,11 +16555,6 @@
                       "Other"
                     ],
                     "description": "Dataset license identifier"
-                  },
-                  "requireExactSlug": {
-                    "default": false,
-                    "description": "Reject a slug conflict instead of creating an automatically suffixed dataset",
-                    "type": "boolean"
                   },
                   "owner": {
                     "description": "Workspace owner",
@@ -24238,7 +24233,7 @@
           "Projects"
         ],
         "operationId": "post_api_projects",
-        "description": "Creates a project for organizing models in an account or editable workspace.",
+        "description": "Creates a project for organizing models in an account or editable workspace. An existing slug is rejected with 409.",
         "requestBody": {
           "required": true,
           "content": {
@@ -24363,6 +24358,16 @@
           },
           "403": {
             "description": "Workspace editor access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Project slug already exists",
             "content": {
               "application/json": {
                 "schema": {
@@ -26314,7 +26319,7 @@
           "Models"
         ],
         "operationId": "post_api_webhooks_models_upload",
-        "description": "Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.",
+        "description": "Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. Workspace editor access is required; uploads use the model owner’s storage. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.",
         "x-sdk-method": "upload_checkpoint",
         "requestBody": {
           "required": true,
@@ -26414,7 +26419,7 @@
             }
           },
           "403": {
-            "description": "Training run is not assigned to this worker",
+            "description": "Workspace access or worker assignment denied",
             "content": {
               "application/json": {
                 "schema": {
@@ -26470,7 +26475,7 @@
           "Training"
         ],
         "operationId": "post_api_webhooks_training_metrics",
-        "description": "Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); the authenticated user owns the run, regardless of any username prefix in project. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).",
+        "description": "Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); an existing username prefix selects that workspace and requires editor access; other paths belong to the caller. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).",
         "requestBody": {
           "required": true,
           "content": {
@@ -26603,7 +26608,7 @@
             }
           },
           "403": {
-            "description": "Worker assignment or storage quota denied",
+            "description": "Workspace access, worker assignment, or storage quota denied",
             "content": {
               "application/json": {
                 "schema": {
