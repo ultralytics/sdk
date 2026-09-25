@@ -325,7 +325,7 @@ class Projects:
     ) -> ProjectsCreateResponse:
         """Create a project.
 
-        Creates a project for organizing models in an account or editable workspace.
+        Creates a project for organizing models in an account or editable workspace. An existing slug is rejected with 409.
 
         Args:
             project (str): Project name used in Platform URLs
@@ -667,7 +667,7 @@ class AsyncProjects:
     ) -> ProjectsCreateResponse:
         """Create a project.
 
-        Creates a project for organizing models in an account or editable workspace.
+        Creates a project for organizing models in an account or editable workspace. An existing slug is rejected with 409.
 
         Args:
             project (str): Project name used in Platform URLs

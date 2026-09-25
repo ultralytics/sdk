@@ -75,6 +75,7 @@ class Upload:
 
         Args:
             body (dict[str, Any]): Request body for generating a signed upload URL
+                Valid body objects (? marks an optional key): {assetId, contentType, totalBytes, assetType: "datasets", filename} or {assetId, contentType, totalBytes, assetType: "models", filename}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -154,6 +155,7 @@ class AsyncUpload:
 
         Args:
             body (dict[str, Any]): Request body for generating a signed upload URL
+                Valid body objects (? marks an optional key): {assetId, contentType, totalBytes, assetType: "datasets", filename} or {assetId, contentType, totalBytes, assetType: "models", filename}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 

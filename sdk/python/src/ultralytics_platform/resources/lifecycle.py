@@ -120,6 +120,7 @@ class Lifecycle:
 
         Args:
             body (dict[str, Any]): Permanently delete one trashable resource or all workspace trash
+                Valid body objects (? marks an optional key): {id, type: "project"|"dataset"|"model"} or {all: true}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -242,6 +243,7 @@ class AsyncLifecycle:
 
         Args:
             body (dict[str, Any]): Permanently delete one trashable resource or all workspace trash
+                Valid body objects (? marks an optional key): {id, type: "project"|"dataset"|"model"} or {all: true}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 

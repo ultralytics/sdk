@@ -143,6 +143,7 @@ class StorageIntegrations:
 
         Args:
             body (dict[str, Any]): Request body.
+                Valid body objects (? marks an optional key): {targets, provider: "gcs", credentials} or {targets, provider: "s3", credentials} or {targets, provider: "azure", credentials}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -177,6 +178,7 @@ class StorageIntegrations:
 
         Args:
             body (dict[str, Any]): Request body.
+                Valid body objects (? marks an optional key): {provider: "gcs", credentials} or {provider: "s3", credentials} or {provider: "azure", credentials}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -319,6 +321,7 @@ class AsyncStorageIntegrations:
 
         Args:
             body (dict[str, Any]): Request body.
+                Valid body objects (? marks an optional key): {targets, provider: "gcs", credentials} or {targets, provider: "s3", credentials} or {targets, provider: "azure", credentials}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -353,6 +356,7 @@ class AsyncStorageIntegrations:
 
         Args:
             body (dict[str, Any]): Request body.
+                Valid body objects (? marks an optional key): {provider: "gcs", credentials} or {provider: "s3", credentials} or {provider: "azure", credentials}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 

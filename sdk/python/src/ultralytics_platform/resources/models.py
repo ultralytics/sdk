@@ -326,6 +326,7 @@ class Models:
             project (str): Project name
             model (str): Model name
             body (dict[str, Any]): Request body.
+                Valid body objects (? marks an optional key): {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file, source?} or {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file?, source}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -511,6 +512,7 @@ class Models:
 
         Args:
             body (dict[str, Any]): API request for creating a new model
+                Valid body objects (? marks an optional key): {owner?, project, description?, metadata?, task?: "detect"|"segment"|"semantic"|"depth"|"classify"|"pose"|"obb", trainArgs?, trainResults?, epochs?, metrics?, version?, docs?, environment?, completedAt?, model, name?} or {owner?, project, description?, metadata?, task?: "detect"|"segment"|"semantic"|"depth"|"classify"|"pose"|"obb", trainArgs?, trainResults?, epochs?, metrics?, version?, docs?, environment?, completedAt?}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -546,7 +548,7 @@ class Models:
     ) -> ModelsUploadCheckpointResponse:
         """Get a training checkpoint upload URL.
 
-        Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.
+        Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. Workspace editor access is required; uploads use the model owner’s storage. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.
 
         Args:
             project (str, optional): project request value.
@@ -878,6 +880,7 @@ class AsyncModels:
             project (str): Project name
             model (str): Model name
             body (dict[str, Any]): Request body.
+                Valid body objects (? marks an optional key): {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file, source?} or {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file?, source}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -1063,6 +1066,7 @@ class AsyncModels:
 
         Args:
             body (dict[str, Any]): API request for creating a new model
+                Valid body objects (? marks an optional key): {owner?, project, description?, metadata?, task?: "detect"|"segment"|"semantic"|"depth"|"classify"|"pose"|"obb", trainArgs?, trainResults?, epochs?, metrics?, version?, docs?, environment?, completedAt?, model, name?} or {owner?, project, description?, metadata?, task?: "detect"|"segment"|"semantic"|"depth"|"classify"|"pose"|"obb", trainArgs?, trainResults?, epochs?, metrics?, version?, docs?, environment?, completedAt?}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -1098,7 +1102,7 @@ class AsyncModels:
     ) -> ModelsUploadCheckpointResponse:
         """Get a training checkpoint upload URL.
 
-        Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.
+        Uses Bearer API-key authentication. Supply modelId and runId from training_started to bind the upload to that run; worker keys require both and must be assigned to the training job. Legacy callers may supply modelId without runId, or project (username/project-slug) and name. Workspace editor access is required; uploads use the model owner’s storage. PUT checkpoint bytes to uploadUrl with Content-Type: application/octet-stream. For runId uploads, then send checkpoint_saved with modelId and data containing runId, modelPath=gcsPath, and uploadPath from this response. The event promotes the staged checkpoint; the generic upload completion endpoint does not perform this promotion.
 
         Args:
             project (str, optional): project request value.

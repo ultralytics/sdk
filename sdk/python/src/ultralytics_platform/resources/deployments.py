@@ -85,6 +85,7 @@ class Deployments:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): API request for updating a deployment
+                Valid body objects (? marks an optional key): {metadata} or {name} or {action: "start"|"stop"|"replace"|"resize", project?, model?, name?, cpu?: 1|2|4|6|8, memoryGi?: 2|4|8|16|24|32}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -283,6 +284,7 @@ class Deployments:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): Request body.
+                Valid body objects (? marks an optional key): {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file, source?} or {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file?, source}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -506,6 +508,7 @@ class AsyncDeployments:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): API request for updating a deployment
+                Valid body objects (? marks an optional key): {metadata} or {name} or {action: "start"|"stop"|"replace"|"resize", project?, model?, name?, cpu?: 1|2|4|6|8, memoryGi?: 2|4|8|16|24|32}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -704,6 +707,7 @@ class AsyncDeployments:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): Request body.
+                Valid body objects (? marks an optional key): {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file, source?} or {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file?, source}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 

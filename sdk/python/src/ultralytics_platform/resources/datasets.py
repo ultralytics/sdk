@@ -784,7 +784,7 @@ class Datasets:
             has_error (Literal["true", "false"], optional): Filter by processing error state
             has_label (Literal["true", "false"], optional): Filter by annotation state
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
-            search (str, optional): Image name or metadata search
+            search (str, optional): Image name, class name or metadata search
             sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
@@ -867,7 +867,7 @@ class Datasets:
             has_error (Literal["true", "false"], optional): Filter by processing error state
             has_label (Literal["true", "false"], optional): Filter by annotation state
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
-            search (str, optional): Image name or metadata search
+            search (str, optional): Image name, class name or metadata search
             sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
@@ -922,6 +922,7 @@ class Datasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             body (dict[str, Any]): Input for dataset ingest job
+                Valid body objects (? marks an optional key): {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sessionId, classMapping?, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sourceUrl, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", reference} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace"}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -1028,6 +1029,7 @@ class Datasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             body (dict[str, Any]): Auto-annotate images or preview and apply face blurring
+                Valid body objects (? marks an optional key): {modelId, confidence?, iou?, classMapping?, operation?: "annotate", includeAnnotated?} or {operation: "blur", confidence?, boxScale?, preview?, imageId?, previewJobId?}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -1255,14 +1257,13 @@ class Datasets:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
-        require_exact_slug: bool | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateResponse:
         """Create a dataset.
 
-        Creates an empty dataset in your personal workspace or a team workspace.
+        Creates an empty dataset in your personal workspace or a team workspace. An existing slug is rejected with 409.
 
         Args:
             dataset (str): Dataset name used in Platform URLs
@@ -1277,7 +1278,6 @@ class Datasets:
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             tags (Sequence[str], optional): tags request value.
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
-            require_exact_slug (bool, optional): Reject a slug conflict instead of creating an automatically suffixed dataset
             owner (str, optional): Workspace owner
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -1309,7 +1309,6 @@ class Datasets:
                     "format": format,
                     "tags": tags,
                     "license": license,
-                    "requireExactSlug": require_exact_slug,
                     "owner": owner,
                 },
             ),
@@ -2119,7 +2118,7 @@ class AsyncDatasets:
             has_error (Literal["true", "false"], optional): Filter by processing error state
             has_label (Literal["true", "false"], optional): Filter by annotation state
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
-            search (str, optional): Image name or metadata search
+            search (str, optional): Image name, class name or metadata search
             sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
@@ -2202,7 +2201,7 @@ class AsyncDatasets:
             has_error (Literal["true", "false"], optional): Filter by processing error state
             has_label (Literal["true", "false"], optional): Filter by annotation state
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
-            search (str, optional): Image name or metadata search
+            search (str, optional): Image name, class name or metadata search
             sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
@@ -2257,6 +2256,7 @@ class AsyncDatasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             body (dict[str, Any]): Input for dataset ingest job
+                Valid body objects (? marks an optional key): {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sessionId, classMapping?, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sourceUrl, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", reference} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace"}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2363,6 +2363,7 @@ class AsyncDatasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             body (dict[str, Any]): Auto-annotate images or preview and apply face blurring
+                Valid body objects (? marks an optional key): {modelId, confidence?, iou?, classMapping?, operation?: "annotate", includeAnnotated?} or {operation: "blur", confidence?, boxScale?, preview?, imageId?, previewJobId?}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2590,14 +2591,13 @@ class AsyncDatasets:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
-        require_exact_slug: bool | NotGiven = NOT_GIVEN,
         owner: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateResponse:
         """Create a dataset.
 
-        Creates an empty dataset in your personal workspace or a team workspace.
+        Creates an empty dataset in your personal workspace or a team workspace. An existing slug is rejected with 409.
 
         Args:
             dataset (str): Dataset name used in Platform URLs
@@ -2612,7 +2612,6 @@ class AsyncDatasets:
             format (Literal["yolo", "coco", "raw", "ndjson"], optional): Dataset annotation format
             tags (Sequence[str], optional): tags request value.
             license (Literal["None", "CC0-1.0", "PDM-1.0", "CC-BY-2.5", "CC-BY-3.0", "CC-BY-4.0", "CC-BY-NC-2.0", "CC-BY-NC-3.0", "CC-BY-NC-4.0", "CC-BY-SA-3.0", "CC-BY-SA-4.0", "CC-BY-NC-SA-3.0", "CC-BY-NC-SA-4.0", "CC-BY-ND-4.0", "CC-BY-NC-ND-2.0", "CC-BY-NC-ND-4.0", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-2.0", "GPL-3.0", "LGPL-3.0", "ODbL-1.0", "DbCL-1.0", "Research-Only", "Other"], optional): Dataset license identifier
-            require_exact_slug (bool, optional): Reject a slug conflict instead of creating an automatically suffixed dataset
             owner (str, optional): Workspace owner
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -2644,7 +2643,6 @@ class AsyncDatasets:
                     "format": format,
                     "tags": tags,
                     "license": license,
-                    "requireExactSlug": require_exact_slug,
                     "owner": owner,
                 },
             ),
