@@ -69,8 +69,8 @@ Use the generator's `main` branch, never a pinned SHA or tag; update an existing
 - Generator configuration and README template → `openapi.config.json`, `README.python.md`.
 - Pinned contract → `openapi.json`, `openapi.sha256`.
 - Generated package → `sdk/python/`.
-- Regeneration and contract sync → `.github/workflows/ci.yml`: `Test` checks drift, lint, build, and tests; `Live` (`Full API lifecycle`, on `main` pushes, nightly, and dispatch) syncs the live contract, admin-merges an `automation/openapi-<hash>` PR, then runs the production canary.
-- Release rules → `.github/workflows/publish.yml`, `README.md`. Publishing requires a fully green CI run on a `main` push, so a red `Live` canary blocks the release.
+- Regeneration and contract sync → `.github/workflows/ci.yml`: `Test` checks drift, lint, build, and tests; `Live` (`Full API lifecycle`, on `main` pushes, nightly, and dispatch) syncs the live contract, admin-merges an `automation/openapi-<hash>` PR when it changed, then runs the production canary.
+- Release rules → `.github/workflows/publish.yml`, `README.md`. Automatic publishing requires a fully green CI run on a `main` push, so a red `Live` canary blocks it; the only bypass is a manual `workflow_dispatch` on `main` by `glenn-jocher`.
 
 ## Conventions
 
