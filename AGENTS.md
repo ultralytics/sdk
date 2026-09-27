@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Repository guidance for coding agents. `CLAUDE.md` is a symlink to this file.
+Repository guidance for coding agents. `CLAUDE.md` is a symlink to this file. This repository generates and publishes the `ultralytics-platform` Python SDK and its `ul` CLI (Python>=3.11) from the Platform OpenAPI contract.
 
 ## Core Principles (CRITICAL)
 
@@ -20,10 +20,10 @@ NEVER push to `main`. NEVER force push. Always start work in a new git worktree 
 
 After opening a PR:
 
-1. Wait for the automated PR review and auto-format commit from Ultralytics Actions (`format.yml`), then pull and address every finding.
+1. Wait for the automated PR review and any header or spelling commits from Ultralytics Actions (`format.yml`), then pull and address every finding.
 2. Review the full diff in-session against the Core Principles, performance, and the review gate above, then batch the fixes into one commit and push. After each round of bot or human commits, pull and resume the same reviewer on `<last-reviewed-sha>..HEAD` plus anything that delta could have invalidated. Repeat until the local head matches the live head.
 3. Hand off or merge only on a clean final pass: one cold full-diff review returning LGTM with no findings, on a head that is still live at merge time.
-4. Never fight other commits: Ultralytics Actions pushes auto-format and header commits, and multiple users may work on the same PR. `git pull --rebase` before pushing; never reset or revert commits you did not author.
+4. Never fight other commits: Ultralytics Actions pushes header and spelling commits, and multiple users may work on the same PR. `git pull --rebase` before pushing; never reset or revert commits you did not author.
 5. After the PR merges, clean up: remove local worktrees and branches for it, then `git checkout main && git pull`.
 
 ## API and SDK versioning (CRITICAL)
@@ -31,12 +31,12 @@ After opening a PR:
 **One version, one owner: the upstream Platform API contract's `info.version`. The Python SDK package version MUST equal the API contract version it contains.** This repository consumes the deployed contract through automation; it does not choose release versions.
 
 - Keep public documentation and PR text scoped to the public upstream API contract. Do not include private repository names, internal paths, or private PR links.
-- NEVER set `python.version` in `openapi.config.json`, independently bump the SDK patch, or edit versions in generated files. Do not restore automatic patch bumps or `max(API version, SDK version)` logic. A newer SDK number is a mismatch, not successful coordination.
+- NEVER set `python.version` in `openapi.config.json`, independently bump the SDK patch, or edit versions in generated files. Do not restore automatic patch bumps or `max(API version, SDK version)` logic.
 - This also applies to SDK-only CLI/help/auth fixes and generator improvements. Merge the source fix, coordinate a contract version bump and deployment with the Platform API maintainers, then let SDK contract synchronization regenerate and publish that same version. Do not manually repair the snapshot or generated descendants to manufacture a release.
 - Before updating a consumer's minimum SDK requirement, verify the published wheel contains the required behavior and its version matches the deployed API. A successful install or green CI alone does not prove this.
 - If SDK versions have already been published ahead of the API, the API maintainers must advance the upstream contract beyond every published SDK version, then synchronize. Never downgrade the SDK, reuse a published version, or claim the offset will self-heal. API `0.1.50` with SDK `0.1.52` is INVALID; both at `0.1.52` is valid.
 
-Contract snapshots keep upstream samples until the Platform API deploys its rebuilt OpenAPI output and automation synchronizes it. Keep both READMEs aligned with `.github/workflows/ci.yml`.
+Never hand-edit `openapi.json` (including its `x-codeSamples`); only the `Live` job replaces it from `upstream` in `openapi.config.json`. Keep the Validation sections of `README.md` and `README.zh-CN.md` aligned with `.github/workflows/ci.yml`.
 
 ## Commands and validation
 
@@ -69,18 +69,17 @@ Use the generator's `main` branch, never a pinned SHA or tag; update an existing
 - Generator configuration and README template → `openapi.config.json`, `README.python.md`.
 - Pinned contract → `openapi.json`, `openapi.sha256`.
 - Generated package → `sdk/python/`.
-- Regeneration and contract sync → `.github/workflows/ci.yml`.
-- Release rules → `.github/workflows/publish.yml`, `README.md`.
+- Regeneration and contract sync → `.github/workflows/ci.yml`: `Test` checks drift, lint, build, and tests; `Live` (`Full API lifecycle`, on `main` pushes, nightly, and dispatch) syncs the live contract, admin-merges an `automation/openapi-<hash>` PR, then runs the production canary.
+- Release rules → `.github/workflows/publish.yml`, `README.md`. Publishing requires a fully green CI run on a `main` push, so a red `Live` canary blocks the release.
 
 ## Conventions
 
 - Ultralytics-owned PyPI packages use `MAJOR.MINOR.PATCH` versions only; no suffixes.
 - License headers (`# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license`) are added automatically by Ultralytics Actions — don't add or revert them manually. Generated files receive the same header from the generator (`header` in `openapi.config.json`).
-- Google-style docstrings, `from __future__ import annotations` for modern type hints, line length 120; formatting is checked by `ci.yml` with the pinned `uvx ruff@0.16.2` (`format.yml` runs with `python: false`, so nothing reformats Python on PR branches) and the generator formats its own output.
+- Google-style docstrings, `from __future__ import annotations` for modern type hints, line length 120. `format.yml` sets `python: false` and `prettier: false`, so nothing reformats Python or Markdown on PR branches: run `uvx ruff@0.16.2 format --line-length 120 cli.py auth.py tests` yourself before pushing; the generator formats `sdk/python`.
 
 ## Pitfalls
 
-- `tests/live_readonly.py` is not read-only and is not collected by pytest. It needs `ULTRALYTICS_API_KEY`, runs against production, creates and deletes `sdk-ci-<timestamp>` projects/datasets/models, uploads `coco32.zip` from `ultralytics/assets`, and paces requests at 0.75s. Its response hook validates successful responses that declare a JSON schema against `openapi.json`, rejects 401/5xx and undocumented statuses, and checks the exact error message of any 403 against `EXPECTED_FORBIDDEN`. Operations that cannot succeed on the canary account (training start, export, deployment create, ...) are wrapped in `expected_error(...)` and must fail; the final gate fails when the set of error-only operations drifts from those classifications. It exercises explicit scenarios, not every operation (e.g. `models.find_similar_training_images` is not called). Run it only deliberately.
+- `tests/live_readonly.py` is not read-only and is not collected by pytest. It needs `ULTRALYTICS_API_KEY`, runs against production, and creates and deletes `sdk-ci-*` resources; run it only deliberately. It validates responses against `openapi.json` and 403 messages against `EXPECTED_FORBIDDEN`. Operations that cannot succeed on the canary account are wrapped in `expected_error(...)`, and the final gate fails when the set of error-only operations drifts from those classifications. It calls hand-written scenarios, not every operation.
 - `ULTRALYTICS_API_KEY=""` (empty) does not disable auth — `_resolve_api_key` treats an empty environment value as unset and falls through to the saved `yolo login` key (that is how `tests/test_cli.py` forces the settings path). Only an explicit `Platform(api_key="")` disables the header.
-- Shell quoting: JSON arguments need single quotes (`'train_args={"epochs":1}'`), `@-` may be used by at most one argument per invocation, and binary fields must be `@path` (never stdin) even when nested inside a multipart `body` JSON.
-- `format.yml` will not reformat Python or Markdown for you here (`python: false`, `prettier: false`); run the pinned `uvx ruff@0.16.2 format --line-length 120` on `cli.py`, `auth.py`, and `tests/` yourself before pushing.
+- `ul` CLI inputs: `@-` (stdin) may feed at most one argument per invocation, and binary fields must be `@path` (never stdin) even when nested inside a multipart `body` JSON.
