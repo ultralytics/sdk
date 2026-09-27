@@ -9499,25 +9499,25 @@
           "format": {
             "type": "string",
             "enum": [
-              "onnx",
               "torchscript",
+              "onnx",
               "openvino",
               "engine",
               "coreml",
               "coreai",
-              "litert",
-              "pb",
               "saved_model",
-              "paddle",
-              "ncnn",
+              "pb",
               "edgetpu",
+              "litert",
+              "paddle",
               "mnn",
-              "rknn",
-              "qnn",
+              "ncnn",
               "imx",
-              "axelera",
+              "rknn",
               "executorch",
+              "axelera",
               "deepx",
+              "qnn",
               "hailo",
               "ascend"
             ],
@@ -9653,25 +9653,25 @@
           "format": {
             "type": "string",
             "enum": [
-              "onnx",
               "torchscript",
+              "onnx",
               "openvino",
               "engine",
               "coreml",
               "coreai",
-              "litert",
-              "pb",
               "saved_model",
-              "paddle",
-              "ncnn",
+              "pb",
               "edgetpu",
+              "litert",
+              "paddle",
               "mnn",
-              "rknn",
-              "qnn",
+              "ncnn",
               "imx",
-              "axelera",
+              "rknn",
               "executorch",
+              "axelera",
               "deepx",
+              "qnn",
               "hailo",
               "ascend"
             ],
@@ -21733,25 +21733,25 @@
                   "format": {
                     "type": "string",
                     "enum": [
-                      "onnx",
                       "torchscript",
+                      "onnx",
                       "openvino",
                       "engine",
                       "coreml",
                       "coreai",
-                      "litert",
-                      "pb",
                       "saved_model",
-                      "paddle",
-                      "ncnn",
+                      "pb",
                       "edgetpu",
+                      "litert",
+                      "paddle",
                       "mnn",
-                      "rknn",
-                      "qnn",
+                      "ncnn",
                       "imx",
-                      "axelera",
+                      "rknn",
                       "executorch",
+                      "axelera",
                       "deepx",
+                      "qnn",
                       "hailo",
                       "ascend"
                     ],
@@ -21875,10 +21875,6 @@
                           },
                           "optimize": {
                             "description": "DEEPX compiler optimization",
-                            "type": "boolean"
-                          },
-                          "keras": {
-                            "description": "Export as Keras format",
                             "type": "boolean"
                           },
                           "name": {
@@ -22041,7 +22037,7 @@
           {
             "label": "Python SDK",
             "lang": "Python",
-            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.exports.create(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    format=\"onnx\",\n)\nprint(response)"
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.exports.create(\n    owner=\"ultralytics\",\n    project=\"yolo26\",\n    model=\"yolo26n\",\n    format=\"torchscript\",\n)\nprint(response)"
           }
         ]
       }
