@@ -361,7 +361,7 @@ class Models:
     ) -> ModelsFindSimilarTrainingImagesResponse:
         """Find images similar to a run's worst validation images.
 
-        Returns images from public datasets that look like the ones this training run scored worst on, drawn from each worst image's nearest neighbors in turn and excluding images the training dataset already holds. Empty when the run recorded no per-image results.
+        Returns images from public datasets and your own and team datasets that look like the ones this training run scored worst on, drawn from each worst image's nearest neighbors in turn and excluding images the training dataset already holds. Empty when the run recorded no per-image results.
 
         Args:
             owner (str): Project owner
@@ -915,7 +915,7 @@ class AsyncModels:
     ) -> ModelsFindSimilarTrainingImagesResponse:
         """Find images similar to a run's worst validation images.
 
-        Returns images from public datasets that look like the ones this training run scored worst on, drawn from each worst image's nearest neighbors in turn and excluding images the training dataset already holds. Empty when the run recorded no per-image results.
+        Returns images from public datasets and your own and team datasets that look like the ones this training run scored worst on, drawn from each worst image's nearest neighbors in turn and excluding images the training dataset already holds. Empty when the run recorded no per-image results.
 
         Args:
             owner (str): Project owner
