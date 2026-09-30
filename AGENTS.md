@@ -43,8 +43,7 @@ Never hand-edit `openapi.json` (including its `x-codeSamples`); only the `Live` 
 ```bash
 uv venv --python 3.11
 source .venv/bin/activate
-uv pip install pytest jsonschema referencing ultralytics -e ./sdk/python \
-  --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
+uv pip install pytest jsonschema referencing ultralytics -e ./sdk/python --torch-backend cpu
 
 sha256sum --check openapi.sha256
 if [ -d .generator ]; then
