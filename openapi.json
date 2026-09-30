@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.73",
+    "version": "0.1.74",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -83,6 +83,10 @@
         "description": "Endpoints documentation",
         "url": "https://docs.ultralytics.com/platform/deploy/endpoints"
       }
+    },
+    {
+      "name": "Agents",
+      "description": "Save and manage Agents: visual workflows of YOLO, LLM, gate, and alert blocks."
     },
     {
       "name": "Storage Integrations",
@@ -2171,6 +2175,17 @@
                 "umapY": {
                   "type": "number"
                 },
+                "cluster": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "HDBSCAN island id ranked by size (0 = largest, -1 = scattered); null on layouts analyzed before clustering shipped"
+                },
                 "split": {
                   "anyOf": [
                     {
@@ -2229,6 +2244,7 @@
                 "id",
                 "umapX",
                 "umapY",
+                "cluster",
                 "split",
                 "classIds",
                 "width",
@@ -12505,6 +12521,239 @@
         ],
         "additionalProperties": false,
         "description": "Updated follow state"
+      },
+      "ListAgentsResponse": {
+        "type": "object",
+        "properties": {
+          "workflows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "integer"
+                },
+                "graph": {
+                  "description": "Returned when id is requested",
+                  "type": "object",
+                  "properties": {
+                    "nodes": {
+                      "maxItems": 100,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "maxLength": 100,
+                            "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+                          },
+                          "type": {
+                            "type": "string",
+                            "const": "agent"
+                          },
+                          "position": {
+                            "type": "object",
+                            "properties": {
+                              "x": {
+                                "type": "number"
+                              },
+                              "y": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "x",
+                              "y"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "data": {
+                            "type": "object",
+                            "properties": {
+                              "label": {
+                                "type": "string",
+                                "maxLength": 200
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "Dataset",
+                                  "Image",
+                                  "YOLO",
+                                  "LLM",
+                                  "Gate",
+                                  "Export",
+                                  "Deployment",
+                                  "Output",
+                                  "Slack",
+                                  "Webhook"
+                                ]
+                              },
+                              "config": {
+                                "type": "object",
+                                "propertyNames": {
+                                  "type": "string",
+                                  "maxLength": 100
+                                },
+                                "additionalProperties": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "maxLength": 10000
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "label",
+                              "type",
+                              "config"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "type",
+                          "position",
+                          "data"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "edges": {
+                      "maxItems": 200,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "maxLength": 200
+                          },
+                          "source": {
+                            "type": "string",
+                            "maxLength": 100
+                          },
+                          "target": {
+                            "type": "string",
+                            "maxLength": 100
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "source",
+                          "target"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "templateId": {
+                      "type": "string",
+                      "maxLength": 100
+                    }
+                  },
+                  "required": [
+                    "nodes",
+                    "edges",
+                    "templateId"
+                  ],
+                  "additionalProperties": false
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "username",
+                "name",
+                "version",
+                "createdAt",
+                "updatedAt"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "workflows"
+        ],
+        "additionalProperties": false
+      },
+      "SaveAgentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "message"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "errors"
+        ],
+        "additionalProperties": false
+      },
+      "DeleteAgentResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "additionalProperties": false
       }
     }
   },
@@ -27326,6 +27575,458 @@
             "label": "Python SDK",
             "lang": "Python",
             "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.training.metrics(\n    event=\"training_started\",\n    data={\"key\": \"example-key\"},\n)\nprint(response)"
+          }
+        ]
+      }
+    },
+    "/api/workflows": {
+      "get": {
+        "summary": "List agents",
+        "tags": [
+          "Agents"
+        ],
+        "operationId": "get_api_workflows",
+        "description": "Returns up to 100 saved agents, most recently updated first. Pass id to return that agent with its graph.",
+        "x-sdk-method": "list",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "query",
+            "required": false,
+            "description": "Workspace username; defaults to yours",
+            "schema": {
+              "type": "string",
+              "maxLength": 32
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "description": "Agent ID",
+            "schema": {
+              "type": "string",
+              "maxLength": 24,
+              "pattern": "^[a-f0-9]{24}$"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Saved agents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListAgentsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid agent ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.agents.list()\nprint(response)"
+          }
+        ]
+      },
+      "put": {
+        "summary": "Save an agent",
+        "tags": [
+          "Agents"
+        ],
+        "operationId": "put_api_workflows",
+        "description": "Creates an agent when id is omitted, or replaces the graph of the agent at version. Returns the block errors the Agents canvas shows; the agent is saved either way. Open it at /agents?workflow=<id>, where runs start.",
+        "x-sdk-method": "save",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "query",
+            "required": false,
+            "description": "Workspace username; defaults to yours",
+            "schema": {
+              "type": "string",
+              "maxLength": 32
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "maxLength": 24,
+                    "pattern": "^[a-f0-9]{24}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "graph": {
+                    "type": "object",
+                    "properties": {
+                      "nodes": {
+                        "maxItems": 100,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "maxLength": 100,
+                              "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+                            },
+                            "type": {
+                              "type": "string",
+                              "const": "agent"
+                            },
+                            "position": {
+                              "type": "object",
+                              "properties": {
+                                "x": {
+                                  "type": "number"
+                                },
+                                "y": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y"
+                              ]
+                            },
+                            "data": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "maxLength": 200
+                                },
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "Dataset",
+                                    "Image",
+                                    "YOLO",
+                                    "LLM",
+                                    "Gate",
+                                    "Export",
+                                    "Deployment",
+                                    "Output",
+                                    "Slack",
+                                    "Webhook"
+                                  ]
+                                },
+                                "config": {
+                                  "type": "object",
+                                  "propertyNames": {
+                                    "type": "string",
+                                    "maxLength": 100
+                                  },
+                                  "additionalProperties": {
+                                    "anyOf": [
+                                      {
+                                        "type": "string",
+                                        "maxLength": 10000
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "type",
+                                "config"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "position",
+                            "data"
+                          ]
+                        }
+                      },
+                      "edges": {
+                        "maxItems": 200,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "source": {
+                              "type": "string",
+                              "maxLength": 100
+                            },
+                            "target": {
+                              "type": "string",
+                              "maxLength": 100
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "source",
+                            "target"
+                          ]
+                        }
+                      },
+                      "templateId": {
+                        "type": "string",
+                        "maxLength": 100
+                      }
+                    },
+                    "required": [
+                      "nodes",
+                      "edges",
+                      "templateId"
+                    ],
+                    "description": "nodes[] are {id, type: \"agent\", position: {x, y}, data: {label, type, config}} with string or number config values; place each block 220 right of its input and branches 180 apart. edges[] are {id, source, target}; templateId is \"\". Dataset {dataset: slug or \"official:coco8\", split: train|val|test, maxInputs: up to 20 on free shared trials, 0 = all with a deployment} reads images; given an input, {dataset: slug} collects them. Image {dataset, image: image ID, name} is one dataset image; uploads happen on the canvas. YOLO {model: \"ul://ultralytics/yolo26/yolo26n\" (-seg, -pose, -obb, -cls suffixes) or ul://owner/project/model, task, conf?}; official models detect the 80 COCO classes. LLM {model: e.g. gemini-3.1-flash-lite-image, prompt} reads the image and upstream text. Gate {kind: \"condition\", path: \"<YOLO or Deployment block id>.counts.<class>\" or \".confidence.<class or *>\", op: eq|ne|gt|gte|lt|lte|between, value, upper?} or {kind: \"every\", unit: frames|seconds, value}. Deployment {deployment: slug, conf?}. Export {model, format} stands alone. Output {}. Slack {message}. Webhook {url: HTTPS, body: JSON object as a string}. Messages and bodies insert the upstream result at \"{output}\". Each block has at most one input. Dataset and Image blocks start chains; Export, Output, Slack, and Webhook end them."
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Version being replaced; 0 creates the agent"
+                  }
+                },
+                "required": [
+                  "name",
+                  "graph",
+                  "version"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Agent saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveAgentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid graph",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace editor access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Agent changed since it was read; retrieve it and retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.agents.save(\n    name=\"example-name\",\n    graph={\"nodes\": [{\"id\": \"example\", \"type\": \"agent\", \"position\": {\"x\": 1, \"y\": 1}, \"data\": {\"label\": \"example-label\", \"type\": \"Dataset\", \"config\": {\"key\": \"example-key\"}}}], \"edges\": [{\"id\": \"example-id\", \"source\": \"example-source\", \"target\": \"example-target\"}], \"templateId\": \"example-template-id\"},\n    version=1,\n)\nprint(response)"
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete an agent",
+        "tags": [
+          "Agents"
+        ],
+        "operationId": "delete_api_workflows",
+        "description": "Moves an agent to trash and cancels its active runs.",
+        "x-sdk-method": "delete",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "query",
+            "required": false,
+            "description": "Workspace username; defaults to yours",
+            "schema": {
+              "type": "string",
+              "maxLength": 32
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Agent ID",
+            "schema": {
+              "type": "string",
+              "maxLength": 24,
+              "pattern": "^[a-f0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteAgentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid agent ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace editor access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agent not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.agents.delete(\n    id=\"<pattern value>\",\n)\nprint(response)"
           }
         ]
       }
