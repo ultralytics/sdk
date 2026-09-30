@@ -631,6 +631,7 @@ DatasetsRetrieveResponseDataset = TypedDict(
         "processingTimeMs": NotRequired[float],
         "lastIngestJobId": NotRequired[str],
         "processingError": NotRequired[DatasetsRetrieveResponseDatasetProcessingError],
+        "restoreVersion": NotRequired[int],
         "lastIngestSummary": NotRequired[DatasetsRetrieveResponseDatasetLastIngestSummary],
         "errorCount": NotRequired[int],
         "iconColor": NotRequired[str],
@@ -708,7 +709,7 @@ DatasetsExportResponse = DatasetsExportResponseVariant1 | DatasetsExportResponse
 
 
 DatasetsCreateExportResponse = TypedDict(
-    "DatasetsCreateExportResponse", {"version": int, "downloadUrl": str, "reused": bool}
+    "DatasetsCreateExportResponse", {"version": int, "downloadUrl": NotRequired[str], "reused": bool}
 )
 
 
@@ -1003,6 +1004,142 @@ DatasetsRedistributeSplitsResponse = TypedDict(
 )
 
 
+DatasetsCompareResponseVariant1SummaryHeaderClassesRenamedItem = TypedDict(
+    "DatasetsCompareResponseVariant1SummaryHeaderClassesRenamedItem", {"from": str, "to": str}
+)
+
+
+DatasetsCompareResponseVariant1SummaryHeader = TypedDict(
+    "DatasetsCompareResponseVariant1SummaryHeader",
+    {
+        "classesAdded": list[str],
+        "classesRemoved": list[str],
+        "classesRenamed": list[DatasetsCompareResponseVariant1SummaryHeaderClassesRenamedItem],
+        "changed": list[str],
+    },
+)
+
+
+DatasetsCompareResponseVariant1Summary = TypedDict(
+    "DatasetsCompareResponseVariant1Summary",
+    {
+        "added": int,
+        "removed": int,
+        "modified": int,
+        "moved": int,
+        "labelsAdded": int,
+        "labelsRemoved": int,
+        "header": DatasetsCompareResponseVariant1SummaryHeader,
+    },
+)
+
+
+DatasetsCompareResponseVariant1ItemsItemBase = TypedDict(
+    "DatasetsCompareResponseVariant1ItemsItemBase", {"split": str, "labelCount": int}
+)
+
+
+DatasetsCompareResponseVariant1ItemsItemHead = TypedDict(
+    "DatasetsCompareResponseVariant1ItemsItemHead", {"split": str, "labelCount": int}
+)
+
+
+DatasetsCompareResponseVariant1ItemsItem = TypedDict(
+    "DatasetsCompareResponseVariant1ItemsItem",
+    {
+        "hash": str,
+        "name": str,
+        "ext": str,
+        "change": Literal["added", "removed", "modified", "moved"],
+        "fields": list[Literal["labels", "metadata", "size", "depth", "name", "error"]],
+        "labelsAdded": int,
+        "labelsRemoved": int,
+        "base": NotRequired[DatasetsCompareResponseVariant1ItemsItemBase],
+        "head": NotRequired[DatasetsCompareResponseVariant1ItemsItemHead],
+    },
+)
+
+
+DatasetsCompareResponseVariant1 = TypedDict(
+    "DatasetsCompareResponseVariant1",
+    {
+        "summary": NotRequired[DatasetsCompareResponseVariant1Summary],
+        "items": list[DatasetsCompareResponseVariant1ItemsItem],
+        "nextCursor": NotRequired[str],
+    },
+)
+
+
+DatasetsCompareResponseVariant2VersionsItemKptSkeletonKeypointsItem = TypedDict(
+    "DatasetsCompareResponseVariant2VersionsItemKptSkeletonKeypointsItem",
+    {"name": str, "x": float, "y": float, "color": NotRequired[str]},
+)
+
+
+DatasetsCompareResponseVariant2VersionsItemKptSkeleton = TypedDict(
+    "DatasetsCompareResponseVariant2VersionsItemKptSkeleton",
+    {
+        "id": str,
+        "name": str,
+        "description": NotRequired[str],
+        "keypoints": list[DatasetsCompareResponseVariant2VersionsItemKptSkeletonKeypointsItem],
+        "connections": list[list[Any]],
+        "url": NotRequired[str],
+    },
+)
+
+
+DatasetsCompareResponseVariant2VersionsItemImagesItemLabelsItem = TypedDict(
+    "DatasetsCompareResponseVariant2VersionsItemImagesItemLabelsItem",
+    {
+        "classId": int,
+        "bbox": NotRequired[list[Any]],
+        "segments": NotRequired[list[float]],
+        "keypoints": NotRequired[list[float]],
+        "obb": NotRequired[list[Any]],
+        "skeletonId": NotRequired[str],
+    },
+)
+
+
+DatasetsCompareResponseVariant2VersionsItemImagesItem = TypedDict(
+    "DatasetsCompareResponseVariant2VersionsItemImagesItem",
+    {
+        "split": str,
+        "name": str,
+        "ext": str,
+        "width": int,
+        "height": int,
+        "labels": list[DatasetsCompareResponseVariant2VersionsItemImagesItemLabelsItem],
+        "labelCount": int,
+        "metadata": NotRequired[dict[str, Any]],
+        "imageUrl": NotRequired[str],
+        "thumbnailUrl": NotRequired[str],
+    },
+)
+
+
+DatasetsCompareResponseVariant2VersionsItem = TypedDict(
+    "DatasetsCompareResponseVariant2VersionsItem",
+    {
+        "version": int,
+        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
+        "kptShape": NotRequired[list[int]],
+        "kptSkeleton": NotRequired[DatasetsCompareResponseVariant2VersionsItemKptSkeleton],
+        "classNames": list[str],
+        "images": list[DatasetsCompareResponseVariant2VersionsItemImagesItem],
+    },
+)
+
+
+DatasetsCompareResponseVariant2 = TypedDict(
+    "DatasetsCompareResponseVariant2", {"versions": list[DatasetsCompareResponseVariant2VersionsItem | None]}
+)
+
+
+DatasetsCompareResponse = DatasetsCompareResponseVariant1 | DatasetsCompareResponseVariant2
+
+
 DatasetsListResponseDatasetsItemSplits = TypedDict(
     "DatasetsListResponseDatasetsItemSplits", {"train": int, "val": int, "test": int, "labeled": int}
 )
@@ -1171,6 +1308,7 @@ DatasetsListResponseDatasetsItem = TypedDict(
         "processingTimeMs": NotRequired[float],
         "lastIngestJobId": NotRequired[str],
         "processingError": NotRequired[DatasetsListResponseDatasetsItemProcessingError],
+        "restoreVersion": NotRequired[int],
         "lastIngestSummary": NotRequired[DatasetsListResponseDatasetsItemLastIngestSummary],
         "errorCount": NotRequired[int],
         "iconColor": NotRequired[str],

@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.72",
+    "version": "0.1.73",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -1631,6 +1631,11 @@
                 ],
                 "additionalProperties": false
               },
+              "restoreVersion": {
+                "description": "Version an in-progress or interrupted restore applies",
+                "type": "integer",
+                "exclusiveMinimum": 0
+              },
               "lastIngestSummary": {
                 "type": "object",
                 "properties": {
@@ -2109,6 +2114,7 @@
             "exclusiveMinimum": 0
           },
           "downloadUrl": {
+            "description": "Signed NDJSON URL; omitted when the request set download to false",
             "type": "string"
           },
           "reused": {
@@ -2117,7 +2123,6 @@
         },
         "required": [
           "version",
-          "downloadUrl",
           "reused"
         ],
         "additionalProperties": false
@@ -3274,6 +3279,509 @@
         ],
         "additionalProperties": false
       },
+      "DatasetVersionComparison": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "summary": {
+                "description": "Exact totals, on the first page only",
+                "type": "object",
+                "properties": {
+                  "added": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "removed": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "modified": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "moved": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Images whose split changed"
+                  },
+                  "labelsAdded": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "labelsRemoved": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "header": {
+                    "type": "object",
+                    "properties": {
+                      "classesAdded": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "classesRemoved": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "classesRenamed": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "from": {
+                              "type": "string"
+                            },
+                            "to": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "from",
+                            "to"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "changed": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Other dataset fields that differ, such as task or kpt_shape"
+                      }
+                    },
+                    "required": [
+                      "classesAdded",
+                      "classesRemoved",
+                      "classesRenamed",
+                      "changed"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "added",
+                  "removed",
+                  "modified",
+                  "moved",
+                  "labelsAdded",
+                  "labelsRemoved",
+                  "header"
+                ],
+                "additionalProperties": false
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "hash": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "ext": {
+                      "type": "string"
+                    },
+                    "change": {
+                      "type": "string",
+                      "enum": [
+                        "added",
+                        "removed",
+                        "modified",
+                        "moved"
+                      ]
+                    },
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "labels",
+                          "metadata",
+                          "size",
+                          "depth",
+                          "name",
+                          "error"
+                        ]
+                      }
+                    },
+                    "labelsAdded": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "labelsRemoved": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "base": {
+                      "type": "object",
+                      "properties": {
+                        "split": {
+                          "type": "string"
+                        },
+                        "labelCount": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "split",
+                        "labelCount"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "head": {
+                      "type": "object",
+                      "properties": {
+                        "split": {
+                          "type": "string"
+                        },
+                        "labelCount": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "split",
+                        "labelCount"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "hash",
+                    "name",
+                    "ext",
+                    "change",
+                    "fields",
+                    "labelsAdded",
+                    "labelsRemoved"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "nextCursor": {
+                "description": "Pass as cursor for the next page",
+                "type": "string"
+              }
+            },
+            "required": [
+              "items"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "versions": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "version": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0
+                        },
+                        "task": {
+                          "type": "string",
+                          "enum": [
+                            "detect",
+                            "segment",
+                            "semantic",
+                            "depth",
+                            "classify",
+                            "pose",
+                            "obb"
+                          ],
+                          "description": "YOLO task type"
+                        },
+                        "kptShape": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        },
+                        "kptSkeleton": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100
+                            },
+                            "description": {
+                              "description": "Short description of the skeleton template",
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "keypoints": {
+                              "minItems": 1,
+                              "maxItems": 500,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 50
+                                  },
+                                  "x": {
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "y": {
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "color": {
+                                    "type": "string",
+                                    "maxLength": 7
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "x",
+                                  "y"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "connections": {
+                              "maxItems": 1000,
+                              "type": "array",
+                              "items": {
+                                "type": "array",
+                                "prefixItems": [
+                                  {
+                                    "type": "integer",
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "type": "integer",
+                                    "minimum": 0
+                                  }
+                                ],
+                                "items": false,
+                                "minItems": 2,
+                                "maxItems": 2
+                              }
+                            },
+                            "url": {
+                              "description": "External reference URL for the skeleton dataset/standard",
+                              "type": "string",
+                              "maxLength": 4096,
+                              "format": "uri"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "keypoints",
+                            "connections"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "classNames": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "images": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "split": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "ext": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "labels": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "classId": {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "description": "Class index (0-based)"
+                                    },
+                                    "bbox": {
+                                      "description": "Bounding box [x_center, y_center, width, height] normalized 0-1",
+                                      "type": "array",
+                                      "prefixItems": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ],
+                                      "items": {
+                                        "not": {}
+                                      },
+                                      "minItems": 4
+                                    },
+                                    "segments": {
+                                      "description": "Segmentation points, normalized 0-1",
+                                      "maxItems": 10000,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "keypoints": {
+                                      "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                                      "example": [
+                                        0.1,
+                                        0.2,
+                                        0.3,
+                                        0.4
+                                      ],
+                                      "maxItems": 10000,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "obb": {
+                                      "description": "Oriented bounding box corners",
+                                      "type": "array",
+                                      "prefixItems": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ],
+                                      "items": {
+                                        "not": {}
+                                      },
+                                      "minItems": 8
+                                    },
+                                    "skeletonId": {
+                                      "description": "Skeleton template ID for pose keypoint connections",
+                                      "type": "string",
+                                      "maxLength": 128
+                                    }
+                                  },
+                                  "required": [
+                                    "classId"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "Single annotation (object) in an image"
+                                },
+                                "description": "Sampled to the API preview budget"
+                              },
+                              "labelCount": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "metadata": {
+                                "type": "object",
+                                "propertyNames": {
+                                  "type": "string"
+                                },
+                                "additionalProperties": {}
+                              },
+                              "imageUrl": {
+                                "type": "string"
+                              },
+                              "thumbnailUrl": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "split",
+                              "name",
+                              "ext",
+                              "width",
+                              "height",
+                              "labels",
+                              "labelCount"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "version",
+                        "task",
+                        "classNames",
+                        "images"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "required": [
+              "versions"
+            ],
+            "additionalProperties": false
+          }
+        ],
+        "description": "Changes between two versions, or one image in each"
+      },
       "ListDatasetsResponse": {
         "type": "object",
         "properties": {
@@ -3820,6 +4328,11 @@
               "timestamp"
             ],
             "additionalProperties": false
+          },
+          "restoreVersion": {
+            "description": "Version an in-progress or interrupted restore applies",
+            "type": "integer",
+            "exclusiveMinimum": 0
           },
           "lastIngestSummary": {
             "type": "object",
@@ -13840,6 +14353,11 @@
                   "description": {
                     "type": "string",
                     "maxLength": 200
+                  },
+                  "download": {
+                    "default": true,
+                    "description": "Return a signed NDJSON download URL; false saves the version without preparing a download",
+                    "type": "boolean"
                   }
                 },
                 "description": "Create a dataset version with an optional description"
@@ -16292,6 +16810,154 @@
             "label": "Python SDK",
             "lang": "Python",
             "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.redistribute_splits(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    train=1,\n    val=1,\n    test=1,\n)\nprint(response)"
+          }
+        ]
+      }
+    },
+    "/api/datasets/{owner}/{dataset}/versions/compare": {
+      "get": {
+        "summary": "Compare dataset versions",
+        "tags": [
+          "Datasets"
+        ],
+        "operationId": "get_api_datasets_owner_dataset_versions_compare",
+        "description": "Lists images added, removed, modified, or moved between two saved versions with an exact summary on the first page, or returns one image as each version stores it.",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 32,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "ultralytics"
+            },
+            "description": "Dataset owner"
+          },
+          {
+            "name": "dataset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "example": "coco8"
+            },
+            "description": "Dataset name"
+          },
+          {
+            "name": "base",
+            "in": "query",
+            "required": true,
+            "description": "Version compared from",
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "head",
+            "in": "query",
+            "required": true,
+            "description": "Version compared to",
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "description": "Resume after a previous page's nextCursor",
+            "schema": {
+              "type": "string",
+              "maxLength": 128,
+              "pattern": "^\\d+:\\d+$"
+            }
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": false,
+            "description": "Return this image as each version stores it instead of the change list",
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f\\d]{32}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Version comparison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetVersionComparison"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid versions, cursor, or image hash",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dataset or version not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Dataset is still processing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.compare(\n    owner=\"ultralytics\",\n    dataset=\"coco8\",\n    base=1,\n    head=1,\n)\nprint(response)"
           }
         ]
       }

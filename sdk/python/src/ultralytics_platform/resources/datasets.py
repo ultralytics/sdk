@@ -21,6 +21,7 @@ from ..types import (
     DatasetsClassStatsResponse,
     DatasetsCloneResponse,
     DatasetsClusteringResponse,
+    DatasetsCompareResponse,
     DatasetsCreateBatchResponse,
     DatasetsCreateEmbeddingsResponse,
     DatasetsCreateExportResponse,
@@ -577,6 +578,7 @@ class Datasets:
         dataset: str,
         *,
         description: str | NotGiven = NOT_GIVEN,
+        download: bool | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateExportResponse:
@@ -588,6 +590,7 @@ class Datasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             description (str, optional): description request value.
+            download (bool, optional): Return a signed NDJSON download URL; false saves the version without preparing a download
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -605,7 +608,7 @@ class Datasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"description": description},
+                json={"description": description, "download": download},
             ),
         )
 
@@ -1166,6 +1169,55 @@ class Datasets:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"train": train, "val": val, "test": test},
+            ),
+        )
+
+    def compare(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        base: int,
+        head: int,
+        cursor: str | NotGiven = NOT_GIVEN,
+        hash: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsCompareResponse:
+        """Compare dataset versions.
+
+        Lists images added, removed, modified, or moved between two saved versions with an exact summary on the first page, or returns one image as each version stores it.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            base (int): Version compared from
+            head (int): Version compared to
+            cursor (str, optional): Resume after a previous page's nextCursor
+            hash (str, optional): Return this image as each version stores it instead of the change list
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsCompareResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsCompareResponse,
+            self._client.request(
+                "GET",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/versions/compare",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                params=[
+                    *_query_parameter("base", base, style="form", explode=True),
+                    *_query_parameter("head", head, style="form", explode=True),
+                    *_query_parameter("cursor", cursor, style="form", explode=True),
+                    *_query_parameter("hash", hash, style="form", explode=True),
+                ],
             ),
         )
 
@@ -1911,6 +1963,7 @@ class AsyncDatasets:
         dataset: str,
         *,
         description: str | NotGiven = NOT_GIVEN,
+        download: bool | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsCreateExportResponse:
@@ -1922,6 +1975,7 @@ class AsyncDatasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             description (str, optional): description request value.
+            download (bool, optional): Return a signed NDJSON download URL; false saves the version without preparing a download
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -1939,7 +1993,7 @@ class AsyncDatasets:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"description": description},
+                json={"description": description, "download": download},
             ),
         )
 
@@ -2500,6 +2554,55 @@ class AsyncDatasets:
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
                 json={"train": train, "val": val, "test": test},
+            ),
+        )
+
+    async def compare(
+        self,
+        owner: str,
+        dataset: str,
+        *,
+        base: int,
+        head: int,
+        cursor: str | NotGiven = NOT_GIVEN,
+        hash: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsCompareResponse:
+        """Compare dataset versions.
+
+        Lists images added, removed, modified, or moved between two saved versions with an exact summary on the first page, or returns one image as each version stores it.
+
+        Args:
+            owner (str): Dataset owner
+            dataset (str): Dataset name
+            base (int): Version compared from
+            head (int): Version compared to
+            cursor (str, optional): Resume after a previous page's nextCursor
+            hash (str, optional): Return this image as each version stores it instead of the change list
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsCompareResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsCompareResponse,
+            await self._client.request(
+                "GET",
+                f"/api/datasets/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(dataset, explode=False, allow_reserved=False)}/versions/compare",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                params=[
+                    *_query_parameter("base", base, style="form", explode=True),
+                    *_query_parameter("head", head, style="form", explode=True),
+                    *_query_parameter("cursor", cursor, style="form", explode=True),
+                    *_query_parameter("hash", hash, style="form", explode=True),
+                ],
             ),
         )
 
