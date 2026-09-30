@@ -6,62 +6,76 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
+from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
 
 import pytest
 
 
-def test_cli_wire_and_auth(tmp_path):
-    requests = []
+@contextmanager
+def loopback(reply):
+    """Serve `reply(handler, body) -> (status, JSON payload or raw bytes)` on loopback and yield its URL."""
 
     class Receiver(BaseHTTPRequestHandler):
         def log_message(self, *args):
             pass
 
         def do_GET(self):
-            body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
-            requests.append((self.command, self.path, dict(self.headers), body))
-            if self.headers.get("Authorization") == "Bearer invalid":
-                self.send_response(401)
-                self.end_headers()
-                self.wfile.write(b"sensitive upstream response")
-                return
-            invalid_training = self.path == "/api/training/start" and json.loads(body)["trainArgs"] == {"epochs": 100}
-            payload = {"username": "jane"} if self.path == "/api/account/summary" else {"ok": True}
-            if invalid_training:
-                payload = {"error": "model and data are required"}
-            self.send_response(422 if invalid_training else 200)
-            self.send_header("Content-Type", "application/json")
+            status, payload = reply(self, self.rfile.read(int(self.headers.get("Content-Length", 0))))
+            self.send_response(status)
+            if not isinstance(payload, bytes):
+                self.send_header("Content-Type", "application/json")
+                payload = json.dumps(payload).encode()
             self.end_headers()
-            self.wfile.write(json.dumps(payload).encode())
+            self.wfile.write(payload)
 
         do_POST = do_PATCH = do_GET
 
     server = ThreadingHTTPServer(("127.0.0.1", 0), Receiver)
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    env = {
-        **os.environ,
-        "YOLO_CONFIG_DIR": str(tmp_path),
-        "ULTRALYTICS_API_KEY": "",
-        "ULTRALYTICS_PLATFORM_URL": f"http://127.0.0.1:{server.server_port}",
-    }
-
-    def run(*args, input=None):
-        return subprocess.run(
-            [sys.executable, "-m", "ultralytics_platform.cli", *args],
-            env=env,
-            input=input,
-            text=True,
-            capture_output=True,
-            timeout=20,
-            check=False,
-        )
-
     try:
+        yield f"http://127.0.0.1:{server.server_port}"
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
+
+
+def test_cli_wire_and_auth(tmp_path):
+    requests = []
+
+    def reply(handler, body):
+        requests.append((handler.command, handler.path, dict(handler.headers), body))
+        if handler.headers.get("Authorization") == "Bearer invalid":
+            return 401, b"sensitive upstream response"
+        if handler.path == "/api/training/start" and json.loads(body)["trainArgs"] == {"epochs": 100}:
+            return 422, {"error": "model and data are required"}
+        return 200, {"username": "jane"} if handler.path == "/api/account/summary" else {"ok": True}
+
+    with loopback(reply) as url:
+        env = {
+            **os.environ,
+            "YOLO_CONFIG_DIR": str(tmp_path),
+            "ULTRALYTICS_API_KEY": "",
+            "ULTRALYTICS_PLATFORM_URL": url,
+        }
+
+        def run(*args, input=None):
+            return subprocess.run(
+                [sys.executable, "-m", "ultralytics_platform.cli", *args],
+                env=env,
+                input=input,
+                text=True,
+                capture_output=True,
+                timeout=20,
+                check=False,
+            )
+
         settings = tmp_path / "Ultralytics" / "settings.json"
         settings.parent.mkdir()
         saved = {"api_key": "ul_" + "a" * 40, "runs_dir": "custom runs"}
@@ -127,10 +141,6 @@ def test_cli_wire_and_auth(tmp_path):
         failed = run("cloud", "account", "summary")
         assert failed.returncode == 1 and "sensitive" not in failed.stderr
         assert json.loads(settings.read_text()) == saved
-    finally:
-        server.shutdown()
-        server.server_close()
-        thread.join()
 
 
 def test_cloud_predict_saves_outputs(tmp_path):
@@ -148,41 +158,40 @@ def test_cloud_predict_saves_outputs(tmp_path):
     cv2.imwrite(str(image), frame)
     posts = []
 
-    class Receiver(BaseHTTPRequestHandler):
-        def log_message(self, *args):
-            pass
+    def reply(handler, body):
+        posts.append(handler.path)
+        stride = int(match[1]) if (match := re.search(rb'name="vid_stride"\r\n\r\n(\d+)', body)) else 1
+        box = {"x1": 8, "y1": 8, "x2": 40, "y2": 32}
+        speed = {"preprocess": 1.0, "inference": 1.0, "postprocess": 1.0}
+        video = handler.path == "/api/models/jane/p/video/predict"
+        images = [  # like Platform, predict every stride-th video frame; each class is its frame index
+            {"results": [{"class": i, "name": str(i), "confidence": 0.9, "box": box}], "speed": speed}
+            for i in (range(stride - 1, 6, stride) if video else [0])
+        ]
+        return 200, {"metadata": {"task": "detect", "classNames": [str(i) for i in range(6)]}, "images": images}
 
-        def do_POST(self):
-            self.rfile.read(int(self.headers["Content-Length"]))
-            posts.append(self.path)
-            box = {"x1": 8, "y1": 8, "x2": 40, "y2": 32}
-            speed = {"preprocess": 1.0, "inference": 1.0, "postprocess": 1.0}
-            images = [  # each Platform frame's class is its index, so saved labels show which frames were kept
-                {"results": [{"class": i, "name": str(i), "confidence": 0.9, "box": box}], "speed": speed}
-                for i in range(6 if self.path == "/api/models/jane/p/video/predict" else 1)
+    with loopback(reply) as url:
+        env = {
+            **os.environ,
+            "YOLO_CONFIG_DIR": str(tmp_path),
+            "ULTRALYTICS_API_KEY": "key",
+            "ULTRALYTICS_PLATFORM_URL": url,
+        }
+
+        def run(model, source, *args):
+            command = [
+                sys.executable,
+                "-m",
+                "ultralytics_platform.cli",
+                "cloud",
+                "predict",
+                f"model=ul://jane/p/{model}",
             ]
-            payload = {"metadata": {"task": "detect", "classNames": [str(i) for i in range(6)]}, "images": images}
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps(payload).encode())
+            command += [f"source={source}", f"project={tmp_path / 'runs'}", f"name={model}", *args]
+            return subprocess.run(
+                command, env=env, cwd=tmp_path, text=True, capture_output=True, timeout=120, check=False
+            )
 
-    server = ThreadingHTTPServer(("127.0.0.1", 0), Receiver)
-    thread = Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    env = {
-        **os.environ,
-        "YOLO_CONFIG_DIR": str(tmp_path),
-        "ULTRALYTICS_API_KEY": "key",
-        "ULTRALYTICS_PLATFORM_URL": f"http://127.0.0.1:{server.server_port}",
-    }
-
-    def run(model, source, *args):
-        command = [sys.executable, "-m", "ultralytics_platform.cli", "cloud", "predict", f"model=ul://jane/p/{model}"]
-        command += [f"source={source}", f"project={tmp_path / 'runs'}", f"name={model}", *args]
-        return subprocess.run(command, env=env, cwd=tmp_path, text=True, capture_output=True, timeout=120, check=False)
-
-    try:
         result = run("video", video, "vid_stride=0")
         assert result.returncode == 2 and not posts, result.stderr
         result = run("video", video, "vid_stride=2", "save_txt=True", "save_crop=True")
@@ -197,7 +206,3 @@ def test_cloud_predict_saves_outputs(tmp_path):
         result = run("image", image)
         assert result.returncode == 0, result.stderr
         assert (tmp_path / "runs" / "image" / "image.jpg").is_file()
-    finally:
-        server.shutdown()
-        server.server_close()
-        thread.join()

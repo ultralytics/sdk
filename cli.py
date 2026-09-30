@@ -557,13 +557,12 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
     writer = BasePredictor(cfg=DEFAULT_CFG_DICT | args | {"task": task, "mode": "predict"})
     options, directory = writer.args, writer.save_dir
     writer.dataset = dataset = load_inference_source(str(source), batch=1, vid_stride=options.vid_stride)
-    stride = options.vid_stride if dataset.mode == "video" else 1  # Platform predicts every frame; skip like YOLO
     if options.save or options.save_txt or options.save_crop:
         directory.mkdir(parents=True, exist_ok=True)
         directory.joinpath("results.json").write_text(json.dumps(response, indent=2))
     try:
         # write_results() needs state that only the inference loop initializes, so call its public writers directly
-        for (paths, images, _), prediction in zip(dataset, response["images"][stride - 1 :: stride], strict=True):
+        for (paths, images, _), prediction in zip(dataset, response["images"], strict=True):
             result = prediction_result(images[0], paths[0], prediction, names, task, options)
             frame = dataset.frame if dataset.mode == "video" else None
             stem = source.stem if frame is None else f"{source.stem}_{frame}"
@@ -594,7 +593,7 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
 def cloud_predict(client: Platform, tokens: list[str]) -> int:
     """ul cloud predict model=ul://owner/project/model source=image.jpg [conf=0.25 iou=0.7 imgsz=640]
 
-    source= is one local image or video; conf/iou/imgsz run on Platform, classes/max_det/vid_stride apply locally.
+    source= is one local image or video; conf/iou/imgsz/vid_stride run on Platform, classes/max_det apply locally.
     Saves annotated output, with optional save_txt/save_crop/save_frames.
     project=, name=, save_dir=, and exist_ok= control local outputs as in YOLO.
     """
@@ -609,7 +608,8 @@ def cloud_predict(client: Platform, tokens: list[str]) -> int:
     check_cfg(local_args)  # reject invalid values before the paid Platform prediction, as `yolo predict` would
     uri = platform_model(client, model) or upload_model(client, model, *resolve_project(client, project))
     owner, project, model = uri[5:].split("/")
-    options = {key: args[key] for key in ("conf", "iou", "imgsz") if key in args}  # YOLO options the endpoint accepts
+    # YOLO options the endpoint accepts
+    options = {key: args[key] for key in ("conf", "iou", "imgsz", "vid_stride") if key in args}
     with source.open("rb") as file:
         response = client.models.predict(owner, project, model, body={"file": file, **options, "normalize": False})
     output(response)
