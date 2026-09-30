@@ -598,12 +598,15 @@ def cloud_predict(client: Platform, tokens: list[str]) -> int:
     Saves annotated output, with optional save_txt/save_crop/save_frames.
     project=, name=, save_dir=, and exist_ok= control local outputs as in YOLO.
     """
+    from ultralytics.cfg import check_cfg
+
     args = yolo_args(tokens)
     source = Path(str(args.pop("source", ""))).expanduser()
     if not source.is_file():
         raise ValueError("source= must be a local image or video file")
     model, project = args.pop("model", "yolo26n.pt"), args.pop("project", None)
     local_args = args | {"model": model, "project": project}
+    check_cfg(local_args)  # reject invalid values before the paid Platform prediction, as `yolo predict` would
     uri = platform_model(client, model) or upload_model(client, model, *resolve_project(client, project))
     owner, project, model = uri[5:].split("/")
     options = {key: args[key] for key in ("conf", "iou", "imgsz") if key in args}  # YOLO options the endpoint accepts

@@ -146,6 +146,7 @@ def test_cloud_predict_saves_outputs(tmp_path):
         writer.write(frame)
     writer.release()
     cv2.imwrite(str(image), frame)
+    posts = []
 
     class Receiver(BaseHTTPRequestHandler):
         def log_message(self, *args):
@@ -153,6 +154,7 @@ def test_cloud_predict_saves_outputs(tmp_path):
 
         def do_POST(self):
             self.rfile.read(int(self.headers["Content-Length"]))
+            posts.append(self.path)
             box = {"x1": 8, "y1": 8, "x2": 40, "y2": 32}
             speed = {"preprocess": 1.0, "inference": 1.0, "postprocess": 1.0}
             images = [  # each Platform frame's class is its index, so saved labels show which frames were kept
@@ -181,6 +183,8 @@ def test_cloud_predict_saves_outputs(tmp_path):
         return subprocess.run(command, env=env, cwd=tmp_path, text=True, capture_output=True, timeout=120, check=False)
 
     try:
+        result = run("video", video, "vid_stride=0")
+        assert result.returncode == 2 and not posts, result.stderr
         result = run("video", video, "vid_stride=2", "save_txt=True", "save_crop=True")
         assert result.returncode == 0, result.stderr
         output = tmp_path / "runs" / "video"
