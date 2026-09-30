@@ -79,7 +79,7 @@ class Deployments:
     ) -> DeploymentsUpdateResponse:
         """Update a deployment.
 
-        Updates the display name or custom metadata, starts, stops, resizes, or rolls out another model while preserving the endpoint URL.
+        Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows.
 
         Args:
             owner (str): Deployment owner
@@ -410,7 +410,7 @@ class Deployments:
     ) -> DeploymentsCreateResponse:
         """Deploy a model.
 
-        Creates a dedicated auto-scaling inference endpoint for a model.
+        Creates a dedicated inference endpoint for a model.
 
         Args:
             owner (str): Deployment owner
@@ -502,7 +502,7 @@ class AsyncDeployments:
     ) -> DeploymentsUpdateResponse:
         """Update a deployment.
 
-        Updates the display name or custom metadata, starts, stops, resizes, or rolls out another model while preserving the endpoint URL.
+        Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows.
 
         Args:
             owner (str): Deployment owner
@@ -833,7 +833,7 @@ class AsyncDeployments:
     ) -> DeploymentsCreateResponse:
         """Deploy a model.
 
-        Creates a dedicated auto-scaling inference endpoint for a model.
+        Creates a dedicated inference endpoint for a model.
 
         Args:
             owner (str): Deployment owner

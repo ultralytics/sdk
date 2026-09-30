@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.70",
+    "version": "0.1.72",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -4203,6 +4203,10 @@
             "description": "Dedicated deployment lifecycle status"
           },
           "message": {
+            "type": "string"
+          },
+          "deployment": {
+            "description": "Deployment slug after renaming",
             "type": "string"
           }
         },
@@ -15647,7 +15651,7 @@
                               "sam3.1",
                               "groundingdino",
                               "gpt-6-astra",
-                              "gpt-6-sol",
+                              "gpt-6.1-sol",
                               "claude-fable-5-1",
                               "claude-opus-5-5",
                               "claude-sonnet-5-5",
@@ -16773,7 +16777,7 @@
           "Deployments"
         ],
         "operationId": "patch_api_deployments_owner_deployment",
-        "description": "Updates the display name or custom metadata, starts, stops, resizes, or rolls out another model while preserving the endpoint URL.",
+        "description": "Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows.",
         "parameters": [
           {
             "name": "owner",
@@ -17018,7 +17022,7 @@
             }
           },
           "409": {
-            "description": "Deployment state changed, replacement model already deployed, or rename attempted during model replacement",
+            "description": "Deployment name already exists, deployment state changed, replacement model already deployed, or rename attempted during model replacement",
             "content": {
               "application/json": {
                 "schema": {
@@ -18028,7 +18032,7 @@
           "Deployments"
         ],
         "operationId": "post_api_deployments_owner",
-        "description": "Creates a dedicated auto-scaling inference endpoint for a model.",
+        "description": "Creates a dedicated inference endpoint for a model.",
         "parameters": [
           {
             "name": "owner",
@@ -18920,7 +18924,7 @@
                           "sam3.1",
                           "groundingdino",
                           "gpt-6-astra",
-                          "gpt-6-sol",
+                          "gpt-6.1-sol",
                           "claude-fable-5-1",
                           "claude-opus-5-5",
                           "claude-sonnet-5-5",

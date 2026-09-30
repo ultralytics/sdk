@@ -1304,6 +1304,7 @@ DeploymentsUpdateResponseVariant1 = TypedDict(
         "success": Literal[True],
         "status": Literal["creating", "deploying", "ready", "stopping", "stopped", "failed"],
         "message": str,
+        "deployment": NotRequired[str],
     },
 )
 
