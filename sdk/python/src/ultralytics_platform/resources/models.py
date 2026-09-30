@@ -326,7 +326,7 @@ class Models:
             project (str): Project name
             model (str): Model name
             body (dict[str, Any]): Request body.
-                Valid body objects (? marks an optional key): {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file, source?} or {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file?, source}
+                Valid body objects (? marks an optional key): {conf?, iou?, imgsz?, normalize?, decimals?, vid_stride?, bits?: 8|12|16, file, source?} or {conf?, iou?, imgsz?, normalize?, decimals?, vid_stride?, bits?: 8|12|16, file?, source}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -880,7 +880,7 @@ class AsyncModels:
             project (str): Project name
             model (str): Model name
             body (dict[str, Any]): Request body.
-                Valid body objects (? marks an optional key): {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file, source?} or {conf?, iou?, imgsz?, normalize?, decimals?, bits?: 8|12|16, file?, source}
+                Valid body objects (? marks an optional key): {conf?, iou?, imgsz?, normalize?, decimals?, vid_stride?, bits?: 8|12|16, file, source?} or {conf?, iou?, imgsz?, normalize?, decimals?, vid_stride?, bits?: 8|12|16, file?, source}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
