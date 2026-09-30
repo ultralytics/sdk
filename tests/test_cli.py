@@ -3,12 +3,15 @@
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import subprocess
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from threading import Thread
+
+import pytest
 
 
 def test_cli_wire_and_auth(tmp_path):
@@ -124,6 +127,72 @@ def test_cli_wire_and_auth(tmp_path):
         failed = run("cloud", "account", "summary")
         assert failed.returncode == 1 and "sensitive" not in failed.stderr
         assert json.loads(settings.read_text()) == saved
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
+
+
+def test_cloud_predict_saves_outputs(tmp_path):
+    if importlib.util.find_spec("ultralytics") is None:  # never import it here: that could reset the real settings
+        pytest.skip("ul cloud predict requires ultralytics")
+    import cv2
+    import numpy as np
+
+    frame = np.full((48, 64, 3), 128, np.uint8)
+    video, image = tmp_path / "clip.mp4", tmp_path / "image.jpg"
+    writer = cv2.VideoWriter(str(video), cv2.VideoWriter_fourcc(*"mp4v"), 10, (64, 48))
+    for _ in range(6):
+        writer.write(frame)
+    writer.release()
+    cv2.imwrite(str(image), frame)
+
+    class Receiver(BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            box = {"x1": 8, "y1": 8, "x2": 40, "y2": 32}
+            speed = {"preprocess": 1.0, "inference": 1.0, "postprocess": 1.0}
+            images = [  # each Platform frame's class is its index, so saved labels show which frames were kept
+                {"results": [{"class": i, "name": str(i), "confidence": 0.9, "box": box}], "speed": speed}
+                for i in range(6 if self.path == "/api/models/jane/p/video/predict" else 1)
+            ]
+            payload = {"metadata": {"task": "detect", "classNames": [str(i) for i in range(6)]}, "images": images}
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode())
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Receiver)
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    env = {
+        **os.environ,
+        "YOLO_CONFIG_DIR": str(tmp_path),
+        "ULTRALYTICS_API_KEY": "key",
+        "ULTRALYTICS_PLATFORM_URL": f"http://127.0.0.1:{server.server_port}",
+    }
+
+    def run(model, source, *args):
+        command = [sys.executable, "-m", "ultralytics_platform.cli", "cloud", "predict", f"model=ul://jane/p/{model}"]
+        command += [f"source={source}", f"project={tmp_path / 'runs'}", f"name={model}", *args]
+        return subprocess.run(command, env=env, cwd=tmp_path, text=True, capture_output=True, timeout=120, check=False)
+
+    try:
+        result = run("video", video, "vid_stride=2", "save_txt=True", "save_crop=True")
+        assert result.returncode == 0, result.stderr
+        output = tmp_path / "runs" / "video"
+        labels = [(output / "labels" / f"clip_{k}.txt").read_text().split()[0] for k in (1, 2, 3)]
+        assert labels == ["1", "3", "5"] and len(list((output / "labels").iterdir())) == 3
+        assert (output / "crops" / "3" / "clip_2.jpg").is_file()
+        capture = cv2.VideoCapture(str(next(output.glob("clip.*"))))  # .mp4 on macOS, .avi elsewhere
+        assert (capture.get(cv2.CAP_PROP_FRAME_COUNT), capture.get(cv2.CAP_PROP_FPS)) == (3, 5)
+        capture.release()
+        result = run("image", image)
+        assert result.returncode == 0, result.stderr
+        assert (tmp_path / "runs" / "image" / "image.jpg").is_file()
     finally:
         server.shutdown()
         server.server_close()
