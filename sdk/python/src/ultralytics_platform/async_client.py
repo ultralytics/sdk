@@ -9,6 +9,7 @@ import httpx
 from ._client import AsyncAPIClient, _resolve_api_key
 from .resources import (
     AsyncAccount,
+    AsyncAgents,
     AsyncBilling,
     AsyncDatasets,
     AsyncDeployments,
@@ -69,6 +70,7 @@ class AsyncPlatform:
         self.training = AsyncTraining(self._client)
         self.lifecycle = AsyncLifecycle(self._client)
         self.upload = AsyncUpload(self._client)
+        self.agents = AsyncAgents(self._client)
 
     async def close(self) -> None:
         """Close the underlying HTTP client."""

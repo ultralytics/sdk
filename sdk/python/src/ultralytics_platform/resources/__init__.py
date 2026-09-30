@@ -2,6 +2,8 @@
 
 from .account import Account as Account
 from .account import AsyncAccount as AsyncAccount
+from .agents import Agents as Agents
+from .agents import AsyncAgents as AsyncAgents
 from .billing import AsyncBilling as AsyncBilling
 from .billing import Billing as Billing
 from .datasets import AsyncDatasets as AsyncDatasets

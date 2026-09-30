@@ -725,6 +725,7 @@ DatasetsClusteringResponseImagesItem = TypedDict(
         "id": str,
         "umapX": float,
         "umapY": float,
+        "cluster": int | None,
         "split": Literal["train", "val", "test"] | None,
         "classIds": list[int],
         "width": int,
@@ -3505,3 +3506,74 @@ UploadSignedUrlResponse = TypedDict(
     "UploadSignedUrlResponse",
     {"sessionId": str, "uploadUrl": str, "expiresAt": str, "headers": NotRequired[dict[str, str]]},
 )
+
+
+AgentsListResponseWorkflowsItemGraphNodesItemPosition = TypedDict(
+    "AgentsListResponseWorkflowsItemGraphNodesItemPosition", {"x": float, "y": float}
+)
+
+
+AgentsListResponseWorkflowsItemGraphNodesItemData = TypedDict(
+    "AgentsListResponseWorkflowsItemGraphNodesItemData",
+    {
+        "label": str,
+        "type": Literal[
+            "Dataset", "Image", "YOLO", "LLM", "Gate", "Export", "Deployment", "Output", "Slack", "Webhook"
+        ],
+        "config": dict[str, str | float],
+    },
+)
+
+
+AgentsListResponseWorkflowsItemGraphNodesItem = TypedDict(
+    "AgentsListResponseWorkflowsItemGraphNodesItem",
+    {
+        "id": str,
+        "type": Literal["agent"],
+        "position": AgentsListResponseWorkflowsItemGraphNodesItemPosition,
+        "data": AgentsListResponseWorkflowsItemGraphNodesItemData,
+    },
+)
+
+
+AgentsListResponseWorkflowsItemGraphEdgesItem = TypedDict(
+    "AgentsListResponseWorkflowsItemGraphEdgesItem", {"id": str, "source": str, "target": str}
+)
+
+
+AgentsListResponseWorkflowsItemGraph = TypedDict(
+    "AgentsListResponseWorkflowsItemGraph",
+    {
+        "nodes": list[AgentsListResponseWorkflowsItemGraphNodesItem],
+        "edges": list[AgentsListResponseWorkflowsItemGraphEdgesItem],
+        "templateId": str,
+    },
+)
+
+
+AgentsListResponseWorkflowsItem = TypedDict(
+    "AgentsListResponseWorkflowsItem",
+    {
+        "id": str,
+        "username": str,
+        "name": str,
+        "version": int,
+        "graph": NotRequired[AgentsListResponseWorkflowsItemGraph],
+        "createdAt": str,
+        "updatedAt": str,
+    },
+)
+
+
+AgentsListResponse = TypedDict("AgentsListResponse", {"workflows": list[AgentsListResponseWorkflowsItem]})
+
+
+AgentsSaveResponseErrorsItem = TypedDict("AgentsSaveResponseErrorsItem", {"id": str, "label": str, "message": str})
+
+
+AgentsSaveResponse = TypedDict(
+    "AgentsSaveResponse", {"id": str, "version": int, "errors": list[AgentsSaveResponseErrorsItem]}
+)
+
+
+AgentsDeleteResponse = TypedDict("AgentsDeleteResponse", {"success": Literal[True]})

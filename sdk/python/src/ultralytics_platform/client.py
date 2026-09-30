@@ -9,6 +9,7 @@ import httpx
 from ._client import SyncAPIClient, _resolve_api_key
 from .resources import (
     Account,
+    Agents,
     Billing,
     Datasets,
     Deployments,
@@ -69,6 +70,7 @@ class Platform:
         self.training = Training(self._client)
         self.lifecycle = Lifecycle(self._client)
         self.upload = Upload(self._client)
+        self.agents = Agents(self._client)
 
     def close(self) -> None:
         """Close the underlying HTTP client."""
