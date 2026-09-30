@@ -556,13 +556,14 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
         raise ValueError("Platform did not report the model task, so predictions cannot be converted")
     writer = BasePredictor(cfg=DEFAULT_CFG_DICT | args | {"task": task, "mode": "predict"})
     options, directory = writer.args, writer.save_dir
-    writer.dataset = dataset = load_inference_source(str(source), batch=1)
+    writer.dataset = dataset = load_inference_source(str(source), batch=1, vid_stride=options.vid_stride)
+    stride = options.vid_stride if dataset.mode == "video" else 1  # Platform predicts every frame; skip like YOLO
     if options.save or options.save_txt or options.save_crop:
         directory.mkdir(parents=True, exist_ok=True)
         directory.joinpath("results.json").write_text(json.dumps(response, indent=2))
     try:
         # write_results() needs state that only the inference loop initializes, so call its public writers directly
-        for (paths, images, _), prediction in zip(dataset, response["images"], strict=True):
+        for (paths, images, _), prediction in zip(dataset, response["images"][stride - 1 :: stride], strict=True):
             result = prediction_result(images[0], paths[0], prediction, names, task, options)
             frame = dataset.frame if dataset.mode == "video" else None
             stem = source.stem if frame is None else f"{source.stem}_{frame}"
@@ -593,7 +594,7 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
 def cloud_predict(client: Platform, tokens: list[str]) -> int:
     """ul cloud predict model=ul://owner/project/model source=image.jpg [conf=0.25 iou=0.7 imgsz=640]
 
-    source= is one local image or video; conf/iou/imgsz run on Platform, classes/max_det apply locally.
+    source= is one local image or video; conf/iou/imgsz run on Platform, classes/max_det/vid_stride apply locally.
     Saves annotated output, with optional save_txt/save_crop/save_frames.
     project=, name=, save_dir=, and exist_ok= control local outputs as in YOLO.
     """
@@ -782,13 +783,13 @@ def main(argv: list[str] | None = None) -> int:
         message = f"API request failed (HTTP {error.status_code}){f': {detail}' if isinstance(detail, str) else '.'}"
         if error.status_code == 401:
             message += (
-                f"\nCreate an API key at {platform_url()}/settings?tab=api-keys, then run `ul login API_KEY` "
-                "or set ULTRALYTICS_API_KEY (it overrides the saved key)."
+                f"\nCreate an API key at {platform_url()}/settings?tab=api-keys and run `ul login API_KEY`. "
+                "ULTRALYTICS_API_KEY overrides the saved key, so update or unset it if it is set."
             )
         print(message, file=sys.stderr)
         return 1
     except APIConnectionError as error:
-        print(f"Could not connect to {platform_url()}: {error}", file=sys.stderr)
+        print(f"Request to {platform_url()} failed: {error}", file=sys.stderr)
         return 1
     except (ValueError, OSError) as error:
         print(f"Error: {error}", file=sys.stderr)
