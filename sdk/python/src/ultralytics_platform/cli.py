@@ -545,7 +545,6 @@ def prediction_result(image, path: str, prediction: dict, names: dict, task: str
 
 def save_predictions(source: Path, response: dict, args: dict) -> None:
     """Reuse YOLO's image/video, label, crop, and display writers without running local inference."""
-    import numpy as np
     from ultralytics.cfg import DEFAULT_CFG_DICT
     from ultralytics.data.build import load_inference_source
     from ultralytics.engine.predictor import BasePredictor
@@ -556,22 +555,37 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
     if (task := metadata.get("task")) is None:
         raise ValueError("Platform did not report the model task, so predictions cannot be converted")
     writer = BasePredictor(cfg=DEFAULT_CFG_DICT | args | {"task": task, "mode": "predict"})
-    directory = writer.save_dir
-    writer.dataset = load_inference_source(str(source), batch=1)
-    writer.source_type = writer.dataset.source_type
-    if writer.args.save or writer.args.save_txt or writer.args.save_crop:
+    options, directory = writer.args, writer.save_dir
+    writer.dataset = dataset = load_inference_source(str(source), batch=1)
+    if options.save or options.save_txt or options.save_crop:
         directory.mkdir(parents=True, exist_ok=True)
         directory.joinpath("results.json").write_text(json.dumps(response, indent=2))
     try:
-        for (paths, images, descriptions), prediction in zip(writer.dataset, response["images"], strict=True):
-            result = prediction_result(images[0], paths[0], prediction, names, task, writer.args)
-            writer.results = [result]
-            writer.write_results(0, Path(paths[0]), np.moveaxis(images[0], -1, 0), descriptions)
+        # write_results() needs state that only the inference loop initializes, so call its public writers directly
+        for (paths, images, _), prediction in zip(dataset, response["images"], strict=True):
+            result = prediction_result(images[0], paths[0], prediction, names, task, options)
+            frame = dataset.frame if dataset.mode == "video" else None
+            stem = source.stem if frame is None else f"{source.stem}_{frame}"
+            if options.save or options.show:
+                writer.plotted_img = result.plot(
+                    line_width=options.line_width,
+                    boxes=options.show_boxes,
+                    conf=options.show_conf,
+                    labels=options.show_labels,
+                )
+            if options.save_txt:
+                result.save_txt(directory / "labels" / f"{stem}.txt", save_conf=options.save_conf)
+            if options.save_crop:
+                result.save_crop(save_dir=directory / "crops", file_name=stem)
+            if options.show:
+                writer.show(str(source))
+            if options.save:
+                writer.save_predicted_images(directory / source.name, frame)
     finally:
         for video in writer.vid_writer.values():
             video.release()
-        if getattr(writer.dataset, "cap", None) is not None:
-            writer.dataset.cap.release()
+        if getattr(dataset, "cap", None) is not None:
+            dataset.cap.release()
     if directory.exists():
         print(f"Results saved to {directory}")
 
