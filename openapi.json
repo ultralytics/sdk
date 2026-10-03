@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.75",
+    "version": "0.1.78",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -251,7 +251,7 @@
               ],
               "additionalProperties": false
             },
-            "description": "Team workspaces available to browser sessions; API key responses omit this list"
+            "description": "Team workspaces a personal account belongs to, with its role in each; empty for team workspaces"
           }
         },
         "required": [
@@ -3486,6 +3486,300 @@
               "nextCursor": {
                 "description": "Pass as cursor for the next page",
                 "type": "string"
+              },
+              "preview": {
+                "description": "Before/after inspection of items[0]'s image (every split holding its hash), first page only",
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "version": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0
+                        },
+                        "task": {
+                          "type": "string",
+                          "enum": [
+                            "detect",
+                            "segment",
+                            "semantic",
+                            "depth",
+                            "classify",
+                            "pose",
+                            "obb"
+                          ],
+                          "description": "YOLO task type"
+                        },
+                        "kptShape": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        },
+                        "kptSkeleton": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100
+                            },
+                            "description": {
+                              "description": "Short description of the skeleton template",
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            "keypoints": {
+                              "minItems": 1,
+                              "maxItems": 500,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 50
+                                  },
+                                  "x": {
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "y": {
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 1
+                                  },
+                                  "color": {
+                                    "type": "string",
+                                    "maxLength": 7
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "x",
+                                  "y"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "connections": {
+                              "maxItems": 1000,
+                              "type": "array",
+                              "items": {
+                                "type": "array",
+                                "prefixItems": [
+                                  {
+                                    "type": "integer",
+                                    "minimum": 0
+                                  },
+                                  {
+                                    "type": "integer",
+                                    "minimum": 0
+                                  }
+                                ],
+                                "items": false,
+                                "minItems": 2,
+                                "maxItems": 2
+                              }
+                            },
+                            "url": {
+                              "description": "External reference URL for the skeleton dataset/standard",
+                              "type": "string",
+                              "maxLength": 4096,
+                              "format": "uri"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "keypoints",
+                            "connections"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "classNames": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "images": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "split": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "ext": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "labels": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "classId": {
+                                      "type": "integer",
+                                      "minimum": 0,
+                                      "description": "Class index (0-based)"
+                                    },
+                                    "bbox": {
+                                      "description": "Bounding box [x_center, y_center, width, height] normalized 0-1",
+                                      "type": "array",
+                                      "prefixItems": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ],
+                                      "items": {
+                                        "not": {}
+                                      },
+                                      "minItems": 4
+                                    },
+                                    "segments": {
+                                      "description": "Segmentation points, normalized 0-1",
+                                      "maxItems": 10000,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "keypoints": {
+                                      "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                                      "example": [
+                                        0.1,
+                                        0.2,
+                                        0.3,
+                                        0.4
+                                      ],
+                                      "maxItems": 10000,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "obb": {
+                                      "description": "Oriented bounding box corners",
+                                      "type": "array",
+                                      "prefixItems": [
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        },
+                                        {
+                                          "type": "number"
+                                        }
+                                      ],
+                                      "items": {
+                                        "not": {}
+                                      },
+                                      "minItems": 8
+                                    },
+                                    "skeletonId": {
+                                      "description": "Skeleton template ID for pose keypoint connections",
+                                      "type": "string",
+                                      "maxLength": 128
+                                    }
+                                  },
+                                  "required": [
+                                    "classId"
+                                  ],
+                                  "additionalProperties": false,
+                                  "description": "Single annotation (object) in an image"
+                                },
+                                "description": "Sampled to the API preview budget"
+                              },
+                              "labelCount": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "metadata": {
+                                "type": "object",
+                                "propertyNames": {
+                                  "type": "string"
+                                },
+                                "additionalProperties": {}
+                              },
+                              "imageUrl": {
+                                "type": "string"
+                              },
+                              "thumbnailUrl": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "split",
+                              "name",
+                              "ext",
+                              "width",
+                              "height",
+                              "labels",
+                              "labelCount"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "version",
+                        "task",
+                        "classNames",
+                        "images"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
               }
             },
             "required": [
@@ -4664,6 +4958,14 @@
                 "description": "API key the endpoint authenticates with, owners only",
                 "type": "string"
               },
+              "camera": {
+                "description": "RTSP/RTSPS URL of the always-on camera, owners only",
+                "type": "string"
+              },
+              "cameraApplying": {
+                "description": "Whether a camera change is still rolling out, owners only",
+                "type": "boolean"
+              },
               "createdAt": {
                 "type": "string",
                 "format": "date-time",
@@ -4757,7 +5059,8 @@
             "type": "string",
             "enum": [
               "deploying",
-              "stopping"
+              "stopping",
+              "ready"
             ]
           },
           "message": {
@@ -5755,6 +6058,14 @@
           "apiKeyId": {
             "description": "API key the endpoint authenticates with, owners only",
             "type": "string"
+          },
+          "camera": {
+            "description": "RTSP/RTSPS URL of the always-on camera, owners only",
+            "type": "string"
+          },
+          "cameraApplying": {
+            "description": "Whether a camera change is still rolling out, owners only",
+            "type": "boolean"
           },
           "createdAt": {
             "type": "string",
@@ -17070,7 +17381,7 @@
           "Datasets"
         ],
         "operationId": "get_api_datasets_owner_dataset_versions_compare",
-        "description": "Lists images added, removed, modified, or moved between two saved versions with an exact summary on the first page, or returns one image as each version stores it.",
+        "description": "Lists images added, removed, modified, or moved between two saved versions with an exact summary and a preview of the first changed image on the first page, or returns one image as each version stores it.",
         "parameters": [
           {
             "name": "owner",
@@ -17692,7 +18003,7 @@
           "Deployments"
         ],
         "operationId": "patch_api_deployments_owner_deployment",
-        "description": "Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows.",
+        "description": "Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows. The camera action saves an RTSP/RTSPS URL for always-on inference on a paid endpoint, or removes it with url null.",
         "parameters": [
           {
             "name": "owner",
@@ -17788,6 +18099,33 @@
                         },
                         "required": [
                           "action"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "action": {
+                            "type": "string",
+                            "const": "camera"
+                          },
+                          "url": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "maxLength": 4096,
+                                "format": "uri"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "RTSP or RTSPS camera URL, including any credentials, or null to remove the camera"
+                          }
+                        },
+                        "required": [
+                          "action",
+                          "url"
                         ],
                         "additionalProperties": false
                       },
@@ -26899,7 +27237,7 @@
           "Upload"
         ],
         "operationId": "post_api_upload_signed_url",
-        "description": "Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, complete the upload, then call the resource ingest endpoint with the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.",
+        "description": "Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, then confirm it with /api/upload/complete. Dataset uploads can skip that call: the dataset ingest endpoint completes the upload when given the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.",
         "requestBody": {
           "required": true,
           "content": {

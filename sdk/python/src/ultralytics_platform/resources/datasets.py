@@ -1186,7 +1186,7 @@ class Datasets:
     ) -> DatasetsCompareResponse:
         """Compare dataset versions.
 
-        Lists images added, removed, modified, or moved between two saved versions with an exact summary on the first page, or returns one image as each version stores it.
+        Lists images added, removed, modified, or moved between two saved versions with an exact summary and a preview of the first changed image on the first page, or returns one image as each version stores it.
 
         Args:
             owner (str): Dataset owner
@@ -2571,7 +2571,7 @@ class AsyncDatasets:
     ) -> DatasetsCompareResponse:
         """Compare dataset versions.
 
-        Lists images added, removed, modified, or moved between two saved versions with an exact summary on the first page, or returns one image as each version stores it.
+        Lists images added, removed, modified, or moved between two saved versions with an exact summary and a preview of the first changed image on the first page, or returns one image as each version stores it.
 
         Args:
             owner (str): Dataset owner

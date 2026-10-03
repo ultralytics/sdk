@@ -79,13 +79,13 @@ class Deployments:
     ) -> DeploymentsUpdateResponse:
         """Update a deployment.
 
-        Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows.
+        Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows. The camera action saves an RTSP/RTSPS URL for always-on inference on a paid endpoint, or removes it with url null.
 
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): API request for updating a deployment
-                Valid body objects (? marks an optional key): {metadata} or {name} or {action: "start"|"stop"|"replace"|"resize", project?, model?, name?, cpu?: 1|2|4|6|8, memoryGi?: 2|4|8|16|24|32}
+                Valid body objects (? marks an optional key): {metadata} or {name} or {action: "start"|"stop"|"camera"|"replace"|"resize", url?, project?, model?, name?, cpu?: 1|2|4|6|8, memoryGi?: 2|4|8|16|24|32}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -502,13 +502,13 @@ class AsyncDeployments:
     ) -> DeploymentsUpdateResponse:
         """Update a deployment.
 
-        Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows.
+        Renames the deployment and its Platform URL slug, updates custom metadata, starts, stops, resizes, or rolls out another model. The Cloud Run service URL is preserved. Renaming invalidates existing Platform URL references, including calls from active workflows. The camera action saves an RTSP/RTSPS URL for always-on inference on a paid endpoint, or removes it with url null.
 
         Args:
             owner (str): Deployment owner
             deployment (str): Deployment name
             body (dict[str, Any]): API request for updating a deployment
-                Valid body objects (? marks an optional key): {metadata} or {name} or {action: "start"|"stop"|"replace"|"resize", project?, model?, name?, cpu?: 1|2|4|6|8, memoryGi?: 2|4|8|16|24|32}
+                Valid body objects (? marks an optional key): {metadata} or {name} or {action: "start"|"stop"|"camera"|"replace"|"resize", url?, project?, model?, name?, cpu?: 1|2|4|6|8, memoryGi?: 2|4|8|16|24|32}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
