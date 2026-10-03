@@ -1061,12 +1061,75 @@ DatasetsCompareResponseVariant1ItemsItem = TypedDict(
 )
 
 
+DatasetsCompareResponseVariant1PreviewItemKptSkeletonKeypointsItem = TypedDict(
+    "DatasetsCompareResponseVariant1PreviewItemKptSkeletonKeypointsItem",
+    {"name": str, "x": float, "y": float, "color": NotRequired[str]},
+)
+
+
+DatasetsCompareResponseVariant1PreviewItemKptSkeleton = TypedDict(
+    "DatasetsCompareResponseVariant1PreviewItemKptSkeleton",
+    {
+        "id": str,
+        "name": str,
+        "description": NotRequired[str],
+        "keypoints": list[DatasetsCompareResponseVariant1PreviewItemKptSkeletonKeypointsItem],
+        "connections": list[list[Any]],
+        "url": NotRequired[str],
+    },
+)
+
+
+DatasetsCompareResponseVariant1PreviewItemImagesItemLabelsItem = TypedDict(
+    "DatasetsCompareResponseVariant1PreviewItemImagesItemLabelsItem",
+    {
+        "classId": int,
+        "bbox": NotRequired[list[Any]],
+        "segments": NotRequired[list[float]],
+        "keypoints": NotRequired[list[float]],
+        "obb": NotRequired[list[Any]],
+        "skeletonId": NotRequired[str],
+    },
+)
+
+
+DatasetsCompareResponseVariant1PreviewItemImagesItem = TypedDict(
+    "DatasetsCompareResponseVariant1PreviewItemImagesItem",
+    {
+        "split": str,
+        "name": str,
+        "ext": str,
+        "width": int,
+        "height": int,
+        "labels": list[DatasetsCompareResponseVariant1PreviewItemImagesItemLabelsItem],
+        "labelCount": int,
+        "metadata": NotRequired[dict[str, Any]],
+        "imageUrl": NotRequired[str],
+        "thumbnailUrl": NotRequired[str],
+    },
+)
+
+
+DatasetsCompareResponseVariant1PreviewItem = TypedDict(
+    "DatasetsCompareResponseVariant1PreviewItem",
+    {
+        "version": int,
+        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
+        "kptShape": NotRequired[list[int]],
+        "kptSkeleton": NotRequired[DatasetsCompareResponseVariant1PreviewItemKptSkeleton],
+        "classNames": list[str],
+        "images": list[DatasetsCompareResponseVariant1PreviewItemImagesItem],
+    },
+)
+
+
 DatasetsCompareResponseVariant1 = TypedDict(
     "DatasetsCompareResponseVariant1",
     {
         "summary": NotRequired[DatasetsCompareResponseVariant1Summary],
         "items": list[DatasetsCompareResponseVariant1ItemsItem],
         "nextCursor": NotRequired[str],
+        "preview": NotRequired[list[DatasetsCompareResponseVariant1PreviewItem | None]],
     },
 )
 
@@ -1424,6 +1487,8 @@ DeploymentsRetrieveResponseDeployment = TypedDict(
         "metered": NotRequired[bool],
         "deployedAt": NotRequired[str],
         "apiKeyId": NotRequired[str],
+        "camera": NotRequired[str],
+        "cameraApplying": NotRequired[bool],
         "createdAt": str,
         "updatedAt": str,
         "metadata": dict[str, Any],
@@ -1450,7 +1515,7 @@ DeploymentsUpdateResponseVariant1 = TypedDict(
 
 DeploymentsUpdateResponseVariant2 = TypedDict(
     "DeploymentsUpdateResponseVariant2",
-    {"success": Literal[True], "status": Literal["deploying", "stopping"], "message": str},
+    {"success": Literal[True], "status": Literal["deploying", "stopping", "ready"], "message": str},
 )
 
 
@@ -1745,6 +1810,8 @@ DeploymentsListResponseDeploymentsItem = TypedDict(
         "metered": NotRequired[bool],
         "deployedAt": NotRequired[str],
         "apiKeyId": NotRequired[str],
+        "camera": NotRequired[str],
+        "cameraApplying": NotRequired[bool],
         "createdAt": str,
         "updatedAt": str,
     },
