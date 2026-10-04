@@ -751,6 +751,7 @@ class Datasets:
         has_label: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         class_ids: str | NotGiven = NOT_GIVEN,
         search: str | NotGiven = NOT_GIVEN,
+        q: str | NotGiven = NOT_GIVEN,
         sort: Literal[
             "newest",
             "oldest",
@@ -774,7 +775,7 @@ class Datasets:
     ) -> DatasetsImagesResponse:
         """List dataset images.
 
-        Returns paginated images. Capped preview annotations are included only when requested.
+        Returns paginated images. Capped preview annotations are included only when requested. `search` matches names, classes and metadata. `q` is a hybrid search, ordered by relevance instead of `sort`: every image whose name, class or metadata matches it, best visual match first, then the best 1,000 visual matches among the rest.
 
         Args:
             owner (str): Dataset owner
@@ -788,6 +789,7 @@ class Datasets:
             has_label (Literal["true", "false"], optional): Filter by annotation state
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
             search (str, optional): Image name, class name or metadata search
+            q (str, optional): Hybrid search: name, class and metadata matches, then images that look like it, by relevance
             sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
@@ -819,6 +821,7 @@ class Datasets:
                     *_query_parameter("hasLabel", has_label, style="form", explode=True),
                     *_query_parameter("classIds", class_ids, style="form", explode=True),
                     *_query_parameter("search", search, style="form", explode=True),
+                    *_query_parameter("q", q, style="form", explode=True),
                     *_query_parameter("sort", sort, style="form", explode=True),
                     *_query_parameter("includeThumbnails", include_thumbnails, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
@@ -838,6 +841,7 @@ class Datasets:
         has_label: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         class_ids: str | NotGiven = NOT_GIVEN,
         search: str | NotGiven = NOT_GIVEN,
+        q: str | NotGiven = NOT_GIVEN,
         sort: Literal[
             "newest",
             "oldest",
@@ -861,7 +865,7 @@ class Datasets:
     ) -> DatasetsSelectedImagesResponse:
         """Get selected dataset images.
 
-        Returns the requested images with optional signed URLs and capped preview annotations.
+        Returns the requested images with optional signed URLs and capped preview annotations. A `q` keeps only its hybrid matches, best first.
 
         Args:
             owner (str): Dataset owner
@@ -871,6 +875,7 @@ class Datasets:
             has_label (Literal["true", "false"], optional): Filter by annotation state
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
             search (str, optional): Image name, class name or metadata search
+            q (str, optional): Hybrid search: name, class and metadata matches, then images that look like it, by relevance
             sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
@@ -899,6 +904,7 @@ class Datasets:
                     *_query_parameter("hasLabel", has_label, style="form", explode=True),
                     *_query_parameter("classIds", class_ids, style="form", explode=True),
                     *_query_parameter("search", search, style="form", explode=True),
+                    *_query_parameter("q", q, style="form", explode=True),
                     *_query_parameter("sort", sort, style="form", explode=True),
                     *_query_parameter("includeThumbnails", include_thumbnails, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
@@ -2136,6 +2142,7 @@ class AsyncDatasets:
         has_label: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         class_ids: str | NotGiven = NOT_GIVEN,
         search: str | NotGiven = NOT_GIVEN,
+        q: str | NotGiven = NOT_GIVEN,
         sort: Literal[
             "newest",
             "oldest",
@@ -2159,7 +2166,7 @@ class AsyncDatasets:
     ) -> DatasetsImagesResponse:
         """List dataset images.
 
-        Returns paginated images. Capped preview annotations are included only when requested.
+        Returns paginated images. Capped preview annotations are included only when requested. `search` matches names, classes and metadata. `q` is a hybrid search, ordered by relevance instead of `sort`: every image whose name, class or metadata matches it, best visual match first, then the best 1,000 visual matches among the rest.
 
         Args:
             owner (str): Dataset owner
@@ -2173,6 +2180,7 @@ class AsyncDatasets:
             has_label (Literal["true", "false"], optional): Filter by annotation state
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
             search (str, optional): Image name, class name or metadata search
+            q (str, optional): Hybrid search: name, class and metadata matches, then images that look like it, by relevance
             sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
@@ -2204,6 +2212,7 @@ class AsyncDatasets:
                     *_query_parameter("hasLabel", has_label, style="form", explode=True),
                     *_query_parameter("classIds", class_ids, style="form", explode=True),
                     *_query_parameter("search", search, style="form", explode=True),
+                    *_query_parameter("q", q, style="form", explode=True),
                     *_query_parameter("sort", sort, style="form", explode=True),
                     *_query_parameter("includeThumbnails", include_thumbnails, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),
@@ -2223,6 +2232,7 @@ class AsyncDatasets:
         has_label: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         class_ids: str | NotGiven = NOT_GIVEN,
         search: str | NotGiven = NOT_GIVEN,
+        q: str | NotGiven = NOT_GIVEN,
         sort: Literal[
             "newest",
             "oldest",
@@ -2246,7 +2256,7 @@ class AsyncDatasets:
     ) -> DatasetsSelectedImagesResponse:
         """Get selected dataset images.
 
-        Returns the requested images with optional signed URLs and capped preview annotations.
+        Returns the requested images with optional signed URLs and capped preview annotations. A `q` keeps only its hybrid matches, best first.
 
         Args:
             owner (str): Dataset owner
@@ -2256,6 +2266,7 @@ class AsyncDatasets:
             has_label (Literal["true", "false"], optional): Filter by annotation state
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
             search (str, optional): Image name, class name or metadata search
+            q (str, optional): Hybrid search: name, class and metadata matches, then images that look like it, by relevance
             sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
@@ -2284,6 +2295,7 @@ class AsyncDatasets:
                     *_query_parameter("hasLabel", has_label, style="form", explode=True),
                     *_query_parameter("classIds", class_ids, style="form", explode=True),
                     *_query_parameter("search", search, style="form", explode=True),
+                    *_query_parameter("q", q, style="form", explode=True),
                     *_query_parameter("sort", sort, style="form", explode=True),
                     *_query_parameter("includeThumbnails", include_thumbnails, style="form", explode=True),
                     *_query_parameter("includeImageUrls", include_image_urls, style="form", explode=True),

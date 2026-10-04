@@ -1908,11 +1908,66 @@ ExploreSearchResponseDatasetsItem = TypedDict(
 )
 
 
+ExploreSearchResponseImagesItemDataset = TypedDict(
+    "ExploreSearchResponseImagesItemDataset",
+    {
+        "owner": str,
+        "dataset": str,
+        "license": Literal[
+            "None",
+            "CC0-1.0",
+            "PDM-1.0",
+            "CC-BY-2.5",
+            "CC-BY-3.0",
+            "CC-BY-4.0",
+            "CC-BY-NC-2.0",
+            "CC-BY-NC-3.0",
+            "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
+            "CC-BY-NC-SA-3.0",
+            "CC-BY-NC-SA-4.0",
+            "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
+            "CC-BY-NC-ND-4.0",
+            "Apache-2.0",
+            "MIT",
+            "BSD-3-Clause",
+            "AGPL-3.0",
+            "GPL-2.0",
+            "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
+            "Research-Only",
+            "Other",
+        ],
+    },
+)
+
+
+ExploreSearchResponseImagesItem = TypedDict(
+    "ExploreSearchResponseImagesItem",
+    {
+        "name": str,
+        "hash": str,
+        "width": int,
+        "height": int,
+        "id": str,
+        "thumbnailUrl": str,
+        "imageUrl": NotRequired[str],
+        "dataset": ExploreSearchResponseImagesItemDataset,
+        "score": float,
+    },
+)
+
+
 ExploreSearchResponse = TypedDict(
     "ExploreSearchResponse",
     {
         "projects": list[ExploreSearchResponseProjectsItem],
         "datasets": list[ExploreSearchResponseDatasetsItem],
+        "images": NotRequired[list[ExploreSearchResponseImagesItem]],
         "hasMore": bool,
     },
 )

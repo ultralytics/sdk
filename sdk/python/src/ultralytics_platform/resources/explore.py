@@ -28,7 +28,7 @@ class Explore:
         self,
         *,
         q: str | NotGiven = NOT_GIVEN,
-        type: Literal["all", "projects", "datasets"] | NotGiven = NOT_GIVEN,
+        type: Literal["all", "projects", "datasets", "images"] | NotGiven = NOT_GIVEN,
         sort: Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
         | NotGiven = NOT_GIVEN,
         offset: int | NotGiven = NOT_GIVEN,
@@ -39,13 +39,13 @@ class Explore:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ExploreSearchResponse:
-        """Search public projects and datasets.
+        """Search public projects, datasets and images.
 
-        Browse public content. Authentication is only used for the caller's starred filter.
+        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Authentication is used for the caller's starred filter and their own and team images.
 
         Args:
             q (str, optional): Search term
-            type (Literal["all", "projects", "datasets"], optional): Resource type filter
+            type (Literal["all", "projects", "datasets", "images"], optional): Resource type filter; `images` searches image content (public, own and team datasets)
             sort (Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
@@ -93,7 +93,7 @@ class AsyncExplore:
         self,
         *,
         q: str | NotGiven = NOT_GIVEN,
-        type: Literal["all", "projects", "datasets"] | NotGiven = NOT_GIVEN,
+        type: Literal["all", "projects", "datasets", "images"] | NotGiven = NOT_GIVEN,
         sort: Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
         | NotGiven = NOT_GIVEN,
         offset: int | NotGiven = NOT_GIVEN,
@@ -104,13 +104,13 @@ class AsyncExplore:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ExploreSearchResponse:
-        """Search public projects and datasets.
+        """Search public projects, datasets and images.
 
-        Browse public content. Authentication is only used for the caller's starred filter.
+        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Authentication is used for the caller's starred filter and their own and team images.
 
         Args:
             q (str, optional): Search term
-            type (Literal["all", "projects", "datasets"], optional): Resource type filter
+            type (Literal["all", "projects", "datasets", "images"], optional): Resource type filter; `images` searches image content (public, own and team datasets)
             sort (Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
