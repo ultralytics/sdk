@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.78",
+    "version": "0.1.79",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -6482,6 +6482,111 @@
               "additionalProperties": false
             }
           },
+          "images": {
+            "description": "Images matching the search by content (`type=images`), best first",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 24,
+                  "maxLength": 24,
+                  "pattern": "^[0-9a-fA-F]{24}$",
+                  "example": "507f1f77bcf86cd799439011"
+                },
+                "thumbnailUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "dataset": {
+                  "type": "object",
+                  "properties": {
+                    "owner": {
+                      "type": "string"
+                    },
+                    "dataset": {
+                      "type": "string"
+                    },
+                    "license": {
+                      "type": "string",
+                      "enum": [
+                        "None",
+                        "CC0-1.0",
+                        "PDM-1.0",
+                        "CC-BY-2.5",
+                        "CC-BY-3.0",
+                        "CC-BY-4.0",
+                        "CC-BY-NC-2.0",
+                        "CC-BY-NC-3.0",
+                        "CC-BY-NC-4.0",
+                        "CC-BY-SA-3.0",
+                        "CC-BY-SA-4.0",
+                        "CC-BY-NC-SA-3.0",
+                        "CC-BY-NC-SA-4.0",
+                        "CC-BY-ND-4.0",
+                        "CC-BY-NC-ND-2.0",
+                        "CC-BY-NC-ND-4.0",
+                        "Apache-2.0",
+                        "MIT",
+                        "BSD-3-Clause",
+                        "AGPL-3.0",
+                        "GPL-2.0",
+                        "GPL-3.0",
+                        "LGPL-3.0",
+                        "ODbL-1.0",
+                        "DbCL-1.0",
+                        "Research-Only",
+                        "Other"
+                      ],
+                      "description": "Dataset license identifier"
+                    }
+                  },
+                  "required": [
+                    "owner",
+                    "dataset",
+                    "license"
+                  ],
+                  "additionalProperties": false
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Cosine similarity rescaled to 0-1 as (1 + cos) / 2"
+                }
+              },
+              "required": [
+                "name",
+                "hash",
+                "width",
+                "height",
+                "id",
+                "thumbnailUrl",
+                "dataset",
+                "score"
+              ],
+              "additionalProperties": false
+            }
+          },
           "hasMore": {
             "type": "boolean"
           }
@@ -6492,7 +6597,7 @@
           "hasMore"
         ],
         "additionalProperties": false,
-        "description": "Public project and dataset search results"
+        "description": "Public project, dataset and image search results"
       },
       "Image": {
         "type": "object",
@@ -15486,7 +15591,7 @@
           "Datasets"
         ],
         "operationId": "get_api_datasets_owner_dataset_images",
-        "description": "Returns paginated images. Capped preview annotations are included only when requested.",
+        "description": "Returns paginated images. Capped preview annotations are included only when requested. `search` matches names, classes and metadata. `q` is a hybrid search, ordered by relevance instead of `sort`: every image whose name, class or metadata matches it, best visual match first, then the best 1,000 visual matches among the rest.",
         "security": [
           {},
           {
@@ -15632,6 +15737,16 @@
             }
           },
           {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Hybrid search: name, class and metadata matches, then images that look like it, by relevance",
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
             "name": "sort",
             "in": "query",
             "required": false,
@@ -15764,7 +15879,7 @@
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_images",
-        "description": "Returns the requested images with optional signed URLs and capped preview annotations.",
+        "description": "Returns the requested images with optional signed URLs and capped preview annotations. A `q` keeps only its hybrid matches, best first.",
         "x-sdk-method": "selected_images",
         "security": [
           {},
@@ -15855,6 +15970,16 @@
             "in": "query",
             "required": false,
             "description": "Image name, class name or metadata search",
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Hybrid search: name, class and metadata matches, then images that look like it, by relevance",
             "schema": {
               "type": "string",
               "maxLength": 200
@@ -19520,12 +19645,12 @@
     },
     "/api/explore/search": {
       "get": {
-        "summary": "Search public projects and datasets",
+        "summary": "Search public projects, datasets and images",
         "tags": [
           "Explore"
         ],
         "operationId": "get_api_explore_search",
-        "description": "Browse public content. Authentication is only used for the caller's starred filter.",
+        "description": "Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Authentication is used for the caller's starred filter and their own and team images.",
         "security": [
           {},
           {
@@ -19548,14 +19673,15 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Resource type filter",
+            "description": "Resource type filter; `images` searches image content (public, own and team datasets)",
             "schema": {
               "default": "all",
               "type": "string",
               "enum": [
                 "all",
                 "projects",
-                "datasets"
+                "datasets",
+                "images"
               ]
             }
           },
@@ -19668,7 +19794,7 @@
             }
           },
           "429": {
-            "description": "Rate limit exceeded",
+            "description": "Image search rate limit exceeded",
             "content": {
               "application/json": {
                 "schema": {
