@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.79",
+    "version": "0.1.80",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -10473,7 +10473,8 @@
               "deepx",
               "qnn",
               "hailo",
-              "ascend"
+              "ascend",
+              "xilinx"
             ],
             "description": "Model export format"
           },
@@ -10627,7 +10628,8 @@
               "deepx",
               "qnn",
               "hailo",
-              "ascend"
+              "ascend",
+              "xilinx"
             ],
             "description": "Model export format"
           },
@@ -23155,7 +23157,8 @@
                       "deepx",
                       "qnn",
                       "hailo",
-                      "ascend"
+                      "ascend",
+                      "xilinx"
                     ],
                     "description": "Target export format"
                   },
@@ -23280,7 +23283,7 @@
                             "type": "boolean"
                           },
                           "name": {
-                            "description": "RKNN, QNN, Hailo, or Ascend target",
+                            "description": "RKNN, QNN, Hailo, Ascend, or AMD Xilinx target",
                             "anyOf": [
                               {
                                 "type": "string",
@@ -23333,6 +23336,18 @@
                                   "Ascend310B1"
                                 ],
                                 "description": "Ascend SoC (ATC --soc_version)"
+                              },
+                              {
+                                "type": "string",
+                                "enum": [
+                                  "ve2-xc2ve3858",
+                                  "ve2-xc2ve3504",
+                                  "ve2-xc2ve3558",
+                                  "ve2-xc2ve3804",
+                                  "ve2-xc2ve3304",
+                                  "ve2-xc2ve3358"
+                                ],
+                                "description": "AMD Xilinx Versal AI Edge Series Gen 2 device (Vitis AI compiler target)"
                               }
                             ]
                           }
