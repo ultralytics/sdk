@@ -177,6 +177,7 @@ class Exports:
             "qnn",
             "hailo",
             "ascend",
+            "xilinx",
         ],
         gpu_type: Literal[
             "rtx-2000-ada",
@@ -227,7 +228,7 @@ class Exports:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
-            format (Literal["torchscript", "onnx", "openvino", "engine", "coreml", "coreai", "saved_model", "pb", "edgetpu", "litert", "paddle", "mnn", "ncnn", "imx", "rknn", "executorch", "axelera", "deepx", "qnn", "hailo", "ascend"]): Target export format
+            format (Literal["torchscript", "onnx", "openvino", "engine", "coreml", "coreai", "saved_model", "pb", "edgetpu", "litert", "paddle", "mnn", "ncnn", "imx", "rknn", "executorch", "axelera", "deepx", "qnn", "hailo", "ascend", "xilinx"]): Target export format
             gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300", "jetson-thor-t5000", "jetson-thor-t4000", "jetson-agx-orin-64gb", "jetson-agx-orin-32gb", "jetson-orin-nx-16gb", "jetson-orin-nx-8gb", "jetson-orin-nano-8gb", "jetson-orin-nano-4gb"], optional): Target GPU type for TensorRT exports
             args (dict[str, Any] | None, optional): Additional export options
             timeout (float | httpx.Timeout, optional): Request timeout override.
@@ -407,6 +408,7 @@ class AsyncExports:
             "qnn",
             "hailo",
             "ascend",
+            "xilinx",
         ],
         gpu_type: Literal[
             "rtx-2000-ada",
@@ -457,7 +459,7 @@ class AsyncExports:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
-            format (Literal["torchscript", "onnx", "openvino", "engine", "coreml", "coreai", "saved_model", "pb", "edgetpu", "litert", "paddle", "mnn", "ncnn", "imx", "rknn", "executorch", "axelera", "deepx", "qnn", "hailo", "ascend"]): Target export format
+            format (Literal["torchscript", "onnx", "openvino", "engine", "coreml", "coreai", "saved_model", "pb", "edgetpu", "litert", "paddle", "mnn", "ncnn", "imx", "rknn", "executorch", "axelera", "deepx", "qnn", "hailo", "ascend", "xilinx"]): Target export format
             gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300", "jetson-thor-t5000", "jetson-thor-t4000", "jetson-agx-orin-64gb", "jetson-agx-orin-32gb", "jetson-orin-nx-16gb", "jetson-orin-nx-8gb", "jetson-orin-nano-8gb", "jetson-orin-nano-4gb"], optional): Target GPU type for TensorRT exports
             args (dict[str, Any] | None, optional): Additional export options
             timeout (float | httpx.Timeout, optional): Request timeout override.
