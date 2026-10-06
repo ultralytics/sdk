@@ -38,7 +38,7 @@ jobs:
         with:
           bun-version: latest
 
-      - uses: ultralytics/actions/setup-uv@main
+      - uses: ultralytics/actions/setup-uv@setup-uv-defaults
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -105,7 +105,7 @@ jobs:
         with:
           bun-version: latest
 
-      - uses: ultralytics/actions/setup-uv@main
+      - uses: ultralytics/actions/setup-uv@setup-uv-defaults
 
       - name: Sync live OpenAPI contract
         run: |
