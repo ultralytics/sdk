@@ -330,7 +330,9 @@ def package_dataset(dataset: Path, destination: str, task: str | None) -> Path:
                 and not any(part.startswith(".") for part in file.relative_to(root).parts)
                 and file.suffix[1:].lower() in IMG_FORMATS | {"txt", "npy"}
             ):
-                output.write(file, file.relative_to(root))
+                # deflate only formats that may be uncompressed; JPEG, PNG, WebP and the like are stored as is
+                deflate = file.suffix[1:].lower() in {"bmp", "dng", "tif", "tiff", "txt", "npy"}
+                output.write(file, file.relative_to(root), zipfile.ZIP_DEFLATED if deflate else zipfile.ZIP_STORED)
     return archive
 
 
