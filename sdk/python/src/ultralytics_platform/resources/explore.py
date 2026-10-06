@@ -34,6 +34,7 @@ class Explore:
         offset: int | NotGiven = NOT_GIVEN,
         limit: int | NotGiven = NOT_GIVEN,
         task: str | NotGiven = NOT_GIVEN,
+        license: str | NotGiven = NOT_GIVEN,
         author: str | NotGiven = NOT_GIVEN,
         starred: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
@@ -50,6 +51,7 @@ class Explore:
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
             task (str, optional): Comma-separated YOLO task filters
+            license (str, optional): Comma-separated dataset license filters
             author (str, optional): Owner username filter
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
             timeout (float | httpx.Timeout, optional): Request timeout override.
@@ -76,6 +78,7 @@ class Explore:
                     *_query_parameter("offset", offset, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                     *_query_parameter("task", task, style="form", explode=True),
+                    *_query_parameter("license", license, style="form", explode=True),
                     *_query_parameter("author", author, style="form", explode=True),
                     *_query_parameter("starred", starred, style="form", explode=True),
                 ],
@@ -99,6 +102,7 @@ class AsyncExplore:
         offset: int | NotGiven = NOT_GIVEN,
         limit: int | NotGiven = NOT_GIVEN,
         task: str | NotGiven = NOT_GIVEN,
+        license: str | NotGiven = NOT_GIVEN,
         author: str | NotGiven = NOT_GIVEN,
         starred: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
@@ -115,6 +119,7 @@ class AsyncExplore:
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
             task (str, optional): Comma-separated YOLO task filters
+            license (str, optional): Comma-separated dataset license filters
             author (str, optional): Owner username filter
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
             timeout (float | httpx.Timeout, optional): Request timeout override.
@@ -141,6 +146,7 @@ class AsyncExplore:
                     *_query_parameter("offset", offset, style="form", explode=True),
                     *_query_parameter("limit", limit, style="form", explode=True),
                     *_query_parameter("task", task, style="form", explode=True),
+                    *_query_parameter("license", license, style="form", explode=True),
                     *_query_parameter("author", author, style="form", explode=True),
                     *_query_parameter("starred", starred, style="form", explode=True),
                 ],
