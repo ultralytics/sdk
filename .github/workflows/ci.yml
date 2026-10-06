@@ -38,11 +38,9 @@ jobs:
         with:
           bun-version: latest
 
-      - uses: actions/setup-python@v7
+      - uses: ultralytics/actions/setup-uv@main
         with:
           python-version: ${{ matrix.python-version }}
-
-      - uses: ultralytics/actions/setup-uv@main
 
       - name: Verify pinned OpenAPI contract
         run: |
@@ -79,7 +77,7 @@ jobs:
           python -m compileall -q sdk/python/src
           uv build --project sdk/python
           unzip -l sdk/python/dist/*.whl | grep --quiet '\.dist-info/licenses/LICENSE$'
-          uv pip install --system pytest jsonschema referencing ultralytics "git+file://${GITHUB_WORKSPACE}@$(git rev-parse HEAD)#subdirectory=sdk/python" --torch-backend cpu
+          uv pip install pytest jsonschema referencing ultralytics "git+file://${GITHUB_WORKSPACE}@$(git rev-parse HEAD)#subdirectory=sdk/python" --torch-backend cpu
           pytest tests -v
 
   Live:
@@ -106,10 +104,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.14"
 
       - uses: ultralytics/actions/setup-uv@main
 
@@ -149,7 +143,7 @@ jobs:
           uvx ruff@0.16.2 check sdk/python tests cli.py auth.py
           python -m compileall -q sdk/python/src
           uv build --project sdk/python
-          uv pip install --system pytest jsonschema referencing "./sdk/python"
+          uv pip install pytest jsonschema referencing "./sdk/python"
           pytest tests -v
 
       - name: Open, validate, and merge contract update
@@ -198,5 +192,5 @@ jobs:
         env:
           ULTRALYTICS_API_KEY: ${{ secrets.ULTRALYTICS_API_KEY }}
         run: |
-          uv pip install --system ./sdk/python jsonschema referencing
+          uv pip install ./sdk/python jsonschema referencing
           python tests/live_readonly.py

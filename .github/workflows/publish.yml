@@ -36,11 +36,8 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.x"
       - uses: ultralytics/actions/setup-uv@main
-      - run: uv pip install --system --no-cache ultralytics-actions packaging
+      - run: uv pip install --no-cache ultralytics-actions packaging
       - id: check_pypi
         shell: python
         env:
@@ -72,12 +69,8 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.x"
       - uses: ultralytics/actions/setup-uv@main
-      - run: uv pip install --system --no-cache build
-      - run: python -m build sdk/python
+      - run: uv build sdk/python
       - uses: actions/upload-artifact@v7
         with:
           name: dist
@@ -125,11 +118,8 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.x"
       - uses: ultralytics/actions/setup-uv@main
-      - run: uv pip install --system --no-cache ultralytics-actions
+      - run: uv pip install --no-cache ultralytics-actions
       - name: Tag and Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -158,20 +148,15 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.x"
       - uses: ultralytics/actions/setup-uv@main
-      - run: |
-          uv venv sbom-env
-          uv pip install -e sdk/python
-        env:
-          VIRTUAL_ENV: sbom-env
+      - run: uv pip install -e sdk/python
       - uses: anchore/sbom-action@v0
         with:
           format: spdx-json
           output-file: sbom.spdx.json
-          path: sbom-env
+          path: ${{ env.VIRTUAL_ENV }}
+        env:
+          SYFT_SOURCE_NAME: ${{ github.repository }} # name the SBOM after the repo, not the venv path
       - run: gh release upload ${{ needs.check.outputs.current_tag }} sbom.spdx.json --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
