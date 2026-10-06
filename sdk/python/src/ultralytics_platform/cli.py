@@ -447,9 +447,9 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
     local_data = Path(args["data"]).expanduser()
     if not local_data.exists():  # ul:// URIs and built-in names such as coco8.yaml are resolved by Platform
         local_data = None
+    owner, project_slug = resolve_project(client, project)
     with TemporaryDirectory(prefix="ul-cloud-train-") as temporary:
         archive = package_dataset(local_data, temporary, args.get("task")) if local_data else None
-        owner, project_slug = resolve_project(client, project)
         model = args["model"]
         if Path(model).is_file() or not (model.startswith("ul://") or model in GITHUB_ASSETS_NAMES):
             args["model"] = upload_model(client, model, owner, project_slug)
