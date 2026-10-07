@@ -51,7 +51,7 @@ class Explore:
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
             task (str, optional): Comma-separated YOLO task filters
-            license (str, optional): Comma-separated dataset license filters
+            license (str, optional): Comma-separated license filters for projects and datasets
             author (str, optional): Owner username filter
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
             timeout (float | httpx.Timeout, optional): Request timeout override.
@@ -119,7 +119,7 @@ class AsyncExplore:
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
             task (str, optional): Comma-separated YOLO task filters
-            license (str, optional): Comma-separated dataset license filters
+            license (str, optional): Comma-separated license filters for projects and datasets
             author (str, optional): Owner username filter
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
             timeout (float | httpx.Timeout, optional): Request timeout override.
