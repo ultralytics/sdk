@@ -564,8 +564,10 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
         directory.joinpath("results.json").write_text(json.dumps(response, indent=2))
     try:
         # write_results() needs state that only the inference loop initializes, so call its public writers directly
-        for (paths, images, _), prediction in zip(dataset, response["images"], strict=True):
+        for (paths, images, info), prediction in zip(dataset, response["images"], strict=True):
             result = prediction_result(images[0], paths[0], prediction, names, task, options)
+            if options.verbose:  # YOLO's per-image line, minus the inference shape Platform does not report
+                print(f"{info[0]}{result.verbose()}{result.speed['inference']:.1f}ms")
             frame = dataset.frame if dataset.mode == "video" else None
             stem = source.stem if frame is None else f"{source.stem}_{frame}"
             if options.save or options.show:
@@ -595,16 +597,17 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
 def cloud_predict(client: Platform, tokens: list[str]) -> int:
     """ul cloud predict model=ul://owner/project/model source=image.jpg [conf=0.25 iou=0.7 imgsz=640]
 
-    source= is one local image or video; conf/iou/imgsz/vid_stride run on Platform, classes/max_det apply locally.
+    source= is one image/video file or URL; conf/iou/imgsz/vid_stride run on Platform, classes/max_det apply locally.
     Saves annotated output, with optional save_txt/save_crop/save_frames.
     project=, name=, save_dir=, and exist_ok= control local outputs as in YOLO.
     """
     from ultralytics.cfg import check_cfg
+    from ultralytics.data.build import check_source
 
     args = yolo_args(tokens)
-    source = Path(str(args.pop("source", ""))).expanduser()
-    if not source.is_file():
-        raise ValueError("source= must be a local image or video file")
+    source = check_source(str(args.pop("source", "")))[0]  # newer YOLO decodes extensionless image URLs to a list
+    if not isinstance(source, str) or not (source := Path(source).expanduser()).is_file():
+        raise ValueError("source= must be a local image or video file, or a URL with an image or video extension")
     model, project = args.pop("model", "yolo26n.pt"), args.pop("project", None)
     local_args = args | {"model": model, "project": project}
     check_cfg(local_args)  # reject invalid values before the paid Platform prediction, as `yolo predict` would
@@ -614,7 +617,6 @@ def cloud_predict(client: Platform, tokens: list[str]) -> int:
     options = {key: args[key] for key in ("conf", "iou", "imgsz", "vid_stride") if key in args}
     with source.open("rb") as file:
         response = client.models.predict(owner, project, model, body={"file": file, **options, "normalize": False})
-    output(response)
     save_predictions(source, response, local_args)
     return 0
 
