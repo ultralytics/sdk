@@ -29,7 +29,7 @@ class Explore:
         *,
         q: str | NotGiven = NOT_GIVEN,
         type: Literal["all", "projects", "datasets", "images"] | NotGiven = NOT_GIVEN,
-        sort: Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
+        sort: Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
         | NotGiven = NOT_GIVEN,
         offset: int | NotGiven = NOT_GIVEN,
         limit: int | NotGiven = NOT_GIVEN,
@@ -47,7 +47,7 @@ class Explore:
         Args:
             q (str, optional): Search term
             type (Literal["all", "projects", "datasets", "images"], optional): Resource type filter; `images` searches image content (public, own and team datasets)
-            sort (Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order
+            sort (Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
             task (str, optional): Comma-separated YOLO task filters
@@ -97,7 +97,7 @@ class AsyncExplore:
         *,
         q: str | NotGiven = NOT_GIVEN,
         type: Literal["all", "projects", "datasets", "images"] | NotGiven = NOT_GIVEN,
-        sort: Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
+        sort: Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
         | NotGiven = NOT_GIVEN,
         offset: int | NotGiven = NOT_GIVEN,
         limit: int | NotGiven = NOT_GIVEN,
@@ -115,7 +115,7 @@ class AsyncExplore:
         Args:
             q (str, optional): Search term
             type (Literal["all", "projects", "datasets", "images"], optional): Resource type filter; `images` searches image content (public, own and team datasets)
-            sort (Literal["stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order
+            sort (Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
             task (str, optional): Comma-separated YOLO task filters
