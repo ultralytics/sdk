@@ -624,15 +624,17 @@ def cloud_predict(client: Platform, tokens: list[str]) -> int:
 def cloud_export(client: Platform, tokens: list[str]) -> int:
     """ul cloud export model=ul://owner/project/model format=onnx [imgsz=640 quantize=16 gpu_type=rtx-4090]
 
-    Waits for the export and downloads its artifact to save_dir= or project=, otherwise beside local weights or in cwd.
+    Waits for the export (or resumes export_id=), downloads to save_dir= or project=, else beside local weights or cwd.
     Replaces an existing artifact only after a successful download; name= retains its export-target meaning.
     """
-    args = yolo_args(tokens)
-    local_args = args.copy()
-    model, project = args.pop("model", "yolo26n.pt"), args.pop("project", None)
+    args = yolo_args(tokens, "export_id")
+    model, project, export_id = args.pop("model", "yolo26n.pt"), args.pop("project", None), args.pop("export_id", None)
+    if export_id is not None and not model.startswith("ul://"):
+        raise ValueError("export_id= requires the model URI printed by the original export")
     hosted = platform_model(client, model)
+    directory = Path(args.get("save_dir") or project or (Path(model).parent if not hosted else "."))
     uri = hosted or upload_model(client, model, *resolve_project(client, project))
-    if uri.startswith("ul://ultralytics/"):  # exports require your own copy of official weights
+    if export_id is None and uri.startswith("ul://ultralytics/"):  # exports require your own copy of official weights
         owner, slug = resolve_project(client, project)
         clone = client.models.clone(*uri[5:].split("/"), owner_body=owner, project_body=slug)
         uri = f"ul://{clone['owner']}/{clone['project']}/{clone['model']}"
@@ -644,19 +646,20 @@ def cloud_export(client: Platform, tokens: list[str]) -> int:
         print(f"Warning: cloud export ignores local options: {', '.join(sorted(ignored))}.", file=sys.stderr)
     for key in ("save_dir", "device", "exist_ok", "mode", "task", *ignored):
         args.pop(key, None)
-    job = client.exports.create(owner, project, model, format=fmt, gpu_type=gpu_type, args=args)
-    print(f"Export: {job['id']} ({job['status']})")
-    job = wait_job(lambda: client.exports.retrieve(owner, project, model, job["id"])["export"])
-    output(job)
-    file = job.get("file") or {}
-    if not file.get("downloadUrl") or not file.get("downloadFilename"):
-        raise ValueError("Export completed without a download URL or filename")
-    directory = Path(
-        local_args.get("save_dir")
-        or local_args.get("project")
-        or (Path(str(local_args.get("model"))).parent if not hosted else ".")
-    )
-    download_file(file["downloadUrl"], directory.expanduser() / Path(file["downloadFilename"]).name)
+    if export_id is None:
+        job = client.exports.create(owner, project, model, format=fmt, gpu_type=gpu_type, args=args)
+        print(f"Export: {job['id']} ({job['status']}{' on ' + job['gpuType'] if job.get('gpuType') else ''})")
+        export_id = job["id"]
+    try:
+        job = wait_job(lambda: client.exports.retrieve(owner, project, model, export_id)["export"])
+        output(job)
+        file = job.get("file") or {}
+        if not file.get("downloadUrl") or not file.get("downloadFilename"):
+            raise ValueError("Export completed without a download URL or filename")
+        download_file(file["downloadUrl"], directory.expanduser() / Path(file["downloadFilename"]).name)
+    except KeyboardInterrupt:  # the remote export is unaffected; this command reattaches and downloads it
+        print(f"Interrupted; run `ul cloud export model={uri} export_id={export_id}` to resume", file=sys.stderr)
+        return 130
     return 0
 
 
