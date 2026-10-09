@@ -163,7 +163,7 @@ jobs:
 
   notify:
     needs: [check, publish, release, sbom]
-    if: always() && needs.check.outputs.increment == 'True'
+    if: always() && needs.check.outputs.increment == 'True' && github.run_attempt == '1' && (github.event_name != 'workflow_run' || github.event.workflow_run.run_attempt == 1)
     runs-on: ubuntu-latest
     permissions:
       contents: read
