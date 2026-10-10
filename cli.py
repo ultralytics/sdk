@@ -336,6 +336,10 @@ def package_dataset(dataset: Path, destination: str, task: str | None) -> Path:
     return archive
 
 
+class CloudJobError(Exception):
+    """A cloud job Platform accepted ended without its result: failed, cancelled, gone, or missing its artifact."""
+
+
 def wait_job(fetch) -> dict:
     """Poll a submitted cloud job until it stops, drawing epoch progress when the job reports it."""
     from ultralytics.utils.tqdm import TQDM, is_noninteractive_console
@@ -347,7 +351,7 @@ def wait_job(fetch) -> dict:
         while True:
             job = fetch()
             if job is None:
-                raise ValueError("Cloud job is no longer available")
+                raise CloudJobError("Cloud job is no longer available")
             progress = job.get("progress") or {}
             if progress.get("totalEpochs") and (bar or job["status"] in active):  # epoch bar, drawn at 0 right away
                 epoch = progress["currentEpoch"]
@@ -377,7 +381,7 @@ def wait_job(fetch) -> dict:
         if bar:
             bar.close()  # also on Ctrl-C, so the interruption message starts on its own line
     if job["status"] != "completed":
-        raise ValueError(f"Cloud job {job['status']}: {(job.get('error') or {}).get('message', '')}")
+        raise CloudJobError(f"Cloud job {job['status']}: {(job.get('error') or {}).get('message', '')}")
     return job
 
 
@@ -408,7 +412,7 @@ def download_model(client: Platform, uri: str, cfg) -> int:
         directory = get_save_dir(cfg)
         files = client.models.files(*model_path)["files"]
         if not files:
-            raise ValueError("Training completed without a downloadable checkpoint")
+            raise CloudJobError("Training completed without a downloadable checkpoint")
         checkpoint = YOLO(download_file(files[0]["downloadUrl"], directory / "weights" / "best.pt")).ckpt
         YAML.save(directory / "args.yaml", checkpoint["train_args"])
         if results := checkpoint.get("train_results"):
@@ -470,7 +474,7 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
                 time.sleep(2)
                 state = client.datasets.retrieve(dataset["owner"], dataset["dataset"])["dataset"]
             if state.get("status") == "failed":
-                raise ValueError(f"Dataset ingestion failed; inspect {args['data']}: {state.get('processingError')}")
+                raise CloudJobError(f"Dataset ingestion failed; inspect {args['data']}: {state.get('processingError')}")
         body = {"owner": owner, "project": project_slug}
         if name:
             body |= {"model": slugify(name), "name": name}
@@ -655,7 +659,7 @@ def cloud_export(client: Platform, tokens: list[str]) -> int:
         output(job)
         file = job.get("file") or {}
         if not file.get("downloadUrl") or not file.get("downloadFilename"):
-            raise ValueError("Export completed without a download URL or filename")
+            raise CloudJobError("Export completed without a download URL or filename")
         download_file(file["downloadUrl"], directory.expanduser() / Path(file["downloadFilename"]).name)
     except KeyboardInterrupt:  # the remote export is unaffected; this command reattaches and downloads it
         print(f"Interrupted; run `ul cloud export model={uri} export_id={export_id}` to resume", file=sys.stderr)
@@ -800,6 +804,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     except APIConnectionError as error:
         print(f"Request to {platform_url()} failed: {error}", file=sys.stderr)
+        return 1
+    except CloudJobError as error:
+        print(f"Error: {error}", file=sys.stderr)
         return 1
     except (ValueError, OSError) as error:
         print(f"Error: {error}", file=sys.stderr)
