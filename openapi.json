@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.83",
+    "version": "0.1.84",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -16863,6 +16863,7 @@
                               "gemini-3.1-pro-preview",
                               "grok-4.7",
                               "kimi-k3",
+                              "muse-wonder-1.0",
                               "muse-spark-1.3",
                               "mimo-v2.6-pro",
                               "gpt-6-luna",
@@ -20335,6 +20336,7 @@
                           "gemini-3.1-pro-preview",
                           "grok-4.7",
                           "kimi-k3",
+                          "muse-wonder-1.0",
                           "muse-spark-1.3",
                           "mimo-v2.6-pro",
                           "gpt-6-luna",
