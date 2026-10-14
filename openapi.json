@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.86",
+    "version": "0.1.87",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -23245,7 +23245,7 @@
                             "description": "Image size for export",
                             "type": "integer",
                             "minimum": 32,
-                            "maximum": 8192
+                            "maximum": 4096
                           },
                           "quantize": {
                             "description": "Export precision: 8/int8 (INT8), 16/fp16 (FP16), 32/fp32 (FP32); unset lets the exporter choose; also w8a8|w16a16|w8a16|w8a32",
