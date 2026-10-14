@@ -37,6 +37,8 @@ class Explore:
         license: str | NotGiven = NOT_GIVEN,
         author: str | NotGiven = NOT_GIVEN,
         starred: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        min_images: int | NotGiven = NOT_GIVEN,
+        max_images: int | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ExploreSearchResponse:
@@ -54,6 +56,8 @@ class Explore:
             license (str, optional): Comma-separated license filters for projects and datasets
             author (str, optional): Owner username filter
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
+            min_images (int, optional): Minimum dataset image count
+            max_images (int, optional): Maximum dataset image count
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -81,6 +85,8 @@ class Explore:
                     *_query_parameter("license", license, style="form", explode=True),
                     *_query_parameter("author", author, style="form", explode=True),
                     *_query_parameter("starred", starred, style="form", explode=True),
+                    *_query_parameter("minImages", min_images, style="form", explode=True),
+                    *_query_parameter("maxImages", max_images, style="form", explode=True),
                 ],
             ),
         )
@@ -105,6 +111,8 @@ class AsyncExplore:
         license: str | NotGiven = NOT_GIVEN,
         author: str | NotGiven = NOT_GIVEN,
         starred: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        min_images: int | NotGiven = NOT_GIVEN,
+        max_images: int | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ExploreSearchResponse:
@@ -122,6 +130,8 @@ class AsyncExplore:
             license (str, optional): Comma-separated license filters for projects and datasets
             author (str, optional): Owner username filter
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
+            min_images (int, optional): Minimum dataset image count
+            max_images (int, optional): Maximum dataset image count
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -149,6 +159,8 @@ class AsyncExplore:
                     *_query_parameter("license", license, style="form", explode=True),
                     *_query_parameter("author", author, style="form", explode=True),
                     *_query_parameter("starred", starred, style="form", explode=True),
+                    *_query_parameter("minImages", min_images, style="form", explode=True),
+                    *_query_parameter("maxImages", max_images, style="form", explode=True),
                 ],
             ),
         )

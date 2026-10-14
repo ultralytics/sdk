@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.84",
+    "version": "0.1.86",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -16860,7 +16860,7 @@
                               "claude-fable-5-1",
                               "claude-opus-5-5",
                               "claude-sonnet-5-5",
-                              "gemini-3.1-pro-preview",
+                              "gemini-4-argon",
                               "grok-4.7",
                               "kimi-k3",
                               "muse-wonder-1.0",
@@ -19774,6 +19774,26 @@
                 "false"
               ]
             }
+          },
+          {
+            "name": "minImages",
+            "in": "query",
+            "required": false,
+            "description": "Minimum dataset image count",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "maxImages",
+            "in": "query",
+            "required": false,
+            "description": "Maximum dataset image count",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         ],
         "responses": {
@@ -20333,7 +20353,7 @@
                           "claude-fable-5-1",
                           "claude-opus-5-5",
                           "claude-sonnet-5-5",
-                          "gemini-3.1-pro-preview",
+                          "gemini-4-argon",
                           "grok-4.7",
                           "kimi-k3",
                           "muse-wonder-1.0",
@@ -24277,7 +24297,7 @@
           "Models"
         ],
         "operationId": "get_api_models_owner_project",
-        "description": "Returns models by owner and project name.",
+        "description": "Returns models by owner and project name, without validation plots; retrieve a model for its plots.",
         "security": [
           {},
           {
@@ -28358,7 +28378,7 @@
                       "edges",
                       "templateId"
                     ],
-                    "description": "nodes[] are {id, type: \"agent\", position: {x, y}, data: {label, type, config}} with string or number config values; place each block 220 right of its input and branches 180 apart. edges[] are {id, source, target}; templateId is \"\". Dataset {dataset: slug or \"official:coco8\", split: train|val|test, maxInputs: up to 20 on free shared trials, 0 = all with a deployment} reads images; given an input, {dataset: slug} collects them. Image {dataset, image: image ID, name} is one dataset image; uploads happen on the canvas. YOLO {model: \"ul://ultralytics/yolo26/yolo26n\" (-seg, -pose, -obb, -cls suffixes) or ul://owner/project/model, task, conf?}; official models detect the 80 COCO classes. LLM {model: e.g. gemini-3.1-flash-lite-image, prompt} reads the image and upstream text. Gate {kind: \"condition\", path: \"<YOLO or Deployment block id>.counts.<class>\" or \".confidence.<class or *>\", op: eq|ne|gt|gte|lt|lte|between, value, upper?} or {kind: \"every\", unit: frames|seconds, value}. Deployment {deployment: slug, conf?}. Export {model, format} stands alone. Output {}. Slack {message}. Webhook {url: HTTPS, body: JSON object as a string}. Messages and bodies insert the upstream result at \"{output}\". Each block has at most one input. Dataset and Image blocks start chains; Export, Output, Slack, and Webhook end them."
+                    "description": "nodes[] are {id, type: \"agent\", position: {x, y}, data: {label, type, config}} with string or number config values; place each block 220 right of its input and branches 180 apart. edges[] are {id, source, target}; templateId is \"\". Dataset {dataset: slug or \"official:coco8\", split: train|val|test, maxInputs: up to 20 on free shared trials, 0 = all with a deployment} reads images; given an input, {dataset: slug} collects them. Image {dataset, image: image ID, name} is one dataset image; uploads happen on the canvas. YOLO {model: \"ul://ultralytics/yolo26/yolo26n\" (-seg, -pose, -obb, -cls suffixes) or ul://owner/project/model, task, conf?}; official models detect the 80 COCO classes. LLM {model: e.g. gemini-nano-banana-2.1, prompt} reads the image and upstream text. Gate {kind: \"condition\", path: \"<YOLO or Deployment block id>.counts.<class>\" or \".confidence.<class or *>\", op: eq|ne|gt|gte|lt|lte|between, value, upper?} or {kind: \"every\", unit: frames|seconds, value}. Deployment {deployment: slug, conf?}. Export {model, format} stands alone. Output {}. Slack {message}. Webhook {url: HTTPS, body: JSON object as a string}. Messages and bodies insert the upstream result at \"{output}\". Each block has at most one input. Dataset and Image blocks start chains; Export, Output, Slack, and Webhook end them."
                   },
                   "version": {
                     "type": "integer",

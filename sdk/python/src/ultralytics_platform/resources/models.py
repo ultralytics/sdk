@@ -472,7 +472,7 @@ class Models:
     ) -> ModelsListResponse:
         """List models in a project.
 
-        Returns models by owner and project name.
+        Returns models by owner and project name, without validation plots; retrieve a model for its plots.
 
         Args:
             owner (str): Project owner
@@ -1026,7 +1026,7 @@ class AsyncModels:
     ) -> ModelsListResponse:
         """List models in a project.
 
-        Returns models by owner and project name.
+        Returns models by owner and project name, without validation plots; retrieve a model for its plots.
 
         Args:
             owner (str): Project owner
