@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.87",
+    "version": "0.1.88",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -7746,6 +7746,34 @@
                   "type": "string",
                   "maxLength": 100,
                   "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                },
+                "task": {
+                  "type": "string",
+                  "enum": [
+                    "detect",
+                    "segment",
+                    "semantic",
+                    "depth",
+                    "classify",
+                    "pose",
+                    "obb"
+                  ],
+                  "description": "YOLO task type"
+                },
+                "thumb": {
+                  "description": "Roboflow project thumbnail URL",
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "imageCount": {
+                  "description": "Images in the latest version",
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sizeBytes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Export size of the latest version"
                 }
               },
               "required": [
@@ -7753,10 +7781,11 @@
                 "projectId",
                 "projectName",
                 "projectType",
-                "latestVersion"
+                "latestVersion",
+                "task",
+                "sizeBytes"
               ],
-              "additionalProperties": false,
-              "description": "Single project candidate for a Roboflow bulk import"
+              "additionalProperties": false
             }
           },
           "skippedCount": {

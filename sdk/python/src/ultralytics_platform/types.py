@@ -1439,6 +1439,10 @@ DatasetsPreviewRoboflowResponseNewDatasetsItem = TypedDict(
         "projectType": str,
         "latestVersion": int,
         "latestVersionName": NotRequired[str],
+        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
+        "thumb": NotRequired[str],
+        "imageCount": NotRequired[int],
+        "sizeBytes": int,
     },
 )
 
