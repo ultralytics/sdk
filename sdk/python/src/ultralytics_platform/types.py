@@ -3511,6 +3511,7 @@ TrainingMetricsResponse = TypedDict(
         "modelId": NotRequired[str],
         "runId": NotRequired[int],
         "modelSlug": NotRequired[str],
+        "modelUrl": NotRequired[str],
         "cancelled": NotRequired[bool],
         "action": NotRequired[Literal["training_terminated"]],
         "reason": NotRequired[str],

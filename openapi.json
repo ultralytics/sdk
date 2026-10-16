@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.88",
+    "version": "0.1.89",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -27962,7 +27962,7 @@
           "Training"
         ],
         "operationId": "post_api_webhooks_training_metrics",
-        "description": "Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); an existing username prefix selects that workspace and requires editor access; other paths belong to the caller. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).",
+        "description": "Receives callbacks from an existing training process; does not provision compute. For initial training_started registration, supply project and optionally name (defaults to train); an existing username prefix selects that workspace and requires editor access; other paths belong to the caller. Retain the returned modelId, runId, and modelSlug; send modelId on subsequent events. modelUrl links to the model. Honor cancelled=true responses. checkpoint_saved promotes an uploaded checkpoint only for its runId. This contract covers Bearer API-key callbacks, including assigned workers. Existing signed cloud callbacks instead use X-Alpha-Job-Id (model ID) and X-Alpha-Signature (HMAC-SHA256 of the exact request body with the job webhook secret).",
         "requestBody": {
           "required": true,
           "content": {
@@ -28044,6 +28044,10 @@
                     },
                     "modelSlug": {
                       "description": "Final model slug assigned during registration",
+                      "type": "string"
+                    },
+                    "modelUrl": {
+                      "description": "Platform URL of the registered model",
                       "type": "string"
                     },
                     "cancelled": {
