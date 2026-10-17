@@ -13,6 +13,7 @@ from .._client import (
     NotGiven,
     SyncAPIClient,
     _path_parameter,
+    _query_parameter,
 )
 from ..types import (
     ImagesDeleteBulkResponse,
@@ -160,6 +161,7 @@ class Images:
             "deepseek-flash",
             "mimo-v2.6-flash",
         ],
+        visual_prompts: Sequence[dict[str, Any]] | NotGiven = NOT_GIVEN,
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -168,11 +170,12 @@ class Images:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Generates label predictions using a YOLO model (ul:// URI), qwen, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
+        Generates label predictions using a YOLO model (ul:// URI), qwen, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
             model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash"]): modelId request value.
+            visual_prompts (Sequence[dict[str, Any]], optional): Same-image seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
@@ -193,19 +196,31 @@ class Images:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou, "classMapping": class_mapping},
+                json={
+                    "modelId": model_id,
+                    "visualPrompts": visual_prompts,
+                    "confidence": confidence,
+                    "iou": iou,
+                    "classMapping": class_mapping,
+                },
             ),
         )
 
     def find_similar_images(
-        self, image_id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+        self,
+        image_id: str,
+        *,
+        include_source_dataset: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ImagesFindSimilarImagesResponse:
         """Find similar images.
 
-        Returns visually similar images from public datasets and your own and team datasets, with their similarity score, source dataset, and license, automatically embedding the query image when needed, excluding images already in the source dataset and copies of the query image.
+        Returns visually similar images from public datasets and your own and team datasets, with their similarity score, source dataset, and license, automatically embedding the query image when needed. By default, excludes the source dataset and datasets containing copies of the query image. Set includeSourceDataset=true to include those datasets. Copies of the query image remain excluded.
 
         Args:
             image_id (str): Image ID
+            include_source_dataset (Literal["true", "false"], optional): Include the source dataset and datasets containing copies of the query image; query copies remain excluded
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -223,6 +238,7 @@ class Images:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("includeSourceDataset", include_source_dataset, style="form", explode=True)],
             ),
         )
 
@@ -467,6 +483,7 @@ class AsyncImages:
             "deepseek-flash",
             "mimo-v2.6-flash",
         ],
+        visual_prompts: Sequence[dict[str, Any]] | NotGiven = NOT_GIVEN,
         confidence: float | NotGiven = NOT_GIVEN,
         iou: float | NotGiven = NOT_GIVEN,
         class_mapping: Sequence[int | None] | NotGiven = NOT_GIVEN,
@@ -475,11 +492,12 @@ class AsyncImages:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Generates label predictions using a YOLO model (ul:// URI), qwen, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
+        Generates label predictions using a YOLO model (ul:// URI), qwen, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
             model_id (str | Literal["qwen", "moondream", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash"]): modelId request value.
+            visual_prompts (Sequence[dict[str, Any]], optional): Same-image seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
             class_mapping (Sequence[int | None], optional): Dataset class index for each model class, or null to drop it
@@ -500,19 +518,31 @@ class AsyncImages:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                json={"modelId": model_id, "confidence": confidence, "iou": iou, "classMapping": class_mapping},
+                json={
+                    "modelId": model_id,
+                    "visualPrompts": visual_prompts,
+                    "confidence": confidence,
+                    "iou": iou,
+                    "classMapping": class_mapping,
+                },
             ),
         )
 
     async def find_similar_images(
-        self, image_id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+        self,
+        image_id: str,
+        *,
+        include_source_dataset: Literal["true", "false"] | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> ImagesFindSimilarImagesResponse:
         """Find similar images.
 
-        Returns visually similar images from public datasets and your own and team datasets, with their similarity score, source dataset, and license, automatically embedding the query image when needed, excluding images already in the source dataset and copies of the query image.
+        Returns visually similar images from public datasets and your own and team datasets, with their similarity score, source dataset, and license, automatically embedding the query image when needed. By default, excludes the source dataset and datasets containing copies of the query image. Set includeSourceDataset=true to include those datasets. Copies of the query image remain excluded.
 
         Args:
             image_id (str): Image ID
+            include_source_dataset (Literal["true", "false"], optional): Include the source dataset and datasets containing copies of the query image; query copies remain excluded
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -530,6 +560,7 @@ class AsyncImages:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
+                params=[*_query_parameter("includeSourceDataset", include_source_dataset, style="form", explode=True)],
             ),
         )
 

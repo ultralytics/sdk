@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.89",
+    "version": "0.1.90",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -7177,7 +7177,7 @@
             "description": "Predicted annotations"
           },
           "partial": {
-            "description": "Output limit reached; only complete boxes were recovered and objects may be missing",
+            "description": "Output limit reached or suspected; returned annotations may omit objects",
             "type": "boolean"
           },
           "confidences": {
@@ -16906,6 +16906,9 @@
                           }
                         ]
                       },
+                      "visualPrompts": {
+                        "not": {}
+                      },
                       "confidence": {
                         "default": 0.25,
                         "description": "Confidence threshold",
@@ -20334,7 +20337,7 @@
           "Images"
         ],
         "operationId": "post_api_images_imageId_predict",
-        "description": "Generates label predictions using a YOLO model (ul:// URI), qwen, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.",
+        "description": "Generates label predictions using a YOLO model (ul:// URI), qwen, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.",
         "parameters": [
           {
             "name": "imageId",
@@ -20398,6 +20401,89 @@
                         ]
                       }
                     ]
+                  },
+                  "visualPrompts": {
+                    "description": "Same-image seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index",
+                    "minItems": 1,
+                    "maxItems": 200,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "classId": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Class index (0-based)"
+                        },
+                        "bbox": {
+                          "description": "Bounding box [x_center, y_center, width, height] normalized 0-1",
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ],
+                          "items": {
+                            "not": {}
+                          },
+                          "minItems": 4
+                        },
+                        "segments": {
+                          "description": "Segmentation points, normalized 0-1",
+                          "maxItems": 10000,
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          }
+                        },
+                        "obb": {
+                          "description": "Oriented bounding box corners",
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ],
+                          "items": {
+                            "not": {}
+                          },
+                          "minItems": 8
+                        }
+                      },
+                      "required": [
+                        "classId"
+                      ]
+                    }
                   },
                   "confidence": {
                     "default": 0.25,
@@ -20556,7 +20642,7 @@
           "Images"
         ],
         "operationId": "get_api_images_imageId_similar",
-        "description": "Returns visually similar images from public datasets and your own and team datasets, with their similarity score, source dataset, and license, automatically embedding the query image when needed, excluding images already in the source dataset and copies of the query image.",
+        "description": "Returns visually similar images from public datasets and your own and team datasets, with their similarity score, source dataset, and license, automatically embedding the query image when needed. By default, excludes the source dataset and datasets containing copies of the query image. Set includeSourceDataset=true to include those datasets. Copies of the query image remain excluded.",
         "x-sdk-method": "find_similar_images",
         "parameters": [
           {
@@ -20571,6 +20657,20 @@
               "example": "507f1f77bcf86cd799439011"
             },
             "description": "Image ID"
+          },
+          {
+            "name": "includeSourceDataset",
+            "in": "query",
+            "required": false,
+            "description": "Include the source dataset and datasets containing copies of the query image; query copies remain excluded",
+            "schema": {
+              "default": "false",
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
           }
         ],
         "responses": {
@@ -20585,7 +20685,7 @@
             }
           },
           "400": {
-            "description": "Invalid image ID",
+            "description": "Invalid image ID or query parameters",
             "content": {
               "application/json": {
                 "schema": {
