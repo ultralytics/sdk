@@ -170,6 +170,13 @@ def output(value) -> None:
         print(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False))
 
 
+def without(value, keys: set[str]):
+    """Drop the named keys at any depth, so callers can hide bulky fields such as label geometry."""
+    if isinstance(value, dict):
+        return {k: without(v, keys) for k, v in value.items() if k not in keys}
+    return [without(v, keys) for v in value] if isinstance(value, list) else value
+
+
 def defaults(methods: dict[str, Any]) -> dict[str, list[str]]:
     """Implicit verbs: bare `list`, and `retrieve` when its extra path identifiers are supplied."""
     if "list" not in methods:
@@ -735,6 +742,7 @@ def dispatch(tokens: list[str]) -> int:
         implicit = defaults(methods)
         method = tokens.pop(0) if tokens and tokens[0] in methods else None
         raw = assignments(tokens)
+        omit = set(filter(None, (raw.pop("omit", None) or "").split(",")))
         help_requested = any(key in {"help", "--help", "-h"} and value is None for key, value in raw.items())
         if resource is not None and method is None and not help_requested:
             method = next((name for name, keys in implicit.items() if keys and any(key in raw for key in keys)), None)
@@ -746,7 +754,10 @@ def dispatch(tokens: list[str]) -> int:
         if method is None or help_requested:
             if CLOUD_COMMANDS:
                 print(f"ul cloud {'|'.join(CLOUD_COMMANDS)} key=value ... — YOLO workflows on Platform")
-            print("<resource> [operation] key=value ... (path owner defaults to the logged-in username)")
+            print(
+                "<resource> [operation] key=value ... [omit=key,...] (path owner defaults to the logged-in username; "
+                "omit drops those keys from the output at any depth)"
+            )
             listing = {resource: {method: methods[method]} if method else methods} if resource else resources
             for resource_name, members in listing.items():
                 for method_name, member in members.items():
@@ -766,7 +777,7 @@ def dispatch(tokens: list[str]) -> int:
             if not isinstance(username, str) or not username:
                 raise ValueError("Could not infer owner; supply owner= explicitly")
             values["owner"] = username
-        output(methods[method](**values))
+        output(without(methods[method](**values), omit))
     return 0
 
 

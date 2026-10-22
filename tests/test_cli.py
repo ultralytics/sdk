@@ -80,7 +80,7 @@ def test_cli_wire_and_auth(tmp_path):
         settings.parent.mkdir()
         saved = {"api_key": "ul_" + "a" * 40, "runs_dir": "custom runs"}
         settings.write_text(json.dumps(saved))
-        assert run("cloud", "datasets", "limit=0").returncode == 0
+        assert json.loads(run("cloud", "datasets", "limit=0", "omit=ok").stdout) == {}
         assert [item[1] for item in requests[-2:]] == ["/api/account/summary", "/api/datasets/jane?limit=0"]
         assert requests[-1][2]["Authorization"] == f"Bearer {saved['api_key']}"
         env["ULTRALYTICS_API_KEY"] = "environment-key"
