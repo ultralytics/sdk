@@ -742,7 +742,7 @@ def dispatch(tokens: list[str]) -> int:
         implicit = defaults(methods)
         method = tokens.pop(0) if tokens and tokens[0] in methods else None
         raw = assignments(tokens)
-        omit = set(filter(None, (raw.pop("omit", None) or "").split(",")))
+        omit = {key.strip() for key in (raw.pop("omit", None) or "").split(",")} - {""}
         help_requested = any(key in {"help", "--help", "-h"} and value is None for key, value in raw.items())
         if resource is not None and method is None and not help_requested:
             method = next((name for name, keys in implicit.items() if keys and any(key in raw for key in keys)), None)
@@ -756,7 +756,7 @@ def dispatch(tokens: list[str]) -> int:
                 print(f"ul cloud {'|'.join(CLOUD_COMMANDS)} key=value ... — YOLO workflows on Platform")
             print(
                 "<resource> [operation] key=value ... [omit=key,...] (path owner defaults to the logged-in username; "
-                "omit drops those keys from the output at any depth)"
+                "omit drops those keys from JSON output at any depth)"
             )
             listing = {resource: {method: methods[method]} if method else methods} if resource else resources
             for resource_name, members in listing.items():
@@ -777,7 +777,8 @@ def dispatch(tokens: list[str]) -> int:
             if not isinstance(username, str) or not username:
                 raise ValueError("Could not infer owner; supply owner= explicitly")
             values["owner"] = username
-        output(without(methods[method](**values), omit))
+        result = methods[method](**values)
+        output(without(result, omit) if omit else result)
     return 0
 
 
