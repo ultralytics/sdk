@@ -1032,7 +1032,7 @@ class Datasets:
     ) -> DatasetsCreateBatchResponse:
         """Auto-annotate images or blur faces.
 
-        For auto-annotation, saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.
+        For auto-annotation, saves a dataset version (cloud storage datasets have none), then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring requires hosted storage and creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.
 
         Args:
             owner (str): Dataset owner
@@ -2423,7 +2423,7 @@ class AsyncDatasets:
     ) -> DatasetsCreateBatchResponse:
         """Auto-annotate images or blur faces.
 
-        For auto-annotation, saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.
+        For auto-annotation, saves a dataset version (cloud storage datasets have none), then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring requires hosted storage and creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.
 
         Args:
             owner (str): Dataset owner

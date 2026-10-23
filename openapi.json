@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.91",
+    "version": "0.1.92",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -1442,6 +1442,14 @@
                   "offline",
                   "disconnected"
                 ]
+              },
+              "integrationProcessing": {
+                "description": "False when AI features are off for its storage",
+                "type": "boolean"
+              },
+              "integrationWritable": {
+                "description": "True when its cloud storage allows image generation",
+                "type": "boolean"
               },
               "source": {
                 "oneOf": [
@@ -4447,6 +4455,14 @@
               "disconnected"
             ]
           },
+          "integrationProcessing": {
+            "description": "False when AI features are off for its storage",
+            "type": "boolean"
+          },
+          "integrationWritable": {
+            "description": "True when its cloud storage allows image generation",
+            "type": "boolean"
+          },
           "source": {
             "oneOf": [
               {
@@ -7450,6 +7466,52 @@
         ],
         "additionalProperties": false
       },
+      "BucketIntegrationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "gcs",
+              "s3",
+              "azure"
+            ]
+          },
+          "credentialIdentity": {
+            "type": "string",
+            "maxLength": 254
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 222
+            }
+          },
+          "processing": {
+            "type": "boolean",
+            "description": "AI features (smart annotation, auto-annotation, similar-image search, dataset analysis, cloud training, and image generation) may use these images"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          }
+        },
+        "required": [
+          "id",
+          "provider",
+          "credentialIdentity",
+          "targets",
+          "processing",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      },
       "DeleteBucketIntegrationResponse": {
         "type": "object",
         "properties": {
@@ -7522,47 +7584,6 @@
         },
         "required": [
           "integrations"
-        ],
-        "additionalProperties": false
-      },
-      "BucketIntegrationResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "maxLength": 128
-          },
-          "provider": {
-            "type": "string",
-            "enum": [
-              "gcs",
-              "s3",
-              "azure"
-            ]
-          },
-          "credentialIdentity": {
-            "type": "string",
-            "maxLength": 254
-          },
-          "targets": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "maxLength": 222
-            }
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
-          }
-        },
-        "required": [
-          "id",
-          "provider",
-          "credentialIdentity",
-          "targets",
-          "createdAt"
         ],
         "additionalProperties": false
       },
@@ -16826,7 +16847,7 @@
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_predict_batch",
-        "description": "For auto-annotation, saves a dataset version, then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.",
+        "description": "For auto-annotation, saves a dataset version (cloud storage datasets have none), then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring requires hosted storage and creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.",
         "parameters": [
           {
             "name": "owner",
@@ -17069,7 +17090,7 @@
             }
           },
           "409": {
-            "description": "Dataset is not ready, has no eligible images, or a run is in progress",
+            "description": "Dataset is not ready, Platform cannot process its images, has no eligible images, or a run is in progress",
             "content": {
               "application/json": {
                 "schema": {
@@ -20718,6 +20739,16 @@
               }
             }
           },
+          "409": {
+            "description": "AI features are off or unavailable for this image's storage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "429": {
             "description": "Rate limit exceeded",
             "content": {
@@ -21096,6 +21127,117 @@
       }
     },
     "/api/integrations/buckets/{id}": {
+      "patch": {
+        "summary": "Turn cloud storage AI features on or off",
+        "tags": [
+          "Storage Integrations"
+        ],
+        "operationId": "patch_api_integrations_buckets_id",
+        "description": "Allows or blocks AI features on this storage's images: smart annotation, auto-annotation, similar-image search, dataset analysis, cloud training, and image generation (which also needs write access). Turning them off stops new work. On by default.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 24,
+              "maxLength": 24,
+              "pattern": "^[0-9a-fA-F]{24}$",
+              "example": "507f1f77bcf86cd799439011"
+            },
+            "description": "Cloud integration ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "processing": {
+                    "type": "boolean",
+                    "description": "Turn AI features on or off: smart annotation, auto-annotation, similar-image search, dataset analysis, cloud training, and image generation"
+                  }
+                },
+                "required": [
+                  "processing"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Integration updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BucketIntegrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid integration ID or body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace admin access required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Integration not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.storage_integrations.update(\n    id=\"507f1f77bcf86cd799439011\",\n    processing=False,\n)\nprint(response)"
+          }
+        ]
+      },
       "delete": {
         "summary": "Disconnect cloud storage",
         "tags": [

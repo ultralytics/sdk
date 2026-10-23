@@ -619,6 +619,8 @@ DatasetsRetrieveResponseDataset = TypedDict(
         "sampleImages": NotRequired[list[DatasetsRetrieveResponseDatasetSampleImagesItem]],
         "integrationProvider": NotRequired[Literal["gcs", "s3", "azure", "on-premise"]],
         "integrationStatus": NotRequired[Literal["online", "offline", "disconnected"]],
+        "integrationProcessing": NotRequired[bool],
+        "integrationWritable": NotRequired[bool],
         "source": NotRequired[
             DatasetsRetrieveResponseDatasetSourceVariant1
             | DatasetsRetrieveResponseDatasetSourceVariant2
@@ -1360,6 +1362,8 @@ DatasetsListResponseDatasetsItem = TypedDict(
         "sampleImages": NotRequired[list[DatasetsListResponseDatasetsItemSampleImagesItem]],
         "integrationProvider": NotRequired[Literal["gcs", "s3", "azure", "on-premise"]],
         "integrationStatus": NotRequired[Literal["online", "offline", "disconnected"]],
+        "integrationProcessing": NotRequired[bool],
+        "integrationWritable": NotRequired[bool],
         "source": NotRequired[
             DatasetsListResponseDatasetsItemSourceVariant1
             | DatasetsListResponseDatasetsItemSourceVariant2
@@ -2184,6 +2188,19 @@ ImagesUrlsResponse = TypedDict(
 )
 
 
+StorageIntegrationsUpdateResponse = TypedDict(
+    "StorageIntegrationsUpdateResponse",
+    {
+        "id": str,
+        "provider": Literal["gcs", "s3", "azure"],
+        "credentialIdentity": str,
+        "targets": list[str],
+        "processing": bool,
+        "createdAt": str,
+    },
+)
+
+
 StorageIntegrationsDeleteResponse = TypedDict("StorageIntegrationsDeleteResponse", {"success": Literal[True]})
 
 
@@ -2205,20 +2222,8 @@ StorageIntegrationsObjectsResponse = TypedDict(
 )
 
 
-StorageIntegrationsListResponseIntegrationsItem = TypedDict(
-    "StorageIntegrationsListResponseIntegrationsItem",
-    {
-        "id": str,
-        "provider": Literal["gcs", "s3", "azure"],
-        "credentialIdentity": str,
-        "targets": list[str],
-        "createdAt": str,
-    },
-)
-
-
 StorageIntegrationsListResponse = TypedDict(
-    "StorageIntegrationsListResponse", {"integrations": list[StorageIntegrationsListResponseIntegrationsItem]}
+    "StorageIntegrationsListResponse", {"integrations": list[StorageIntegrationsUpdateResponse]}
 )
 
 
@@ -2229,6 +2234,7 @@ StorageIntegrationsCreateResponse = TypedDict(
         "provider": Literal["gcs", "s3", "azure"],
         "credentialIdentity": str,
         "targets": list[str],
+        "processing": bool,
         "createdAt": str,
     },
 )

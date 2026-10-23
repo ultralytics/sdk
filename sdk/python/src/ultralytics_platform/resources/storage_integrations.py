@@ -20,6 +20,7 @@ from ..types import (
     StorageIntegrationsDiscoverResponse,
     StorageIntegrationsListResponse,
     StorageIntegrationsObjectsResponse,
+    StorageIntegrationsUpdateResponse,
 )
 
 
@@ -28,6 +29,42 @@ class StorageIntegrations:
 
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
+
+    def update(
+        self,
+        id: str,
+        *,
+        processing: bool,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> StorageIntegrationsUpdateResponse:
+        """Turn cloud storage AI features on or off.
+
+        Allows or blocks AI features on this storage's images: smart annotation, auto-annotation, similar-image search, dataset analysis, cloud training, and image generation (which also needs write access). Turning them off stops new work. On by default.
+
+        Args:
+            id (str): Cloud integration ID
+            processing (bool): Turn AI features on or off: smart annotation, auto-annotation, similar-image search, dataset analysis, cloud training, and image generation
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (StorageIntegrationsUpdateResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            StorageIntegrationsUpdateResponse,
+            self._client.request(
+                "PATCH",
+                f"/api/integrations/buckets/{_path_parameter(id, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"processing": processing},
+            ),
+        )
 
     def delete(
         self, id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
@@ -206,6 +243,42 @@ class AsyncStorageIntegrations:
 
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
+
+    async def update(
+        self,
+        id: str,
+        *,
+        processing: bool,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> StorageIntegrationsUpdateResponse:
+        """Turn cloud storage AI features on or off.
+
+        Allows or blocks AI features on this storage's images: smart annotation, auto-annotation, similar-image search, dataset analysis, cloud training, and image generation (which also needs write access). Turning them off stops new work. On by default.
+
+        Args:
+            id (str): Cloud integration ID
+            processing (bool): Turn AI features on or off: smart annotation, auto-annotation, similar-image search, dataset analysis, cloud training, and image generation
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (StorageIntegrationsUpdateResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            StorageIntegrationsUpdateResponse,
+            await self._client.request(
+                "PATCH",
+                f"/api/integrations/buckets/{_path_parameter(id, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"processing": processing},
+            ),
+        )
 
     async def delete(
         self, id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
