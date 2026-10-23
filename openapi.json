@@ -8609,7 +8609,7 @@
                                   }
                                 },
                                 "labels": {
-                                  "description": "Ground-truth annotations, capped at 100 with polygons decimated to 100 points",
+                                  "description": "Ground-truth boxes, capped at 200; segment polygons become their bounding boxes",
                                   "type": "array",
                                   "items": {
                                     "type": "object",
@@ -8890,7 +8890,7 @@
                                   }
                                 },
                                 "labels": {
-                                  "description": "Ground-truth annotations, capped at 100 with polygons decimated to 100 points",
+                                  "description": "Ground-truth boxes, capped at 200; segment polygons become their bounding boxes",
                                   "type": "array",
                                   "items": {
                                     "type": "object",
@@ -10336,7 +10336,7 @@
                         "type": "null"
                       }
                     ],
-                    "description": "Trait-vs-F1 comparisons; null when no traits were read — unreadable dataset, missing manifest, a manifest with no `detect` header, or no matching row"
+                    "description": "Trait-vs-F1 comparisons; null when no traits were read — unreadable dataset, missing manifest, a manifest whose header is neither `detect` nor `segment`, or no matching row"
                   }
                 },
                 "required": [
