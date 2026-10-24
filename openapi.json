@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.92",
+    "version": "0.1.94",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -7809,6 +7809,87 @@
               "additionalProperties": false
             }
           },
+          "importedDatasets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "workspace": {
+                  "type": "string",
+                  "maxLength": 128,
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                  "example": "my-workspace"
+                },
+                "projectId": {
+                  "type": "string",
+                  "maxLength": 128,
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                  "example": "vehicle-detection"
+                },
+                "projectName": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                  "example": "Vehicle Detection"
+                },
+                "projectType": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$",
+                  "example": "object-detection"
+                },
+                "latestVersion": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "example": 1
+                },
+                "latestVersionName": {
+                  "example": "v1",
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                },
+                "task": {
+                  "type": "string",
+                  "enum": [
+                    "detect",
+                    "segment",
+                    "semantic",
+                    "depth",
+                    "classify",
+                    "pose",
+                    "obb"
+                  ],
+                  "description": "YOLO task type"
+                },
+                "thumb": {
+                  "description": "Roboflow project thumbnail URL",
+                  "type": "string",
+                  "maxLength": 4096
+                },
+                "imageCount": {
+                  "description": "Images in the latest version",
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sizeBytes": {
+                  "description": "Export size, when Roboflow can still size it",
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "workspace",
+                "projectId",
+                "projectName",
+                "projectType",
+                "latestVersion",
+                "task"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Datasets whose latest version is already imported"
+          },
           "skippedCount": {
             "type": "integer",
             "minimum": 0
@@ -7853,6 +7934,7 @@
         "required": [
           "workspace",
           "newDatasets",
+          "importedDatasets",
           "skippedCount",
           "missingVersionCount",
           "unsupportedCount",
@@ -11426,6 +11508,9 @@
           "model": {
             "type": "string"
           },
+          "name": {
+            "type": "string"
+          },
           "region": {
             "type": "string",
             "enum": [
@@ -11441,6 +11526,7 @@
           "owner",
           "project",
           "model",
+          "name",
           "region"
         ],
         "additionalProperties": false
@@ -13884,7 +13970,7 @@
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_clone",
-        "description": "Copies an accessible dataset into your personal workspace or a team workspace.",
+        "description": "Copies an accessible dataset, or selected splits, a saved version, or selected images of it, into your workspace or into a dataset you own.",
         "parameters": [
           {
             "name": "owner",
@@ -13985,6 +14071,51 @@
                     "maxLength": 32,
                     "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
                     "example": "ultralytics"
+                  },
+                  "splits": {
+                    "description": "Live splits to clone; defaults to all",
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "train",
+                        "val",
+                        "test"
+                      ],
+                      "description": "Dataset split type"
+                    }
+                  },
+                  "version": {
+                    "description": "Saved version to clone instead of live images",
+                    "type": "integer",
+                    "exclusiveMinimum": 0
+                  },
+                  "imageIds": {
+                    "description": "Clone only these live images",
+                    "minItems": 1,
+                    "maxItems": 1000,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 24,
+                      "maxLength": 24,
+                      "pattern": "^[0-9a-fA-F]{24}$",
+                      "example": "507f1f77bcf86cd799439011",
+                      "description": "Image ID"
+                    }
+                  },
+                  "annotations": {
+                    "description": "Copy annotations with the images; false clones raw images only",
+                    "type": "boolean"
+                  },
+                  "into": {
+                    "description": "Merge unlabeled into this dataset you own instead",
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
                   }
                 },
                 "description": "Dataset clone overrides"
@@ -14034,7 +14165,7 @@
             }
           },
           "404": {
-            "description": "Dataset not found",
+            "description": "Dataset, version, or destination not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -14044,7 +14175,7 @@
             }
           },
           "409": {
-            "description": "Connected datasets cannot be cloned",
+            "description": "Connected source, or destination busy or connected",
             "content": {
               "application/json": {
                 "schema": {
@@ -16915,6 +17046,7 @@
                               "gemini-4-argon",
                               "grok-4.7",
                               "kimi-k3",
+                              "kimi-k3.1-pro",
                               "muse-wonder-1.0",
                               "muse-spark-1.3",
                               "mimo-v2.6-pro",
@@ -20413,6 +20545,7 @@
                           "gemini-4-argon",
                           "grok-4.7",
                           "kimi-k3",
+                          "kimi-k3.1-pro",
                           "muse-wonder-1.0",
                           "muse-spark-1.3",
                           "mimo-v2.6-pro",
@@ -25258,14 +25391,6 @@
                     ],
                     "description": "Resource visibility"
                   },
-                  "owner": {
-                    "description": "Destination owner",
-                    "type": "string",
-                    "minLength": 4,
-                    "maxLength": 32,
-                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-                    "example": "ultralytics"
-                  },
                   "project": {
                     "description": "Name for the cloned project",
                     "type": "string",
@@ -25291,6 +25416,27 @@
                       "Other"
                     ],
                     "description": "Project/model license identifier"
+                  },
+                  "owner": {
+                    "description": "Destination owner",
+                    "type": "string",
+                    "minLength": 4,
+                    "maxLength": 32,
+                    "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                    "example": "ultralytics"
+                  },
+                  "models": {
+                    "description": "Models to clone; defaults to every completed model",
+                    "minItems": 1,
+                    "maxItems": 1000,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                      "description": "Model name used in Platform URLs"
+                    }
                   }
                 }
               }

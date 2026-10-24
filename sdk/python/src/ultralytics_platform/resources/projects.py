@@ -39,7 +39,6 @@ class Projects:
         name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        owner_body: str | NotGiven = NOT_GIVEN,
         project_body: str | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
@@ -57,6 +56,8 @@ class Projects:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
+        owner_body: str | NotGiven = NOT_GIVEN,
+        models: Sequence[str] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ProjectsCloneResponse:
@@ -70,9 +71,10 @@ class Projects:
             name (str, optional): name request value.
             description (str, optional): description request value.
             visibility (Literal["public", "private"], optional): Resource visibility
-            owner_body (str, optional): Destination owner
             project_body (str, optional): Name for the cloned project
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            owner_body (str, optional): Destination owner
+            models (Sequence[str], optional): Models to clone; defaults to every completed model
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -94,9 +96,10 @@ class Projects:
                     "name": name,
                     "description": description,
                     "visibility": visibility,
-                    "owner": owner_body,
                     "project": project_body,
                     "license": license,
+                    "owner": owner_body,
+                    "models": models,
                 },
             ),
         )
@@ -381,7 +384,6 @@ class AsyncProjects:
         name: str | NotGiven = NOT_GIVEN,
         description: str | NotGiven = NOT_GIVEN,
         visibility: Literal["public", "private"] | NotGiven = NOT_GIVEN,
-        owner_body: str | NotGiven = NOT_GIVEN,
         project_body: str | NotGiven = NOT_GIVEN,
         license: Literal[
             "None",
@@ -399,6 +401,8 @@ class AsyncProjects:
             "Other",
         ]
         | NotGiven = NOT_GIVEN,
+        owner_body: str | NotGiven = NOT_GIVEN,
+        models: Sequence[str] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ProjectsCloneResponse:
@@ -412,9 +416,10 @@ class AsyncProjects:
             name (str, optional): name request value.
             description (str, optional): description request value.
             visibility (Literal["public", "private"], optional): Resource visibility
-            owner_body (str, optional): Destination owner
             project_body (str, optional): Name for the cloned project
             license (Literal["None", "Apache-2.0", "MIT", "BSD-3-Clause", "AGPL-3.0", "GPL-3.0", "LGPL-3.0", "MPL-2.0", "EUPL-1.1", "Unlicense", "CC0-1.0", "Ultralytics-Enterprise", "Other"], optional): Project/model license identifier
+            owner_body (str, optional): Destination owner
+            models (Sequence[str], optional): Models to clone; defaults to every completed model
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -436,9 +441,10 @@ class AsyncProjects:
                     "name": name,
                     "description": description,
                     "visibility": visibility,
-                    "owner": owner_body,
                     "project": project_body,
                     "license": license,
+                    "owner": owner_body,
+                    "models": models,
                 },
             ),
         )

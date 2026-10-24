@@ -152,6 +152,7 @@ class Images:
             "gemini-4-argon",
             "grok-4.7",
             "kimi-k3",
+            "kimi-k3.1-pro",
             "muse-wonder-1.0",
             "muse-spark-1.3",
             "mimo-v2.6-pro",
@@ -176,7 +177,7 @@ class Images:
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash"]): modelId request value.
+            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash"]): modelId request value.
             visual_prompts (Sequence[dict[str, Any]], optional): Same-image seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
@@ -476,6 +477,7 @@ class AsyncImages:
             "gemini-4-argon",
             "grok-4.7",
             "kimi-k3",
+            "kimi-k3.1-pro",
             "muse-wonder-1.0",
             "muse-spark-1.3",
             "mimo-v2.6-pro",
@@ -500,7 +502,7 @@ class AsyncImages:
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash"]): modelId request value.
+            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash"]): modelId request value.
             visual_prompts (Sequence[dict[str, Any]], optional): Same-image seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression

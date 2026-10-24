@@ -1451,6 +1451,23 @@ DatasetsPreviewRoboflowResponseNewDatasetsItem = TypedDict(
 )
 
 
+DatasetsPreviewRoboflowResponseImportedDatasetsItem = TypedDict(
+    "DatasetsPreviewRoboflowResponseImportedDatasetsItem",
+    {
+        "workspace": str,
+        "projectId": str,
+        "projectName": str,
+        "projectType": str,
+        "latestVersion": int,
+        "latestVersionName": NotRequired[str],
+        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
+        "thumb": NotRequired[str],
+        "imageCount": NotRequired[int],
+        "sizeBytes": NotRequired[int],
+    },
+)
+
+
 DatasetsPreviewRoboflowResponseStorage = TypedDict(
     "DatasetsPreviewRoboflowResponseStorage", {"usedBytes": float, "limitBytes": float, "hasEnoughStorage": bool}
 )
@@ -1461,6 +1478,7 @@ DatasetsPreviewRoboflowResponse = TypedDict(
     {
         "workspace": DatasetsPreviewRoboflowResponseWorkspace,
         "newDatasets": list[DatasetsPreviewRoboflowResponseNewDatasetsItem],
+        "importedDatasets": list[DatasetsPreviewRoboflowResponseImportedDatasetsItem],
         "skippedCount": int,
         "missingVersionCount": int,
         "unsupportedCount": int,
@@ -3197,7 +3215,8 @@ ModelsListResponse = TypedDict(
 
 
 ModelsCreateResponse = TypedDict(
-    "ModelsCreateResponse", {"id": str, "owner": str, "project": str, "model": str, "region": Literal["us", "eu", "ap"]}
+    "ModelsCreateResponse",
+    {"id": str, "owner": str, "project": str, "model": str, "name": str, "region": Literal["us", "eu", "ap"]},
 )
 
 
