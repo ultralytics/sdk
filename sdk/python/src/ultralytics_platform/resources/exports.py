@@ -18,6 +18,8 @@ from ..types import (
     ExportsCreateResponse,
     ExportsDeleteResponse,
     ExportsListResponse,
+    ExportsMobileResponse,
+    ExportsResolveMobileResponse,
     ExportsRetrieveResponse,
 )
 
@@ -27,6 +29,43 @@ class Exports:
 
     def __init__(self, client: SyncAPIClient) -> None:
         self._client = client
+
+    def resolve_mobile(
+        self,
+        export_id: str,
+        *,
+        expires: int,
+        signature: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ExportsResolveMobileResponse:
+        """Resolve mobile import link.
+
+        Exchange the signed fragment in the JSON body of a mobile import link for a model descriptor and download URL. Both the link and download URL expire at expiresAt; installed models remain available offline.
+
+        Args:
+            export_id (str): Export ID
+            expires (int): expires request value.
+            signature (str): signature request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ExportsResolveMobileResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ExportsResolveMobileResponse,
+            self._client.request(
+                "POST",
+                f"/api/mobile/models/{_path_parameter(export_id, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                json={"expires": expires, "signature": signature},
+            ),
+        )
 
     def retrieve(
         self,
@@ -98,6 +137,44 @@ class Exports:
             self._client.request(
                 "DELETE",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/exports/{_path_parameter(export_id, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
+        )
+
+    def mobile(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        export_id: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ExportsMobileResponse:
+        """Create mobile import link.
+
+        Create a 24-hour bearer link authorizing download of this completed mobile-compatible export. Anyone with the link can download it without signing in.
+
+        Args:
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            export_id (str): Export ID
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ExportsMobileResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ExportsMobileResponse,
+            self._client.request(
+                "POST",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/exports/{_path_parameter(export_id, explode=False, allow_reserved=False)}/mobile",
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
@@ -259,6 +336,43 @@ class AsyncExports:
     def __init__(self, client: AsyncAPIClient) -> None:
         self._client = client
 
+    async def resolve_mobile(
+        self,
+        export_id: str,
+        *,
+        expires: int,
+        signature: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ExportsResolveMobileResponse:
+        """Resolve mobile import link.
+
+        Exchange the signed fragment in the JSON body of a mobile import link for a model descriptor and download URL. Both the link and download URL expire at expiresAt; installed models remain available offline.
+
+        Args:
+            export_id (str): Export ID
+            expires (int): expires request value.
+            signature (str): signature request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ExportsResolveMobileResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ExportsResolveMobileResponse,
+            await self._client.request(
+                "POST",
+                f"/api/mobile/models/{_path_parameter(export_id, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                json={"expires": expires, "signature": signature},
+            ),
+        )
+
     async def retrieve(
         self,
         owner: str,
@@ -329,6 +443,44 @@ class AsyncExports:
             await self._client.request(
                 "DELETE",
                 f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/exports/{_path_parameter(export_id, explode=False, allow_reserved=False)}",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+            ),
+        )
+
+    async def mobile(
+        self,
+        owner: str,
+        project: str,
+        model: str,
+        export_id: str,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> ExportsMobileResponse:
+        """Create mobile import link.
+
+        Create a 24-hour bearer link authorizing download of this completed mobile-compatible export. Anyone with the link can download it without signing in.
+
+        Args:
+            owner (str): Project owner
+            project (str): Project name
+            model (str): Model name
+            export_id (str): Export ID
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (ExportsMobileResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            ExportsMobileResponse,
+            await self._client.request(
+                "POST",
+                f"/api/models/{_path_parameter(owner, explode=False, allow_reserved=False)}/{_path_parameter(project, explode=False, allow_reserved=False)}/{_path_parameter(model, explode=False, allow_reserved=False)}/exports/{_path_parameter(export_id, explode=False, allow_reserved=False)}/mobile",
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),

@@ -2261,6 +2261,123 @@ StorageIntegrationsCreateResponse = TypedDict(
 StorageIntegrationsDiscoverResponse = TypedDict("StorageIntegrationsDiscoverResponse", {"targets": list[str]})
 
 
+ExportsResolveMobileResponse = TypedDict(
+    "ExportsResolveMobileResponse",
+    {
+        "version": Literal[1],
+        "exportId": str,
+        "name": str,
+        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
+        "format": Literal["coreml", "coreai", "litert"],
+        "filename": str,
+        "size": float,
+        "downloadUrl": str,
+        "expiresAt": str,
+    },
+)
+
+
+ExportsRetrieveResponseExportFile = TypedDict(
+    "ExportsRetrieveResponseExportFile",
+    {"size": NotRequired[float], "downloadUrl": NotRequired[str], "downloadFilename": NotRequired[str]},
+)
+
+
+ExportsRetrieveResponseExportError = TypedDict("ExportsRetrieveResponseExportError", {"message": str, "timestamp": str})
+
+
+ExportsRetrieveResponseExport = TypedDict(
+    "ExportsRetrieveResponseExport",
+    {
+        "id": str,
+        "status": Literal["queued", "starting", "running", "completed", "failed", "cancelled"],
+        "format": Literal[
+            "torchscript",
+            "onnx",
+            "openvino",
+            "engine",
+            "coreml",
+            "coreai",
+            "saved_model",
+            "pb",
+            "edgetpu",
+            "litert",
+            "paddle",
+            "mnn",
+            "ncnn",
+            "imx",
+            "rknn",
+            "executorch",
+            "axelera",
+            "deepx",
+            "qnn",
+            "hailo",
+            "ascend",
+            "xilinx",
+        ],
+        "args": NotRequired[dict[str, Any]],
+        "gpuType": NotRequired[str],
+        "file": NotRequired[ExportsRetrieveResponseExportFile],
+        "error": NotRequired[ExportsRetrieveResponseExportError],
+        "startedAt": NotRequired[str],
+        "completedAt": NotRequired[str],
+        "createdAt": str,
+        "updatedAt": str,
+    },
+)
+
+
+ExportsRetrieveResponse = TypedDict("ExportsRetrieveResponse", {"export": ExportsRetrieveResponseExport})
+
+
+ExportsDeleteResponse = TypedDict(
+    "ExportsDeleteResponse", {"success": Literal[True], "action": Literal["cancelled", "deleted"]}
+)
+
+
+ExportsMobileResponse = TypedDict("ExportsMobileResponse", {"importUrl": str, "expiresAt": str})
+
+
+ExportsListResponse = TypedDict(
+    "ExportsListResponse", {"exports": list[ExportsRetrieveResponseExport], "region": Literal["us", "eu", "ap"]}
+)
+
+
+ExportsCreateResponse = TypedDict(
+    "ExportsCreateResponse",
+    {
+        "id": str,
+        "format": Literal[
+            "torchscript",
+            "onnx",
+            "openvino",
+            "engine",
+            "coreml",
+            "coreai",
+            "saved_model",
+            "pb",
+            "edgetpu",
+            "litert",
+            "paddle",
+            "mnn",
+            "ncnn",
+            "imx",
+            "rknn",
+            "executorch",
+            "axelera",
+            "deepx",
+            "qnn",
+            "hailo",
+            "ascend",
+            "xilinx",
+        ],
+        "status": Literal["queued", "running"],
+        "gpuType": NotRequired[str],
+        "region": Literal["us", "eu", "ap"],
+    },
+)
+
+
 ModelsCloneResponse = TypedDict(
     "ModelsCloneResponse",
     {"id": str, "owner": str, "project": str, "model": str, "name": str, "region": Literal["us", "eu", "ap"]},
@@ -3222,104 +3339,6 @@ ModelsCreateResponse = TypedDict(
 
 ModelsUploadCheckpointResponse = TypedDict(
     "ModelsUploadCheckpointResponse", {"uploadUrl": str, "gcsPath": str, "uploadPath": NotRequired[str], "modelId": str}
-)
-
-
-ExportsRetrieveResponseExportFile = TypedDict(
-    "ExportsRetrieveResponseExportFile",
-    {"size": NotRequired[float], "downloadUrl": NotRequired[str], "downloadFilename": NotRequired[str]},
-)
-
-
-ExportsRetrieveResponseExportError = TypedDict("ExportsRetrieveResponseExportError", {"message": str, "timestamp": str})
-
-
-ExportsRetrieveResponseExport = TypedDict(
-    "ExportsRetrieveResponseExport",
-    {
-        "id": str,
-        "status": Literal["queued", "starting", "running", "completed", "failed", "cancelled"],
-        "format": Literal[
-            "torchscript",
-            "onnx",
-            "openvino",
-            "engine",
-            "coreml",
-            "coreai",
-            "saved_model",
-            "pb",
-            "edgetpu",
-            "litert",
-            "paddle",
-            "mnn",
-            "ncnn",
-            "imx",
-            "rknn",
-            "executorch",
-            "axelera",
-            "deepx",
-            "qnn",
-            "hailo",
-            "ascend",
-            "xilinx",
-        ],
-        "args": NotRequired[dict[str, Any]],
-        "gpuType": NotRequired[str],
-        "file": NotRequired[ExportsRetrieveResponseExportFile],
-        "error": NotRequired[ExportsRetrieveResponseExportError],
-        "startedAt": NotRequired[str],
-        "completedAt": NotRequired[str],
-        "createdAt": str,
-        "updatedAt": str,
-    },
-)
-
-
-ExportsRetrieveResponse = TypedDict("ExportsRetrieveResponse", {"export": ExportsRetrieveResponseExport})
-
-
-ExportsDeleteResponse = TypedDict(
-    "ExportsDeleteResponse", {"success": Literal[True], "action": Literal["cancelled", "deleted"]}
-)
-
-
-ExportsListResponse = TypedDict(
-    "ExportsListResponse", {"exports": list[ExportsRetrieveResponseExport], "region": Literal["us", "eu", "ap"]}
-)
-
-
-ExportsCreateResponse = TypedDict(
-    "ExportsCreateResponse",
-    {
-        "id": str,
-        "format": Literal[
-            "torchscript",
-            "onnx",
-            "openvino",
-            "engine",
-            "coreml",
-            "coreai",
-            "saved_model",
-            "pb",
-            "edgetpu",
-            "litert",
-            "paddle",
-            "mnn",
-            "ncnn",
-            "imx",
-            "rknn",
-            "executorch",
-            "axelera",
-            "deepx",
-            "qnn",
-            "hailo",
-            "ascend",
-            "xilinx",
-        ],
-        "status": Literal["queued", "running"],
-        "gpuType": NotRequired[str],
-        "region": Literal["us", "eu", "ap"],
-    },
 )
 
 

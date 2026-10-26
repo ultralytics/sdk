@@ -1390,8 +1390,8 @@ class Datasets:
     def import_roboflow(
         self,
         *,
-        api_key: str,
         items: Sequence[dict[str, Any]],
+        api_key: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsImportRoboflowResponse:
@@ -1400,7 +1400,7 @@ class Datasets:
         Imports selected Roboflow dataset versions into the API key's workspace.
 
         Args:
-            api_key (str): Roboflow API key
+            api_key (str, optional): Roboflow API key
             items (Sequence[dict[str, Any]]): items request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -1424,14 +1424,18 @@ class Datasets:
         )
 
     def preview_roboflow(
-        self, *, api_key: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+        self,
+        *,
+        api_key: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsPreviewRoboflowResponse:
         """Preview a Roboflow import.
 
         Validates a Roboflow API key and lists datasets available for import.
 
         Args:
-            api_key (str): Roboflow API key
+            api_key (str, optional): Roboflow API key
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2796,8 +2800,8 @@ class AsyncDatasets:
     async def import_roboflow(
         self,
         *,
-        api_key: str,
         items: Sequence[dict[str, Any]],
+        api_key: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsImportRoboflowResponse:
@@ -2806,7 +2810,7 @@ class AsyncDatasets:
         Imports selected Roboflow dataset versions into the API key's workspace.
 
         Args:
-            api_key (str): Roboflow API key
+            api_key (str, optional): Roboflow API key
             items (Sequence[dict[str, Any]]): items request value.
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -2830,14 +2834,18 @@ class AsyncDatasets:
         )
 
     async def preview_roboflow(
-        self, *, api_key: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
+        self,
+        *,
+        api_key: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
     ) -> DatasetsPreviewRoboflowResponse:
         """Preview a Roboflow import.
 
         Validates a Roboflow API key and lists datasets available for import.
 
         Args:
-            api_key (str): Roboflow API key
+            api_key (str, optional): Roboflow API key
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
