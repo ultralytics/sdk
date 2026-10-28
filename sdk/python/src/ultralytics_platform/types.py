@@ -1796,7 +1796,6 @@ DeploymentsPredictResponseMetadata = TypedDict(
     "DeploymentsPredictResponseMetadata",
     {
         "imageCount": int,
-        "classNames": NotRequired[list[str]],
         "functionTimeAlive": float,
         "functionTimeCall": float,
         "model": NotRequired[str],
@@ -3061,7 +3060,6 @@ ModelsPredictResponseMetadata = TypedDict(
     "ModelsPredictResponseMetadata",
     {
         "imageCount": int,
-        "classNames": NotRequired[list[str]],
         "functionTimeAlive": float,
         "functionTimeCall": float,
         "model": NotRequired[str],
