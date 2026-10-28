@@ -938,7 +938,7 @@ class Datasets:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsIngestResponse:
-        """Ingest dataset data.
+        """Import data into a dataset.
 
         Verifies and completes an upload before processing it, or imports a remote archive or connected data source into this dataset. Calling upload/complete first is optional for dataset uploads.
 
@@ -1122,7 +1122,7 @@ class Datasets:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsRestoreResponse:
-        """Restore a saved dataset version.
+        """Restore a dataset version.
 
         Restores dataset files, labels, and metadata from a previously saved version.
 
@@ -2348,7 +2348,7 @@ class AsyncDatasets:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsIngestResponse:
-        """Ingest dataset data.
+        """Import data into a dataset.
 
         Verifies and completes an upload before processing it, or imports a remote archive or connected data source into this dataset. Calling upload/complete first is optional for dataset uploads.
 
@@ -2532,7 +2532,7 @@ class AsyncDatasets:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DatasetsRestoreResponse:
-        """Restore a saved dataset version.
+        """Restore a dataset version.
 
         Restores dataset files, labels, and metadata from a previously saved version.
 

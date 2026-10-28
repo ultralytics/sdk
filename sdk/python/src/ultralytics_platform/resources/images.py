@@ -102,7 +102,7 @@ class Images:
     def delete(
         self, image_id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
     ) -> ImagesDeleteResponse:
-        """Delete an image.
+        """Permanently delete an image.
 
         Permanently deletes one image and its associated labels from a dataset.
 
@@ -293,7 +293,7 @@ class Images:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ImagesDeleteBulkResponse:
-        """Delete images from dataset.
+        """Permanently delete dataset images.
 
         Deletes multiple images and their annotations from the dataset. Removes files from storage in the background. Maximum 1000 images per batch.
 
@@ -430,7 +430,7 @@ class AsyncImages:
     async def delete(
         self, image_id: str, timeout: float | httpx.Timeout | None = None, extra_headers: dict[str, str] | None = None
     ) -> ImagesDeleteResponse:
-        """Delete an image.
+        """Permanently delete an image.
 
         Permanently deletes one image and its associated labels from a dataset.
 
@@ -621,7 +621,7 @@ class AsyncImages:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ImagesDeleteBulkResponse:
-        """Delete images from dataset.
+        """Permanently delete dataset images.
 
         Deletes multiple images and their annotations from the dataset. Removes files from storage in the background. Maximum 1000 images per batch.
 

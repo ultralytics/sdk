@@ -114,7 +114,7 @@ class Deployments:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsDeleteResponse:
-        """Delete a deployment.
+        """Permanently delete a deployment.
 
         Permanently removes the inference endpoint.
 
@@ -537,7 +537,7 @@ class AsyncDeployments:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> DeploymentsDeleteResponse:
-        """Delete a deployment.
+        """Permanently delete a deployment.
 
         Permanently removes the inference endpoint.
 

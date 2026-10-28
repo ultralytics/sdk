@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.100",
+    "version": "0.1.101",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -16407,7 +16407,7 @@
     },
     "/api/datasets/{owner}/{dataset}/ingest": {
       "post": {
-        "summary": "Ingest dataset data",
+        "summary": "Import data into a dataset",
         "tags": [
           "Datasets"
         ],
@@ -17483,7 +17483,7 @@
     },
     "/api/datasets/{owner}/{dataset}/restore": {
       "post": {
-        "summary": "Restore a saved dataset version",
+        "summary": "Restore a dataset version",
         "tags": [
           "Datasets"
         ],
@@ -18722,7 +18722,7 @@
         ]
       },
       "delete": {
-        "summary": "Delete a deployment",
+        "summary": "Permanently delete a deployment",
         "tags": [
           "Deployments"
         ],
@@ -20466,7 +20466,7 @@
         ]
       },
       "delete": {
-        "summary": "Delete an image",
+        "summary": "Permanently delete an image",
         "tags": [
           "Images"
         ],
@@ -21135,7 +21135,7 @@
         ]
       },
       "delete": {
-        "summary": "Delete images from dataset",
+        "summary": "Permanently delete dataset images",
         "tags": [
           "Images"
         ],
