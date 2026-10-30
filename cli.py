@@ -531,7 +531,7 @@ def prediction_result(image, path: str, prediction: dict, names: dict, task: str
 
     rows, values = prediction["results"], {}
     if task == "classify":
-        values["probs"] = np.zeros(len(names), dtype=np.float32)
+        values["probs"] = np.zeros(max(names) + 1, dtype=np.float32)
         for row in rows:
             values["probs"][row["class"]] = row["confidence"]
     elif task not in {"semantic", "depth"}:
@@ -582,9 +582,8 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
     from ultralytics.engine.predictor import BasePredictor
     from ultralytics.nn.autobackend import default_class_names
 
-    metadata = response["metadata"]  # classNames and task are optional in the contract
-    names = dict(enumerate(metadata["classNames"])) if metadata.get("classNames") else default_class_names()
-    if (task := metadata.get("task")) is None:
+    names = default_class_names() | {r["class"]: r["name"] for image in response["images"] for r in image["results"]}
+    if (task := response["metadata"].get("task")) is None:  # optional in the contract
         raise ValueError("Platform did not report the model task, so predictions cannot be converted")
     writer = BasePredictor(cfg=DEFAULT_CFG_DICT | args | {"task": task, "mode": "predict"})
     options, directory = writer.args, writer.save_dir
