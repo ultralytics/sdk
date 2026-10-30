@@ -43,6 +43,8 @@ asyncio.run(main())
 
 The package includes typed responses, multipart uploads, retries for temporary failures, structured API errors, custom HTTP clients, and context-manager cleanup.
 
+After a successful ingest or training start, both clients send a best-effort `GET http://127.0.0.1:8765/wake` so an On Premise worker on the same machine claims the job at once; a custom `http_client` skips it.
+
 ## Unified `ul` CLI
 
 This package installs `ul`. API resource commands work without the ML package. Local commands and `ul cloud train/predict/export` require `ultralytics` in the same environment. Existing `yolo` behavior, including local training with `ul://` inputs, is unchanged.

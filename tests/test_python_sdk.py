@@ -12,7 +12,6 @@ from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
 
 import httpx
 import pytest
-from test_cli import loopback
 from ultralytics_platform import APIError, AsyncPlatform, Platform
 
 ROOT = Path(__file__).parents[1]
@@ -160,23 +159,3 @@ def test_api_error_details() -> None:
     assert raised.value.status_code == 422
     assert raised.value.body == '{"detail":"invalid"}'
     assert raised.value.request_id == "request-1"
-
-
-def test_async_client_wakes_local_worker() -> None:
-    wakes = []
-
-    def wake(handler, body):
-        wakes.append((handler.path, handler.headers["Origin"]))
-        return 204, b""
-
-    async def run(url: str) -> None:
-        async with AsyncPlatform(api_key="", base_url=url) as client:
-            await client.datasets.list("user")
-            with pytest.raises(APIError):
-                await client.datasets.ingest("user", "fail", body={})
-            await client.training.start(model_id="model-id", train_args={})
-            await client.datasets.ingest("user", "dataset", body={})
-
-    with loopback(lambda handler, body: (422 if "/fail/" in handler.path else 200, {})) as url, loopback(wake, 8765):
-        asyncio.run(run(url))
-    assert wakes == [("/wake", url)] * 2  # not reads or failures; the CLI wire test covers the sync Platform

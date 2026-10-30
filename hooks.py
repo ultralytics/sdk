@@ -1,5 +1,5 @@
 # Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
-"""Response hooks that Platform and AsyncPlatform register on the HTTP clients they create; they must never raise."""
+"""Response hooks for Platform and AsyncPlatform: wake a local On Premise worker after creating its job."""
 
 from __future__ import annotations
 
@@ -7,37 +7,27 @@ from contextlib import suppress
 
 import httpx
 
-WAKE_URL = "http://127.0.0.1:8765/wake"  # the On Premise worker's fixed local port
 
-
-def job_origin(response: httpx.Response) -> str | None:
-    """Return the Platform origin of a just-created ingest or training job, else None.
-
-    Responses do not say where a job runs, so every one wakes; without a worker, or an old one, nothing changes.
-    """
-    request = response.request
-    if response.is_success and request.method == "POST" and request.url.path.endswith(("/ingest", "/training/start")):
-        return f"{request.url.scheme}://{request.url.netloc.decode()}"  # workers accept only their Platform's origin
+def wake_request(response: httpx.Response) -> dict | None:
+    """Return the local wake request for a created ingest or training job; responses don't say where a job runs."""
+    url = response.request.url
+    if response.is_success and response.request.method == "POST" and url.path.endswith(("/ingest", "/training/start")):
+        # Workers accept only their Platform's origin; reading headers only keeps a dripping listener from blocking
+        origin = f"{url.scheme}://{url.netloc.decode()}"
+        return {"method": "GET", "url": "http://127.0.0.1:8765/wake", "headers": {"Origin": origin}, "timeout": 0.5}
     return None
 
 
 def response_hook(response: httpx.Response) -> None:
-    """Have an On Premise worker on this machine claim a just-created ingest or training job instead of polling."""
-    if origin := job_origin(response):
-        # stream returns after the headers, so a listener that drips a body can't hold the caller open
-        with (
-            suppress(httpx.HTTPError),
-            httpx.stream("GET", WAKE_URL, headers={"Origin": origin}, timeout=0.5, trust_env=False),
-        ):
+    """Wake the local worker; never raises."""
+    if request := wake_request(response):
+        with suppress(httpx.HTTPError), httpx.stream(**request, trust_env=False):
             pass
 
 
 async def async_response_hook(response: httpx.Response) -> None:
-    """Wake the local On Premise worker like response_hook, without blocking the event loop."""
-    if origin := job_origin(response):
+    """Wake the local worker without blocking the event loop; never raises."""
+    if request := wake_request(response):
         with suppress(httpx.HTTPError):
-            async with (
-                httpx.AsyncClient(trust_env=False) as client,
-                client.stream("GET", WAKE_URL, headers={"Origin": origin}, timeout=0.5),
-            ):
+            async with httpx.AsyncClient(trust_env=False) as client, client.stream(**request):
                 pass
