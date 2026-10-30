@@ -13,12 +13,14 @@ import types
 import typing
 import zipfile
 from collections.abc import Sequence
-from contextlib import ExitStack
+from contextlib import ExitStack, suppress
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from tarfile import is_tarfile
 from tempfile import TemporaryDirectory
 from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
+
+import httpx
 
 from . import NOT_GIVEN, APIConnectionError, APIError, NotGiven, Platform
 from ._cli_metadata import MULTIPART_FILES
@@ -31,6 +33,17 @@ OFFICIAL_FAMILIES = ("yolo26", "yolo11", "yolov8", "yolov5")  # public ultralyti
 def platform_url() -> str:
     """Platform origin, read per invocation so ULTRALYTICS_PLATFORM_URL applies after import."""
     return os.getenv("ULTRALYTICS_PLATFORM_URL", "https://platform.ultralytics.com").rstrip("/")
+
+
+def wake_worker(response: httpx.Response) -> None:
+    """Have an On Premise worker on this machine claim a just-created ingest or training job instead of polling.
+
+    Responses do not say where a job runs, so every one wakes; without a worker, or an old one, nothing changes.
+    """
+    request = response.request
+    if response.is_success and request.method == "POST" and request.url.path.endswith(("/ingest", "/training/start")):
+        with suppress(httpx.HTTPError):
+            httpx.get("http://127.0.0.1:8765/wake", headers={"Origin": platform_url()}, timeout=0.5, trust_env=False)
 
 
 def kinds(annotation: Any) -> tuple[set[str], list | None]:
@@ -715,7 +728,8 @@ def dispatch(tokens: list[str]) -> int:
     """Execute one SDK operation, inferring only a missing resource-path owner."""
     tokens = list(tokens)
     with ExitStack() as stack:
-        client = stack.enter_context(Platform(base_url=platform_url()))
+        http_client = httpx.Client(timeout=60.0, event_hooks={"response": [wake_worker]})
+        client = stack.enter_context(Platform(base_url=platform_url(), http_client=http_client))
         if tokens and tokens[0] in CLOUD_COMMANDS:
             if len(tokens) == 1 or any(token in {"help", "--help", "-h"} for token in tokens):
                 print(inspect.getdoc(CLOUD_COMMANDS[tokens[0]]))

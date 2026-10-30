@@ -17,7 +17,7 @@ import pytest
 
 
 @contextmanager
-def loopback(reply):
+def loopback(reply, port=0):
     """Serve `reply(handler, body) -> (status, JSON payload or raw bytes)` on loopback and yield its URL."""
 
     class Receiver(BaseHTTPRequestHandler):
@@ -35,7 +35,7 @@ def loopback(reply):
 
         do_POST = do_PATCH = do_GET
 
-    server = ThreadingHTTPServer(("127.0.0.1", 0), Receiver)
+    server = ThreadingHTTPServer(("127.0.0.1", port), Receiver)
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
@@ -135,8 +135,22 @@ def test_cli_wire_and_auth(tmp_path):
         count = len(requests)
         result = run("cloud", "models", "update", "project=p", "model=m", "metadata=@-", "train_args=@-", input="{}")
         assert result.returncode == 2 and len(requests) == count
-        failed = run("cloud", "training", "start", "model_id=m", 'train_args={"epochs":100}')
-        assert failed.returncode == 1 and "HTTP 422): model and data are required" in failed.stderr
+        wakes = []
+
+        def wake(handler, body):
+            wakes.append((handler.path, handler.headers["Origin"]))
+            return 204, b""
+
+        with loopback(wake, 8765):  # the On Premise worker's fixed local port
+            failed = run("cloud", "training", "start", "model_id=m", 'train_args={"epochs":100}')
+            assert failed.returncode == 1 and "HTTP 422): model and data are required" in failed.stderr
+            for arguments in (
+                ["training", "start", "model_id=m", "train_args={}"],
+                ["datasets", "ingest", "dataset=d", "body={}"],
+            ):
+                result = run("cloud", *arguments)
+                assert result.returncode == 0 and json.loads(result.stdout) == {"ok": True}
+        assert wakes == [("/wake", url)] * 2  # only successful job creations wake, not failures or the owner lookup
         env["ULTRALYTICS_API_KEY"] = "invalid"
         failed = run("cloud", "account", "summary")
         assert failed.returncode == 1 and "sensitive" not in failed.stderr
