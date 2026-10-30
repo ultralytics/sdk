@@ -46,7 +46,7 @@ class AsyncPlatform:
             timeout (float | httpx.Timeout): Request timeout.
             max_retries (int): Retries for connection errors and retryable responses.
             retry_methods (Sequence[str]): HTTP methods safe to repeat after network errors or HTTP 408, 409, 429, and 5xx responses. Defaults to GET, HEAD, OPTIONS. Opt in only when the operation is safe to repeat and its request body can be resent.
-            http_client (httpx.AsyncClient, optional): Custom HTTP client.
+            http_client (httpx.AsyncClient, optional): Custom HTTP client, used as is without the configured response hooks.
         """
         resolved_api_key = _resolve_api_key(api_key)
         self._client = AsyncAPIClient(

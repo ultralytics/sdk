@@ -22,7 +22,7 @@ Typed SDKs for the [Ultralytics Platform API](https://platform.ultralytics.com),
 
 ## 🐍 Python
 
-The package includes the unified `ul` CLI for local YOLO and Platform SDK commands; see the [CLI guide](README.python.md#unified-ul-cli). Maintain `cli.py` and `auth.py` at the repository root, then regenerate their installed copies through the configured `python.cli.source` and `python.authProvider` hooks.
+The package includes the unified `ul` CLI for local YOLO and Platform SDK commands; see the [CLI guide](README.python.md#unified-ul-cli). Maintain `cli.py`, `auth.py`, and `hooks.py` at the repository root, then regenerate their installed copies through the configured `python.cli.source`, `python.authProvider`, and `python.hooksProvider` hooks.
 
 [![PyPI - Version](https://img.shields.io/pypi/v/ultralytics-platform?logo=pypi&logoColor=white)](https://pypi.org/project/ultralytics-platform/) [![Ultralytics Downloads](https://static.pepy.tech/badge/ultralytics-platform)](https://clickpy.clickhouse.com/dashboard/ultralytics-platform) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ultralytics-platform?logo=python&logoColor=gold)](https://pypi.org/project/ultralytics-platform/)
 
@@ -87,7 +87,7 @@ Platform OpenAPI contract
         └── java/       # coming soon
 ```
 
-`openapi.config.json` contains product and package configuration, including the source path for `README.python.md`. `auth.py` owns the Python SDK's Ultralytics credential discovery and is included by the generic `python.authProvider` hook on every regeneration. `openapi.json` and `openapi.sha256` pin the exact consumed contract. Generated files are never edited manually; update the contract snapshot, configuration, package README source, or generator and regenerate.
+`openapi.config.json` contains product and package configuration, including the source path for `README.python.md`. `auth.py` owns the Python SDK's Ultralytics credential discovery and is included by the generic `python.authProvider` hook on every regeneration; `hooks.py`, included by `python.hooksProvider`, wakes a local On Premise worker after the SDK creates an ingest or training job. `openapi.json` and `openapi.sha256` pin the exact consumed contract. Generated files are never edited manually; update the contract snapshot, configuration, package README source, or generator and regenerate.
 
 ## 🛠️ Validation
 

@@ -57,15 +57,15 @@ export OPENAPI_CONFIG="$PWD/openapi.config.json"
 diff --recursive --unified sdk/python .generator/generated/python
 
 pytest tests -v
-uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests cli.py auth.py
-uvx ruff@0.16.2 check sdk/python tests cli.py auth.py
+uvx ruff@0.16.2 format --check --line-length 120 sdk/python tests cli.py auth.py hooks.py
+uvx ruff@0.16.2 check sdk/python tests cli.py auth.py hooks.py
 ```
 
 Use the generator's `main` branch, never a pinned SHA or tag; update an existing `.generator` checkout before regenerating. Check drift before running tests/builds, which leave ignored artifacts in the generated tree. After intentional source changes, inspect the diff, then copy with `rsync --archive --delete .generator/generated/python/ sdk/python/`. Never repair generated files by hand. Install the package in the same interpreter that runs pytest. Use `python -m ultralytics_platform.cli` if the system `ul` command shadows the console script.
 
 ## Where to look
 
-- CLI and credential customization → `cli.py`, `auth.py`.
+- CLI, credential, and response hook customization → `cli.py`, `auth.py`, `hooks.py`.
 - Generator configuration and README template → `openapi.config.json`, `README.python.md`.
 - Pinned contract → `openapi.json`, `openapi.sha256`.
 - Generated package → `sdk/python/`.
@@ -76,7 +76,7 @@ Use the generator's `main` branch, never a pinned SHA or tag; update an existing
 
 - Ultralytics-owned PyPI packages use `MAJOR.MINOR.PATCH` versions only; no suffixes.
 - License headers (`# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license`) are added automatically by Ultralytics Actions — don't add or revert them manually. Generated files receive the same header from the generator (`header` in `openapi.config.json`).
-- Google-style docstrings, `from __future__ import annotations` for modern type hints, line length 120. `format.yml` sets `python: false` and `prettier: false`, so nothing reformats Python or Markdown on PR branches: run `uvx ruff@0.16.2 format --line-length 120 cli.py auth.py tests` yourself before pushing; the generator formats `sdk/python`.
+- Google-style docstrings, `from __future__ import annotations` for modern type hints, line length 120. `format.yml` sets `python: false` and `prettier: false`, so nothing reformats Python or Markdown on PR branches: run `uvx ruff@0.16.2 format --line-length 120 cli.py auth.py hooks.py tests` yourself before pushing; the generator formats `sdk/python`.
 
 ## Pitfalls
 

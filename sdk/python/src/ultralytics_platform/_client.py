@@ -14,6 +14,7 @@ import httpx
 
 from ._auth import get_api_key
 from ._exceptions import APIConnectionError, APIError
+from ._hooks import async_response_hook, response_hook
 
 
 def _resolve_api_key(api_key: str | None) -> str | None:
@@ -126,7 +127,7 @@ class SyncAPIClient:
         retry_methods: Sequence[str],
         http_client: httpx.Client | None,
     ) -> None:
-        self._client = http_client or httpx.Client(timeout=timeout)
+        self._client = http_client or httpx.Client(timeout=timeout, event_hooks={"response": [response_hook]})
         self._base_url = httpx.URL(f"{base_url.rstrip('/')}/")
         self._api_key = api_key
         self._max_retries = max_retries
@@ -192,7 +193,9 @@ class AsyncAPIClient:
         retry_methods: Sequence[str],
         http_client: httpx.AsyncClient | None,
     ) -> None:
-        self._client = http_client or httpx.AsyncClient(timeout=timeout)
+        self._client = http_client or httpx.AsyncClient(
+            timeout=timeout, event_hooks={"response": [async_response_hook]}
+        )
         self._base_url = httpx.URL(f"{base_url.rstrip('/')}/")
         self._api_key = api_key
         self._max_retries = max_retries
