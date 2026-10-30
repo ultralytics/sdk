@@ -42,8 +42,14 @@ def wake_worker(response: httpx.Response) -> None:
     """
     request = response.request
     if response.is_success and request.method == "POST" and request.url.path.endswith(("/ingest", "/training/start")):
-        with suppress(httpx.HTTPError):
-            httpx.get("http://127.0.0.1:8765/wake", headers={"Origin": platform_url()}, timeout=0.5, trust_env=False)
+        # stream returns after the headers, so a listener that drips a body can't hold the CLI open
+        with (
+            suppress(httpx.HTTPError),
+            httpx.stream(
+                "GET", "http://127.0.0.1:8765/wake", headers={"Origin": platform_url()}, timeout=0.5, trust_env=False
+            ),
+        ):
+            pass
 
 
 def kinds(annotation: Any) -> tuple[set[str], list | None]:
