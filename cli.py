@@ -634,12 +634,12 @@ def cloud_predict(client: Platform, tokens: list[str]) -> int:
     from ultralytics.data.build import check_source
 
     args = yolo_args(tokens)
+    check_cfg(args)
     source = check_source(str(args.pop("source", "")))[0]  # newer YOLO decodes extensionless image URLs to a list
     if not isinstance(source, str) or not (source := Path(source).expanduser()).is_file():
         raise ValueError("source= must be a local image or video file, or a URL with an image or video extension")
     model, project = args.pop("model", "yolo26n.pt"), args.pop("project", None)
     local_args = args | {"model": model, "project": project}
-    check_cfg(local_args)  # reject invalid values before the paid Platform prediction, as `yolo predict` would
     uri = platform_model(client, model) or upload_model(client, model, *resolve_project(client, project))
     owner, project, model = uri[5:].split("/")
     # YOLO options the endpoint accepts
