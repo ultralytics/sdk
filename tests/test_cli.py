@@ -182,7 +182,7 @@ def test_cloud_predict_saves_outputs(tmp_path):
             {"results": [{"class": i, "name": str(i), "confidence": 0.9, "box": box}], "speed": speed}
             for i in (range(stride - 1, 6, stride) if video else [0])
         ]
-        return 200, {"metadata": {"task": "detect", "classNames": [str(i) for i in range(6)]}, "images": images}
+        return 200, {"metadata": {"task": "detect"}, "images": images}
 
     with loopback(reply) as url:
         env = {
