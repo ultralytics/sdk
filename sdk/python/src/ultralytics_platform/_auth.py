@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import json
 import os
+import stat
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -21,11 +23,14 @@ def get_api_key() -> str | None:
     else:
         return None
     # Select the same directory as the settings writer; never revive a key from another location after logout.
-    for candidate in (directory, Path("/tmp") / "Ultralytics", Path.cwd() / "Ultralytics"):
-        if candidate.exists() or os.access(candidate.parent, os.W_OK):
-            break
     try:
-        settings = json.loads((candidate / "settings.json").read_text(encoding="utf-8"))
+        if not directory.is_dir():  # the writer falls back to a private temp directory when it cannot create this one
+            windows = sys.platform == "win32"
+            directory = Path(tempfile.gettempdir()) / ("Ultralytics" if windows else f"Ultralytics-{os.getuid()}")
+            st = directory.lstat()
+            if not (stat.S_ISDIR(st.st_mode) and (windows or (st.st_uid, st.st_mode & 0o777) == (os.getuid(), 0o700))):
+                return None  # the writer never uses a foreign, shared or symlinked directory
+        settings = json.loads((directory / "settings.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
     api_key = settings.get("api_key") if isinstance(settings, dict) else None
