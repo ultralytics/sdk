@@ -724,7 +724,10 @@ def cloud_download(client: Platform, tokens: list[str]) -> int:
     uri = str(args.get("model", ""))
     if not uri.startswith("ul://"):
         raise ValueError("model= must be a ul://owner/project/model URI")
-    return download_model(client, uri, get_cfg(DEFAULT_CFG_DICT | args | {"mode": "train"}))
+    cfg = get_cfg(DEFAULT_CFG_DICT | args | {"mode": "train"})
+    if (client.models.training(*uri[5:].split("/"))["job"] or {}).get("status") in {"pending", "untrained"}:
+        raise CloudJobError(f"{uri} has not been trained yet; start training with `ul cloud train`")
+    return download_model(client, uri, cfg)
 
 
 CLOUD_COMMANDS = {"train": cloud_train, "predict": cloud_predict, "export": cloud_export, "download": cloud_download}
