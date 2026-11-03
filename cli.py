@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import inspect
 import json
@@ -480,14 +481,31 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
     owner, project_slug = resolve_project(client, project)
     with TemporaryDirectory(prefix="ul-cloud-train-") as temporary:
         archive = package_dataset(local_data, temporary, args.get("task")) if local_data else None
-        model = args["model"]
-        if Path(model).is_file() or not (model.startswith("ul://") or model in GITHUB_ASSETS_NAMES):
-            args["model"] = upload_model(client, model, owner, project_slug)
-        else:  # hosted official weights map to their public model; other official names stay bare for the worker
-            args["model"] = platform_model(client, model) or model
-        if archive:
+        if archive:  # an unchanged local dataset reuses the Platform dataset its last upload created
+            slug, existing = slugify(archive.stem) or "dataset", None
+            uri = f"ul://{owner}/datasets/{slug}"
+            if zipfile.is_zipfile(archive):  # names, CRCs and sizes: copies and checkouts change only file dates
+                with zipfile.ZipFile(archive) as zip_file:
+                    members = [(info.filename, info.CRC, info.file_size) for info in zip_file.infolist()]
+                digest = hashlib.sha256(repr(members).encode()).hexdigest()
+            else:
+                with archive.open("rb") as file:
+                    digest = hashlib.file_digest(file, "sha256").hexdigest()
+            try:
+                existing = client.datasets.retrieve(owner, slug)["dataset"]
+            except APIError as error:
+                if error.status_code != 404:
+                    raise
+            if existing and (
+                existing.get("status") != "ready" or existing["metadata"].get("ul_cloud_upload_sha256") != digest
+            ):
+                raise ValueError(f"{uri} exists but is not a ready upload of this data; pass data={uri} or rename it")
+        if archive and existing:
+            args["data"] = uri
+            print(f"Dataset: {uri} (local data unchanged since its upload; Platform edits are kept)")
+        elif archive:
             dataset = client.datasets.create(  # Platform infers the task from the labels during ingest
-                owner=owner, dataset=slugify(archive.stem) or "dataset", name=archive.stem, visibility="private"
+                owner=owner, dataset=slug, name=archive.stem, visibility="private"
             )
             args["data"] = f"ul://{dataset['owner']}/datasets/{dataset['dataset']}"
             print(f"Dataset: {args['data']} (reuse this URI to skip uploading next time)")
@@ -499,6 +517,12 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
                 state = client.datasets.retrieve(dataset["owner"], dataset["dataset"])["dataset"]
             if state.get("status") == "failed":
                 raise CloudJobError(f"Dataset ingestion failed; inspect {args['data']}: {state.get('processingError')}")
+            client.datasets.update(owner, slug, metadata={"ul_cloud_upload_sha256": digest})
+        model = args["model"]
+        if Path(model).is_file() or not (model.startswith("ul://") or model in GITHUB_ASSETS_NAMES):
+            args["model"] = upload_model(client, model, owner, project_slug)
+        else:  # hosted official weights map to their public model; other official names stay bare for the worker
+            args["model"] = platform_model(client, model) or model
         body = {"owner": owner, "project": project_slug}
         if name:
             body |= {"model": slugify(name), "name": name}
