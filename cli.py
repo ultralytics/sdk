@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import importlib.util
 import inspect
 import json
@@ -15,6 +14,7 @@ import typing
 import zipfile
 from collections.abc import Sequence
 from contextlib import ExitStack
+from hashlib import file_digest, sha256
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from tarfile import TarFile, is_tarfile
@@ -483,38 +483,30 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
         archive = package_dataset(local_data, temporary, args.get("task")) if local_data else None
         if archive:  # an unchanged local dataset reuses the Platform dataset its last upload created
             slug, existing = slugify(archive.stem) or "dataset", None
-            uri = f"ul://{owner}/datasets/{slug}"
+            uri = args["data"] = f"ul://{owner}/datasets/{slug}"
             if zipfile.is_zipfile(archive):  # names and contents: repacks, copies and checkouts change only dates
                 with zipfile.ZipFile(archive) as zipped:
-                    members = [
-                        (i.filename, hashlib.file_digest(zipped.open(i), "sha256").digest()) for i in zipped.infolist()
-                    ]
+                    members = [(i.filename, file_digest(zipped.open(i), "sha256").digest()) for i in zipped.infolist()]
             else:
                 with TarFile.open(archive) as tar:
                     members = [
-                        (m.name, m.linkname, m.isfile() and hashlib.file_digest(tar.extractfile(m), "sha256").digest())
+                        (m.name, m.linkname, file_digest(tar.extractfile(m), "sha256").digest() if m.isfile() else b"")
                         for m in tar
                         if not m.isdir()
                     ]
-            digest = hashlib.sha256(repr(members).encode()).hexdigest()
+            digest = sha256(repr(sorted(members, key=lambda m: m[0])).encode()).hexdigest()  # order-independent
             try:
                 existing = client.datasets.retrieve(owner, slug)["dataset"]
             except APIError as error:
                 if error.status_code != 404:
                     raise
-            if existing and (
-                existing.get("status") != "ready" or existing["metadata"].get("ul_cloud_upload_sha256") != digest
-            ):
+            if existing and (existing.get("status"), existing["metadata"].get("ul_cloud_sha256")) != ("ready", digest):
                 raise ValueError(f"{uri} exists but is not a ready upload of this data; pass data={uri} or rename it")
-        if archive and existing:
-            args["data"] = uri
-            print(f"Dataset: {uri} (local data unchanged since its upload; Platform edits are kept)")
-        elif archive:
+            print(f"Dataset: {uri} ({'reused; Platform edits since its upload are kept' if existing else 'uploading'})")
+        if archive and not existing:
             dataset = client.datasets.create(  # Platform infers the task from the labels during ingest
                 owner=owner, dataset=slug, name=archive.stem, visibility="private"
             )
-            args["data"] = f"ul://{dataset['owner']}/datasets/{dataset['dataset']}"
-            print(f"Dataset: {args['data']} (reuse this URI to skip uploading next time)")
             session = upload_file(client, archive, "datasets", dataset["id"])
             client.datasets.ingest(dataset["owner"], dataset["dataset"], body={"sessionId": session})
             state = {"status": "processing"}
@@ -523,7 +515,7 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
                 state = client.datasets.retrieve(dataset["owner"], dataset["dataset"])["dataset"]
             if state.get("status") == "failed":
                 raise CloudJobError(f"Dataset ingestion failed; inspect {args['data']}: {state.get('processingError')}")
-            client.datasets.update(owner, slug, metadata={"ul_cloud_upload_sha256": digest})
+            client.datasets.update(owner, slug, metadata={"ul_cloud_sha256": digest})
         model = args["model"]
         if Path(model).is_file() or not (model.startswith("ul://") or model in GITHUB_ASSETS_NAMES):
             args["model"] = upload_model(client, model, owner, project_slug)
