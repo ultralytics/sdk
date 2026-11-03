@@ -14,9 +14,10 @@ import typing
 import zipfile
 from collections.abc import Sequence
 from contextlib import ExitStack
+from hashlib import file_digest, sha256
 from importlib.metadata import PackageNotFoundError, version
-from pathlib import Path
-from tarfile import is_tarfile
+from pathlib import Path, PurePosixPath
+from tarfile import TarFile, is_tarfile
 from tempfile import TemporaryDirectory
 from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
 
@@ -480,17 +481,34 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
     owner, project_slug = resolve_project(client, project)
     with TemporaryDirectory(prefix="ul-cloud-train-") as temporary:
         archive = package_dataset(local_data, temporary, args.get("task")) if local_data else None
-        model = args["model"]
-        if Path(model).is_file() or not (model.startswith("ul://") or model in GITHUB_ASSETS_NAMES):
-            args["model"] = upload_model(client, model, owner, project_slug)
-        else:  # hosted official weights map to their public model; other official names stay bare for the worker
-            args["model"] = platform_model(client, model) or model
-        if archive:
+        if archive:  # an unchanged local dataset reuses the Platform dataset its last upload created
+            slug, existing = slugify(archive.stem) or "dataset", None
+            uri = args["data"] = f"ul://{owner}/datasets/{slug}"
+            if zipfile.is_zipfile(archive):  # names and contents: repacks, copies and checkouts change only dates
+                with zipfile.ZipFile(archive) as zf:
+                    members = [
+                        (i.filename, file_digest(zf.open(i), sha256).digest()) for i in zf.infolist() if not i.is_dir()
+                    ]
+            else:
+                with TarFile.open(archive) as tar:
+                    members = [
+                        (m.name, m.linkname, file_digest(tar.extractfile(m), sha256).digest() if m.isfile() else b"")
+                        for m in tar
+                        if not m.isdir()
+                    ]
+            digest = sha256(repr(sorted(members, key=lambda m: str(PurePosixPath(m[0])))).encode()).hexdigest()
+            try:
+                existing = client.datasets.retrieve(owner, slug)["dataset"]
+            except APIError as error:
+                if error.status_code != 404:
+                    raise
+            if existing and (existing.get("status"), existing["metadata"].get("ul_cloud_sha256")) != ("ready", digest):
+                raise ValueError(f"{uri} exists but is not a ready upload of this data; pass data={uri} or rename it")
+            print(f"Dataset: {uri} ({'reused; Platform edits since its upload are kept' if existing else 'uploading'})")
+        if archive and not existing:
             dataset = client.datasets.create(  # Platform infers the task from the labels during ingest
-                owner=owner, dataset=slugify(archive.stem) or "dataset", name=archive.stem, visibility="private"
+                owner=owner, dataset=slug, name=archive.stem, visibility="private"
             )
-            args["data"] = f"ul://{dataset['owner']}/datasets/{dataset['dataset']}"
-            print(f"Dataset: {args['data']} (reuse this URI to skip uploading next time)")
             session = upload_file(client, archive, "datasets", dataset["id"])
             client.datasets.ingest(dataset["owner"], dataset["dataset"], body={"sessionId": session})
             state = {"status": "processing"}
@@ -499,6 +517,12 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
                 state = client.datasets.retrieve(dataset["owner"], dataset["dataset"])["dataset"]
             if state.get("status") == "failed":
                 raise CloudJobError(f"Dataset ingestion failed; inspect {args['data']}: {state.get('processingError')}")
+            client.datasets.update(owner, slug, metadata=state["metadata"] | {"ul_cloud_sha256": digest})
+        model = args["model"]
+        if Path(model).is_file() or not (model.startswith("ul://") or model in GITHUB_ASSETS_NAMES):
+            args["model"] = upload_model(client, model, owner, project_slug)
+        else:  # hosted official weights map to their public model; other official names stay bare for the worker
+            args["model"] = platform_model(client, model) or model
         body = {"owner": owner, "project": project_slug}
         if name:
             body |= {"model": slugify(name), "name": name}
