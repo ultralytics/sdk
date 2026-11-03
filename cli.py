@@ -16,7 +16,7 @@ from collections.abc import Sequence
 from contextlib import ExitStack
 from hashlib import file_digest, sha256
 from importlib.metadata import PackageNotFoundError, version
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from tarfile import TarFile, is_tarfile
 from tempfile import TemporaryDirectory
 from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
@@ -485,16 +485,18 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
             slug, existing = slugify(archive.stem) or "dataset", None
             uri = args["data"] = f"ul://{owner}/datasets/{slug}"
             if zipfile.is_zipfile(archive):  # names and contents: repacks, copies and checkouts change only dates
-                with zipfile.ZipFile(archive) as zipped:
-                    members = [(i.filename, file_digest(zipped.open(i), "sha256").digest()) for i in zipped.infolist()]
+                with zipfile.ZipFile(archive) as zf:
+                    members = [
+                        (i.filename, file_digest(zf.open(i), sha256).digest()) for i in zf.infolist() if not i.is_dir()
+                    ]
             else:
                 with TarFile.open(archive) as tar:
                     members = [
-                        (m.name, m.linkname, file_digest(tar.extractfile(m), "sha256").digest() if m.isfile() else b"")
+                        (m.name, m.linkname, file_digest(tar.extractfile(m), sha256).digest() if m.isfile() else b"")
                         for m in tar
                         if not m.isdir()
                     ]
-            digest = sha256(repr(sorted(members, key=lambda m: m[0])).encode()).hexdigest()  # order-independent
+            digest = sha256(repr(sorted(members, key=lambda m: str(PurePosixPath(m[0])))).encode()).hexdigest()
             try:
                 existing = client.datasets.retrieve(owner, slug)["dataset"]
             except APIError as error:
