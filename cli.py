@@ -484,9 +484,11 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
         if archive:  # an unchanged local dataset reuses the Platform dataset its last upload created
             slug, existing = slugify(archive.stem) or "dataset", None
             uri = f"ul://{owner}/datasets/{slug}"
-            if zipfile.is_zipfile(archive):  # names, CRCs and sizes: copies and checkouts change only file dates
-                with zipfile.ZipFile(archive) as zip_file:
-                    members = [(info.filename, info.CRC, info.file_size) for info in zip_file.infolist()]
+            if zipfile.is_zipfile(archive):  # names and contents: copies and checkouts change only file dates
+                with zipfile.ZipFile(archive) as zipped:
+                    members = [
+                        (i.filename, hashlib.file_digest(zipped.open(i), "sha256").digest()) for i in zipped.infolist()
+                    ]
                 digest = hashlib.sha256(repr(members).encode()).hexdigest()
             else:
                 with archive.open("rb") as file:
