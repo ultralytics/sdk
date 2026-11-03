@@ -517,7 +517,7 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
                 state = client.datasets.retrieve(dataset["owner"], dataset["dataset"])["dataset"]
             if state.get("status") == "failed":
                 raise CloudJobError(f"Dataset ingestion failed; inspect {args['data']}: {state.get('processingError')}")
-            client.datasets.update(owner, slug, metadata={"ul_cloud_sha256": digest})
+            client.datasets.update(owner, slug, metadata=state["metadata"] | {"ul_cloud_sha256": digest})
         model = args["model"]
         if Path(model).is_file() or not (model.startswith("ul://") or model in GITHUB_ASSETS_NAMES):
             args["model"] = upload_model(client, model, owner, project_slug)
