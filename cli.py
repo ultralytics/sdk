@@ -17,7 +17,7 @@ from collections.abc import Sequence
 from contextlib import ExitStack
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
-from tarfile import is_tarfile
+from tarfile import TarFile, is_tarfile
 from tempfile import TemporaryDirectory
 from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
 
@@ -484,15 +484,19 @@ def cloud_train(client: Platform, tokens: list[str]) -> int:
         if archive:  # an unchanged local dataset reuses the Platform dataset its last upload created
             slug, existing = slugify(archive.stem) or "dataset", None
             uri = f"ul://{owner}/datasets/{slug}"
-            if zipfile.is_zipfile(archive):  # names and contents: copies and checkouts change only file dates
+            if zipfile.is_zipfile(archive):  # names and contents: repacks, copies and checkouts change only dates
                 with zipfile.ZipFile(archive) as zipped:
                     members = [
                         (i.filename, hashlib.file_digest(zipped.open(i), "sha256").digest()) for i in zipped.infolist()
                     ]
-                digest = hashlib.sha256(repr(members).encode()).hexdigest()
             else:
-                with archive.open("rb") as file:
-                    digest = hashlib.file_digest(file, "sha256").hexdigest()
+                with TarFile.open(archive) as tar:
+                    members = [
+                        (m.name, m.linkname, m.isfile() and hashlib.file_digest(tar.extractfile(m), "sha256").digest())
+                        for m in tar
+                        if not m.isdir()
+                    ]
+            digest = hashlib.sha256(repr(members).encode()).hexdigest()
             try:
                 existing = client.datasets.retrieve(owner, slug)["dataset"]
             except APIError as error:
