@@ -631,6 +631,7 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
                     labels=options.show_labels,
                 )
             if options.save_txt:
+                (directory / "labels" / f"{stem}.txt").unlink(missing_ok=True)
                 result.save_txt(directory / "labels" / f"{stem}.txt", save_conf=options.save_conf)
             if options.save_crop:
                 result.save_crop(save_dir=directory / "crops", file_name=stem)
