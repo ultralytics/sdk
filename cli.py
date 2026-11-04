@@ -612,6 +612,7 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
     writer = BasePredictor(cfg=DEFAULT_CFG_DICT | args | {"task": task, "mode": "predict"})
     options, directory = writer.args, writer.save_dir
     writer.dataset = dataset = load_inference_source(str(source), batch=1, vid_stride=options.vid_stride)
+    writer.source_type = dataset.source_type  # setup_source() state that save_predicted_images() reads
     if options.save or options.save_txt or options.save_crop:
         directory.mkdir(parents=True, exist_ok=True)
         directory.joinpath("results.json").write_text(json.dumps(response, indent=2))
