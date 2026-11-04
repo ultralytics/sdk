@@ -296,14 +296,15 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
         )
     with path.open("rb") as file:
         digest = file_digest(file, lambda: md5(usedforsecurity=False)).hexdigest()
-    for m in client.models.list(owner, project, limit=100)["models"]:  # same size, then the stored MD5 (its ETag)
-        if (m.get("file") or {}).get("size") == path.stat().st_size:
+    stem = slugify(path.stem)
+    for m in client.models.list(owner, project, limit=100)["models"]:  # named after this file and the same size,
+        if m["model"].startswith(stem) and (m.get("file") or {}).get("size") == path.stat().st_size:  # then same MD5
             url = client.models.files(owner, project, m["model"])["files"][0]["downloadUrl"]
             if httpx.head(url).raise_for_status().headers.get("etag") == f'"{digest}"':
                 uri = f"ul://{owner}/{project}/{m['model']}"
                 print(f"Model: {uri} (reused)")
                 return uri
-    body = {"owner": owner, "project": project, "model": slugify(path.stem), "name": path.stem, "task": YOLO(path).task}
+    body = {"owner": owner, "project": project, "model": stem, "name": path.stem, "task": YOLO(path).task}
     created = client.models.create(body=body)
     upload_file(client, path, "models", created["id"])
     uri = f"ul://{created['owner']}/{created['project']}/{created['model']}"
