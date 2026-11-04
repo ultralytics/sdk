@@ -294,22 +294,24 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
         raise ValueError(
             f"model= must be a local .pt file, ul://owner/project/model, or official weights hosted on Platform: {model}"
         )
-    slug, reused = slugify(path.stem), False
     with path.open("rb") as file:
         digest = file_digest(file, md5).hexdigest()
+    slug = f"{slugify(path.stem)}-{digest[:8]}"  # one model per distinct checkpoint content
+    uri = f"ul://{owner}/{project}/{slug}"
     try:  # the storage object's ETag is its MD5, so this compares the current remote bytes, not a saved fingerprint
         files = client.models.files(owner, project, slug)["files"]
-        reused = bool(files) and httpx.head(files[0]["downloadUrl"]).headers.get("etag") == f'"{digest}"'
+        if files and httpx.head(files[0]["downloadUrl"]).raise_for_status().headers.get("etag") != f'"{digest}"':
+            raise ValueError(f"{uri} holds other weights; rename {path.name} or delete that model")
+        target = None if files else client.models.retrieve(owner, project, slug)["model"]  # an interrupted upload
     except APIError as error:
         if error.status_code != 404:
             raise
-    if not reused:
         body = {"owner": owner, "project": project, "model": slug, "name": path.stem, "task": YOLO(path).task}
-        created = client.models.create(body=body)
-        upload_file(client, path, "models", created["id"])
-        slug = created["model"]
-    uri = f"ul://{owner}/{project}/{slug}"
-    print(f"Model: {uri}{' (reused)' if reused else ''}")
+        target = client.models.create(body=body)
+    if target:
+        upload_file(client, path, "models", target["id"])
+        uri = f"ul://{owner}/{project}/{target['model']}"
+    print(f"Model: {uri}{'' if target else ' (reused)'}")
     return uri
 
 
@@ -897,7 +899,7 @@ def main(argv: list[str] | None = None) -> int:
     except APIConnectionError as error:
         print(f"Request to {platform_url()} failed: {error}", file=sys.stderr)
         return 1
-    except CloudJobError as error:
+    except (CloudJobError, httpx.HTTPError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
     except (ValueError, OSError) as error:
