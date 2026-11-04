@@ -295,12 +295,13 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
     slug, existing = slugify(path.stem), None  # the upload's fingerprint lives in its metadata, as for datasets
     with path.open("rb") as file:
         digest = file_digest(file, sha256).hexdigest()
-    try:
-        existing = client.models.retrieve(owner, project, slug)["model"]
-    except APIError as error:
-        if error.status_code != 404:
-            raise
-    if existing and existing.get("file") and existing["metadata"].get("ul_cloud_sha256") == digest:
+    for m in client.models.list(owner, project, limit=100)["models"]:  # the list omits metadata: fetch same-name models
+        if m["model"].startswith(slug) and m.get("file"):
+            model = client.models.retrieve(owner, project, m["model"])["model"]
+            if model["metadata"].get("ul_cloud_sha256") == digest:
+                existing = model
+                break
+    if existing:
         created = existing
     else:
         body = {"owner": owner, "project": project, "model": slug, "name": path.stem, "task": YOLO(path).task}
