@@ -14,14 +14,12 @@ import typing
 import zipfile
 from collections.abc import Sequence
 from contextlib import ExitStack
-from hashlib import file_digest, md5, sha256
+from hashlib import file_digest, sha256
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path, PurePosixPath
 from tarfile import TarFile, is_tarfile
 from tempfile import TemporaryDirectory
 from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
-
-import httpx
 
 from . import NOT_GIVEN, APIConnectionError, APIError, NotGiven, Platform
 from ._cli_metadata import MULTIPART_FILES
@@ -294,21 +292,22 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
         raise ValueError(
             f"model= must be a local .pt file, ul://owner/project/model, or official weights hosted on Platform: {model}"
         )
+    slug, existing = slugify(path.stem), None  # the upload's fingerprint lives in its metadata, as for datasets
     with path.open("rb") as file:
-        digest = file_digest(file, lambda: md5(usedforsecurity=False)).hexdigest()
-    stem = slugify(path.stem)
-    for m in client.models.list(owner, project, limit=100)["models"]:  # named after this file and the same size,
-        if m["model"].startswith(stem) and (m.get("file") or {}).get("size") == path.stat().st_size:  # then same MD5
-            url = client.models.files(owner, project, m["model"])["files"][0]["downloadUrl"]
-            if httpx.head(url).raise_for_status().headers.get("etag") == f'"{digest}"':
-                uri = f"ul://{owner}/{project}/{m['model']}"
-                print(f"Model: {uri} (reused)")
-                return uri
-    body = {"owner": owner, "project": project, "model": stem, "name": path.stem, "task": YOLO(path).task}
-    created = client.models.create(body=body)
-    upload_file(client, path, "models", created["id"])
-    uri = f"ul://{created['owner']}/{created['project']}/{created['model']}"
-    print(f"Model: {uri}")
+        digest = file_digest(file, sha256).hexdigest()
+    try:
+        existing = client.models.retrieve(owner, project, slug)["model"]
+    except APIError as error:
+        if error.status_code != 404:
+            raise
+    if existing and existing.get("file") and existing["metadata"].get("ul_cloud_sha256") == digest:
+        created = existing
+    else:
+        body = {"owner": owner, "project": project, "model": slug, "name": path.stem, "task": YOLO(path).task}
+        created = client.models.create(body=body | {"metadata": {"ul_cloud_sha256": digest}})
+        upload_file(client, path, "models", created["id"])
+    uri = f"ul://{owner}/{project}/{created['model']}"
+    print(f"Model: {uri}{' (reused)' if created is existing else ''}")
     return uri
 
 
@@ -896,7 +895,7 @@ def main(argv: list[str] | None = None) -> int:
     except APIConnectionError as error:
         print(f"Request to {platform_url()} failed: {error}", file=sys.stderr)
         return 1
-    except (CloudJobError, httpx.HTTPError) as error:
+    except CloudJobError as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
     except (ValueError, OSError) as error:
