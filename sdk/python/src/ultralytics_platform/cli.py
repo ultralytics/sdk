@@ -296,22 +296,18 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
         )
     with path.open("rb") as file:
         digest = file_digest(file, md5).hexdigest()
-    slug = f"{slugify(path.stem)}-{digest[:8]}"  # one model per distinct checkpoint content
-    uri = f"ul://{owner}/{project}/{slug}"
-    try:  # the storage object's ETag is its MD5, so this compares the current remote bytes, not a saved fingerprint
-        files = client.models.files(owner, project, slug)["files"]
-        if files and httpx.head(files[0]["downloadUrl"]).raise_for_status().headers.get("etag") != f'"{digest}"':
-            raise ValueError(f"{uri} holds other weights; rename {path.name} or delete that model")
-        target = None if files else client.models.retrieve(owner, project, slug)["model"]  # an interrupted upload
-    except APIError as error:
-        if error.status_code != 404:
-            raise
-        body = {"owner": owner, "project": project, "model": slug, "name": path.stem, "task": YOLO(path).task}
-        target = client.models.create(body=body)
-    if target:
-        upload_file(client, path, "models", target["id"])
-        uri = f"ul://{owner}/{project}/{target['model']}"
-    print(f"Model: {uri}{'' if target else ' (reused)'}")
+    for m in client.models.list(owner, project, limit=100)["models"]:  # same size, then the stored MD5 (its ETag)
+        if (m.get("file") or {}).get("size") == path.stat().st_size:
+            url = client.models.files(owner, project, m["model"])["files"][0]["downloadUrl"]
+            if httpx.head(url).raise_for_status().headers.get("etag") == f'"{digest}"':
+                uri = f"ul://{owner}/{project}/{m['model']}"
+                print(f"Model: {uri} (reused)")
+                return uri
+    body = {"owner": owner, "project": project, "model": slugify(path.stem), "name": path.stem, "task": YOLO(path).task}
+    created = client.models.create(body=body)
+    upload_file(client, path, "models", created["id"])
+    uri = f"ul://{created['owner']}/{created['project']}/{created['model']}"
+    print(f"Model: {uri}")
     return uri
 
 
