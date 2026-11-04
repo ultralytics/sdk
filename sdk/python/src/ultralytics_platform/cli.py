@@ -295,7 +295,7 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
             f"model= must be a local .pt file, ul://owner/project/model, or official weights hosted on Platform: {model}"
         )
     with path.open("rb") as file:
-        digest = file_digest(file, md5).hexdigest()
+        digest = file_digest(file, lambda: md5(usedforsecurity=False)).hexdigest()
     for m in client.models.list(owner, project, limit=100)["models"]:  # same size, then the stored MD5 (its ETag)
         if (m.get("file") or {}).get("size") == path.stat().st_size:
             url = client.models.files(owner, project, m["model"])["files"][0]["downloadUrl"]
