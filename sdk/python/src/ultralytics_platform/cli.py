@@ -14,12 +14,14 @@ import typing
 import zipfile
 from collections.abc import Sequence
 from contextlib import ExitStack
-from hashlib import file_digest, sha256
+from hashlib import file_digest, md5, sha256
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path, PurePosixPath
 from tarfile import TarFile, is_tarfile
 from tempfile import TemporaryDirectory
 from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
+
+import httpx
 
 from . import NOT_GIVEN, APIConnectionError, APIError, NotGiven, Platform
 from ._cli_metadata import MULTIPART_FILES
@@ -283,7 +285,7 @@ def platform_model(client: Platform, model: Any) -> str | None:
 
 
 def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
-    """Upload a local .pt checkpoint as a new model of the project and return its ul:// URI."""
+    """Upload a local .pt checkpoint as a model of the project, reusing an unchanged earlier upload, and return its URI."""
     from ultralytics import YOLO
     from ultralytics.utils.callbacks.platform import slugify
 
@@ -292,11 +294,22 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
         raise ValueError(
             f"model= must be a local .pt file, ul://owner/project/model, or official weights hosted on Platform: {model}"
         )
-    body = {"owner": owner, "project": project, "model": slugify(path.stem), "name": path.stem, "task": YOLO(path).task}
-    created = client.models.create(body=body)
-    upload_file(client, path, "models", created["id"])
-    uri = f"ul://{created['owner']}/{created['project']}/{created['model']}"
-    print(f"Model: {uri}")
+    slug, reused = slugify(path.stem), False
+    with path.open("rb") as file:
+        digest = file_digest(file, md5).hexdigest()
+    try:  # the storage object's ETag is its MD5, so this compares the current remote bytes, not a saved fingerprint
+        files = client.models.files(owner, project, slug)["files"]
+        reused = bool(files) and httpx.head(files[0]["downloadUrl"]).headers.get("etag") == f'"{digest}"'
+    except APIError as error:
+        if error.status_code != 404:
+            raise
+    if not reused:
+        body = {"owner": owner, "project": project, "model": slug, "name": path.stem, "task": YOLO(path).task}
+        created = client.models.create(body=body)
+        upload_file(client, path, "models", created["id"])
+        slug = created["model"]
+    uri = f"ul://{owner}/{project}/{slug}"
+    print(f"Model: {uri}{' (reused)' if reused else ''}")
     return uri
 
 
