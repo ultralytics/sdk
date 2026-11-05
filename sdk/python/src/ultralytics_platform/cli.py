@@ -7,6 +7,7 @@ import importlib.util
 import inspect
 import json
 import os
+import re
 import sys
 import time
 import types
@@ -298,7 +299,7 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
     with path.open("rb") as file:
         digest = b64encode(file_digest(file, lambda: md5(usedforsecurity=False)).digest()).decode()
     for m in client.models.list(owner, project, limit=100)["models"]:
-        if m["model"].startswith(slug) and (m.get("file") or {}).get("size") == size:
+        if re.fullmatch(rf"{slug}(-\d+)?", m["model"]) and (m.get("file") or {}).get("size") == size:
             for remote in client.models.files(owner, project, m["model"])["files"]:
                 with urlopen(Request(remote["downloadUrl"], headers={"Range": "bytes=0-0"}), timeout=30) as response:
                     hashes = ",".join(response.headers.get_all("x-goog-hash", [])).replace(" ", "").split(",")
