@@ -2116,6 +2116,7 @@ ImagesPredictResponse = TypedDict(
         "confidences": NotRequired[list[float]],
         "modelUsed": str,
         "inferenceTime": NotRequired[float],
+        "usage": NotRequired[list[Any]],
         "cost": NotRequired[float],
     },
 )
