@@ -12,14 +12,16 @@ import time
 import types
 import typing
 import zipfile
+from base64 import b64encode
 from collections.abc import Sequence
 from contextlib import ExitStack
-from hashlib import file_digest, sha256
+from hashlib import file_digest, md5, sha256
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path, PurePosixPath
 from tarfile import TarFile, is_tarfile
 from tempfile import TemporaryDirectory
 from typing import Any, BinaryIO, Literal, get_args, get_origin, get_type_hints
+from urllib.request import Request, urlopen
 
 from . import NOT_GIVEN, APIConnectionError, APIError, NotGiven, Platform
 from ._cli_metadata import MULTIPART_FILES
@@ -292,23 +294,23 @@ def upload_model(client: Platform, model: Any, owner: str, project: str) -> str:
         raise ValueError(
             f"model= must be a local .pt file, ul://owner/project/model, or official weights hosted on Platform: {model}"
         )
-    slug, existing = slugify(path.stem), None  # the upload's fingerprint lives in its metadata, as for datasets
+    slug, size = slugify(path.stem), path.stat().st_size
     with path.open("rb") as file:
-        digest = file_digest(file, sha256).hexdigest()
-    for m in client.models.list(owner, project, limit=100)["models"]:  # the list omits metadata: fetch same-name models
-        if m["model"].startswith(slug) and m.get("file"):
-            model = client.models.retrieve(owner, project, m["model"])["model"]
-            if model["metadata"].get("ul_cloud_sha256") == digest:
-                existing = model
-                break
-    if existing:
-        created = existing
-    else:
-        body = {"owner": owner, "project": project, "model": slug, "name": path.stem, "task": YOLO(path).task}
-        created = client.models.create(body=body | {"metadata": {"ul_cloud_sha256": digest}})
-        upload_file(client, path, "models", created["id"])
-    uri = f"ul://{owner}/{project}/{created['model']}"
-    print(f"Model: {uri}{' (reused)' if created is existing else ''}")
+        digest = b64encode(file_digest(file, lambda: md5(usedforsecurity=False)).digest()).decode()
+    for m in client.models.list(owner, project, limit=100)["models"]:
+        if m["model"].startswith(slug) and (m.get("file") or {}).get("size") == size:
+            for remote in client.models.files(owner, project, m["model"])["files"]:
+                with urlopen(Request(remote["downloadUrl"], headers={"Range": "bytes=0-0"}), timeout=30) as response:
+                    hashes = ",".join(response.headers.get_all("x-goog-hash", [])).replace(" ", "").split(",")
+                    if f"md5={digest}" in hashes:
+                        uri = f"ul://{owner}/{project}/{m['model']}"
+                        print(f"Model: {uri} (reused)")
+                        return uri
+    body = {"owner": owner, "project": project, "model": slug, "name": path.stem, "task": YOLO(path).task}
+    created = client.models.create(body=body)
+    upload_file(client, path, "models", created["id"])
+    uri = f"ul://{created['owner']}/{created['project']}/{created['model']}"
+    print(f"Model: {uri}")
     return uri
 
 
