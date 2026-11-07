@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.104",
+    "version": "0.1.107",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -6607,6 +6607,489 @@
         ],
         "additionalProperties": false,
         "description": "Public project, dataset and image search results"
+      },
+      "ExploreImageSearchResponse": {
+        "type": "object",
+        "properties": {
+          "projects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "project": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "private"
+                  ],
+                  "description": "Resource visibility"
+                },
+                "iconColor": {
+                  "type": "string"
+                },
+                "iconLetter": {
+                  "type": "string"
+                },
+                "iconImage": {
+                  "type": "string"
+                },
+                "modelCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "modelNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "totalBytes": {
+                  "type": "number"
+                },
+                "starCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "userImageUrl": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "project",
+                "name",
+                "owner",
+                "visibility",
+                "modelCount",
+                "modelNames",
+                "totalBytes",
+                "starCount",
+                "updatedAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "datasets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "dataset": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": [
+                    "public",
+                    "private"
+                  ],
+                  "description": "Resource visibility"
+                },
+                "imageCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "classCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "classNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "classColors": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "task": {
+                  "type": "string",
+                  "enum": [
+                    "detect",
+                    "segment",
+                    "semantic",
+                    "depth",
+                    "classify",
+                    "pose",
+                    "obb"
+                  ],
+                  "description": "YOLO task type"
+                },
+                "totalBytes": {
+                  "type": "number"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "splits": {
+                  "type": "object",
+                  "properties": {
+                    "train": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Number of training images"
+                    },
+                    "val": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Number of validation images"
+                    },
+                    "test": {
+                      "default": 0,
+                      "description": "Number of test images",
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "labeled": {
+                      "default": 0,
+                      "description": "Number of images with annotations",
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "train",
+                    "val",
+                    "test",
+                    "labeled"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Dataset split statistics"
+                },
+                "kptShape": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ],
+                  "items": {
+                    "not": {}
+                  },
+                  "minItems": 2
+                },
+                "starCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sampleImages": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "imageUrl": {
+                        "type": "string"
+                      },
+                      "width": {
+                        "type": "number"
+                      },
+                      "height": {
+                        "type": "number"
+                      },
+                      "labels": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "classId": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Class index (0-based)"
+                            },
+                            "bbox": {
+                              "description": "Bounding box [x_center, y_center, width, height] normalized 0-1",
+                              "type": "array",
+                              "prefixItems": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ],
+                              "items": {
+                                "not": {}
+                              },
+                              "minItems": 4
+                            },
+                            "segments": {
+                              "description": "Segmentation points, normalized 0-1",
+                              "maxItems": 10000,
+                              "type": "array",
+                              "items": {
+                                "type": "number"
+                              }
+                            },
+                            "keypoints": {
+                              "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                              "example": [
+                                0.1,
+                                0.2,
+                                0.3,
+                                0.4
+                              ],
+                              "maxItems": 10000,
+                              "type": "array",
+                              "items": {
+                                "type": "number"
+                              }
+                            },
+                            "obb": {
+                              "description": "Oriented bounding box corners",
+                              "type": "array",
+                              "prefixItems": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ],
+                              "items": {
+                                "not": {}
+                              },
+                              "minItems": 8
+                            },
+                            "skeletonId": {
+                              "description": "Skeleton template ID for pose keypoint connections",
+                              "type": "string",
+                              "maxLength": 128
+                            }
+                          },
+                          "required": [
+                            "classId"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Single annotation (object) in an image"
+                        }
+                      }
+                    },
+                    "required": [
+                      "url",
+                      "width",
+                      "height"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "userImageUrl": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "dataset",
+                "name",
+                "owner",
+                "visibility",
+                "imageCount",
+                "task",
+                "starCount",
+                "sampleImages",
+                "updatedAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "images": {
+            "description": "Images matching the search by content (`type=images`), best first",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "id": {
+                  "type": "string",
+                  "minLength": 24,
+                  "maxLength": 24,
+                  "pattern": "^[0-9a-fA-F]{24}$",
+                  "example": "507f1f77bcf86cd799439011"
+                },
+                "thumbnailUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "dataset": {
+                  "type": "object",
+                  "properties": {
+                    "owner": {
+                      "type": "string"
+                    },
+                    "dataset": {
+                      "type": "string"
+                    },
+                    "license": {
+                      "type": "string",
+                      "enum": [
+                        "None",
+                        "CC0-1.0",
+                        "PDM-1.0",
+                        "CC-BY-2.5",
+                        "CC-BY-3.0",
+                        "CC-BY-4.0",
+                        "CC-BY-NC-2.0",
+                        "CC-BY-NC-3.0",
+                        "CC-BY-NC-4.0",
+                        "CC-BY-SA-3.0",
+                        "CC-BY-SA-4.0",
+                        "CC-BY-NC-SA-3.0",
+                        "CC-BY-NC-SA-4.0",
+                        "CC-BY-ND-4.0",
+                        "CC-BY-NC-ND-2.0",
+                        "CC-BY-NC-ND-4.0",
+                        "Apache-2.0",
+                        "MIT",
+                        "BSD-3-Clause",
+                        "AGPL-3.0",
+                        "GPL-2.0",
+                        "GPL-3.0",
+                        "LGPL-3.0",
+                        "ODbL-1.0",
+                        "DbCL-1.0",
+                        "Research-Only",
+                        "Other"
+                      ],
+                      "description": "Dataset license identifier"
+                    }
+                  },
+                  "required": [
+                    "owner",
+                    "dataset",
+                    "license"
+                  ],
+                  "additionalProperties": false
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1,
+                  "description": "Cosine similarity rescaled to 0-1 as (1 + cos) / 2"
+                }
+              },
+              "required": [
+                "name",
+                "hash",
+                "width",
+                "height",
+                "id",
+                "thumbnailUrl",
+                "dataset",
+                "score"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "vector": {
+            "description": "The photo's vector on its first page, for later pages",
+            "type": "string",
+            "minLength": 172,
+            "maxLength": 172,
+            "pattern": "^[A-Za-z0-9+/]{170}[AEIMQUYcgkosw048]=$"
+          }
+        },
+        "required": [
+          "projects",
+          "datasets",
+          "hasMore"
+        ],
+        "additionalProperties": false,
+        "description": "Images or public datasets matching a photo"
       },
       "Image": {
         "type": "object",
@@ -17131,6 +17614,7 @@
                               "gemma",
                               "nemotron",
                               "moondream",
+                              "wevisone",
                               "florence2",
                               "owlv2",
                               "yoloe26x",
@@ -20144,6 +20628,188 @@
             "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.explore.search()\nprint(response)"
           }
         ]
+      },
+      "post": {
+        "summary": "Search by image",
+        "tags": [
+          "Explore"
+        ],
+        "operationId": "post_api_explore_search",
+        "description": "Send a photo as `image` (never stored), then reuse its returned `vector` for pages, filters or switching `type` between images and public datasets. Dataset cards show matching images.",
+        "x-sdk-method": "search_by_image",
+        "security": [
+          {},
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sort": {
+                    "default": "relevance",
+                    "description": "Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first",
+                    "type": "string",
+                    "enum": [
+                      "relevance",
+                      "stars",
+                      "newest",
+                      "oldest",
+                      "name-asc",
+                      "name-desc",
+                      "count-desc",
+                      "count-asc"
+                    ]
+                  },
+                  "offset": {
+                    "default": 0,
+                    "description": "Results to skip",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "limit": {
+                    "default": 20,
+                    "description": "Maximum results per resource type",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "task": {
+                    "description": "Comma-separated YOLO task filters",
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "license": {
+                    "description": "Comma-separated license filters for projects and datasets",
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "author": {
+                    "description": "Owner username filter",
+                    "type": "string",
+                    "maxLength": 32
+                  },
+                  "starred": {
+                    "default": "false",
+                    "description": "Only content starred by the authenticated caller",
+                    "type": "string",
+                    "enum": [
+                      "true",
+                      "false"
+                    ]
+                  },
+                  "minImages": {
+                    "description": "Minimum dataset image count",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "maxImages": {
+                    "description": "Maximum dataset image count",
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "type": {
+                    "default": "images",
+                    "description": "Return matching images or public datasets",
+                    "type": "string",
+                    "enum": [
+                      "images",
+                      "datasets"
+                    ]
+                  },
+                  "image": {
+                    "description": "Base64-encoded photo file, at most 3 MiB",
+                    "type": "string",
+                    "maxLength": 4194304,
+                    "format": "base64",
+                    "contentEncoding": "base64",
+                    "pattern": "^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$"
+                  },
+                  "vector": {
+                    "description": "The first page's `vector`, in place of `image`",
+                    "type": "string",
+                    "minLength": 172,
+                    "maxLength": 172,
+                    "pattern": "^[A-Za-z0-9+/]{170}[AEIMQUYcgkosw048]=$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Photo search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExploreImageSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters, or a photo that cannot be read",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Search rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Image search unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Search is busy; retry shortly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.explore.search_by_image()\nprint(response)"
+          }
+        ]
       }
     },
     "/api/images/{imageId}": {
@@ -20594,7 +21260,7 @@
           "Images"
         ],
         "operationId": "post_api_images_imageId_predict",
-        "description": "Generates label predictions using a YOLO model (ul:// URI), qwen, gemma, nemotron, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.",
+        "description": "Generates label predictions using a YOLO model (ul:// URI) or an offered annotation model. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.",
         "parameters": [
           {
             "name": "imageId",
@@ -20633,6 +21299,7 @@
                           "gemma",
                           "nemotron",
                           "moondream",
+                          "wevisone",
                           "florence2",
                           "owlv2",
                           "yoloe26x",

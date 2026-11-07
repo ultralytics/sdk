@@ -138,6 +138,7 @@ class Images:
             "gemma",
             "nemotron",
             "moondream",
+            "wevisone",
             "florence2",
             "owlv2",
             "yoloe26x",
@@ -176,11 +177,11 @@ class Images:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Generates label predictions using a YOLO model (ul:// URI), qwen, gemma, nemotron, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
+        Generates label predictions using a YOLO model (ul:// URI) or an offered annotation model. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "gpt-6.1-terra", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "qwen3.8-max", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash", "minimax-m3.1-flash"]): modelId request value.
+            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "wevisone", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "gpt-6.1-terra", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "qwen3.8-max", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash", "minimax-m3.1-flash"]): modelId request value.
             visual_prompts (Sequence[dict[str, Any]], optional): Same-image seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression
@@ -466,6 +467,7 @@ class AsyncImages:
             "gemma",
             "nemotron",
             "moondream",
+            "wevisone",
             "florence2",
             "owlv2",
             "yoloe26x",
@@ -504,11 +506,11 @@ class AsyncImages:
     ) -> ImagesPredictResponse:
         """Auto-annotate an image.
 
-        Generates label predictions using a YOLO model (ul:// URI), qwen, gemma, nemotron, moondream, florence2, owlv2, yoloe26x, sam3, sam3.1, or groundingdino. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
+        Generates label predictions using a YOLO model (ul:// URI) or an offered annotation model. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "gpt-6.1-terra", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "qwen3.8-max", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash", "minimax-m3.1-flash"]): modelId request value.
+            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "wevisone", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "gpt-6.1-terra", "claude-fable-5-1", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "mimo-v2.6-pro", "qwen3.8-max", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash", "minimax-m3.1-flash"]): modelId request value.
             visual_prompts (Sequence[dict[str, Any]], optional): Same-image seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index
             confidence (float, optional): Confidence threshold
             iou (float, optional): IoU threshold for non-maximum suppression

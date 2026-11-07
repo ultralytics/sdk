@@ -1998,6 +1998,150 @@ ExploreSearchResponse = TypedDict(
 )
 
 
+ExploreSearchByImageResponseProjectsItem = TypedDict(
+    "ExploreSearchByImageResponseProjectsItem",
+    {
+        "id": str,
+        "project": str,
+        "name": str,
+        "description": NotRequired[str],
+        "owner": str,
+        "visibility": Literal["public", "private"],
+        "iconColor": NotRequired[str],
+        "iconLetter": NotRequired[str],
+        "iconImage": NotRequired[str],
+        "modelCount": int,
+        "modelNames": list[str],
+        "totalBytes": float,
+        "starCount": int,
+        "userImageUrl": NotRequired[str],
+        "updatedAt": str,
+    },
+)
+
+
+ExploreSearchByImageResponseDatasetsItemSplits = TypedDict(
+    "ExploreSearchByImageResponseDatasetsItemSplits", {"train": int, "val": int, "test": int, "labeled": int}
+)
+
+
+ExploreSearchByImageResponseDatasetsItemSampleImagesItemLabelsItem = TypedDict(
+    "ExploreSearchByImageResponseDatasetsItemSampleImagesItemLabelsItem",
+    {
+        "classId": int,
+        "bbox": NotRequired[list[Any]],
+        "segments": NotRequired[list[float]],
+        "keypoints": NotRequired[list[float]],
+        "obb": NotRequired[list[Any]],
+        "skeletonId": NotRequired[str],
+    },
+)
+
+
+ExploreSearchByImageResponseDatasetsItemSampleImagesItem = TypedDict(
+    "ExploreSearchByImageResponseDatasetsItemSampleImagesItem",
+    {
+        "url": str,
+        "imageUrl": NotRequired[str],
+        "width": float,
+        "height": float,
+        "labels": NotRequired[list[ExploreSearchByImageResponseDatasetsItemSampleImagesItemLabelsItem]],
+    },
+)
+
+
+ExploreSearchByImageResponseDatasetsItem = TypedDict(
+    "ExploreSearchByImageResponseDatasetsItem",
+    {
+        "id": str,
+        "dataset": str,
+        "name": str,
+        "description": NotRequired[str],
+        "owner": str,
+        "visibility": Literal["public", "private"],
+        "imageCount": int,
+        "classCount": NotRequired[int],
+        "classNames": NotRequired[list[str]],
+        "classColors": NotRequired[dict[str, str]],
+        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
+        "totalBytes": NotRequired[float],
+        "tags": NotRequired[list[str]],
+        "splits": NotRequired[ExploreSearchByImageResponseDatasetsItemSplits],
+        "kptShape": NotRequired[list[Any]],
+        "starCount": int,
+        "sampleImages": list[ExploreSearchByImageResponseDatasetsItemSampleImagesItem],
+        "userImageUrl": NotRequired[str],
+        "updatedAt": str,
+    },
+)
+
+
+ExploreSearchByImageResponseImagesItemDataset = TypedDict(
+    "ExploreSearchByImageResponseImagesItemDataset",
+    {
+        "owner": str,
+        "dataset": str,
+        "license": Literal[
+            "None",
+            "CC0-1.0",
+            "PDM-1.0",
+            "CC-BY-2.5",
+            "CC-BY-3.0",
+            "CC-BY-4.0",
+            "CC-BY-NC-2.0",
+            "CC-BY-NC-3.0",
+            "CC-BY-NC-4.0",
+            "CC-BY-SA-3.0",
+            "CC-BY-SA-4.0",
+            "CC-BY-NC-SA-3.0",
+            "CC-BY-NC-SA-4.0",
+            "CC-BY-ND-4.0",
+            "CC-BY-NC-ND-2.0",
+            "CC-BY-NC-ND-4.0",
+            "Apache-2.0",
+            "MIT",
+            "BSD-3-Clause",
+            "AGPL-3.0",
+            "GPL-2.0",
+            "GPL-3.0",
+            "LGPL-3.0",
+            "ODbL-1.0",
+            "DbCL-1.0",
+            "Research-Only",
+            "Other",
+        ],
+    },
+)
+
+
+ExploreSearchByImageResponseImagesItem = TypedDict(
+    "ExploreSearchByImageResponseImagesItem",
+    {
+        "name": str,
+        "hash": str,
+        "width": int,
+        "height": int,
+        "id": str,
+        "thumbnailUrl": str,
+        "imageUrl": NotRequired[str],
+        "dataset": ExploreSearchByImageResponseImagesItemDataset,
+        "score": float,
+    },
+)
+
+
+ExploreSearchByImageResponse = TypedDict(
+    "ExploreSearchByImageResponse",
+    {
+        "projects": list[ExploreSearchByImageResponseProjectsItem],
+        "datasets": list[ExploreSearchByImageResponseDatasetsItem],
+        "images": NotRequired[list[ExploreSearchByImageResponseImagesItem]],
+        "hasMore": bool,
+        "vector": NotRequired[str],
+    },
+)
+
+
 ImagesRetrieveResponsePropertiesDepth = TypedDict(
     "ImagesRetrieveResponsePropertiesDepth",
     {
