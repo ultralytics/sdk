@@ -21589,6 +21589,30 @@
             "description": "Image ID"
           },
           {
+            "name": "license",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated dataset licenses to match; None matches datasets without a license",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          {
+            "name": "publicOnly",
+            "in": "query",
+            "required": false,
+            "description": "Search public datasets alone; by default your own and your teams' private datasets are searched too",
+            "schema": {
+              "default": "false",
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
             "name": "includeSourceDataset",
             "in": "query",
             "required": false,
@@ -25379,6 +25403,30 @@
               "example": "yolo26n"
             },
             "description": "Model name"
+          },
+          {
+            "name": "license",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated dataset licenses to match; None matches datasets without a license",
+            "schema": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          {
+            "name": "publicOnly",
+            "in": "query",
+            "required": false,
+            "description": "Search public datasets alone; by default your own and your teams' private datasets are searched too",
+            "schema": {
+              "default": "false",
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
           },
           {
             "name": "hashes",

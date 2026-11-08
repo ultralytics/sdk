@@ -217,6 +217,8 @@ class Images:
         self,
         image_id: str,
         *,
+        license: str | NotGiven = NOT_GIVEN,
+        public_only: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         include_source_dataset: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
@@ -227,6 +229,8 @@ class Images:
 
         Args:
             image_id (str): Image ID
+            license (str, optional): Comma-separated dataset licenses to match; None matches datasets without a license
+            public_only (Literal["true", "false"], optional): Search public datasets alone; by default your own and your teams' private datasets are searched too
             include_source_dataset (Literal["true", "false"], optional): Include the source dataset and datasets containing copies of the query image; query copies remain excluded
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -245,7 +249,11 @@ class Images:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("includeSourceDataset", include_source_dataset, style="form", explode=True)],
+                params=[
+                    *_query_parameter("license", license, style="form", explode=True),
+                    *_query_parameter("publicOnly", public_only, style="form", explode=True),
+                    *_query_parameter("includeSourceDataset", include_source_dataset, style="form", explode=True),
+                ],
             ),
         )
 
@@ -546,6 +554,8 @@ class AsyncImages:
         self,
         image_id: str,
         *,
+        license: str | NotGiven = NOT_GIVEN,
+        public_only: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         include_source_dataset: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
@@ -556,6 +566,8 @@ class AsyncImages:
 
         Args:
             image_id (str): Image ID
+            license (str, optional): Comma-separated dataset licenses to match; None matches datasets without a license
+            public_only (Literal["true", "false"], optional): Search public datasets alone; by default your own and your teams' private datasets are searched too
             include_source_dataset (Literal["true", "false"], optional): Include the source dataset and datasets containing copies of the query image; query copies remain excluded
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -574,7 +586,11 @@ class AsyncImages:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("includeSourceDataset", include_source_dataset, style="form", explode=True)],
+                params=[
+                    *_query_parameter("license", license, style="form", explode=True),
+                    *_query_parameter("publicOnly", public_only, style="form", explode=True),
+                    *_query_parameter("includeSourceDataset", include_source_dataset, style="form", explode=True),
+                ],
             ),
         )
 
