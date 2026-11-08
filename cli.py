@@ -665,7 +665,7 @@ def save_predictions(source: Path, response: dict, args: dict) -> None:
 
 
 def cloud_predict(client: Platform, tokens: list[str]) -> int:
-    """ul cloud predict model=ul://owner/project/model source=image.jpg [conf=0.25 iou=0.7 imgsz=640]
+    """ul cloud predict model=ul://owner/project/model source=image.jpg [conf=0.25 iou=0.5 imgsz=640]
 
     source= is one image/video file or URL; conf/iou/imgsz/vid_stride run on Platform, classes/max_det apply locally.
     Saves annotated output, with optional save_txt/save_crop/save_frames.
