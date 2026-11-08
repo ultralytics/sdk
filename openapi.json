@@ -15013,7 +15013,8 @@
                     },
                     "additionalProperties": {
                       "type": "string",
-                      "maxLength": 7
+                      "maxLength": 7,
+                      "pattern": "^#[0-9a-fA-F]{6}$"
                     },
                     "maxProperties": 25000
                   },
