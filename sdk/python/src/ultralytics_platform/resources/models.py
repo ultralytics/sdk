@@ -355,6 +355,8 @@ class Models:
         project: str,
         model: str,
         *,
+        license: str | NotGiven = NOT_GIVEN,
+        public_only: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         hashes: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
@@ -367,6 +369,8 @@ class Models:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            license (str, optional): Comma-separated dataset licenses to match; None matches datasets without a license
+            public_only (Literal["true", "false"], optional): Search public datasets alone; by default your own and your teams' private datasets are searched too
             hashes (str, optional): Comma-separated subset of the run's captured worst image hashes; defaults to the whole cohort
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -385,7 +389,11 @@ class Models:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("hashes", hashes, style="form", explode=True)],
+                params=[
+                    *_query_parameter("license", license, style="form", explode=True),
+                    *_query_parameter("publicOnly", public_only, style="form", explode=True),
+                    *_query_parameter("hashes", hashes, style="form", explode=True),
+                ],
             ),
         )
 
@@ -909,6 +917,8 @@ class AsyncModels:
         project: str,
         model: str,
         *,
+        license: str | NotGiven = NOT_GIVEN,
+        public_only: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         hashes: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
@@ -921,6 +931,8 @@ class AsyncModels:
             owner (str): Project owner
             project (str): Project name
             model (str): Model name
+            license (str, optional): Comma-separated dataset licenses to match; None matches datasets without a license
+            public_only (Literal["true", "false"], optional): Search public datasets alone; by default your own and your teams' private datasets are searched too
             hashes (str, optional): Comma-separated subset of the run's captured worst image hashes; defaults to the whole cohort
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
@@ -939,7 +951,11 @@ class AsyncModels:
                 timeout=timeout,
                 extra_headers=extra_headers,
                 auth=("Authorization", "Bearer "),
-                params=[*_query_parameter("hashes", hashes, style="form", explode=True)],
+                params=[
+                    *_query_parameter("license", license, style="form", explode=True),
+                    *_query_parameter("publicOnly", public_only, style="form", explode=True),
+                    *_query_parameter("hashes", hashes, style="form", explode=True),
+                ],
             ),
         )
 
