@@ -17659,7 +17659,7 @@
                         "maximum": 1
                       },
                       "iou": {
-                        "default": 0.7,
+                        "default": 0.5,
                         "description": "IoU threshold for non-maximum suppression",
                         "type": "number",
                         "minimum": 0,
@@ -19820,7 +19820,7 @@
                       },
                       "iou": {
                         "description": "IoU threshold",
-                        "example": 0.7,
+                        "example": 0.5,
                         "type": "number",
                         "minimum": 0,
                         "maximum": 0.95
@@ -19894,7 +19894,7 @@
                       },
                       "iou": {
                         "description": "IoU threshold",
-                        "example": 0.7,
+                        "example": 0.5,
                         "type": "number",
                         "minimum": 0,
                         "maximum": 0.95
@@ -21424,7 +21424,7 @@
                     "maximum": 1
                   },
                   "iou": {
-                    "default": 0.7,
+                    "default": 0.5,
                     "description": "IoU threshold for non-maximum suppression",
                     "type": "number",
                     "minimum": 0,
@@ -25133,7 +25133,7 @@
                       },
                       "iou": {
                         "description": "IoU threshold",
-                        "example": 0.7,
+                        "example": 0.5,
                         "type": "number",
                         "minimum": 0,
                         "maximum": 0.95
@@ -25207,7 +25207,7 @@
                       },
                       "iou": {
                         "description": "IoU threshold",
-                        "example": 0.7,
+                        "example": 0.5,
                         "type": "number",
                         "minimum": 0,
                         "maximum": 0.95
