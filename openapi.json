@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.107",
+    "version": "0.1.108",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -17561,7 +17561,7 @@
           "Datasets"
         ],
         "operationId": "post_api_datasets_owner_dataset_predict_batch",
-        "description": "For auto-annotation, saves a dataset version (cloud storage datasets have none), then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring requires hosted storage and creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.",
+        "description": "For auto-annotation, saves a dataset version (cloud storage datasets have none), then queues a run that labels the dataset's unlabeled images with the given model, or every image when `includeAnnotated` is set. With `yoloe26x`, `visualPrompts` drawn on `referenceImageId` are encoded once and find similar objects in every image, on detect, segment and OBB datasets. Set `operation: blur` to blur faces using the platform detector, optionally limited to `imageId`. Blurring requires hosted storage and creates no version. `confidence` defaults to 0.25; `boxScale` defaults to 1 and scales face boxes around their centers. Set `preview: true` to prepare up to six full-resolution images and their thumbnails without changing the dataset. Pass the returned `jobId` as `previewJobId` with the same settings to apply those exact assets; only remaining dataset images require processing. Existing labels are never changed, and the run is billed for the images it actually processes.",
         "parameters": [
           {
             "name": "owner",
@@ -17625,6 +17625,7 @@
                               "gpt-6-astra",
                               "gpt-6.1-sol",
                               "gpt-6.1-terra",
+                              "claude-fable-5-2",
                               "claude-fable-5-1",
                               "claude-opus-5-5",
                               "claude-sonnet-5-5",
@@ -17634,6 +17635,7 @@
                               "kimi-k3.1-pro",
                               "muse-wonder-1.0",
                               "muse-spark-1.3",
+                              "muse-ember-1.0",
                               "mimo-v2.6-pro",
                               "qwen3.8-max",
                               "gpt-6-luna",
@@ -17643,13 +17645,102 @@
                               "glm-5.3-flash",
                               "deepseek-flash",
                               "mimo-v2.6-flash",
-                              "minimax-m3.1-flash"
+                              "minimax-m3.1-flash",
+                              "hy4"
                             ]
                           }
                         ]
                       },
                       "visualPrompts": {
-                        "not": {}
+                        "description": "Seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index",
+                        "minItems": 1,
+                        "maxItems": 200,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "classId": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Class index (0-based)"
+                            },
+                            "bbox": {
+                              "description": "Bounding box [x_center, y_center, width, height] normalized 0-1",
+                              "type": "array",
+                              "prefixItems": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ],
+                              "items": {
+                                "not": {}
+                              },
+                              "minItems": 4
+                            },
+                            "segments": {
+                              "description": "Segmentation points, normalized 0-1",
+                              "maxItems": 10000,
+                              "type": "array",
+                              "items": {
+                                "type": "number"
+                              }
+                            },
+                            "obb": {
+                              "description": "Oriented bounding box corners",
+                              "type": "array",
+                              "prefixItems": [
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ],
+                              "items": {
+                                "not": {}
+                              },
+                              "minItems": 8
+                            }
+                          },
+                          "required": [
+                            "classId"
+                          ]
+                        }
+                      },
+                      "referenceImageId": {
+                        "description": "Dataset image the visual prompts are drawn on, when not the predicted image; required for batch annotation",
+                        "type": "string",
+                        "minLength": 24,
+                        "maxLength": 24,
+                        "pattern": "^[0-9a-fA-F]{24}$",
+                        "example": "507f1f77bcf86cd799439011"
                       },
                       "confidence": {
                         "default": 0.25,
@@ -20427,7 +20518,7 @@
           "Explore"
         ],
         "operationId": "get_api_explore_search",
-        "description": "Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Authentication is used for the caller's starred filter and their own and team images.",
+        "description": "Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. Authentication is used for the caller's starred filter and their own and team images.",
         "security": [
           {},
           {
@@ -21261,7 +21352,7 @@
           "Images"
         ],
         "operationId": "post_api_images_imageId_predict",
-        "description": "Generates label predictions using a YOLO model (ul:// URI) or an offered annotation model. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Visual prompts are not supported by batch annotation. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.",
+        "description": "Generates label predictions using a YOLO model (ul:// URI) or an offered annotation model. Without visualPrompts, hosted models detect the dataset classes (1–200) using model-specific thresholds and return no confidence scores. With visualPrompts, yoloe26x uses up to 200 labels on this image, or on `referenceImageId` in the same dataset, (bbox, segments, or obb) as seeds for detection, segmentation or mask-derived oriented boxes, preserves polygon shape as a visual mask, uses confidence and applies class-aware IoU suppression to the capped model output, and returns scores with the seed dataset class IDs. Reaching the detection cap returns partial=true; more objects may exist. Truncated generative output returns only complete boxes with partial=true; objects or classes may be missing. Depth datasets are rejected because dense maps cannot be converted to annotations.",
         "parameters": [
           {
             "name": "imageId",
@@ -21310,6 +21401,7 @@
                           "gpt-6-astra",
                           "gpt-6.1-sol",
                           "gpt-6.1-terra",
+                          "claude-fable-5-2",
                           "claude-fable-5-1",
                           "claude-opus-5-5",
                           "claude-sonnet-5-5",
@@ -21319,6 +21411,7 @@
                           "kimi-k3.1-pro",
                           "muse-wonder-1.0",
                           "muse-spark-1.3",
+                          "muse-ember-1.0",
                           "mimo-v2.6-pro",
                           "qwen3.8-max",
                           "gpt-6-luna",
@@ -21328,13 +21421,14 @@
                           "glm-5.3-flash",
                           "deepseek-flash",
                           "mimo-v2.6-flash",
-                          "minimax-m3.1-flash"
+                          "minimax-m3.1-flash",
+                          "hy4"
                         ]
                       }
                     ]
                   },
                   "visualPrompts": {
-                    "description": "Same-image seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index",
+                    "description": "Seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index",
                     "minItems": 1,
                     "maxItems": 200,
                     "type": "array",
@@ -21415,6 +21509,14 @@
                         "classId"
                       ]
                     }
+                  },
+                  "referenceImageId": {
+                    "description": "Dataset image the visual prompts are drawn on, when not the predicted image; required for batch annotation",
+                    "type": "string",
+                    "minLength": 24,
+                    "maxLength": 24,
+                    "pattern": "^[0-9a-fA-F]{24}$",
+                    "example": "507f1f77bcf86cd799439011"
                   },
                   "confidence": {
                     "default": 0.25,
@@ -24635,25 +24737,25 @@
                       "rtx-a4500",
                       "rtx-a5000",
                       "rtx-4000-ada",
+                      "rtx-3090",
+                      "rtx-pro-4000",
                       "l4",
                       "a40",
-                      "rtx-3090",
                       "rtx-a6000",
-                      "rtx-pro-4000",
                       "rtx-pro-4500",
+                      "l40",
                       "rtx-4090",
+                      "rtx-pro-5000",
                       "rtx-6000-ada",
                       "l40s",
-                      "rtx-pro-5000",
                       "rtx-5090",
-                      "l40",
                       "a100-80gb-pcie",
                       "a100-80gb-sxm",
                       "rtx-pro-6000",
                       "h100-pcie",
                       "h100-nvl",
-                      "h100-sxm",
                       "h200-nvl",
+                      "h100-sxm",
                       "h200-sxm",
                       "b200",
                       "b300",
@@ -27540,25 +27642,25 @@
                       "rtx-a4500",
                       "rtx-a5000",
                       "rtx-4000-ada",
+                      "rtx-3090",
+                      "rtx-pro-4000",
                       "l4",
                       "a40",
-                      "rtx-3090",
                       "rtx-a6000",
-                      "rtx-pro-4000",
                       "rtx-pro-4500",
+                      "l40",
                       "rtx-4090",
+                      "rtx-pro-5000",
                       "rtx-6000-ada",
                       "l40s",
-                      "rtx-pro-5000",
                       "rtx-5090",
-                      "l40",
                       "a100-80gb-pcie",
                       "a100-80gb-sxm",
                       "rtx-pro-6000",
                       "h100-pcie",
                       "h100-nvl",
-                      "h100-sxm",
                       "h200-nvl",
+                      "h100-sxm",
                       "h200-sxm",
                       "b200",
                       "b300"
