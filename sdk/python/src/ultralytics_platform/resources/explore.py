@@ -45,7 +45,7 @@ class Explore:
     ) -> ExploreSearchResponse:
         """Search public projects, datasets and images.
 
-        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Authentication is used for the caller's starred filter and their own and team images.
+        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. Authentication is used for the caller's starred filter and their own and team images.
 
         Args:
             q (str, optional): Search term
@@ -189,7 +189,7 @@ class AsyncExplore:
     ) -> ExploreSearchResponse:
         """Search public projects, datasets and images.
 
-        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Authentication is used for the caller's starred filter and their own and team images.
+        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. Authentication is used for the caller's starred filter and their own and team images.
 
         Args:
             q (str, optional): Search term

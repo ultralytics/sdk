@@ -70,25 +70,25 @@ class Training:
             "rtx-a4500",
             "rtx-a5000",
             "rtx-4000-ada",
+            "rtx-3090",
+            "rtx-pro-4000",
             "l4",
             "a40",
-            "rtx-3090",
             "rtx-a6000",
-            "rtx-pro-4000",
             "rtx-pro-4500",
+            "l40",
             "rtx-4090",
+            "rtx-pro-5000",
             "rtx-6000-ada",
             "l40s",
-            "rtx-pro-5000",
             "rtx-5090",
-            "l40",
             "a100-80gb-pcie",
             "a100-80gb-sxm",
             "rtx-pro-6000",
             "h100-pcie",
             "h100-nvl",
-            "h100-sxm",
             "h200-nvl",
+            "h100-sxm",
             "h200-sxm",
             "b200",
             "b300",
@@ -104,7 +104,7 @@ class Training:
 
         Args:
             model_id (str): Model ID to train
-            gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300"], optional): Cloud GPU to use
+            gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "rtx-3090", "rtx-pro-4000", "l4", "a40", "rtx-a6000", "rtx-pro-4500", "l40", "rtx-4090", "rtx-pro-5000", "rtx-6000-ada", "l40s", "rtx-5090", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h200-nvl", "h100-sxm", "h200-sxm", "b200", "b300"], optional): Cloud GPU to use
             capture_dataset_version (bool, optional): Save an immutable dataset version for this run
             train_args (dict[str, Any]): YOLO training arguments
             timeout (float | httpx.Timeout, optional): Request timeout override.
@@ -235,25 +235,25 @@ class AsyncTraining:
             "rtx-a4500",
             "rtx-a5000",
             "rtx-4000-ada",
+            "rtx-3090",
+            "rtx-pro-4000",
             "l4",
             "a40",
-            "rtx-3090",
             "rtx-a6000",
-            "rtx-pro-4000",
             "rtx-pro-4500",
+            "l40",
             "rtx-4090",
+            "rtx-pro-5000",
             "rtx-6000-ada",
             "l40s",
-            "rtx-pro-5000",
             "rtx-5090",
-            "l40",
             "a100-80gb-pcie",
             "a100-80gb-sxm",
             "rtx-pro-6000",
             "h100-pcie",
             "h100-nvl",
-            "h100-sxm",
             "h200-nvl",
+            "h100-sxm",
             "h200-sxm",
             "b200",
             "b300",
@@ -269,7 +269,7 @@ class AsyncTraining:
 
         Args:
             model_id (str): Model ID to train
-            gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "l4", "a40", "rtx-3090", "rtx-a6000", "rtx-pro-4000", "rtx-pro-4500", "rtx-4090", "rtx-6000-ada", "l40s", "rtx-pro-5000", "rtx-5090", "l40", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h100-sxm", "h200-nvl", "h200-sxm", "b200", "b300"], optional): Cloud GPU to use
+            gpu_type (Literal["rtx-2000-ada", "rtx-a4500", "rtx-a5000", "rtx-4000-ada", "rtx-3090", "rtx-pro-4000", "l4", "a40", "rtx-a6000", "rtx-pro-4500", "l40", "rtx-4090", "rtx-pro-5000", "rtx-6000-ada", "l40s", "rtx-5090", "a100-80gb-pcie", "a100-80gb-sxm", "rtx-pro-6000", "h100-pcie", "h100-nvl", "h200-nvl", "h100-sxm", "h200-sxm", "b200", "b300"], optional): Cloud GPU to use
             capture_dataset_version (bool, optional): Save an immutable dataset version for this run
             train_args (dict[str, Any]): YOLO training arguments
             timeout (float | httpx.Timeout, optional): Request timeout override.
