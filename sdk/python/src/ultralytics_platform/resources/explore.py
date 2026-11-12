@@ -29,7 +29,7 @@ class Explore:
         self,
         *,
         q: str | NotGiven = NOT_GIVEN,
-        type: Literal["all", "projects", "datasets", "images"] | NotGiven = NOT_GIVEN,
+        type: Literal["all", "projects", "datasets", "images", "models"] | NotGiven = NOT_GIVEN,
         sort: Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
         | NotGiven = NOT_GIVEN,
         offset: int | NotGiven = NOT_GIVEN,
@@ -43,13 +43,13 @@ class Explore:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ExploreSearchResponse:
-        """Search public projects, datasets and images.
+        """Search public projects, datasets, models and images.
 
-        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. Authentication is used for the caller's starred filter and their own and team images.
+        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter and their own and team images.
 
         Args:
             q (str, optional): Search term
-            type (Literal["all", "projects", "datasets", "images"], optional): Resource type filter; `images` searches image content (public, own and team datasets)
+            type (Literal["all", "projects", "datasets", "images", "models"], optional): Resource type filter; `images` searches image content (public, own and team datasets), and `models` ranks public models by their name, project and training images
             sort (Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
@@ -105,7 +105,7 @@ class Explore:
         starred: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         min_images: int | NotGiven = NOT_GIVEN,
         max_images: int | NotGiven = NOT_GIVEN,
-        type: Literal["images", "datasets"] | NotGiven = NOT_GIVEN,
+        type: Literal["images", "datasets", "models"] | NotGiven = NOT_GIVEN,
         image: str | NotGiven = NOT_GIVEN,
         vector: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
@@ -113,7 +113,7 @@ class Explore:
     ) -> ExploreSearchByImageResponse:
         """Search by image.
 
-        Send a photo as `image` (never stored), then reuse its returned `vector` for pages, filters or switching `type` between images and public datasets. Dataset cards show matching images.
+        Send a photo as `image` (never stored), then reuse its returned `vector` for pages, filters or switching `type` between images, public datasets and public models. Dataset cards show matching images.
 
         Args:
             sort (Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first
@@ -125,7 +125,7 @@ class Explore:
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
             min_images (int, optional): Minimum dataset image count
             max_images (int, optional): Maximum dataset image count
-            type (Literal["images", "datasets"], optional): Return matching images or public datasets
+            type (Literal["images", "datasets", "models"], optional): Return matching images, public datasets, or public models trained on them
             image (str, optional): Base64-encoded photo file, at most 3 MiB
             vector (str, optional): The first page's `vector`, in place of `image`
             timeout (float | httpx.Timeout, optional): Request timeout override.
@@ -173,7 +173,7 @@ class AsyncExplore:
         self,
         *,
         q: str | NotGiven = NOT_GIVEN,
-        type: Literal["all", "projects", "datasets", "images"] | NotGiven = NOT_GIVEN,
+        type: Literal["all", "projects", "datasets", "images", "models"] | NotGiven = NOT_GIVEN,
         sort: Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"]
         | NotGiven = NOT_GIVEN,
         offset: int | NotGiven = NOT_GIVEN,
@@ -187,13 +187,13 @@ class AsyncExplore:
         timeout: float | httpx.Timeout | None = None,
         extra_headers: dict[str, str] | None = None,
     ) -> ExploreSearchResponse:
-        """Search public projects, datasets and images.
+        """Search public projects, datasets, models and images.
 
-        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. Authentication is used for the caller's starred filter and their own and team images.
+        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter and their own and team images.
 
         Args:
             q (str, optional): Search term
-            type (Literal["all", "projects", "datasets", "images"], optional): Resource type filter; `images` searches image content (public, own and team datasets)
+            type (Literal["all", "projects", "datasets", "images", "models"], optional): Resource type filter; `images` searches image content (public, own and team datasets), and `models` ranks public models by their name, project and training images
             sort (Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
@@ -249,7 +249,7 @@ class AsyncExplore:
         starred: Literal["true", "false"] | NotGiven = NOT_GIVEN,
         min_images: int | NotGiven = NOT_GIVEN,
         max_images: int | NotGiven = NOT_GIVEN,
-        type: Literal["images", "datasets"] | NotGiven = NOT_GIVEN,
+        type: Literal["images", "datasets", "models"] | NotGiven = NOT_GIVEN,
         image: str | NotGiven = NOT_GIVEN,
         vector: str | NotGiven = NOT_GIVEN,
         timeout: float | httpx.Timeout | None = None,
@@ -257,7 +257,7 @@ class AsyncExplore:
     ) -> ExploreSearchByImageResponse:
         """Search by image.
 
-        Send a photo as `image` (never stored), then reuse its returned `vector` for pages, filters or switching `type` between images and public datasets. Dataset cards show matching images.
+        Send a photo as `image` (never stored), then reuse its returned `vector` for pages, filters or switching `type` between images, public datasets and public models. Dataset cards show matching images.
 
         Args:
             sort (Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first
@@ -269,7 +269,7 @@ class AsyncExplore:
             starred (Literal["true", "false"], optional): Only content starred by the authenticated caller
             min_images (int, optional): Minimum dataset image count
             max_images (int, optional): Maximum dataset image count
-            type (Literal["images", "datasets"], optional): Return matching images or public datasets
+            type (Literal["images", "datasets", "models"], optional): Return matching images, public datasets, or public models trained on them
             image (str, optional): Base64-encoded photo file, at most 3 MiB
             vector (str, optional): The first page's `vector`, in place of `image`
             timeout (float | httpx.Timeout, optional): Request timeout override.

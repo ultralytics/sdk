@@ -6491,6 +6491,388 @@
               "additionalProperties": false
             }
           },
+          "models": {
+            "description": "Public models (`type=models`), one per training dataset (or per project without one), best match first",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": "string",
+                  "description": "Model slug"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "project": {
+                  "type": "string",
+                  "description": "Project slug"
+                },
+                "projectName": {
+                  "type": "string"
+                },
+                "projectIconColor": {
+                  "type": "string"
+                },
+                "projectIconLetter": {
+                  "type": "string"
+                },
+                "projectIconImage": {
+                  "type": "string"
+                },
+                "task": {
+                  "type": "string",
+                  "enum": [
+                    "detect",
+                    "segment",
+                    "semantic",
+                    "depth",
+                    "classify",
+                    "pose",
+                    "obb"
+                  ],
+                  "description": "YOLO task type"
+                },
+                "metrics": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                },
+                "classNames": {
+                  "description": "The first class names",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "classCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "epochs": {
+                  "type": "number"
+                },
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "size": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "starCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "dataset": {
+                  "description": "The public dataset it was trained on",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "dataset": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "owner": {
+                      "type": "string"
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "enum": [
+                        "public",
+                        "private"
+                      ],
+                      "description": "Resource visibility"
+                    },
+                    "imageCount": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "classCount": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "classNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "classColors": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "task": {
+                      "type": "string",
+                      "enum": [
+                        "detect",
+                        "segment",
+                        "semantic",
+                        "depth",
+                        "classify",
+                        "pose",
+                        "obb"
+                      ],
+                      "description": "YOLO task type"
+                    },
+                    "totalBytes": {
+                      "type": "number"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "splits": {
+                      "type": "object",
+                      "properties": {
+                        "train": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Number of training images"
+                        },
+                        "val": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Number of validation images"
+                        },
+                        "test": {
+                          "default": 0,
+                          "description": "Number of test images",
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "labeled": {
+                          "default": 0,
+                          "description": "Number of images with annotations",
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "train",
+                        "val",
+                        "test",
+                        "labeled"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Dataset split statistics"
+                    },
+                    "kptShape": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ],
+                      "items": {
+                        "not": {}
+                      },
+                      "minItems": 2
+                    },
+                    "starCount": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "sampleImages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "imageUrl": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "number"
+                          },
+                          "height": {
+                            "type": "number"
+                          },
+                          "labels": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "classId": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "description": "Class index (0-based)"
+                                },
+                                "bbox": {
+                                  "description": "Bounding box [x_center, y_center, width, height] normalized 0-1",
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ],
+                                  "items": {
+                                    "not": {}
+                                  },
+                                  "minItems": 4
+                                },
+                                "segments": {
+                                  "description": "Segmentation points, normalized 0-1",
+                                  "maxItems": 10000,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "number"
+                                  }
+                                },
+                                "keypoints": {
+                                  "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                                  "example": [
+                                    0.1,
+                                    0.2,
+                                    0.3,
+                                    0.4
+                                  ],
+                                  "maxItems": 10000,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "number"
+                                  }
+                                },
+                                "obb": {
+                                  "description": "Oriented bounding box corners",
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ],
+                                  "items": {
+                                    "not": {}
+                                  },
+                                  "minItems": 8
+                                },
+                                "skeletonId": {
+                                  "description": "Skeleton template ID for pose keypoint connections",
+                                  "type": "string",
+                                  "maxLength": 128
+                                }
+                              },
+                              "required": [
+                                "classId"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Single annotation (object) in an image"
+                            }
+                          }
+                        },
+                        "required": [
+                          "url",
+                          "width",
+                          "height"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "userImageUrl": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "dataset",
+                    "name",
+                    "owner",
+                    "visibility",
+                    "imageCount",
+                    "task",
+                    "starCount",
+                    "sampleImages",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                },
+                "userImageUrl": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "model",
+                "name",
+                "owner",
+                "project",
+                "projectName",
+                "classCount",
+                "starCount"
+              ],
+              "additionalProperties": false
+            }
+          },
           "images": {
             "description": "Images matching the search by content (`type=images`), best first",
             "type": "array",
@@ -6606,7 +6988,7 @@
           "hasMore"
         ],
         "additionalProperties": false,
-        "description": "Public project, dataset and image search results"
+        "description": "Public project, dataset, model and image search results"
       },
       "ExploreImageSearchResponse": {
         "type": "object",
@@ -6967,6 +7349,388 @@
               "additionalProperties": false
             }
           },
+          "models": {
+            "description": "Public models (`type=models`), one per training dataset (or per project without one), best match first",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": "string",
+                  "description": "Model slug"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "project": {
+                  "type": "string",
+                  "description": "Project slug"
+                },
+                "projectName": {
+                  "type": "string"
+                },
+                "projectIconColor": {
+                  "type": "string"
+                },
+                "projectIconLetter": {
+                  "type": "string"
+                },
+                "projectIconImage": {
+                  "type": "string"
+                },
+                "task": {
+                  "type": "string",
+                  "enum": [
+                    "detect",
+                    "segment",
+                    "semantic",
+                    "depth",
+                    "classify",
+                    "pose",
+                    "obb"
+                  ],
+                  "description": "YOLO task type"
+                },
+                "metrics": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                },
+                "classNames": {
+                  "description": "The first class names",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "classCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "epochs": {
+                  "type": "number"
+                },
+                "file": {
+                  "type": "object",
+                  "properties": {
+                    "size": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "starCount": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "dataset": {
+                  "description": "The public dataset it was trained on",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "dataset": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "owner": {
+                      "type": "string"
+                    },
+                    "visibility": {
+                      "type": "string",
+                      "enum": [
+                        "public",
+                        "private"
+                      ],
+                      "description": "Resource visibility"
+                    },
+                    "imageCount": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "classCount": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "classNames": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "classColors": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string"
+                      },
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "task": {
+                      "type": "string",
+                      "enum": [
+                        "detect",
+                        "segment",
+                        "semantic",
+                        "depth",
+                        "classify",
+                        "pose",
+                        "obb"
+                      ],
+                      "description": "YOLO task type"
+                    },
+                    "totalBytes": {
+                      "type": "number"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "splits": {
+                      "type": "object",
+                      "properties": {
+                        "train": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Number of training images"
+                        },
+                        "val": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Number of validation images"
+                        },
+                        "test": {
+                          "default": 0,
+                          "description": "Number of test images",
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "labeled": {
+                          "default": 0,
+                          "description": "Number of images with annotations",
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "train",
+                        "val",
+                        "test",
+                        "labeled"
+                      ],
+                      "additionalProperties": false,
+                      "description": "Dataset split statistics"
+                    },
+                    "kptShape": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ],
+                      "items": {
+                        "not": {}
+                      },
+                      "minItems": 2
+                    },
+                    "starCount": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "sampleImages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "imageUrl": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "number"
+                          },
+                          "height": {
+                            "type": "number"
+                          },
+                          "labels": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "classId": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "description": "Class index (0-based)"
+                                },
+                                "bbox": {
+                                  "description": "Bounding box [x_center, y_center, width, height] normalized 0-1",
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ],
+                                  "items": {
+                                    "not": {}
+                                  },
+                                  "minItems": 4
+                                },
+                                "segments": {
+                                  "description": "Segmentation points, normalized 0-1",
+                                  "maxItems": 10000,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "number"
+                                  }
+                                },
+                                "keypoints": {
+                                  "description": "One consistent flat shape of normalized [x, y] pairs or [x, y, visibility] triples; visibility conventionally uses 0, 1, or 2",
+                                  "example": [
+                                    0.1,
+                                    0.2,
+                                    0.3,
+                                    0.4
+                                  ],
+                                  "maxItems": 10000,
+                                  "type": "array",
+                                  "items": {
+                                    "type": "number"
+                                  }
+                                },
+                                "obb": {
+                                  "description": "Oriented bounding box corners",
+                                  "type": "array",
+                                  "prefixItems": [
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ],
+                                  "items": {
+                                    "not": {}
+                                  },
+                                  "minItems": 8
+                                },
+                                "skeletonId": {
+                                  "description": "Skeleton template ID for pose keypoint connections",
+                                  "type": "string",
+                                  "maxLength": 128
+                                }
+                              },
+                              "required": [
+                                "classId"
+                              ],
+                              "additionalProperties": false,
+                              "description": "Single annotation (object) in an image"
+                            }
+                          }
+                        },
+                        "required": [
+                          "url",
+                          "width",
+                          "height"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "userImageUrl": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "dataset",
+                    "name",
+                    "owner",
+                    "visibility",
+                    "imageCount",
+                    "task",
+                    "starCount",
+                    "sampleImages",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                },
+                "userImageUrl": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "id",
+                "model",
+                "name",
+                "owner",
+                "project",
+                "projectName",
+                "classCount",
+                "starCount"
+              ],
+              "additionalProperties": false
+            }
+          },
           "images": {
             "description": "Images matching the search by content (`type=images`), best first",
             "type": "array",
@@ -7089,7 +7853,7 @@
           "hasMore"
         ],
         "additionalProperties": false,
-        "description": "Images or public datasets matching a photo"
+        "description": "Images, public datasets or public models matching a photo"
       },
       "Image": {
         "type": "object",
@@ -20513,12 +21277,12 @@
     },
     "/api/explore/search": {
       "get": {
-        "summary": "Search public projects, datasets and images",
+        "summary": "Search public projects, datasets, models and images",
         "tags": [
           "Explore"
         ],
         "operationId": "get_api_explore_search",
-        "description": "Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. Authentication is used for the caller's starred filter and their own and team images.",
+        "description": "Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter and their own and team images.",
         "security": [
           {},
           {
@@ -20541,7 +21305,7 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Resource type filter; `images` searches image content (public, own and team datasets)",
+            "description": "Resource type filter; `images` searches image content (public, own and team datasets), and `models` ranks public models by their name, project and training images",
             "schema": {
               "default": "all",
               "type": "string",
@@ -20549,7 +21313,8 @@
                 "all",
                 "projects",
                 "datasets",
-                "images"
+                "images",
+                "models"
               ]
             }
           },
@@ -20727,7 +21492,7 @@
           "Explore"
         ],
         "operationId": "post_api_explore_search",
-        "description": "Send a photo as `image` (never stored), then reuse its returned `vector` for pages, filters or switching `type` between images and public datasets. Dataset cards show matching images.",
+        "description": "Send a photo as `image` (never stored), then reuse its returned `vector` for pages, filters or switching `type` between images, public datasets and public models. Dataset cards show matching images.",
         "x-sdk-method": "search_by_image",
         "security": [
           {},
@@ -20806,11 +21571,12 @@
                   },
                   "type": {
                     "default": "images",
-                    "description": "Return matching images or public datasets",
+                    "description": "Return matching images, public datasets, or public models trained on them",
                     "type": "string",
                     "enum": [
                       "images",
-                      "datasets"
+                      "datasets",
+                      "models"
                     ]
                   },
                   "image": {
