@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.109",
+    "version": "0.1.110",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -8858,6 +8858,216 @@
           "targets"
         ],
         "additionalProperties": false
+      },
+      "LabelStudioImportResponse": {
+        "type": "object",
+        "properties": {
+          "imported": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "projectId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                "projectName": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "datasetId": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "slug": {
+                  "type": "string",
+                  "maxLength": 100
+                }
+              },
+              "required": [
+                "projectId",
+                "projectName",
+                "datasetId",
+                "slug"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "projectId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                "projectName": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "error": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              },
+              "required": [
+                "projectId",
+                "projectName",
+                "error"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "skipped": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "projectId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                "projectName": {
+                  "type": "string",
+                  "maxLength": 100
+                }
+              },
+              "required": [
+                "projectId",
+                "projectName"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "imported",
+          "failed",
+          "skipped"
+        ],
+        "additionalProperties": false,
+        "description": "Label Studio import results"
+      },
+      "LabelStudioImportPreviewResponse": {
+        "type": "object",
+        "properties": {
+          "newDatasets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "projectId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                "projectName": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "task": {
+                  "type": "string",
+                  "enum": [
+                    "detect",
+                    "segment",
+                    "semantic",
+                    "depth",
+                    "classify",
+                    "pose",
+                    "obb"
+                  ],
+                  "description": "Task forecast from the labeling config"
+                },
+                "imageCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Label Studio tasks, one image each"
+                }
+              },
+              "required": [
+                "projectId",
+                "projectName",
+                "task",
+                "imageCount"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "importedDatasets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "projectId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0
+                },
+                "projectName": {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                "task": {
+                  "type": "string",
+                  "enum": [
+                    "detect",
+                    "segment",
+                    "semantic",
+                    "depth",
+                    "classify",
+                    "pose",
+                    "obb"
+                  ],
+                  "description": "Task forecast from the labeling config"
+                },
+                "imageCount": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Label Studio tasks, one image each"
+                }
+              },
+              "required": [
+                "projectId",
+                "projectName",
+                "task",
+                "imageCount"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Projects already imported"
+          },
+          "unsupportedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "storage": {
+            "type": "object",
+            "properties": {
+              "usedBytes": {
+                "type": "number"
+              },
+              "limitBytes": {
+                "type": "number"
+              },
+              "hasEnoughStorage": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "usedBytes",
+              "limitBytes",
+              "hasEnoughStorage"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "newDatasets",
+          "importedDatasets",
+          "unsupportedCount",
+          "storage"
+        ],
+        "additionalProperties": false,
+        "description": "Label Studio import plan"
       },
       "RoboflowImportResponse": {
         "type": "object",
@@ -23749,6 +23959,240 @@
         ]
       }
     },
+    "/api/integrations/label-studio/import": {
+      "post": {
+        "summary": "Import projects from Label Studio",
+        "tags": [
+          "Datasets"
+        ],
+        "operationId": "post_api_integrations_label_studio_import",
+        "description": "Imports selected projects from the connected Label Studio account into the API key's workspace.",
+        "x-sdk-method": "import_label_studio",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "projectIds": {
+                    "minItems": 1,
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "exclusiveMinimum": 0
+                    }
+                  }
+                },
+                "required": [
+                  "projectIds"
+                ],
+                "description": "POST /api/integrations/label-studio/import request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Label Studio import results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabelStudioImportResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or Label Studio token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace access or storage quota denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No Label Studio token saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Label Studio rate limit reached; try again shortly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Label Studio request failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Workspace storage region unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.import_label_studio(\n    project_ids=[1],\n)\nprint(response)"
+          }
+        ]
+      }
+    },
+    "/api/integrations/label-studio/preview": {
+      "post": {
+        "summary": "Preview a Label Studio import",
+        "tags": [
+          "Datasets"
+        ],
+        "operationId": "post_api_integrations_label_studio_preview",
+        "description": "Validates a Label Studio access token, or uses the saved one, and lists importable projects with each project's forecast task.",
+        "x-sdk-method": "preview_label_studio",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "apiKey": {
+                    "description": "Label Studio access token",
+                    "type": "string",
+                    "maxLength": 4096,
+                    "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
+                  }
+                },
+                "description": "POST /api/integrations/label-studio/preview request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Label Studio import plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LabelStudioImportPreviewResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or Label Studio token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Workspace access denied, or a token sent by someone other than the owner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No Label Studio token saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Label Studio rate limit reached; try again shortly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Label Studio request failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "label": "Python SDK",
+            "lang": "Python",
+            "source": "from ultralytics_platform import Platform\n\nclient = Platform()  # Reads ULTRALYTICS_API_KEY\nresponse = client.datasets.preview_label_studio()\nprint(response)"
+          }
+        ]
+      }
+    },
     "/api/integrations/roboflow/import": {
       "post": {
         "summary": "Import datasets from Roboflow",
@@ -23769,7 +24213,7 @@
                     "description": "Roboflow API key",
                     "example": "rf_your_api_key",
                     "type": "string",
-                    "maxLength": 128,
+                    "maxLength": 4096,
                     "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
                   },
                   "items": {
@@ -23925,7 +24369,7 @@
                     "description": "Roboflow API key",
                     "example": "rf_your_api_key",
                     "type": "string",
-                    "maxLength": 128,
+                    "maxLength": 4096,
                     "pattern": "^(?:\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*|\\s*\"\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*\"\\s*|\\s*'\\s*(?:[^\\s\"'](?:[\\s\\S]*\\S)?)\\s*'\\s*)$"
                   }
                 },

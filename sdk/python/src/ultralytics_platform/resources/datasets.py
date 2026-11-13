@@ -33,11 +33,13 @@ from ..types import (
     DatasetsEmbeddingsResponse,
     DatasetsExportResponse,
     DatasetsImagesResponse,
+    DatasetsImportLabelStudioResponse,
     DatasetsImportRoboflowResponse,
     DatasetsIngestResponse,
     DatasetsListResponse,
     DatasetsMergeClassesResponse,
     DatasetsModelsResponse,
+    DatasetsPreviewLabelStudioResponse,
     DatasetsPreviewRoboflowResponse,
     DatasetsRedistributeSplitsResponse,
     DatasetsRestoreResponse,
@@ -1384,6 +1386,74 @@ class Datasets:
                     "license": license,
                     "owner": owner,
                 },
+            ),
+        )
+
+    def import_label_studio(
+        self,
+        *,
+        project_ids: Sequence[int],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsImportLabelStudioResponse:
+        """Import projects from Label Studio.
+
+        Imports selected projects from the connected Label Studio account into the API key's workspace.
+
+        Args:
+            project_ids (Sequence[int]): projectIds request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsImportLabelStudioResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsImportLabelStudioResponse,
+            self._client.request(
+                "POST",
+                "/api/integrations/label-studio/import",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"projectIds": project_ids},
+            ),
+        )
+
+    def preview_label_studio(
+        self,
+        *,
+        api_key: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsPreviewLabelStudioResponse:
+        """Preview a Label Studio import.
+
+        Validates a Label Studio access token, or uses the saved one, and lists importable projects with each project's forecast task.
+
+        Args:
+            api_key (str, optional): Label Studio access token
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsPreviewLabelStudioResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsPreviewLabelStudioResponse,
+            self._client.request(
+                "POST",
+                "/api/integrations/label-studio/preview",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"apiKey": api_key},
             ),
         )
 
@@ -2794,6 +2864,74 @@ class AsyncDatasets:
                     "license": license,
                     "owner": owner,
                 },
+            ),
+        )
+
+    async def import_label_studio(
+        self,
+        *,
+        project_ids: Sequence[int],
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsImportLabelStudioResponse:
+        """Import projects from Label Studio.
+
+        Imports selected projects from the connected Label Studio account into the API key's workspace.
+
+        Args:
+            project_ids (Sequence[int]): projectIds request value.
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsImportLabelStudioResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsImportLabelStudioResponse,
+            await self._client.request(
+                "POST",
+                "/api/integrations/label-studio/import",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"projectIds": project_ids},
+            ),
+        )
+
+    async def preview_label_studio(
+        self,
+        *,
+        api_key: str | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None = None,
+        extra_headers: dict[str, str] | None = None,
+    ) -> DatasetsPreviewLabelStudioResponse:
+        """Preview a Label Studio import.
+
+        Validates a Label Studio access token, or uses the saved one, and lists importable projects with each project's forecast task.
+
+        Args:
+            api_key (str, optional): Label Studio access token
+            timeout (float | httpx.Timeout, optional): Request timeout override.
+            extra_headers (dict[str, str], optional): Additional request headers.
+
+        Returns:
+            (DatasetsPreviewLabelStudioResponse): The API response.
+
+        Raises:
+            (APIError): If the API returns an unsuccessful response.
+        """
+        return cast(
+            DatasetsPreviewLabelStudioResponse,
+            await self._client.request(
+                "POST",
+                "/api/integrations/label-studio/preview",
+                timeout=timeout,
+                extra_headers=extra_headers,
+                auth=("Authorization", "Bearer "),
+                json={"apiKey": api_key},
             ),
         )
 

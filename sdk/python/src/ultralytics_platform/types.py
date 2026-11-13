@@ -1403,6 +1403,70 @@ DatasetsCreateResponse = TypedDict(
 )
 
 
+DatasetsImportLabelStudioResponseImportedItem = TypedDict(
+    "DatasetsImportLabelStudioResponseImportedItem",
+    {"projectId": int, "projectName": str, "datasetId": str, "slug": str},
+)
+
+
+DatasetsImportLabelStudioResponseFailedItem = TypedDict(
+    "DatasetsImportLabelStudioResponseFailedItem", {"projectId": int, "projectName": str, "error": str}
+)
+
+
+DatasetsImportLabelStudioResponseSkippedItem = TypedDict(
+    "DatasetsImportLabelStudioResponseSkippedItem", {"projectId": int, "projectName": str}
+)
+
+
+DatasetsImportLabelStudioResponse = TypedDict(
+    "DatasetsImportLabelStudioResponse",
+    {
+        "imported": list[DatasetsImportLabelStudioResponseImportedItem],
+        "failed": list[DatasetsImportLabelStudioResponseFailedItem],
+        "skipped": list[DatasetsImportLabelStudioResponseSkippedItem],
+    },
+)
+
+
+DatasetsPreviewLabelStudioResponseNewDatasetsItem = TypedDict(
+    "DatasetsPreviewLabelStudioResponseNewDatasetsItem",
+    {
+        "projectId": int,
+        "projectName": str,
+        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
+        "imageCount": int,
+    },
+)
+
+
+DatasetsPreviewLabelStudioResponseImportedDatasetsItem = TypedDict(
+    "DatasetsPreviewLabelStudioResponseImportedDatasetsItem",
+    {
+        "projectId": int,
+        "projectName": str,
+        "task": Literal["detect", "segment", "semantic", "depth", "classify", "pose", "obb"],
+        "imageCount": int,
+    },
+)
+
+
+DatasetsPreviewLabelStudioResponseStorage = TypedDict(
+    "DatasetsPreviewLabelStudioResponseStorage", {"usedBytes": float, "limitBytes": float, "hasEnoughStorage": bool}
+)
+
+
+DatasetsPreviewLabelStudioResponse = TypedDict(
+    "DatasetsPreviewLabelStudioResponse",
+    {
+        "newDatasets": list[DatasetsPreviewLabelStudioResponseNewDatasetsItem],
+        "importedDatasets": list[DatasetsPreviewLabelStudioResponseImportedDatasetsItem],
+        "unsupportedCount": int,
+        "storage": DatasetsPreviewLabelStudioResponseStorage,
+    },
+)
+
+
 DatasetsImportRoboflowResponseImportedItem = TypedDict(
     "DatasetsImportRoboflowResponseImportedItem",
     {"projectId": str, "projectName": str, "version": int, "datasetId": str, "slug": str},
