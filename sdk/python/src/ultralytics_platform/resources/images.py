@@ -163,6 +163,7 @@ class Images:
             "qwen3.8-max",
             "gpt-6-luna",
             "claude-haiku-5-5",
+            "gemini-4-hydrogen",
             "gemini-3.8-flash",
             "gemini-3.5-flash-lite",
             "glm-5.3-flash",
@@ -185,7 +186,7 @@ class Images:
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "wevisone", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "gpt-6.1-terra", "claude-fable-5-2", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-carbon", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "muse-ember-1.0", "mimo-v2.6-pro", "qwen3.8-max", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash", "minimax-m3.1-flash", "hy4"]): modelId request value.
+            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "wevisone", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "gpt-6.1-terra", "claude-fable-5-2", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-carbon", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "muse-ember-1.0", "mimo-v2.6-pro", "qwen3.8-max", "gpt-6-luna", "claude-haiku-5-5", "gemini-4-hydrogen", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash", "minimax-m3.1-flash", "hy4"]): modelId request value.
             visual_prompts (Sequence[dict[str, Any]], optional): Seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index
             reference_image_id (str, optional): Dataset image the visual prompts are drawn on, when not the predicted image; required for batch annotation
             confidence (float, optional): Confidence threshold
@@ -506,6 +507,7 @@ class AsyncImages:
             "qwen3.8-max",
             "gpt-6-luna",
             "claude-haiku-5-5",
+            "gemini-4-hydrogen",
             "gemini-3.8-flash",
             "gemini-3.5-flash-lite",
             "glm-5.3-flash",
@@ -528,7 +530,7 @@ class AsyncImages:
 
         Args:
             image_id (str): Image ID
-            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "wevisone", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "gpt-6.1-terra", "claude-fable-5-2", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-carbon", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "muse-ember-1.0", "mimo-v2.6-pro", "qwen3.8-max", "gpt-6-luna", "claude-haiku-5-5", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash", "minimax-m3.1-flash", "hy4"]): modelId request value.
+            model_id (str | Literal["qwen", "gemma", "nemotron", "moondream", "wevisone", "florence2", "owlv2", "yoloe26x", "sam3", "sam3.1", "groundingdino", "gpt-6-astra", "gpt-6.1-sol", "gpt-6.1-terra", "claude-fable-5-2", "claude-opus-5-5", "claude-sonnet-5-5", "gemini-4-carbon", "gemini-4-argon", "grok-4.7", "kimi-k3", "kimi-k3.1-pro", "muse-wonder-1.0", "muse-spark-1.3", "muse-ember-1.0", "mimo-v2.6-pro", "qwen3.8-max", "gpt-6-luna", "claude-haiku-5-5", "gemini-4-hydrogen", "gemini-3.8-flash", "gemini-3.5-flash-lite", "glm-5.3-flash", "deepseek-flash", "mimo-v2.6-flash", "minimax-m3.1-flash", "hy4"]): modelId request value.
             visual_prompts (Sequence[dict[str, Any]], optional): Seed labels (bbox, segments, or obb) for yoloe26x detection, segmentation or mask-derived OBB; classId is the dataset class index
             reference_image_id (str, optional): Dataset image the visual prompts are drawn on, when not the predicted image; required for batch annotation
             confidence (float, optional): Confidence threshold
