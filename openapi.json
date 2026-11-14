@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.110",
+    "version": "0.1.111",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -18614,6 +18614,7 @@
                               "qwen3.8-max",
                               "gpt-6-luna",
                               "claude-haiku-5-5",
+                              "gemini-4-hydrogen",
                               "gemini-3.8-flash",
                               "gemini-3.5-flash-lite",
                               "glm-5.3-flash",
@@ -22392,6 +22393,7 @@
                           "qwen3.8-max",
                           "gpt-6-luna",
                           "claude-haiku-5-5",
+                          "gemini-4-hydrogen",
                           "gemini-3.8-flash",
                           "gemini-3.5-flash-lite",
                           "glm-5.3-flash",
