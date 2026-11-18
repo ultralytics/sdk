@@ -71,7 +71,7 @@ class Upload:
     ) -> UploadSignedUrlResponse:
         """Get a file upload URL.
 
-        Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, then confirm it with /api/upload/complete. Dataset uploads can skip that call: the dataset ingest endpoint completes the upload when given the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
+        Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, then confirm it with /api/upload/complete. Dataset uploads can skip that call: the dataset ingest endpoint completes the upload when given the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive. Model filenames must end in .pt.
 
         Args:
             body (dict[str, Any]): Request body for generating a signed upload URL
@@ -151,7 +151,7 @@ class AsyncUpload:
     ) -> UploadSignedUrlResponse:
         """Get a file upload URL.
 
-        Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, then confirm it with /api/upload/complete. Dataset uploads can skip that call: the dataset ingest endpoint completes the upload when given the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive.
+        Generates a pre-signed URL for uploading a file directly to cloud storage. Upload the file with a PUT request to the returned URL and headers, then confirm it with /api/upload/complete. Dataset uploads can skip that call: the dataset ingest endpoint completes the upload when given the returned sessionId. Dataset upload URLs remain valid for 12 hours, are create-only, and filenames must end in .zip, .tar, .tar.gz, .tgz, or .ndjson — package loose images into an archive. Model filenames must end in .pt.
 
         Args:
             body (dict[str, Any]): Request body for generating a signed upload URL
