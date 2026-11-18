@@ -221,13 +221,14 @@ def yolo_args(tokens: list[str], *extra: str) -> dict:
 def resolve_project(client: Platform, project: str | None) -> tuple[str, str]:
     """Return the owner and slug of an existing project, creating the private cloud-training default.
 
-    project= names the same Platform project as in local training: an existing username before the first slash selects
-    that workspace, and the remaining path joins with dashes.
+    project= names the same Platform project as in local training: a local path names it by its last folder, an existing
+    username before the first slash selects that workspace, and the remaining path joins with dashes.
     """
-    from ultralytics.utils.callbacks.platform import slugify
+    from ultralytics.utils.callbacks.platform import _get_project_name, slugify
 
     owner = client.account.summary()["username"]
-    prefix, slash, path = str(project).partition("/")
+    named = _get_project_name(types.SimpleNamespace(args=types.SimpleNamespace(project=project, name=None)))[0]
+    prefix, slash, path = named.partition("/")
     slug = slugify(path.replace("/", "-") if slash else prefix) if project else "cloud-training"
     if not slug:
         raise ValueError(f"project= has no project name: {project}")
