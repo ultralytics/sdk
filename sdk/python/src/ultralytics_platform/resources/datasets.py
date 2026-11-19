@@ -948,7 +948,7 @@ class Datasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             body (dict[str, Any]): Input for dataset ingest job
-                Valid body objects (? marks an optional key): {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sessionId, classMapping?, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sourceUrl, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", reference} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace"}
+                Valid body objects (? marks an optional key): {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sessionId, classMapping?, imageMetadata?, generated?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sourceUrl, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", reference} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace"}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
@@ -2426,7 +2426,7 @@ class AsyncDatasets:
             owner (str): Dataset owner
             dataset (str): Dataset name
             body (dict[str, Any]): Input for dataset ingest job
-                Valid body objects (? marks an optional key): {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sessionId, classMapping?, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sourceUrl, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", reference} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace"}
+                Valid body objects (? marks an optional key): {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sessionId, classMapping?, imageMetadata?, generated?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", sourceUrl, imageMetadata?} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace", reference} or {targetSplit?: "train"|"val"|"test", conflictPolicy?: "skip"|"keep_both"|"replace"}
             timeout (float | httpx.Timeout, optional): Request timeout override.
             extra_headers (dict[str, str], optional): Additional request headers.
 
