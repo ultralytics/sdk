@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.115",
+    "version": "0.1.117",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -8005,6 +8005,86 @@
                   "string",
                   "null"
                 ]
+              },
+              "source": {
+                "description": "Where an image added from another dataset or by generation came from",
+                "type": "object",
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "similar",
+                      "copy",
+                      "move",
+                      "clone",
+                      "generated"
+                    ],
+                    "description": "How the image entered the dataset: find similar, copy, move, dataset clone, or generate similar"
+                  },
+                  "dataset": {
+                    "description": "Current source dataset path; absent when it is deleted or not visible to the caller",
+                    "type": "object",
+                    "properties": {
+                      "owner": {
+                        "type": "string"
+                      },
+                      "slug": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "owner",
+                      "slug"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "license": {
+                    "type": "string",
+                    "enum": [
+                      "None",
+                      "CC0-1.0",
+                      "PDM-1.0",
+                      "CC-BY-2.5",
+                      "CC-BY-3.0",
+                      "CC-BY-4.0",
+                      "CC-BY-NC-2.0",
+                      "CC-BY-NC-3.0",
+                      "CC-BY-NC-4.0",
+                      "CC-BY-SA-3.0",
+                      "CC-BY-SA-4.0",
+                      "CC-BY-NC-SA-3.0",
+                      "CC-BY-NC-SA-4.0",
+                      "CC-BY-ND-4.0",
+                      "CC-BY-NC-ND-2.0",
+                      "CC-BY-NC-ND-4.0",
+                      "Apache-2.0",
+                      "MIT",
+                      "BSD-3-Clause",
+                      "AGPL-3.0",
+                      "GPL-2.0",
+                      "GPL-3.0",
+                      "LGPL-3.0",
+                      "ODbL-1.0",
+                      "DbCL-1.0",
+                      "Research-Only",
+                      "Other"
+                    ],
+                    "description": "Source dataset license at import"
+                  },
+                  "model": {
+                    "description": "Name of the model that generated the image",
+                    "type": "string"
+                  },
+                  "importedBy": {
+                    "description": "Username of whoever imported it; only for the dataset's workspace",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "method",
+                  "license"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [
@@ -18009,6 +18089,32 @@
                         },
                         "description": "Custom metadata keyed by each image's archive-relative path or NDJSON file value. Paths are limited to 1,024 characters, top-level metadata keys to 128 characters, and the map to 500,000 serialized characters.",
                         "x-max-serialized-characters": 500000
+                      },
+                      "generated": {
+                        "type": "object",
+                        "propertyNames": {
+                          "type": "string",
+                          "maxLength": 1024
+                        },
+                        "additionalProperties": {
+                          "type": "string",
+                          "enum": [
+                            "4b",
+                            "6b",
+                            "9b",
+                            "12b",
+                            "gemini-nano-banana-2.1",
+                            "gpt-image-2.6-flare",
+                            "gpt-image-2.6-sunburst",
+                            "gemini-3.1-flash-lite-image",
+                            "gemini-3-pro-image",
+                            "grok-imagine-image-2.0",
+                            "grok-imagine-image",
+                            "muse-image-1.0",
+                            "glm-image"
+                          ]
+                        },
+                        "description": "Model of each generated image, keyed by its archive path or object key"
                       }
                     },
                     "required": [
@@ -18072,6 +18178,9 @@
                         },
                         "description": "Custom metadata keyed by each image's archive-relative path or NDJSON file value. Paths are limited to 1,024 characters, top-level metadata keys to 128 characters, and the map to 500,000 serialized characters.",
                         "x-max-serialized-characters": 500000
+                      },
+                      "generated": {
+                        "not": {}
                       }
                     },
                     "required": [
@@ -18173,6 +18282,9 @@
                       },
                       "imageMetadata": {
                         "not": {}
+                      },
+                      "generated": {
+                        "not": {}
                       }
                     },
                     "required": [
@@ -18213,6 +18325,9 @@
                         "not": {}
                       },
                       "imageMetadata": {
+                        "not": {}
+                      },
+                      "generated": {
                         "not": {}
                       }
                     }
@@ -18625,7 +18740,8 @@
                               "deepseek-flash",
                               "mimo-v2.6-flash",
                               "minimax-m3.1-flash",
-                              "hy4"
+                              "hy4",
+                              "hy4-flash"
                             ]
                           }
                         ]
@@ -22404,7 +22520,8 @@
                           "deepseek-flash",
                           "mimo-v2.6-flash",
                           "minimax-m3.1-flash",
-                          "hy4"
+                          "hy4",
+                          "hy4-flash"
                         ]
                       }
                     ]
