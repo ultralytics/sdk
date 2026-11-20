@@ -1936,6 +1936,9 @@ ExploreSearchResponseProjectsItem = TypedDict(
         "totalBytes": float,
         "starCount": int,
         "userImageUrl": NotRequired[str],
+        "userFullName": NotRequired[str],
+        "userIconColor": NotRequired[str],
+        "userIconLetter": NotRequired[str],
         "updatedAt": str,
     },
 )
@@ -1992,6 +1995,9 @@ ExploreSearchResponseDatasetsItem = TypedDict(
         "starCount": int,
         "sampleImages": list[ExploreSearchResponseDatasetsItemSampleImagesItem],
         "userImageUrl": NotRequired[str],
+        "userFullName": NotRequired[str],
+        "userIconColor": NotRequired[str],
+        "userIconLetter": NotRequired[str],
         "updatedAt": str,
     },
 )
@@ -2051,6 +2057,9 @@ ExploreSearchResponseModelsItemDataset = TypedDict(
         "starCount": int,
         "sampleImages": list[ExploreSearchResponseModelsItemDatasetSampleImagesItem],
         "userImageUrl": NotRequired[str],
+        "userFullName": NotRequired[str],
+        "userIconColor": NotRequired[str],
+        "userIconLetter": NotRequired[str],
         "updatedAt": str,
     },
 )
@@ -2077,6 +2086,9 @@ ExploreSearchResponseModelsItem = TypedDict(
         "starCount": int,
         "dataset": NotRequired[ExploreSearchResponseModelsItemDataset],
         "userImageUrl": NotRequired[str],
+        "userFullName": NotRequired[str],
+        "userIconColor": NotRequired[str],
+        "userIconLetter": NotRequired[str],
         "createdAt": NotRequired[str],
     },
 )
@@ -2165,6 +2177,9 @@ ExploreSearchByImageResponseProjectsItem = TypedDict(
         "totalBytes": float,
         "starCount": int,
         "userImageUrl": NotRequired[str],
+        "userFullName": NotRequired[str],
+        "userIconColor": NotRequired[str],
+        "userIconLetter": NotRequired[str],
         "updatedAt": str,
     },
 )
@@ -2221,6 +2236,9 @@ ExploreSearchByImageResponseDatasetsItem = TypedDict(
         "starCount": int,
         "sampleImages": list[ExploreSearchByImageResponseDatasetsItemSampleImagesItem],
         "userImageUrl": NotRequired[str],
+        "userFullName": NotRequired[str],
+        "userIconColor": NotRequired[str],
+        "userIconLetter": NotRequired[str],
         "updatedAt": str,
     },
 )
@@ -2282,6 +2300,9 @@ ExploreSearchByImageResponseModelsItemDataset = TypedDict(
         "starCount": int,
         "sampleImages": list[ExploreSearchByImageResponseModelsItemDatasetSampleImagesItem],
         "userImageUrl": NotRequired[str],
+        "userFullName": NotRequired[str],
+        "userIconColor": NotRequired[str],
+        "userIconLetter": NotRequired[str],
         "updatedAt": str,
     },
 )
@@ -2308,6 +2329,9 @@ ExploreSearchByImageResponseModelsItem = TypedDict(
         "starCount": int,
         "dataset": NotRequired[ExploreSearchByImageResponseModelsItemDataset],
         "userImageUrl": NotRequired[str],
+        "userFullName": NotRequired[str],
+        "userIconColor": NotRequired[str],
+        "userIconLetter": NotRequired[str],
         "createdAt": NotRequired[str],
     },
 )
