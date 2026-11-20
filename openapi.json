@@ -3,7 +3,7 @@
   "info": {
     "title": "Ultralytics Platform API",
     "summary": "Build, train, and deploy YOLO models with the Ultralytics Platform REST API.",
-    "version": "0.1.117",
+    "version": "0.1.119",
     "description": "The [Ultralytics Platform](https://platform.ultralytics.com) API lets you manage datasets, train models on cloud GPUs, deploy inference endpoints, and more — all from your own code. See the [Quickstart](https://docs.ultralytics.com/platform/quickstart) to get started.",
     "termsOfService": "https://www.ultralytics.com/legal/terms-of-service",
     "contact": {
@@ -6192,6 +6192,15 @@
                 "userImageUrl": {
                   "type": "string"
                 },
+                "userFullName": {
+                  "type": "string"
+                },
+                "userIconColor": {
+                  "type": "string"
+                },
+                "userIconLetter": {
+                  "type": "string"
+                },
                 "updatedAt": {
                   "type": "string",
                   "format": "date-time",
@@ -6469,6 +6478,15 @@
                   }
                 },
                 "userImageUrl": {
+                  "type": "string"
+                },
+                "userFullName": {
+                  "type": "string"
+                },
+                "userIconColor": {
+                  "type": "string"
+                },
+                "userIconLetter": {
                   "type": "string"
                 },
                 "updatedAt": {
@@ -6833,6 +6851,15 @@
                     "userImageUrl": {
                       "type": "string"
                     },
+                    "userFullName": {
+                      "type": "string"
+                    },
+                    "userIconColor": {
+                      "type": "string"
+                    },
+                    "userIconLetter": {
+                      "type": "string"
+                    },
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
@@ -6854,6 +6881,15 @@
                   "additionalProperties": false
                 },
                 "userImageUrl": {
+                  "type": "string"
+                },
+                "userFullName": {
+                  "type": "string"
+                },
+                "userIconColor": {
+                  "type": "string"
+                },
+                "userIconLetter": {
                   "type": "string"
                 },
                 "createdAt": {
@@ -7052,6 +7088,15 @@
                 "userImageUrl": {
                   "type": "string"
                 },
+                "userFullName": {
+                  "type": "string"
+                },
+                "userIconColor": {
+                  "type": "string"
+                },
+                "userIconLetter": {
+                  "type": "string"
+                },
                 "updatedAt": {
                   "type": "string",
                   "format": "date-time",
@@ -7329,6 +7374,15 @@
                   }
                 },
                 "userImageUrl": {
+                  "type": "string"
+                },
+                "userFullName": {
+                  "type": "string"
+                },
+                "userIconColor": {
+                  "type": "string"
+                },
+                "userIconLetter": {
                   "type": "string"
                 },
                 "updatedAt": {
@@ -7693,6 +7747,15 @@
                     "userImageUrl": {
                       "type": "string"
                     },
+                    "userFullName": {
+                      "type": "string"
+                    },
+                    "userIconColor": {
+                      "type": "string"
+                    },
+                    "userIconLetter": {
+                      "type": "string"
+                    },
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
@@ -7714,6 +7777,15 @@
                   "additionalProperties": false
                 },
                 "userImageUrl": {
+                  "type": "string"
+                },
+                "userFullName": {
+                  "type": "string"
+                },
+                "userIconColor": {
+                  "type": "string"
+                },
+                "userIconLetter": {
                   "type": "string"
                 },
                 "createdAt": {
@@ -18723,6 +18795,7 @@
                               "claude-sonnet-5-5",
                               "gemini-4-carbon",
                               "gemini-4-argon",
+                              "gemini-4-neon",
                               "grok-4.7",
                               "kimi-k3",
                               "kimi-k3.1-pro",
@@ -22503,6 +22576,7 @@
                           "claude-sonnet-5-5",
                           "gemini-4-carbon",
                           "gemini-4-argon",
+                          "gemini-4-neon",
                           "grok-4.7",
                           "kimi-k3",
                           "kimi-k3.1-pro",
