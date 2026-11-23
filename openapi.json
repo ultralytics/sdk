@@ -22490,7 +22490,7 @@
             }
           },
           "409": {
-            "description": "Image already deleted",
+            "description": "Image already deleted or a class or split update is in progress",
             "content": {
               "application/json": {
                 "schema": {
@@ -23096,7 +23096,7 @@
             }
           },
           "409": {
-            "description": "Filename or content conflicts require a policy",
+            "description": "Filename or content conflicts require a policy, or a class or split update is in progress",
             "content": {
               "application/json": {
                 "schema": {
