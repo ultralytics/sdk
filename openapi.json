@@ -17648,7 +17648,7 @@
             "name": "sort",
             "in": "query",
             "required": false,
-            "description": "Sort order",
+            "description": "Sort order; `random` is a stable shuffle",
             "schema": {
               "default": "newest",
               "type": "string",
@@ -17664,7 +17664,8 @@
                 "size-asc",
                 "size-desc",
                 "labels-desc",
-                "labels-asc"
+                "labels-asc",
+                "random"
               ]
             }
           },
@@ -17887,7 +17888,7 @@
             "name": "sort",
             "in": "query",
             "required": false,
-            "description": "Sort order",
+            "description": "Sort order; `random` is a stable shuffle",
             "schema": {
               "default": "newest",
               "type": "string",
@@ -17903,7 +17904,8 @@
                 "size-asc",
                 "size-desc",
                 "labels-desc",
-                "labels-asc"
+                "labels-asc",
+                "random"
               ]
             }
           },

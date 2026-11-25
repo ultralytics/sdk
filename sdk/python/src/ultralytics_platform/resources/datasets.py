@@ -782,6 +782,7 @@ class Datasets:
             "size-desc",
             "labels-desc",
             "labels-asc",
+            "random",
         ]
         | NotGiven = NOT_GIVEN,
         include_thumbnails: Literal["true", "false"] | NotGiven = NOT_GIVEN,
@@ -807,7 +808,7 @@ class Datasets:
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
             search (str, optional): Image name, class name or metadata search
             q (str, optional): Hybrid search: name, class and metadata matches, then images that look like it, by relevance
-            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
+            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc", "random"], optional): Sort order; `random` is a stable shuffle
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
             include_labels (Literal["true", "false"], optional): Include capped preview annotations
@@ -872,6 +873,7 @@ class Datasets:
             "size-desc",
             "labels-desc",
             "labels-asc",
+            "random",
         ]
         | NotGiven = NOT_GIVEN,
         include_thumbnails: Literal["true", "false"] | NotGiven = NOT_GIVEN,
@@ -893,7 +895,7 @@ class Datasets:
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
             search (str, optional): Image name, class name or metadata search
             q (str, optional): Hybrid search: name, class and metadata matches, then images that look like it, by relevance
-            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
+            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc", "random"], optional): Sort order; `random` is a stable shuffle
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
             include_labels (Literal["true", "false"], optional): Include capped preview annotations
@@ -2260,6 +2262,7 @@ class AsyncDatasets:
             "size-desc",
             "labels-desc",
             "labels-asc",
+            "random",
         ]
         | NotGiven = NOT_GIVEN,
         include_thumbnails: Literal["true", "false"] | NotGiven = NOT_GIVEN,
@@ -2285,7 +2288,7 @@ class AsyncDatasets:
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
             search (str, optional): Image name, class name or metadata search
             q (str, optional): Hybrid search: name, class and metadata matches, then images that look like it, by relevance
-            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
+            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc", "random"], optional): Sort order; `random` is a stable shuffle
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
             include_labels (Literal["true", "false"], optional): Include capped preview annotations
@@ -2350,6 +2353,7 @@ class AsyncDatasets:
             "size-desc",
             "labels-desc",
             "labels-asc",
+            "random",
         ]
         | NotGiven = NOT_GIVEN,
         include_thumbnails: Literal["true", "false"] | NotGiven = NOT_GIVEN,
@@ -2371,7 +2375,7 @@ class AsyncDatasets:
             class_ids (str, optional): Comma-separated class IDs; empty matches no images
             search (str, optional): Image name, class name or metadata search
             q (str, optional): Hybrid search: name, class and metadata matches, then images that look like it, by relevance
-            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc"], optional): Sort order
+            sort (Literal["newest", "oldest", "name-asc", "name-desc", "height-asc", "height-desc", "width-asc", "width-desc", "size-asc", "size-desc", "labels-desc", "labels-asc", "random"], optional): Sort order; `random` is a stable shuffle
             include_thumbnails (Literal["true", "false"], optional): Include signed thumbnail URLs
             include_image_urls (Literal["true", "false"], optional): Include signed full-size image URLs
             include_labels (Literal["true", "false"], optional): Include capped preview annotations
