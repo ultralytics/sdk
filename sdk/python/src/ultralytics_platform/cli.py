@@ -14,7 +14,7 @@ import types
 import typing
 import zipfile
 from base64 import b64encode
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from contextlib import ExitStack
 from hashlib import file_digest, md5, sha256
 from importlib.metadata import PackageNotFoundError, version
@@ -165,11 +165,14 @@ def open_inputs(values: dict, arguments: dict[str, dict], files: list[str], stac
 
 
 def output(value) -> None:
-    """Write one complete SDK response to stdout; never fetch additional pages."""
+    """Write one complete SDK response to stdout, or each event of a stream as it arrives; never fetch more pages."""
     if isinstance(value, bytes):
         sys.stdout.buffer.write(value)
     elif isinstance(value, str):
         print(value)
+    elif isinstance(value, Iterator):
+        for event in value:
+            print(json.dumps(event, ensure_ascii=False, allow_nan=False), flush=True)
     else:
         print(json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False))
 
@@ -178,6 +181,8 @@ def without(value, keys: set[str]):
     """Drop the named keys at any depth, so callers can hide bulky fields such as label geometry."""
     if isinstance(value, dict):
         return {k: without(v, keys) for k, v in value.items() if k not in keys}
+    if isinstance(value, Iterator):
+        return (without(v, keys) for v in value)
     return [without(v, keys) for v in value] if isinstance(value, list) else value
 
 
