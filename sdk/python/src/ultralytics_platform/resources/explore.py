@@ -45,11 +45,11 @@ class Explore:
     ) -> ExploreSearchResponse:
         """Search public projects, datasets, models and images.
 
-        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter and their own and team images.
+        Browse public content. `type=images` searches images by what they show, across public datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter.
 
         Args:
             q (str, optional): Search term
-            type (Literal["all", "projects", "datasets", "images", "models"], optional): Resource type filter; `images` searches image content (public, own and team datasets), and `models` ranks public models by their name, project and training images
+            type (Literal["all", "projects", "datasets", "images", "models"], optional): Resource type filter; `images` searches public image content, and `models` ranks public models by their name, project and training images
             sort (Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
@@ -189,11 +189,11 @@ class AsyncExplore:
     ) -> ExploreSearchResponse:
         """Search public projects, datasets, models and images.
 
-        Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter and their own and team images.
+        Browse public content. `type=images` searches images by what they show, across public datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter.
 
         Args:
             q (str, optional): Search term
-            type (Literal["all", "projects", "datasets", "images", "models"], optional): Resource type filter; `images` searches image content (public, own and team datasets), and `models` ranks public models by their name, project and training images
+            type (Literal["all", "projects", "datasets", "images", "models"], optional): Resource type filter; `images` searches public image content, and `models` ranks public models by their name, project and training images
             sort (Literal["relevance", "stars", "newest", "oldest", "name-asc", "name-desc", "count-desc", "count-asc"], optional): Sort order; `relevance` ranks dataset matches for `q` by search score, otherwise lists the newest first
             offset (int, optional): Results to skip
             limit (int, optional): Maximum results per resource type
