@@ -21690,7 +21690,7 @@
           "Explore"
         ],
         "operationId": "get_api_explore_search",
-        "description": "Browse public content. `type=images` searches images by what they show, across public datasets plus the caller's own and team datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter and their own and team images.",
+        "description": "Browse public content. `type=images` searches images by what they show, across public datasets. Without `q` or a photo, it lists one image from each of the newest public datasets, each scored 1. `type=models` lists public models, one per training dataset (or per project without one): named matches first, then models trained on the public datasets whose images best match `q`. Authentication is used for the caller's starred filter.",
         "security": [
           {},
           {
@@ -21713,7 +21713,7 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Resource type filter; `images` searches image content (public, own and team datasets), and `models` ranks public models by their name, project and training images",
+            "description": "Resource type filter; `images` searches public image content, and `models` ranks public models by their name, project and training images",
             "schema": {
               "default": "all",
               "type": "string",
